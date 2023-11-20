@@ -1,6 +1,19 @@
 {
-  "parent": "item/generated",
-  "textures": {
-    "layer0": "terracompositio:item/stone_staff"
+  "parent": "item/handheld",
+  "loader": "forge:separate_transforms",
+  "base": {
+    "parent": "terracompositio:item/stone_staff3d"
+  },
+  "perspectives": {
+    "gui": {
+      "parent": "terracompositio:item/stone_staff2d"
+    },
+    "ground": {
+      "parent": "terracompositio:item/stone_staff2d"
+    },
+    "fixed": {
+      "parent": "terracompositio:item/stone_staff2d"
+    }
   }
+
 }

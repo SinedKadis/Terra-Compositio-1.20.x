@@ -14,7 +14,7 @@ public class ModItems {
     public static final RegistryObject<Item> Pebble = ITEMS.register("pebble",
             () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> StoneStaff = ITEMS.register("stone_staff",
-            () -> new Item(new Item.Properties()));
+            () -> new Item(new Item.Properties().stacksTo(1)));
     public static void register(IEventBus eventBus){
         ITEMS.register(eventBus);
     }
