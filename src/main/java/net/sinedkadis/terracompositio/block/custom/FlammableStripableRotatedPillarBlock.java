@@ -2,15 +2,17 @@ package net.sinedkadis.terracompositio.block.custom;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.ToolAction;
+import net.sinedkadis.terracompositio.block.ModBlocks;
 import org.jetbrains.annotations.Nullable;
 
-public class FlowLog extends RotatedPillarBlock {
-    public FlowLog(Properties pProperties) {
+public class FlammableStripableRotatedPillarBlock extends RotatedPillarBlock {
+    public FlammableStripableRotatedPillarBlock(Properties pProperties) {
         super(pProperties);
     }
 
@@ -31,6 +33,14 @@ public class FlowLog extends RotatedPillarBlock {
 
     @Override
     public @Nullable BlockState getToolModifiedState(BlockState state, UseOnContext context, ToolAction toolAction, boolean simulate) {
-        return super.getToolModifiedState(state, context, toolAction, simulate);
+        if(context.getItemInHand().getItem() instanceof AxeItem){
+            if(state.is(ModBlocks.NONFLOW_LOG.get())){
+                return ModBlocks.STRIPPED_NONFLOW_LOG.get().defaultBlockState().setValue(AXIS, state.getValue(AXIS));
+            }
+            if(state.is(ModBlocks.NONFLOW_WOOD.get())){
+                return ModBlocks.STRIPPED_NONFLOW_WOOD.get().defaultBlockState().setValue(AXIS, state.getValue(AXIS));
+            }
+        }
+        return super.getToolModifiedState(state, context,toolAction,simulate);
     }
 }

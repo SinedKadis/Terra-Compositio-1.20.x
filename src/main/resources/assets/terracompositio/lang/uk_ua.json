@@ -1,5 +1,11 @@
 {
   "item.terracompositio.pebble": "\u0413\u0430\u043b\u044c\u043a\u0430",
   "item.terracompositio.stone_staff": "\u041a\u0430\u043c'\u044f\u043d\u0438\u0439 \u043f\u043e\u0441\u043e\u0445",
-  "creativetab.terra_compositio": "Terra Compositio"
+  "creativetab.terra_compositio": "Terra Compositio",
+  "block.terracompositio.flow_log": "Flow Log",
+  "block.terracompositio.flow_wood": "Flow Wood",
+  "block.terracompositio.stripped_flow_log": "Stripped Flow Log",
+  "block.terracompositio.stripped_flow_wood": "Stripped Flow Wood",
+  "block.terracompositio.flow_planks": "Flow Planks",
+  "block.terracompositio.flow_leaves": "Flow Leaves"
 }

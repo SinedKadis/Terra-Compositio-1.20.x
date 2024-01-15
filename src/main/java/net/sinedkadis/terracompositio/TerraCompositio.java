@@ -12,7 +12,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.sinedkadis.terracompositio.block.entity.ModBlocks;
+import net.sinedkadis.terracompositio.block.ModBlocks;
 import net.sinedkadis.terracompositio.item.ModCreativeModTabs;
 import net.sinedkadis.terracompositio.item.ModItems;
 import org.slf4j.Logger;
