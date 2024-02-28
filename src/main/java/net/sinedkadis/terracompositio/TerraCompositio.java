@@ -17,10 +17,10 @@ import net.sinedkadis.terracompositio.item.ModCreativeModTabs;
 import net.sinedkadis.terracompositio.item.ModItems;
 import org.slf4j.Logger;
 
-@Mod(TerraCompositio.MODID)
+@Mod(TerraCompositio.MOD_ID)
 public class TerraCompositio
 {
-    public static final String MODID = "terracompositio";
+    public static final String MOD_ID = "terracompositio";
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public TerraCompositio()
@@ -64,7 +64,7 @@ public class TerraCompositio
     }
 
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
-    @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    @Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents
     {
         @SubscribeEvent

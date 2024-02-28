@@ -12,7 +12,7 @@ import net.sinedkadis.terracompositio.block.ModBlocks;
 
 public class ModCreativeModTabs {
     public static final DeferredRegister<CreativeModeTab> Creative_mode_tabs =
-            DeferredRegister.create(Registries.CREATIVE_MODE_TAB, TerraCompositio.MODID);
+            DeferredRegister.create(Registries.CREATIVE_MODE_TAB, TerraCompositio.MOD_ID);
     public static final RegistryObject<CreativeModeTab> Terra_Compositio = Creative_mode_tabs.register("terra_compositio",
             () -> CreativeModeTab.builder().icon(() -> new ItemStack(ModItems.PEBBLE.get()))
                     .title(Component.translatable("creativetab.terra_compositio"))
@@ -25,8 +25,10 @@ public class ModCreativeModTabs {
                         pOutput.accept(ModBlocks.NONFLOW_WOOD.get());
                         pOutput.accept(ModBlocks.STRIPPED_NONFLOW_LOG.get());
                         pOutput.accept(ModBlocks.STRIPPED_NONFLOW_WOOD.get());
+                        pOutput.accept(ModBlocks.FLOW_PORT.get());
                         pOutput.accept(ModBlocks.NONFLOW_PLANKS.get());
                         pOutput.accept(ModBlocks.FLOW_LEAVES.get());
+
                     })
                     .build());
 

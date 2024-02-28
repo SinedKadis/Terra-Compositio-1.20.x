@@ -9,5 +9,6 @@
   "block.terracompositio.stripped_nonflow_log": "Stripped Non-flow Log",
   "block.terracompositio.stripped_nonflow_wood": "Stripped Non-flow Wood",
   "block.terracompositio.nonflow_planks": "Non-Flow Planks",
-  "block.terracompositio.flow_leaves": "Flow Leaves"
+  "block.terracompositio.flow_leaves": "Flow Leaves",
+  "block.terracompositio.flow_log_port": "Flow Port"
 }

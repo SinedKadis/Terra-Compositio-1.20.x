@@ -8,6 +8,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LeavesBlock;
+import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -26,7 +27,7 @@ import java.util.function.Supplier;
 
 public class ModBlocks {
     public static final DeferredRegister<Block> BLOCKS =
-            DeferredRegister.create(ForgeRegistries.BLOCKS, TerraCompositio.MODID);
+            DeferredRegister.create(ForgeRegistries.BLOCKS, TerraCompositio.MOD_ID);
 
     private static <T extends Block>RegistryObject<T> registerBlock(String name, Supplier<T> block) {
         RegistryObject<T> toReturn = BLOCKS.register(name, block);
@@ -43,8 +44,8 @@ public class ModBlocks {
 
     public static final RegistryObject<Block> FLOW_LOG = registerBlock("flow_log",
             () -> new StripableRotatedPillarBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LOG).strength(3f)));
-    //public static final RegistryObject<Block> FLOW_PORT = registerBlock("flow_port",
-     //       () -> new FlowWoodPortBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LOG).strength(3f)));
+    public static final RegistryObject<Block> FLOW_PORT = registerBlock("flow_log_port",
+            () -> new FlowWoodPortBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LOG).strength(3f)));
     public static final RegistryObject<Block> FLOW_WOOD = registerBlock("flow_wood",
             () -> new StripableRotatedPillarBlock(BlockBehaviour.Properties.copy(Blocks.OAK_WOOD).strength(3f)));
     public static final RegistryObject<Block> STRIPPED_NONFLOW_LOG = registerBlock("stripped_nonflow_log",

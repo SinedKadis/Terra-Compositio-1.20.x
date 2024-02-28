@@ -9,7 +9,7 @@ import net.sinedkadis.terracompositio.TerraCompositio;
 
 public class ModItems {
     public static final DeferredRegister<Item> ITEMS =
-            DeferredRegister.create(ForgeRegistries.ITEMS, TerraCompositio.MODID);
+            DeferredRegister.create(ForgeRegistries.ITEMS, TerraCompositio.MOD_ID);
 
     public static final RegistryObject<Item> PEBBLE = ITEMS.register("pebble",
             () -> new Item(new Item.Properties()));
