@@ -9,6 +9,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.block.ModBlocks;
+import net.sinedkadis.terracompositio.util.ModTags;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,5 +50,8 @@ public class ModItemTagGenerator extends ItemTagsProvider {
                 .add(ModBlocks.NONFLOW_FENCE.get().asItem());
         this.tag(ItemTags.FENCE_GATES)
                 .add(ModBlocks.NONFLOW_FENCE_GATE.get().asItem());
+        this.tag(ModTags.Items.NONFLOW_LOGS)
+                .add(ModBlocks.NONFLOW_LOG.get().asItem(),
+                        ModBlocks.NONFLOW_WOOD.get().asItem());
     }
 }

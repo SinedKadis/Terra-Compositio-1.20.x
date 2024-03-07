@@ -1,4 +1,4 @@
-// 1.20.1	2024-03-07T09:39:53.9961248	Recipes
+// 1.20.1	2024-03-07T10:14:15.0361842	Recipes
 6043e8326ea28a534c215583750d0bfd72d2f57b data/terracompositio/advancements/recipes/building_blocks/nonflow_button.json
 ea1e4fccced382b56e2f7bd6f5ec31c00c91b8c6 data/terracompositio/advancements/recipes/building_blocks/nonflow_door.json
 2e32bf8db42d84c892df74bdbbfb256b68a15e40 data/terracompositio/advancements/recipes/building_blocks/nonflow_fence.json
@@ -12,7 +12,7 @@ f361fccea26e96279817d491bd3232dbdf36f8fb data/terracompositio/recipes/nonflow_bu
 26ac82757bbad63ddf1ff9a9578e0d6ab270e935 data/terracompositio/recipes/nonflow_door.json
 0d8ec4e1bf6cbc44628de531afe0edbebf956268 data/terracompositio/recipes/nonflow_fence.json
 eab1c3843595afb3fe437c0feaf8febb0a9e8e30 data/terracompositio/recipes/nonflow_fence_gate.json
-b77faa9137d7a6fbac615633d95fd299eed5c672 data/terracompositio/recipes/nonflow_planks.json
+9c2b326e593bc46eeb9a0face18c83141678a60b data/terracompositio/recipes/nonflow_planks.json
 54e3fef28ad7a539a76d9b49b2cca2fa131ad65a data/terracompositio/recipes/nonflow_pressure_plate.json
 52c35eeecd98392305a9510e9c254a9960b77c9d data/terracompositio/recipes/nonflow_slab.json
 5dceed8e66742475db0a62606bb72eead3c1ec97 data/terracompositio/recipes/nonflow_stairs.json

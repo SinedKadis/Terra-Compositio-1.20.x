@@ -3,11 +3,11 @@
   "category": "building",
   "ingredients": [
     {
-      "tag": "terracompositio:nonflow_logs"
+      "item": "terracompositio:nonflow_planks"
     }
   ],
   "result": {
     "count": 4,
-    "item": "terracompositio:nonflow_planks"
+    "item": "terracompositio:nonflow_button"
   }
 }

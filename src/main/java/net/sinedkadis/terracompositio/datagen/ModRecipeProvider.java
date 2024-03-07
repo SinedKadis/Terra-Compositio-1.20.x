@@ -11,6 +11,7 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.block.ModBlocks;
+import net.sinedkadis.terracompositio.util.ModTags;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -79,12 +80,8 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
 
 
         ShapelessRecipeBuilder.shapeless(RecipeCategory.BUILDING_BLOCKS, ModBlocks.NONFLOW_PLANKS.get(), 4)
-                .requires(ModBlocks.NONFLOW_LOG.get())
+                .requires(ModTags.Items.NONFLOW_LOGS)
                 .unlockedBy(getHasName(ModBlocks.NONFLOW_LOG.get()), has(ModBlocks.NONFLOW_LOG.get()))
-                .save(pWriter);
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.BUILDING_BLOCKS, ModBlocks.NONFLOW_PLANKS.get(), 4)
-                .requires(ModBlocks.NONFLOW_WOOD.get())
-                .unlockedBy(getHasName(ModBlocks.NONFLOW_WOOD.get()), has(ModBlocks.NONFLOW_WOOD.get()))
                 .save(pWriter);
         ShapelessRecipeBuilder.shapeless(RecipeCategory.BUILDING_BLOCKS, ModBlocks.NONFLOW_BUTTON.get(), 4)
                 .requires(ModBlocks.NONFLOW_PLANKS.get())
