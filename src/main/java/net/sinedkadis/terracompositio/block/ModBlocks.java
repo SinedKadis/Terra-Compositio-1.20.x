@@ -2,15 +2,15 @@ package net.sinedkadis.terracompositio.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.LeavesBlock;
-import net.minecraft.world.level.block.RotatedPillarBlock;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -46,6 +46,9 @@ public class ModBlocks {
             () -> new StripableRotatedPillarBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LOG).strength(3f)));
     public static final RegistryObject<Block> FLOW_PORT = registerBlock("flow_log_port",
             () -> new FlowWoodPortBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LOG).strength(3f)));
+    public static final RegistryObject<Block> NONFLOW_PORT = registerBlock("nonflow_log_port",
+            () -> new FlowWoodPortBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LOG).strength(3f)));
+
     public static final RegistryObject<Block> FLOW_WOOD = registerBlock("flow_wood",
             () -> new StripableRotatedPillarBlock(BlockBehaviour.Properties.copy(Blocks.OAK_WOOD).strength(3f)));
     public static final RegistryObject<Block> STRIPPED_NONFLOW_LOG = registerBlock("stripped_nonflow_log",
@@ -75,7 +78,7 @@ public class ModBlocks {
                 }
             });
     public static final RegistryObject<Block> FLOW_LEAVES = registerBlock("flow_leaves",
-            () -> new LeavesBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LEAVES)){
+            () -> new LeavesBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LEAVES).noLootTable()){
                 @Override
                 public boolean isFlammable(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
                     return false;
@@ -91,4 +94,23 @@ public class ModBlocks {
                     return 30;
                 }
             });
+    public static final RegistryObject<Block> NONFLOW_STAIRS = registerBlock("nonflow_stairs",
+            () -> new StairBlock(() -> ModBlocks.NONFLOW_PLANKS.get().defaultBlockState(),
+                    BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS)));
+    public static final RegistryObject<Block> NONFLOW_SLAB = registerBlock("nonflow_slab",
+            () -> new SlabBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS).strength(3f)));
+    public static final RegistryObject<Block> NONFLOW_BUTTON = registerBlock("nonflow_button",
+            () -> new ButtonBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS),
+                    BlockSetType.OAK,30,true));
+    public static final RegistryObject<Block> NONFLOW_PRESSURE_PLATE = registerBlock("nonflow_pressure_plate",
+            () -> new PressurePlateBlock(PressurePlateBlock.Sensitivity.EVERYTHING,
+                    BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS),BlockSetType.OAK));
+    public static final RegistryObject<Block> NONFLOW_FENCE = registerBlock("nonflow_fence",
+            () -> new FenceBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS)));
+    public static final RegistryObject<Block> NONFLOW_FENCE_GATE = registerBlock("nonflow_fence_gate",
+            () -> new FenceGateBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS), SoundEvents.FENCE_GATE_OPEN,SoundEvents.FENCE_GATE_CLOSE));
+    public static final RegistryObject<Block> NONFLOW_DOOR = registerBlock("nonflow_door",
+            () -> new DoorBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS).noOcclusion(), BlockSetType.OAK));
+    public static final RegistryObject<Block> NONFLOW_TRAPDOOR = registerBlock("nonflow_trapdoor",
+            () -> new TrapDoorBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS).noOcclusion(),BlockSetType.OAK));
 }

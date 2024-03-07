@@ -1,0 +1,14 @@
+// 1.20.1	2024-03-07T09:39:53.9921229	Tags for minecraft:block mod id terracompositio
+be28fe38073be4e66110769f4dd5c7b93b95b67d data/minecraft/tags/blocks/buttons.json
+4be77f69ad8337373cabcc50e2e3502dcd8ff1bd data/minecraft/tags/blocks/doors.json
+cc259d1331627f9d8c2d50d9f8e994af37f31995 data/minecraft/tags/blocks/fences.json
+0c48ad54cd0dda03006e069031d8eeea3ba484dd data/minecraft/tags/blocks/fence_gates.json
+f6f0bf76596bf6ea3c77f86e89d7396e34466356 data/minecraft/tags/blocks/leaves.json
+5d914e7d95ad205db3bd4b8aa8af0460ec4163bf data/minecraft/tags/blocks/logs.json
+a707c9e846a3c492e6ee6d3ea71389e4bacf7d31 data/minecraft/tags/blocks/logs_that_burn.json
+d3e8b25ba26147b83a9a03faa6dcf44a58059cee data/minecraft/tags/blocks/mineable/axe.json
+ba6a55e8a7d0c653054aa1cdde36f103b2a59e09 data/minecraft/tags/blocks/needs_iron_tool.json
+fea96acd8ca32c9d1985ffceb2d64b96886f28d2 data/minecraft/tags/blocks/planks.json
+6020df9807c521c41c8ec2516f1e3b56591b21f8 data/minecraft/tags/blocks/pressure_plates.json
+765ffe7b3a2f830a27abc63011295efa91c98630 data/minecraft/tags/blocks/stairs.json
+e58664f1331d3c3a8a6c454d7cde0dc5ede9c2d5 data/minecraft/tags/blocks/trapdoors.json

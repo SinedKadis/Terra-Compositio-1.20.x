@@ -20,14 +20,24 @@ public class ModCreativeModTabs {
                         pOutput.accept(ModItems.PEBBLE.get());
                         pOutput.accept(ModItems.STONE_STAFF.get());
                         pOutput.accept(ModBlocks.FLOW_LOG.get());
-                        pOutput.accept(ModBlocks.FLOW_WOOD.get());
                         pOutput.accept(ModBlocks.NONFLOW_LOG.get());
-                        pOutput.accept(ModBlocks.NONFLOW_WOOD.get());
                         pOutput.accept(ModBlocks.STRIPPED_NONFLOW_LOG.get());
+                        pOutput.accept(ModBlocks.FLOW_WOOD.get());
+                        pOutput.accept(ModBlocks.NONFLOW_WOOD.get());
                         pOutput.accept(ModBlocks.STRIPPED_NONFLOW_WOOD.get());
                         pOutput.accept(ModBlocks.FLOW_PORT.get());
-                        pOutput.accept(ModBlocks.NONFLOW_PLANKS.get());
+                        pOutput.accept(ModBlocks.NONFLOW_PORT.get());
                         pOutput.accept(ModBlocks.FLOW_LEAVES.get());
+                        pOutput.accept(ModBlocks.NONFLOW_PLANKS.get());
+                        pOutput.accept(ModBlocks.NONFLOW_STAIRS.get());
+                        pOutput.accept(ModBlocks.NONFLOW_SLAB.get());
+                        pOutput.accept(ModBlocks.NONFLOW_BUTTON.get());
+                        pOutput.accept(ModBlocks.NONFLOW_PRESSURE_PLATE.get());
+                        pOutput.accept(ModBlocks.NONFLOW_FENCE.get());
+                        pOutput.accept(ModBlocks.NONFLOW_FENCE_GATE.get());
+                        pOutput.accept(ModBlocks.NONFLOW_DOOR.get());
+                        pOutput.accept(ModBlocks.NONFLOW_TRAPDOOR.get());
+
 
                     })
                     .build());
