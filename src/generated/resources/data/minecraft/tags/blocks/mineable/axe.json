@@ -3,7 +3,6 @@
     "terracompositio:flow_log",
     "terracompositio:flow_leaves",
     "terracompositio:flow_log_port",
-    "terracompositio:nonflow_log_port",
     "terracompositio:flow_wood",
     "terracompositio:nonflow_log",
     "terracompositio:nonflow_wood",

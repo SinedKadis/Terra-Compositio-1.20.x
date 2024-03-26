@@ -9,6 +9,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.block.ModBlocks;
+import net.sinedkadis.terracompositio.fluid.ModFluids;
 
 public class ModCreativeModTabs {
     public static final DeferredRegister<CreativeModeTab> Creative_mode_tabs =
@@ -37,6 +38,7 @@ public class ModCreativeModTabs {
                         pOutput.accept(ModBlocks.NONFLOW_FENCE_GATE.get());
                         pOutput.accept(ModBlocks.NONFLOW_DOOR.get());
                         pOutput.accept(ModBlocks.NONFLOW_TRAPDOOR.get());
+                        pOutput.accept(ModFluids.FLOW_FLUID.bucket.get());
 
 
                     })

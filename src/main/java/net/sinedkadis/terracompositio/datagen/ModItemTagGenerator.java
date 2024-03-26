@@ -53,5 +53,6 @@ public class ModItemTagGenerator extends ItemTagsProvider {
         this.tag(ModTags.Items.NONFLOW_LOGS)
                 .add(ModBlocks.NONFLOW_LOG.get().asItem(),
                         ModBlocks.NONFLOW_WOOD.get().asItem());
+
     }
 }

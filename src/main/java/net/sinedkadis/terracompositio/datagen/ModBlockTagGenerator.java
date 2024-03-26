@@ -35,7 +35,7 @@ public class ModBlockTagGenerator extends BlockTagsProvider {
                 .add(ModBlocks.FLOW_LOG.get(),
                         ModBlocks.FLOW_LEAVES.get(),
                         ModBlocks.FLOW_PORT.get(),
-                        ModBlocks.NONFLOW_PORT.get(),
+                        //ModBlocks.NONFLOW_PORT.get(),
                         ModBlocks.FLOW_WOOD.get(),
                         ModBlocks.NONFLOW_LOG.get(),
                         ModBlocks.NONFLOW_WOOD.get(),

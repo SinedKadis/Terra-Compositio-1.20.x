@@ -10,6 +10,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.block.ModBlocks;
+import net.sinedkadis.terracompositio.fluid.ModFluids;
 
 public class ModBlockStateProvider extends BlockStateProvider {
     public ModBlockStateProvider(PackOutput output, ExistingFileHelper exFileHelper) {
@@ -29,6 +30,8 @@ public class ModBlockStateProvider extends BlockStateProvider {
         logBlockWithItem(ModBlocks.STRIPPED_NONFLOW_LOG);
         woodBlockWithItem(ModBlocks.STRIPPED_NONFLOW_WOOD,ModBlocks.STRIPPED_NONFLOW_LOG);
 
+
+
         stairsBlock(((StairBlock) ModBlocks.NONFLOW_STAIRS.get()),blockTexture(ModBlocks.NONFLOW_PLANKS.get()));
         slabBlock(((SlabBlock) ModBlocks.NONFLOW_SLAB.get()),blockTexture(ModBlocks.NONFLOW_PLANKS.get()),blockTexture(ModBlocks.NONFLOW_PLANKS.get()));
         buttonBlock(((ButtonBlock) ModBlocks.NONFLOW_BUTTON.get()),blockTexture(ModBlocks.NONFLOW_PLANKS.get()));
@@ -44,6 +47,10 @@ public class ModBlockStateProvider extends BlockStateProvider {
     private void blockWithItem(RegistryObject<Block> blockRegistryObject) {
         simpleBlockWithItem(blockRegistryObject.get(), cubeAll(blockRegistryObject.get()));
     }
+    private void fluidBlockWithItem(RegistryObject<LiquidBlock> blockRegistryObject) {
+        simpleBlock(blockRegistryObject.get(), cubeAll(blockRegistryObject.get()));
+    }
+
     private  void woodBlockWithItem(RegistryObject<Block> block, RegistryObject<Block> texture){
         axisBlock(((RotatedPillarBlock) block.get()),blockTexture(texture.get()),blockTexture(texture.get()));
         simpleBlockItem(block.get(), new ModelFile.UncheckedModelFile(TerraCompositio.MOD_ID+":block/"+ ForgeRegistries.BLOCKS.getKey(block.get()).getPath()));

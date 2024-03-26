@@ -13,6 +13,8 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.sinedkadis.terracompositio.block.ModBlocks;
+import net.sinedkadis.terracompositio.block.entity.ModBlockEntities;
+import net.sinedkadis.terracompositio.fluid.ModFluids;
 import net.sinedkadis.terracompositio.item.ModCreativeModTabs;
 import net.sinedkadis.terracompositio.item.ModItems;
 import org.slf4j.Logger;
@@ -30,10 +32,12 @@ public class TerraCompositio
         ModCreativeModTabs.register(modEventBus);
 
         ModItems.register(modEventBus);
-
+        ModFluids.FLUIDS.register(modEventBus);
+        ModFluids.FLUID_TYPES.register(modEventBus);
         ModBlocks.register(modEventBus);
         modEventBus.addListener(this::commonSetup);
 
+        ModBlockEntities.register(modEventBus);
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
 

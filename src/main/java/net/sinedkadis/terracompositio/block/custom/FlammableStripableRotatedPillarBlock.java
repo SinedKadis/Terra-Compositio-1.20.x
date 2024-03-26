@@ -42,7 +42,10 @@ public class FlammableStripableRotatedPillarBlock extends RotatedPillarBlock {
             if(state.is(ModBlocks.NONFLOW_WOOD.get())){
                 return ModBlocks.STRIPPED_NONFLOW_WOOD.get().defaultBlockState().setValue(AXIS, state.getValue(AXIS));
             }
-        }
+            /*if(state.is(ModBlocks.NONFLOW_PORT.get())) {
+                return ModBlocks.STRIPPED_NONFLOW_LOG.get().defaultBlockState().setValue(AXIS, state.getValue(AXIS));
+            }*/
+            }
         return super.getToolModifiedState(state, context,toolAction,simulate);
     }
 }
