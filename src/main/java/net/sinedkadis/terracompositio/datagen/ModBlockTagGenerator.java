@@ -4,10 +4,12 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;
 
+import net.minecraft.tags.FluidTags;
 import net.minecraftforge.common.data.BlockTagsProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.block.ModBlocks;
+import net.sinedkadis.terracompositio.fluid.ModFluids;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -85,7 +87,6 @@ public class ModBlockTagGenerator extends BlockTagsProvider {
 
         //this.tag(Tags.Blocks.NEEDS_NETHERITE_TOOL)
         //        .add(ModBlocks.END_STONE_SAPPHIRE_ORE.get());
-
 
     }
 }
