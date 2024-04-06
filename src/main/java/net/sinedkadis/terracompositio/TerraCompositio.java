@@ -15,6 +15,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.sinedkadis.terracompositio.block.ModBlocks;
 import net.sinedkadis.terracompositio.block.entity.ModBlockEntities;
 import net.sinedkadis.terracompositio.fluid.ModFluids;
+//import net.sinedkadis.terracompositio.fluid.SwimEventHandler;
 import net.sinedkadis.terracompositio.item.ModCreativeModTabs;
 import net.sinedkadis.terracompositio.item.ModItems;
 import org.slf4j.Logger;
@@ -43,6 +44,8 @@ public class TerraCompositio
 
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
+
+        //SwimEventHandler.register();
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)
