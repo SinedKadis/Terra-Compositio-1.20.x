@@ -1,31 +1,39 @@
-[27бер.2024 21:12:54.309] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgedatauserdev, --assetIndex, 5, --assetsDir, C:\Users\sidbo\.gradle\caches\forge_gradle\assets, --gameDir, ., --fml.forgeVersion, 47.2.20, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412, --mod, terracompositio, --all, --output, D:\mymod\src\generated\resources, --existing, D:\mymod\src\main\resources]
-[27бер.2024 21:12:54.318] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher 10.0.9+10.0.9+main.dcd20f30 starting: java version 17.0.7 by Oracle Corporation; OS Windows 10 arch amd64 version 10.0
-[27бер.2024 21:12:54.439] [main/INFO] [net.minecraftforge.fml.loading.ImmediateWindowHandler/]: ImmediateWindowProvider not loading because launch target is forgedatauserdev
-[27бер.2024 21:12:54.493] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.5 Source=union:/C:/Users/sidbo/.gradle/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar%23128!/ Service=ModLauncher Env=CLIENT
-[27бер.2024 21:12:54.789] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\sidbo\.gradle\caches\modules-2\files-2.1\net.minecraftforge\javafmllanguage\1.20.1-47.2.20\918959a037ab7191a0c45a359f4746ab76c110c3\javafmllanguage-1.20.1-47.2.20.jar is missing mods.toml file
-[27бер.2024 21:12:54.794] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\sidbo\.gradle\caches\modules-2\files-2.1\net.minecraftforge\lowcodelanguage\1.20.1-47.2.20\c1d1efcb98e8bfcf3dbfed0d1e81b55b648b86bf\lowcodelanguage-1.20.1-47.2.20.jar is missing mods.toml file
-[27бер.2024 21:12:54.798] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\sidbo\.gradle\caches\modules-2\files-2.1\net.minecraftforge\mclanguage\1.20.1-47.2.20\efca3bee89c0085192b122d47334692b921ca7d1\mclanguage-1.20.1-47.2.20.jar is missing mods.toml file
-[27бер.2024 21:12:54.803] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\sidbo\.gradle\caches\modules-2\files-2.1\net.minecraftforge\fmlcore\1.20.1-47.2.20\12cd436f148405b50c9b16bd8f3cc6f18db89824\fmlcore-1.20.1-47.2.20.jar is missing mods.toml file
-[27бер.2024 21:12:54.879] [main/INFO] [net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator/]: No dependencies to load found. Skipping!
-[27бер.2024 21:12:56.053] [main/INFO] [cpw.mods.modlauncher.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgedatauserdev' with arguments [--gameDir, ., --assetsDir, C:\Users\sidbo\.gradle\caches\forge_gradle\assets, --assetIndex, 5, --mod, terracompositio, --all, --output, D:\mymod\src\generated\resources, --existing, D:\mymod\src\main\resources]
-[27бер.2024 21:12:56.395] [main/INFO] [net.minecraftforge.data.loading.DatagenModLoader/]: Initializing Data Gatherer for mods [terracompositio]
-[27бер.2024 21:13:00.713] [modloading-worker-0/INFO] [net.minecraftforge.common.ForgeMod/FORGEMOD]: Forge mod loading, version 47.2.20, for MC 1.20.1 with MCP 20230612.114412
-[27бер.2024 21:13:00.715] [modloading-worker-0/INFO] [net.minecraftforge.common.MinecraftForge/FORGE]: MinecraftForge v47.2.20 Initialized
-[27бер.2024 21:13:01.192] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/C:/Users/sidbo/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.2.20_mapped_parchment_2023.06.26-1.20.1/forge-1.20.1-47.2.20_mapped_parchment_2023.06.26-1.20.1-recomp.jar%23191!/assets/.mcassetsroot' uses unexpected schema
-[27бер.2024 21:13:01.192] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/C:/Users/sidbo/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.2.20_mapped_parchment_2023.06.26-1.20.1/forge-1.20.1-47.2.20_mapped_parchment_2023.06.26-1.20.1-recomp.jar%23191!/data/.mcassetsroot' uses unexpected schema
-[27бер.2024 21:13:01.410] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Recipes
-[27бер.2024 21:13:01.446] [main/INFO] [net.minecraft.data.DataGenerator/]: Recipes finished after 36 ms
-[27бер.2024 21:13:01.446] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Loot Tables
-[27бер.2024 21:13:01.498] [main/INFO] [net.minecraft.data.DataGenerator/]: Loot Tables finished after 52 ms
-[27бер.2024 21:13:01.498] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Block States: terracompositio
-[27бер.2024 21:13:01.688] [main/INFO] [net.minecraft.data.DataGenerator/]: Block States: terracompositio finished after 189 ms
-[27бер.2024 21:13:01.688] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Item Models: terracompositio
-[27бер.2024 21:13:01.692] [main/INFO] [net.minecraft.data.DataGenerator/]: Item Models: terracompositio finished after 3 ms
-[27бер.2024 21:13:01.692] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Tags for minecraft:block mod id terracompositio
-[27бер.2024 21:13:01.705] [main/INFO] [net.minecraft.data.DataGenerator/]: Tags for minecraft:block mod id terracompositio finished after 12 ms
-[27бер.2024 21:13:01.705] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Tags for minecraft:item mod id terracompositio
-[27бер.2024 21:13:01.707] [main/INFO] [net.minecraft.data.DataGenerator/]: Tags for minecraft:item mod id terracompositio finished after 2 ms
-[27бер.2024 21:13:01.707] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Tags for minecraft:fluid mod id terracompositio
-[27бер.2024 21:13:01.709] [main/INFO] [net.minecraft.data.DataGenerator/]: Tags for minecraft:fluid mod id terracompositio finished after 1 ms
-[27бер.2024 21:13:01.709] [main/INFO] [net.minecraft.data.DataGenerator/]: All providers took: 300 ms
-[27бер.2024 21:13:01.719] [main/INFO] [net.minecraft.data.HashCache/]: Caching: total files: 141, old count: 142, new count: 142, removed stale: 0, written: 1
+[09квіт.2024 23:01:59.626] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgedatauserdev, --assetIndex, 5, --assetsDir, C:\Users\sidbo\.gradle\caches\forge_gradle\assets, --gameDir, ., --fml.forgeVersion, 47.2.20, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412, --mod, terracompositio, --all, --output, D:\mymod\src\generated\resources, --existing, D:\mymod\src\main\resources, --mixin.config, mixins.terracompositio.json]
+[09квіт.2024 23:01:59.631] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher 10.0.9+10.0.9+main.dcd20f30 starting: java version 17.0.7 by Oracle Corporation; OS Windows 10 arch amd64 version 10.0
+[09квіт.2024 23:01:59.742] [main/INFO] [net.minecraftforge.fml.loading.ImmediateWindowHandler/]: ImmediateWindowProvider not loading because launch target is forgedatauserdev
+[09квіт.2024 23:01:59.795] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.5 Source=union:/C:/Users/sidbo/.gradle/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar%23128!/ Service=ModLauncher Env=CLIENT
+[09квіт.2024 23:02:00.219] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\sidbo\.gradle\caches\modules-2\files-2.1\net.minecraftforge\javafmllanguage\1.20.1-47.2.20\918959a037ab7191a0c45a359f4746ab76c110c3\javafmllanguage-1.20.1-47.2.20.jar is missing mods.toml file
+[09квіт.2024 23:02:00.224] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\sidbo\.gradle\caches\modules-2\files-2.1\net.minecraftforge\lowcodelanguage\1.20.1-47.2.20\c1d1efcb98e8bfcf3dbfed0d1e81b55b648b86bf\lowcodelanguage-1.20.1-47.2.20.jar is missing mods.toml file
+[09квіт.2024 23:02:00.229] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\sidbo\.gradle\caches\modules-2\files-2.1\net.minecraftforge\mclanguage\1.20.1-47.2.20\efca3bee89c0085192b122d47334692b921ca7d1\mclanguage-1.20.1-47.2.20.jar is missing mods.toml file
+[09квіт.2024 23:02:00.234] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\sidbo\.gradle\caches\modules-2\files-2.1\net.minecraftforge\fmlcore\1.20.1-47.2.20\12cd436f148405b50c9b16bd8f3cc6f18db89824\fmlcore-1.20.1-47.2.20.jar is missing mods.toml file
+[09квіт.2024 23:02:00.303] [main/INFO] [net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator/]: No dependencies to load found. Skipping!
+[09квіт.2024 23:02:01.529] [main/WARN] [mixin/]: Compatibility level JAVA_17 specified by mixins.terracompositio.json is higher than the maximum level supported by this version of mixin (JAVA_13).
+[09квіт.2024 23:02:01.529] [main/INFO] [mixin/]: Compatibility level set to JAVA_17
+[09квіт.2024 23:02:01.532] [main/INFO] [cpw.mods.modlauncher.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgedatauserdev' with arguments [--gameDir, ., --assetsDir, C:\Users\sidbo\.gradle\caches\forge_gradle\assets, --assetIndex, 5, --mod, terracompositio, --all, --output, D:\mymod\src\generated\resources, --existing, D:\mymod\src\main\resources]
+[09квіт.2024 23:02:01.609] [main/INFO] [mixin/]: Attempting to load Fernflower decompiler (Threaded mode)
+[09квіт.2024 23:02:01.611] [main/INFO] [mixin/]: Fernflower could not be loaded, exported classes will not be decompiled. NoClassDefFoundError: org/jetbrains/java/decompiler/main/extern/IResultSaver
+[09квіт.2024 23:02:01.616] [main/INFO] [mixin/]: Preparing mixins for MixinEnvironment[DEFAULT]
+[09квіт.2024 23:02:01.617] [main/INFO] [mixin/]: Selecting config mixins.terracompositio.json
+[09квіт.2024 23:02:01.620] [main/INFO] [mixin/]: Preparing mixins.terracompositio.json (1)
+[09квіт.2024 23:02:01.895] [main/INFO] [net.minecraftforge.data.loading.DatagenModLoader/]: Initializing Data Gatherer for mods [terracompositio]
+[09квіт.2024 23:02:02.029] [main/INFO] [mixin/]: Mixing EntityMixin from mixins.terracompositio.json into net.minecraft.world.entity.LivingEntity
+[09квіт.2024 23:02:06.140] [modloading-worker-0/INFO] [net.minecraftforge.common.ForgeMod/FORGEMOD]: Forge mod loading, version 47.2.20, for MC 1.20.1 with MCP 20230612.114412
+[09квіт.2024 23:02:06.144] [modloading-worker-0/INFO] [net.minecraftforge.common.MinecraftForge/FORGE]: MinecraftForge v47.2.20 Initialized
+[09квіт.2024 23:02:06.615] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/C:/Users/sidbo/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.2.20_mapped_parchment_2023.06.26-1.20.1/forge-1.20.1-47.2.20_mapped_parchment_2023.06.26-1.20.1-recomp.jar%23191!/assets/.mcassetsroot' uses unexpected schema
+[09квіт.2024 23:02:06.615] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/C:/Users/sidbo/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.2.20_mapped_parchment_2023.06.26-1.20.1/forge-1.20.1-47.2.20_mapped_parchment_2023.06.26-1.20.1-recomp.jar%23191!/data/.mcassetsroot' uses unexpected schema
+[09квіт.2024 23:02:06.758] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Recipes
+[09квіт.2024 23:02:06.789] [main/INFO] [net.minecraft.data.DataGenerator/]: Recipes finished after 30 ms
+[09квіт.2024 23:02:06.789] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Loot Tables
+[09квіт.2024 23:02:06.827] [main/INFO] [net.minecraft.data.DataGenerator/]: Loot Tables finished after 37 ms
+[09квіт.2024 23:02:06.827] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Block States: terracompositio
+[09квіт.2024 23:02:07.048] [main/INFO] [net.minecraft.data.DataGenerator/]: Block States: terracompositio finished after 221 ms
+[09квіт.2024 23:02:07.049] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Item Models: terracompositio
+[09квіт.2024 23:02:07.051] [main/INFO] [net.minecraft.data.DataGenerator/]: Item Models: terracompositio finished after 2 ms
+[09квіт.2024 23:02:07.052] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Tags for minecraft:block mod id terracompositio
+[09квіт.2024 23:02:07.064] [main/INFO] [net.minecraft.data.DataGenerator/]: Tags for minecraft:block mod id terracompositio finished after 12 ms
+[09квіт.2024 23:02:07.065] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Tags for minecraft:item mod id terracompositio
+[09квіт.2024 23:02:07.066] [main/INFO] [net.minecraft.data.DataGenerator/]: Tags for minecraft:item mod id terracompositio finished after 1 ms
+[09квіт.2024 23:02:07.067] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Tags for minecraft:fluid mod id terracompositio
+[09квіт.2024 23:02:07.067] [main/INFO] [net.minecraft.data.DataGenerator/]: Tags for minecraft:fluid mod id terracompositio finished after 0 ms
+[09квіт.2024 23:02:07.067] [main/INFO] [net.minecraft.data.DataGenerator/]: All providers took: 309 ms
+[09квіт.2024 23:02:07.075] [main/INFO] [net.minecraft.data.HashCache/]: Caching: total files: 142, old count: 141, new count: 142, removed stale: 1, written: 0

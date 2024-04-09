@@ -2,6 +2,7 @@ package net.sinedkadis.terracompositio;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
@@ -17,6 +18,9 @@ import net.sinedkadis.terracompositio.block.entity.ModBlockEntities;
 import net.sinedkadis.terracompositio.fluid.ModFluids;
 import net.sinedkadis.terracompositio.item.ModCreativeModTabs;
 import net.sinedkadis.terracompositio.item.ModItems;
+import net.sinedkadis.terracompositio.recipe.ModRecipes;
+import net.sinedkadis.terracompositio.screen.FlowBlokPortScreen;
+import net.sinedkadis.terracompositio.screen.ModMenuTypes;
 import org.slf4j.Logger;
 
 @Mod(TerraCompositio.MOD_ID)
@@ -43,6 +47,8 @@ public class TerraCompositio
 
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
+        ModRecipes.register(modEventBus);
+        ModMenuTypes.register(modEventBus);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)
@@ -77,6 +83,7 @@ public class TerraCompositio
             // Some client setup code
             LOGGER.info("HELLO FROM CLIENT SETUP");
             LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
+            MenuScreens.register(ModMenuTypes.FLOW_PORT_MENU.get(), FlowBlokPortScreen::new);
         }
     }
 }

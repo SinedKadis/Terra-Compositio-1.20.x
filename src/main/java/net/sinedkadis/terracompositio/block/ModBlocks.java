@@ -45,7 +45,7 @@ public class ModBlocks {
     public static final RegistryObject<Block> FLOW_LOG = registerBlock("flow_log",
             () -> new StripableRotatedPillarBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LOG).strength(3f)));
     public static final RegistryObject<Block> FLOW_PORT = registerBlock("flow_log_port",
-            () -> new StripableRotatedPillarBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LOG).strength(3f)));
+            () -> new FlowWoodPortBlock(BlockBehaviour.Properties.copy(Blocks.OAK_WOOD).strength(3f)));
     public static final RegistryObject<Block> NONFLOW_PORT = registerBlock("nonflow_log_port",
             () -> new FlammableStripableRotatedPillarBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LOG).strength(3f)));
 

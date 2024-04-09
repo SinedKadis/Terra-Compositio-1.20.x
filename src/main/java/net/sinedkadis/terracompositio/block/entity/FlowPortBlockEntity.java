@@ -4,9 +4,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.Containers;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.SimpleContainer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.*;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -15,6 +15,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
@@ -22,8 +23,12 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import net.sinedkadis.terracompositio.recipe.FlowSaturationRecipe;
+import net.sinedkadis.terracompositio.screen.FlowBlockPortMenu;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
 
 public class FlowPortBlockEntity extends BlockEntity implements MenuProvider {
     private final ItemStackHandler itemHandler = new ItemStackHandler(2);
@@ -122,7 +127,8 @@ public class FlowPortBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     private void craftItem() {
-        ItemStack result = new ItemStack(Items.KNOWLEDGE_BOOK,1);
+        Optional<FlowSaturationRecipe> recipe = getCurrentRecipe();
+        ItemStack result = recipe.get().getResultItem(null);
         this.itemHandler.extractItem(SLOT_INPUT,1,false);
         this.itemHandler.setStackInSlot(SLOT_OUTPUT, new ItemStack(result.getItem(),
                 this.itemHandler.getStackInSlot(SLOT_OUTPUT).getCount()+result.getCount()));
@@ -137,16 +143,28 @@ public class FlowPortBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     private boolean hasRecipe() {
-        boolean hasCraftingItem = this.itemHandler.getStackInSlot(SLOT_INPUT).getItem() == Items.BOOK;
-        ItemStack result = new ItemStack(Items.KNOWLEDGE_BOOK);
-        return hasCraftingItem && enoghtSpaceInOutput(result.getCount())&& sameItemInOutput(result.getItem());
+        Optional<FlowSaturationRecipe> recipe = getCurrentRecipe();
+        for (recipe.isEmpty()){
+            return false;
+        }
+        ItemStack result = recipe.get().getResultItem(null);
+        return enoughSpaceInOutput(result.getCount())&& sameItemInOutput(result.getItem());
+    }
+
+    private Optional<FlowSaturationRecipe> getCurrentRecipe() {
+        SimpleContainer inventory = new SimpleContainer(this.itemHandler.getSlots());
+        for(int i = 0; i < itemHandler.getSlots(); i++) {
+            inventory.setItem(i, this.itemHandler.getStackInSlot(i));
+        }
+
+        return this.level.getRecipeManager().getRecipeFor(FlowSaturationRecipe.Type.INSTANCE, inventory, level);
     }
 
     private boolean sameItemInOutput(Item item) {
         return this.itemHandler.getStackInSlot(SLOT_OUTPUT).isEmpty() || this.itemHandler.getStackInSlot(SLOT_OUTPUT).is(item);
     }
 
-    private boolean enoghtSpaceInOutput(int count) {
+    private boolean enoughSpaceInOutput(int count) {
         return this.itemHandler.getStackInSlot(SLOT_OUTPUT).getCount() + count <=this.itemHandler.getStackInSlot(SLOT_OUTPUT).getMaxStackSize();
     }
 
@@ -158,6 +176,27 @@ public class FlowPortBlockEntity extends BlockEntity implements MenuProvider {
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
-        return null;
+        return new FlowBlockPortMenu(pContainerId,pPlayerInventory,this,this.data);
     }
+
+
+    //public void setItem(ItemStack pStack) {this.setItem(pStack, true);}
+
+    /*public void setItem(ItemStack pStack, boolean pUpdateNeighbours) {
+        if (!pStack.isEmpty()) {
+            pStack = pStack.copyWithCount(1);
+        }
+
+        //this.onItemChanged(pStack);
+        this.itemHandler.insertItem(SLOT_INPUT,pStack,true);
+        if (!pStack.isEmpty()) {
+            level().playSound(,SoundEvents.ITEM_FRAME_ADD_ITEM);
+        }
+
+        if (pUpdateNeighbours && this.pos != null) {
+            this.level().updateNeighbourForOutputSignal(this.pos, Blocks.AIR);
+        }
+
+    }*/
+
 }

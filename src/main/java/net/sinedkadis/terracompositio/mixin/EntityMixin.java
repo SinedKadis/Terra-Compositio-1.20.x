@@ -28,9 +28,9 @@ import javax.annotation.Nullable;
 
 
 @Mixin(LivingEntity.class)
-public abstract class EntityFlowFluidMixin extends Entity implements IForgeLivingEntity {
+public abstract class EntityMixin extends Entity implements IForgeLivingEntity {
 
-    public EntityFlowFluidMixin(EntityType<?> pEntityType, Level pLevel) {
+    public EntityMixin(EntityType<?> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
     }
     @Shadow
