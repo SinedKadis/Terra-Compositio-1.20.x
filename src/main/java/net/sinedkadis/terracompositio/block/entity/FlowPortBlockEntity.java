@@ -144,7 +144,7 @@ public class FlowPortBlockEntity extends BlockEntity implements MenuProvider {
 
     private boolean hasRecipe() {
         Optional<FlowSaturationRecipe> recipe = getCurrentRecipe();
-        for (recipe.isEmpty()){
+        if (recipe.isEmpty()){
             return false;
         }
         ItemStack result = recipe.get().getResultItem(null);
