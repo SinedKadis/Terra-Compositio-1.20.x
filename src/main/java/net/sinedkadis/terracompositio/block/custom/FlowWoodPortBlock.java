@@ -1,6 +1,7 @@
 package net.sinedkadis.terracompositio.block.custom;
 
 
+import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -28,14 +29,14 @@ import net.sinedkadis.terracompositio.block.ModBlocks;
 import net.sinedkadis.terracompositio.block.entity.FlowPortBlockEntity;
 import net.sinedkadis.terracompositio.block.entity.ModBlockEntities;
 import org.jetbrains.annotations.Nullable;
-
+import org.slf4j.Logger;
 
 
 public class FlowWoodPortBlock extends BaseEntityBlock {
     public FlowWoodPortBlock(Properties pProperties) {
         super(pProperties);
     }
-
+    private static final Logger LOGGER = LogUtils.getLogger();
 
     @Override
     public @Nullable BlockState getToolModifiedState(BlockState state, UseOnContext context, ToolAction toolAction, boolean simulate) {
@@ -66,13 +67,36 @@ public class FlowWoodPortBlock extends BaseEntityBlock {
 
     @Override
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
-        ItemStack itemstack = pPlayer.getItemInHand(pHand);
-        //boolean flag = !this.getItem().isEmpty();
-        boolean flag1 = !itemstack.isEmpty();
        if (!pLevel.isClientSide()){
             BlockEntity entity = pLevel.getBlockEntity(pPos);
             if(entity instanceof  FlowPortBlockEntity){
-                NetworkHooks.openScreen(((ServerPlayer) pPlayer), ((FlowPortBlockEntity) entity),pPos);
+                ItemStack itemstack = pPlayer.getItemInHand(pHand);
+                if (!ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).getOutputSlot().isEmpty()){
+                    LOGGER.debug("Output is not empty, putting "+ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).getOutputSlot()+" in inventory");
+                    if (!pPlayer.addItem(ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).getOutputSlot())) {
+                        pPlayer.drop(ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).getOutputSlot(), false);
+                    }
+                } else if (!ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).getInputSlot().isEmpty()){
+                    LOGGER.debug("Input is not empty, putting "+ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).getInputSlot()+" in inventory");
+                    if (!pPlayer.addItem(ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).getInputSlot())) {
+                        pPlayer.drop(ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).getInputSlot(), false);
+                    }
+                } else if (!itemstack.isEmpty()){
+                    LOGGER.debug("Hand is not empty, trying to put "+itemstack+" in input slot");
+                    if (!ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).getInputSlot().isEmpty()){
+                        LOGGER.debug("Input is not empty, putting "+ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).getInputSlot()+" in inventory");
+                        if (!pPlayer.addItem(ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).getInputSlot())) {
+                            pPlayer.drop(ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).getInputSlot(), false);
+                        }
+                    }else {
+                        ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).setSlotInput(itemstack);
+                        itemstack.shrink(1);
+                        LOGGER.debug("Success");
+                    }
+                } else  {
+                    NetworkHooks.openScreen(((ServerPlayer) pPlayer), ((FlowPortBlockEntity) entity),pPos);
+                }
+
             }else {
                 throw new IllegalStateException("Our Container provider is missing");
             }
@@ -80,6 +104,7 @@ public class FlowWoodPortBlock extends BaseEntityBlock {
 
         return InteractionResult.sidedSuccess(pLevel.isClientSide());
     }
+
 
     @Nullable
     @Override

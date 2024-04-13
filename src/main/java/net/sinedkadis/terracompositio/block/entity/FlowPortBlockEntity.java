@@ -178,7 +178,18 @@ public class FlowPortBlockEntity extends BlockEntity implements MenuProvider {
     public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
         return new FlowBlockPortMenu(pContainerId,pPlayerInventory,this,this.data);
     }
-
+    public ItemStack getInputSlot(){
+        return this.itemHandler.getStackInSlot(SLOT_INPUT);
+    }
+    public ItemStack getOutputSlot(){
+        return this.itemHandler.getStackInSlot(SLOT_OUTPUT);
+    }
+    public void setSlotInput(ItemStack item){
+        this.itemHandler.setStackInSlot(SLOT_INPUT,item);
+    }
+    public void setSlotOutput(ItemStack item){
+        this.itemHandler.setStackInSlot(SLOT_OUTPUT,item);
+    }
 
     //public void setItem(ItemStack pStack) {this.setItem(pStack, true);}
 

@@ -19,7 +19,7 @@ import net.sinedkadis.terracompositio.fluid.ModFluids;
 import net.sinedkadis.terracompositio.item.ModCreativeModTabs;
 import net.sinedkadis.terracompositio.item.ModItems;
 import net.sinedkadis.terracompositio.recipe.ModRecipes;
-import net.sinedkadis.terracompositio.screen.FlowBlokPortScreen;
+import net.sinedkadis.terracompositio.screen.FlowBlockPortScreen;
 import net.sinedkadis.terracompositio.screen.ModMenuTypes;
 import org.slf4j.Logger;
 
@@ -83,7 +83,7 @@ public class TerraCompositio
             // Some client setup code
             LOGGER.info("HELLO FROM CLIENT SETUP");
             LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
-            MenuScreens.register(ModMenuTypes.FLOW_PORT_MENU.get(), FlowBlokPortScreen::new);
+            MenuScreens.register(ModMenuTypes.FLOW_PORT_MENU.get(), FlowBlockPortScreen::new);
         }
     }
 }

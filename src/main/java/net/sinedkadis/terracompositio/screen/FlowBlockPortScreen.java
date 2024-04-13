@@ -9,10 +9,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.sinedkadis.terracompositio.TerraCompositio;
 
-public class FlowBlokPortScreen extends AbstractContainerScreen<FlowBlockPortMenu> {
+public class FlowBlockPortScreen extends AbstractContainerScreen<FlowBlockPortMenu> {
     private static final ResourceLocation TEXTURE =
             new ResourceLocation(TerraCompositio.MOD_ID, "textures/gui/flow_port_gui.png");
-    public FlowBlokPortScreen(FlowBlockPortMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
+    public FlowBlockPortScreen(FlowBlockPortMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);
     }
 
