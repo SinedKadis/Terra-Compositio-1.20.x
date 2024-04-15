@@ -3,13 +3,9 @@ package net.sinedkadis.terracompositio.block.custom;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.ItemStack;
@@ -21,7 +17,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.ToolAction;
 import net.minecraftforge.network.NetworkHooks;
@@ -67,33 +62,36 @@ public class FlowWoodPortBlock extends BaseEntityBlock {
 
     @Override
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
-       if (!pLevel.isClientSide()){
+        if (!pLevel.isClientSide()){
             BlockEntity entity = pLevel.getBlockEntity(pPos);
             if(entity instanceof  FlowPortBlockEntity){
                 ItemStack itemstack = pPlayer.getItemInHand(pHand);
-                if (!ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).getOutputSlot().isEmpty()){
-                    LOGGER.debug("Output is not empty, putting "+ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).getOutputSlot()+" in inventory");
-                    if (!pPlayer.addItem(ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).getOutputSlot())) {
-                        pPlayer.drop(ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).getOutputSlot(), false);
+                ItemStack outputSlot = ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).getOutputSlot();
+                ItemStack inputSlot = ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).getInputSlot();
+                if (outputSlot.isEmpty() && inputSlot.isEmpty()){
+                    //LOGGER.debug("Block is empty");
+                    if(!itemstack.isEmpty()) {
+                        /*LOGGER.debug("Putting "+*/ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).addOneItemInSlotInput(itemstack)/*)*/;
                     }
-                } else if (!ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).getInputSlot().isEmpty()){
-                    LOGGER.debug("Input is not empty, putting "+ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).getInputSlot()+" in inventory");
-                    if (!pPlayer.addItem(ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).getInputSlot())) {
-                        pPlayer.drop(ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).getInputSlot(), false);
+                }else if (!outputSlot.isEmpty()){
+                    //LOGGER.debug("Output is not empty, putting "+outputSlot+" in inventory");
+                    if (!pPlayer.addItem(outputSlot)) {
+                        pPlayer.drop(outputSlot, false);
+                        ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).setSlotEmpty(1);
+                        //LOGGER.debug("Dropped");
+                    }else{
+                        //LOGGER.debug("Added in inventory successfully");
                     }
-                } else if (!itemstack.isEmpty()){
-                    LOGGER.debug("Hand is not empty, trying to put "+itemstack+" in input slot");
-                    if (!ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).getInputSlot().isEmpty()){
-                        LOGGER.debug("Input is not empty, putting "+ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).getInputSlot()+" in inventory");
-                        if (!pPlayer.addItem(ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).getInputSlot())) {
-                            pPlayer.drop(ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).getInputSlot(), false);
-                        }
-                    }else {
-                        ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).setSlotInput(itemstack);
-                        itemstack.shrink(1);
-                        LOGGER.debug("Success");
+                } else if (!inputSlot.isEmpty()){
+                    //LOGGER.debug("Input is not empty, putting "+inputSlot+" in inventory");
+                    if (!pPlayer.addItem(inputSlot)) {
+                        pPlayer.drop(inputSlot, false);
+                        ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).setSlotEmpty(0);
+                        //LOGGER.debug("Dropped");
+                    }else{
+                        //LOGGER.debug("Added in inventory successfully");
                     }
-                } else  {
+                }  else  {
                     NetworkHooks.openScreen(((ServerPlayer) pPlayer), ((FlowPortBlockEntity) entity),pPos);
                 }
 

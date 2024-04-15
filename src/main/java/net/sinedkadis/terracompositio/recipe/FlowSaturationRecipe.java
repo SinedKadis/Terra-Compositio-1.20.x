@@ -15,12 +15,12 @@ import net.sinedkadis.terracompositio.TerraCompositio;
 import org.jetbrains.annotations.Nullable;
 
 public class FlowSaturationRecipe implements Recipe<SimpleContainer> {
-    private final NonNullList<Ingredient> imputItems;
+    private final NonNullList<Ingredient> inputItems;
     private final ItemStack output;
     private final ResourceLocation id;
 
-    public FlowSaturationRecipe(NonNullList<Ingredient> imputItems, ItemStack output, ResourceLocation id) {
-        this.imputItems = imputItems;
+    public FlowSaturationRecipe(NonNullList<Ingredient> inputItems, ItemStack output, ResourceLocation id) {
+        this.inputItems = inputItems;
         this.output = output;
         this.id = id;
     }
@@ -31,7 +31,7 @@ public class FlowSaturationRecipe implements Recipe<SimpleContainer> {
             return false;
         }
 
-        return imputItems.get(0).test(pContainer.getItem(0));
+        return inputItems.get(0).test(pContainer.getItem(0));
     }
 
     @Override
@@ -96,7 +96,7 @@ public class FlowSaturationRecipe implements Recipe<SimpleContainer> {
 
         @Override
         public void toNetwork(FriendlyByteBuf pBuffer, FlowSaturationRecipe pRecipe) {
-            pBuffer.writeInt(pRecipe.imputItems.size());
+            pBuffer.writeInt(pRecipe.inputItems.size());
             for (Ingredient ingredient:pRecipe.getIngredients()){
                 ingredient.toNetwork(pBuffer);
             }

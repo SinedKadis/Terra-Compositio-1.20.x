@@ -1,11 +1,13 @@
 package net.sinedkadis.terracompositio.block.entity;
 
+import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.*;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -27,17 +29,26 @@ import net.sinedkadis.terracompositio.recipe.FlowSaturationRecipe;
 import net.sinedkadis.terracompositio.screen.FlowBlockPortMenu;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 import java.util.Optional;
 
 public class FlowPortBlockEntity extends BlockEntity implements MenuProvider {
-    private final ItemStackHandler itemHandler = new ItemStackHandler(2);
+    private final ItemStackHandler itemHandler = new ItemStackHandler(2){
+        @Override
+        protected void onContentsChanged(int slot) {
+            setChanged();
+            if(!level.isClientSide()) {
+                level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
+            }
+        }
+    };
     private static final int SLOT_INPUT = 0;
     private static final int SLOT_OUTPUT = 1;
     protected final ContainerData data;
     private int progress = 0;
     private int maxProgress = 78;
-
+    private static final Logger LOGGER = LogUtils.getLogger();
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
 
 
@@ -110,11 +121,15 @@ public class FlowPortBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     public void tick(Level pLevel, BlockPos pPos, BlockState pState) {
+        //boolean hasRecipe = hasRecipe();
+        //LOGGER.debug("Recipe found("+hasRecipe+")");
         if(hasRecipe()){
+
             increaseCraftingProgress();
             setChanged(pLevel, pPos, pState);
             if(hasProgressFinished()){
                 craftItem();
+
                 resetProgress();
             }
         }else {
@@ -129,6 +144,7 @@ public class FlowPortBlockEntity extends BlockEntity implements MenuProvider {
     private void craftItem() {
         Optional<FlowSaturationRecipe> recipe = getCurrentRecipe();
         ItemStack result = recipe.get().getResultItem(null);
+        LOGGER.debug("Item crafted");
         this.itemHandler.extractItem(SLOT_INPUT,1,false);
         this.itemHandler.setStackInSlot(SLOT_OUTPUT, new ItemStack(result.getItem(),
                 this.itemHandler.getStackInSlot(SLOT_OUTPUT).getCount()+result.getCount()));
@@ -184,12 +200,36 @@ public class FlowPortBlockEntity extends BlockEntity implements MenuProvider {
     public ItemStack getOutputSlot(){
         return this.itemHandler.getStackInSlot(SLOT_OUTPUT);
     }
-    public void setSlotInput(ItemStack item){
-        this.itemHandler.setStackInSlot(SLOT_INPUT,item);
+    public ItemStack addOneItemInSlotInput(ItemStack item){
+        this.itemHandler.setStackInSlot(SLOT_INPUT,new ItemStack(item.getItem(),
+                this.itemHandler.getStackInSlot(SLOT_INPUT).getCount()+1));
+        item.setCount(item.getCount()-1);
+        return new ItemStack(item.getItem(),item.getCount());
     }
-    public void setSlotOutput(ItemStack item){
-        this.itemHandler.setStackInSlot(SLOT_OUTPUT,item);
+    public void setSlotEmpty(int Slot){
+        this.itemHandler.setStackInSlot(Slot,ItemStack.EMPTY);
     }
+    public ItemStack getRenderStack() {
+        if(itemHandler.getStackInSlot(SLOT_OUTPUT).isEmpty()) {
+            /*if(itemHandler.getStackInSlot(SLOT_INPUT).isEmpty()){
+                return new ItemStack(Items.AIR,1);
+            }*/
+            return itemHandler.getStackInSlot(SLOT_INPUT);
+        } else {
+            return itemHandler.getStackInSlot(SLOT_OUTPUT);
+        }
+    }
+    @Nullable
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public CompoundTag getUpdateTag() {
+        return saveWithoutMetadata();
+    }
+    //public void setSlotOutput(ItemStack item){this.itemHandler.setStackInSlot(SLOT_OUTPUT,item);}
 
     //public void setItem(ItemStack pStack) {this.setItem(pStack, true);}
 
