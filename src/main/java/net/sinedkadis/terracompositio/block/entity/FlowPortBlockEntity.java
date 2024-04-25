@@ -15,9 +15,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
@@ -25,6 +23,7 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import net.sinedkadis.terracompositio.item.ModItems;
 import net.sinedkadis.terracompositio.recipe.FlowSaturationRecipe;
 import net.sinedkadis.terracompositio.screen.FlowBlockPortMenu;
 import org.jetbrains.annotations.NotNull;
@@ -200,14 +199,17 @@ public class FlowPortBlockEntity extends BlockEntity implements MenuProvider {
     public ItemStack getOutputSlot(){
         return this.itemHandler.getStackInSlot(SLOT_OUTPUT);
     }
-    public ItemStack addOneItemInSlotInput(ItemStack item){
-        this.itemHandler.setStackInSlot(SLOT_INPUT,new ItemStack(item.getItem(),
-                this.itemHandler.getStackInSlot(SLOT_INPUT).getCount()+1));
-        item.setCount(item.getCount()-1);
+    public ItemStack addItemInSlot(int Slot, ItemStack item, int count){
+        this.itemHandler.setStackInSlot(Slot,new ItemStack(item.getItem(),
+                         this.itemHandler.getStackInSlot(Slot).getCount()+count));
+        item.setCount(item.getCount()-count);
         return new ItemStack(item.getItem(),item.getCount());
+
+
     }
     public void setSlotEmpty(int Slot){
-        this.itemHandler.setStackInSlot(Slot,ItemStack.EMPTY);
+        this.itemHandler.setStackInSlot(Slot,/*new ItemStack(ModItems.ITEM_PLACEHOLDER.get(),1)*/ItemStack.EMPTY);
+
     }
     public ItemStack getRenderStack() {
         if(itemHandler.getStackInSlot(SLOT_OUTPUT).isEmpty()) {

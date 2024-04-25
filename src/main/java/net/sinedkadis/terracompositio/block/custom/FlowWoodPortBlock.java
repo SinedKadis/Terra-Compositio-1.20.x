@@ -71,26 +71,24 @@ public class FlowWoodPortBlock extends BaseEntityBlock {
                 if (outputSlot.isEmpty() && inputSlot.isEmpty()){
                     //LOGGER.debug("Block is empty");
                     if(!itemstack.isEmpty()) {
-                        /*LOGGER.debug("Putting "+*/ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).addOneItemInSlotInput(itemstack)/*)*/;
+                        /*LOGGER.debug("Putting "+*/ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).addItemInSlot(0,itemstack,1)/*)*/;
                     }
                 }else if (!outputSlot.isEmpty()){
                     //LOGGER.debug("Output is not empty, putting "+outputSlot+" in inventory");
                     if (!pPlayer.addItem(outputSlot)) {
                         pPlayer.drop(outputSlot, false);
-                        ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).setSlotEmpty(1);
+
                         //LOGGER.debug("Dropped");
-                    }else{
-                        //LOGGER.debug("Added in inventory successfully");
                     }
+                    ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).setSlotEmpty(1);
                 } else if (!inputSlot.isEmpty()){
                     //LOGGER.debug("Input is not empty, putting "+inputSlot+" in inventory");
                     if (!pPlayer.addItem(inputSlot)) {
                         pPlayer.drop(inputSlot, false);
-                        ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).setSlotEmpty(0);
+
                         //LOGGER.debug("Dropped");
-                    }else{
-                        //LOGGER.debug("Added in inventory successfully");
                     }
+                    ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).setSlotEmpty(0);
                 }  else  {
                     NetworkHooks.openScreen(((ServerPlayer) pPlayer), ((FlowPortBlockEntity) entity),pPos);
                 }
