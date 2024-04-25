@@ -4,6 +4,8 @@ package net.sinedkadis.terracompositio.block.custom;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -62,7 +64,7 @@ public class FlowWoodPortBlock extends BaseEntityBlock {
 
     @Override
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
-        if (!pLevel.isClientSide()){
+        //if (!pLevel.isClientSide()){
             BlockEntity entity = pLevel.getBlockEntity(pPos);
             if(entity instanceof  FlowPortBlockEntity){
                 ItemStack itemstack = pPlayer.getItemInHand(pHand);
@@ -72,6 +74,7 @@ public class FlowWoodPortBlock extends BaseEntityBlock {
                     //LOGGER.debug("Block is empty");
                     if(!itemstack.isEmpty()) {
                         /*LOGGER.debug("Putting "+*/ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).addItemInSlot(0,itemstack,1)/*)*/;
+                     pLevel.playSound(pPlayer,pPos, SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.BLOCKS);
                     }
                 }else if (!outputSlot.isEmpty()){
                     //LOGGER.debug("Output is not empty, putting "+outputSlot+" in inventory");
@@ -81,6 +84,7 @@ public class FlowWoodPortBlock extends BaseEntityBlock {
                         //LOGGER.debug("Dropped");
                     }
                     ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).setSlotEmpty(1);
+                    pLevel.playSound(pPlayer,pPos, SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS);
                 } else if (!inputSlot.isEmpty()){
                     //LOGGER.debug("Input is not empty, putting "+inputSlot+" in inventory");
                     if (!pPlayer.addItem(inputSlot)) {
@@ -89,6 +93,7 @@ public class FlowWoodPortBlock extends BaseEntityBlock {
                         //LOGGER.debug("Dropped");
                     }
                     ModBlockEntities.FLOW_PORT_BE.get().getBlockEntity(pLevel,pPos).setSlotEmpty(0);
+                    pLevel.playSound(pPlayer,pPos, SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS);
                 }  else  {
                     NetworkHooks.openScreen(((ServerPlayer) pPlayer), ((FlowPortBlockEntity) entity),pPos);
                 }
@@ -96,7 +101,7 @@ public class FlowWoodPortBlock extends BaseEntityBlock {
             }else {
                 throw new IllegalStateException("Our Container provider is missing");
             }
-        }
+        //}
 
         return InteractionResult.sidedSuccess(pLevel.isClientSide());
     }

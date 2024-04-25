@@ -8,7 +8,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.*;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -49,6 +52,7 @@ public class FlowPortBlockEntity extends BlockEntity implements MenuProvider {
     private int maxProgress = 78;
     private static final Logger LOGGER = LogUtils.getLogger();
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
+    private int tickForSound = 0;
 
 
     public FlowPortBlockEntity(BlockPos pPos, BlockState pBlockState) {
@@ -123,7 +127,11 @@ public class FlowPortBlockEntity extends BlockEntity implements MenuProvider {
         //boolean hasRecipe = hasRecipe();
         //LOGGER.debug("Recipe found("+hasRecipe+")");
         if(hasRecipe()){
-
+            tickForSound++;
+            if(tickForSound==5){
+                tickForSound = 0;
+                pLevel.playSound(null,pPos, SoundEvents.ITEM_FRAME_ROTATE_ITEM, SoundSource.BLOCKS);
+            }
             increaseCraftingProgress();
             setChanged(pLevel, pPos, pState);
             if(hasProgressFinished()){
