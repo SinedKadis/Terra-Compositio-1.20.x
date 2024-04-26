@@ -151,7 +151,7 @@ public class FlowPortBlockEntity extends BlockEntity implements MenuProvider {
     private void craftItem() {
         Optional<FlowSaturationRecipe> recipe = getCurrentRecipe();
         ItemStack result = recipe.get().getResultItem(null);
-        LOGGER.debug("Item crafted");
+        //LOGGER.debug("Item crafted");
         this.itemHandler.extractItem(SLOT_INPUT,1,false);
         this.itemHandler.setStackInSlot(SLOT_OUTPUT, new ItemStack(result.getItem(),
                 this.itemHandler.getStackInSlot(SLOT_OUTPUT).getCount()+result.getCount()));

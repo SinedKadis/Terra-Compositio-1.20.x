@@ -31,8 +31,8 @@ public class FlowBlockPortMenu extends AbstractContainerMenu {
         addPlayerHotbar(inv);
 
         this.blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iItemHandler -> {
-            this.addSlot(new SlotItemHandler(iItemHandler,0,80,11));
-            this.addSlot(new SlotItemHandler(iItemHandler,1,80,59));
+            this.addSlot(new SlotItemHandler(iItemHandler,0,41,16));
+            this.addSlot(new SlotItemHandler(iItemHandler,1,121,48));
         });
 
         addDataSlots(data);
