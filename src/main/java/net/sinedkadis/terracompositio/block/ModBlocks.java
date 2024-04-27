@@ -3,6 +3,7 @@ package net.sinedkadis.terracompositio.block;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 
+import net.minecraft.core.cauldron.CauldronInteraction;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -17,6 +18,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.block.custom.FlammableStripableRotatedPillarBlock;
+import net.sinedkadis.terracompositio.block.custom.FlowCauldron;
 import net.sinedkadis.terracompositio.block.custom.FlowWoodPortBlock;
 import net.sinedkadis.terracompositio.block.custom.StripableRotatedPillarBlock;
 import net.sinedkadis.terracompositio.item.ModItems;
@@ -113,4 +115,7 @@ public class ModBlocks {
             () -> new DoorBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS).noOcclusion(), BlockSetType.OAK));
     public static final RegistryObject<Block> NONFLOW_TRAPDOOR = registerBlock("nonflow_trapdoor",
             () -> new TrapDoorBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS).noOcclusion(),BlockSetType.OAK));
+
+    public static final RegistryObject<Block> FLOW_CAULDRON = registerBlock("flow_cauldron",
+            ()-> new FlowCauldron(BlockBehaviour.Properties.copy(Blocks.CAULDRON), CauldronInteraction.EMPTY));
 }

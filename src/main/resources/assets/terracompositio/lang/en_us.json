@@ -20,5 +20,6 @@
   "block.terracompositio.nonflow_door": "Non-flow Door",
   "block.terracompositio.nonflow_trapdoor": "Non-flow Trapdoor",
   "block.terracompositio.nonflow_log_port": "Non-Flow Port",
-  "item.terracompositio.flow_bucket": "Bucket of Flow"
+  "item.terracompositio.flow_bucket": "Bucket of Flow",
+  "block.terracompositio.flow_cauldron": "Flow Cauldron"
 }

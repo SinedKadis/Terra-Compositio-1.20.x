@@ -9,6 +9,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.enchantment.Enchantments;
 
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.functions.ApplyBonusCount;
@@ -60,6 +61,7 @@ public class ModBlockLootTables extends BlockLootSubProvider {
         this.dropOther(ModBlocks.FLOW_LOG.get(), ModBlocks.NONFLOW_LOG.get());
         this.dropOther(ModBlocks.FLOW_WOOD.get(),ModBlocks.NONFLOW_WOOD.get());
         this.dropOther(ModBlocks.FLOW_PORT.get(),ModBlocks.NONFLOW_PORT.get());
+        this.dropOther(ModBlocks.FLOW_CAULDRON.get(), Blocks.CAULDRON);
     }
 
     protected LootTable.Builder createCopperLikeOreDrops(Block pBlock, Item item) {

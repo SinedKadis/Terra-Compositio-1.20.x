@@ -21,7 +21,7 @@ public class ModFluids {
     public static final ModFluidRegistryContainer FLOW_FLUID =new ModFluidRegistryContainer("flow",
             FluidType.Properties.create().canDrown(true).canSwim(true).supportsBoating(true).canPushEntity(true).lightLevel(2).motionScale(0.5f).temperature(100),
             ()-> ModFluidRegistryContainer.createExtension(new ModFluidRegistryContainer.ClientExtensions(TerraCompositio.MOD_ID,"flow")/*.still("flow")*/
-                    .renderOverlay(null).tint(0x1e8dc6).fogColor(30f/255f,141f/255f,198f/255f)),
+                    .renderOverlay(null).fogColor(30f/255f,141f/255f,198f/255f)),
             new ModFluidRegistryContainer.AdditionalProperties().levelDecreasePerBlock(1).slopeFindDistance(4).tickRate(1),
             BlockBehaviour.Properties.copy(Blocks.WATER),
             new Item.Properties().stacksTo(1));

@@ -42,6 +42,8 @@ public class ModBlockStateProvider extends BlockStateProvider {
         trapdoorBlockWithRenderType(((TrapDoorBlock) ModBlocks.NONFLOW_TRAPDOOR.get()),modLoc("block/nonflow_trapdoor"),true,"cutout");
 
 
+
+
     }
 
     private void blockWithItem(RegistryObject<Block> blockRegistryObject) {
