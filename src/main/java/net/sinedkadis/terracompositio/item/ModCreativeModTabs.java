@@ -20,6 +20,7 @@ public class ModCreativeModTabs {
                     .displayItems((pParameters, pOutput) -> {
                         pOutput.accept(ModItems.PEBBLE.get());
                         pOutput.accept(ModItems.STONE_STAFF.get());
+                        pOutput.accept(ModItems.OAK_STAFF.get());
                         pOutput.accept(ModBlocks.FLOW_LOG.get());
                         pOutput.accept(ModBlocks.NONFLOW_LOG.get());
                         pOutput.accept(ModBlocks.STRIPPED_NONFLOW_LOG.get());
