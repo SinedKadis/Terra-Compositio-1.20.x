@@ -33,6 +33,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         evenSimplerBlockItem(ModBlocks.NONFLOW_PRESSURE_PLATE);
         evenSimplerBlockItem(ModBlocks.NONFLOW_FENCE_GATE);
         simpleItem(ModFluids.FLOW_FLUID.bucket);
+        simpleItem(ModItems.FLOW_BOTTLE);
 
 
 

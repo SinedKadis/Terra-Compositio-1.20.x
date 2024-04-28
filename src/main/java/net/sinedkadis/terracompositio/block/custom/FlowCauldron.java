@@ -10,22 +10,30 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.AbstractCauldronBlock;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.BlockHitResult;
 import net.sinedkadis.terracompositio.fluid.ModFluids;
 
 import java.util.Map;
+import java.util.function.Predicate;
 
-public class FlowCauldron extends AbstractCauldronBlock{
-    public FlowCauldron(Properties pProperties, Map<Item, CauldronInteraction> pInteractions) {
-        super(pProperties, pInteractions);
+public class FlowCauldron extends LayeredCauldronBlock {
+
+
+    public FlowCauldron(Properties pProperties, Predicate<Biome.Precipitation> pFillPredicate, Map<Item, CauldronInteraction> pInteractions) {
+        super(pProperties, pFillPredicate, pInteractions);
     }
 
     @Override
-    public boolean isFull(BlockState pState) {
-        return true;
+    protected void handleEntityOnFireInside(BlockState pState, Level pLevel, BlockPos pPos) {
+
     }
 
     @Override
@@ -46,6 +54,9 @@ public class FlowCauldron extends AbstractCauldronBlock{
             }
             pPlayer.playSound(SoundEvents.BUCKET_FILL);
             return InteractionResult.SUCCESS;
+        }
+        if (itemStack.getItem() == Items.GLASS_BOTTLE){
+
         }
 
 

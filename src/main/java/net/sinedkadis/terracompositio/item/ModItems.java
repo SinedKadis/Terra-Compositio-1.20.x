@@ -15,6 +15,10 @@ public class ModItems {
             () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> STONE_STAFF = ITEMS.register("stone_staff",
             () -> new Item(new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> FLOW_BOTTLE = ITEMS.register("flow_bottle",
+            ()-> new Item(new Item.Properties().stacksTo(1)));
+
+
     public static void register(IEventBus eventBus){
         ITEMS.register(eventBus);
     }
