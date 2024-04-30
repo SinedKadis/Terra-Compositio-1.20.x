@@ -31,6 +31,7 @@ import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 import net.minecraftforge.registries.RegistryObject;
 import net.sinedkadis.terracompositio.block.ModBlocks;
+import net.sinedkadis.terracompositio.block.custom.FlowCauldron;
 import net.sinedkadis.terracompositio.item.ModItems;
 import org.apache.commons.lang3.function.TriFunction;
 import org.jetbrains.annotations.NotNull;
@@ -81,7 +82,7 @@ public class ModFluidRegistryContainer {
                 BlockPos pPos = context.getClickedPos();
                 if (context.getItemInHand().getItem() == ModFluids.FLOW_FLUID.bucket.get()){
                     if (context.getLevel().getBlockState(pPos)== Blocks.CAULDRON.defaultBlockState()){
-                        context.getLevel().setBlock(pPos,ModBlocks.FLOW_CAULDRON.get().defaultBlockState(),1);
+                        context.getLevel().setBlock(pPos,ModBlocks.FLOW_CAULDRON.get().defaultBlockState().setValue(FlowCauldron.LEVEL,3),1);
                         context.getPlayer().setItemInHand(context.getHand(),new ItemStack(Items.BUCKET));
                         context.getPlayer().playSound(SoundEvents.BUCKET_EMPTY); //TODO: fix sound when clicked with empty bucket on flow
                         return InteractionResult.SUCCESS;
