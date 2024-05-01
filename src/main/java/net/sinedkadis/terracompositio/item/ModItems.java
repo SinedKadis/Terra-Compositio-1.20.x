@@ -14,7 +14,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.block.ModBlocks;
-import net.sinedkadis.terracompositio.block.custom.FlowCauldron;
+import net.sinedkadis.terracompositio.block.custom.FlowCauldronBlock;
 
 public class ModItems {
     public static final DeferredRegister<Item> ITEMS =
@@ -30,18 +30,18 @@ public class ModItems {
                 public InteractionResult useOn(UseOnContext pContext) {
                     ItemStack itemStack = pContext.getItemInHand();
                     BlockState blockState = pContext.getLevel().getBlockState(pContext.getClickedPos());
-                    int levelValue = blockState.getValue(FlowCauldron.LEVEL);
-                    if (blockState.hasProperty(FlowCauldron.LEVEL)){
+                    int levelValue = blockState.getValue(FlowCauldronBlock.LEVEL);
+                    if (blockState.hasProperty(FlowCauldronBlock.LEVEL)){
                         if (itemStack.getCount()==1){
                             if (levelValue !=3) {
-                                pContext.getLevel().setBlock(pContext.getClickedPos(),blockState.setValue(FlowCauldron.LEVEL, levelValue + 1),1);
+                                pContext.getLevel().setBlock(pContext.getClickedPos(),blockState.setValue(FlowCauldronBlock.LEVEL, levelValue + 1),1);
                                 pContext.getPlayer().setItemInHand(pContext.getHand(),new ItemStack(Items.GLASS_BOTTLE));
                                 pContext.getPlayer().playSound(SoundEvents.BOTTLE_EMPTY);
                                 return InteractionResult.SUCCESS;
                             }
                         }else {
                             if (levelValue !=3) {
-                                pContext.getLevel().setBlock(pContext.getClickedPos(),blockState.setValue(FlowCauldron.LEVEL, levelValue + 1),1);
+                                pContext.getLevel().setBlock(pContext.getClickedPos(),blockState.setValue(FlowCauldronBlock.LEVEL, levelValue + 1),1);
                                 if (!pContext.getPlayer().addItem(new ItemStack(Items.GLASS_BOTTLE))){
                                     pContext.getPlayer().drop(new ItemStack(Items.GLASS_BOTTLE),false);
                                 }
@@ -51,7 +51,7 @@ public class ModItems {
                         }
 
                     }else if (blockState == Blocks.CAULDRON.defaultBlockState()){
-                        pContext.getLevel().setBlock(pContext.getClickedPos(), ModBlocks.FLOW_CAULDRON.get().defaultBlockState().setValue(FlowCauldron.LEVEL,1),1);
+                        pContext.getLevel().setBlock(pContext.getClickedPos(), ModBlocks.FLOW_CAULDRON.get().defaultBlockState().setValue(FlowCauldronBlock.LEVEL,1),1);
                         if (itemStack.getCount()==1){
                             pContext.getPlayer().setItemInHand(pContext.getHand(),new ItemStack(Items.GLASS_BOTTLE));
                             pContext.getPlayer().playSound(SoundEvents.BOTTLE_EMPTY);

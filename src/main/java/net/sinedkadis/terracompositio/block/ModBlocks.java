@@ -8,7 +8,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -18,10 +17,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.sinedkadis.terracompositio.TerraCompositio;
-import net.sinedkadis.terracompositio.block.custom.FlammableStripableRotatedPillarBlock;
-import net.sinedkadis.terracompositio.block.custom.FlowCauldron;
-import net.sinedkadis.terracompositio.block.custom.FlowWoodPortBlock;
-import net.sinedkadis.terracompositio.block.custom.StripableRotatedPillarBlock;
+import net.sinedkadis.terracompositio.block.custom.*;
 import net.sinedkadis.terracompositio.item.ModItems;
 
 import java.util.function.Supplier;
@@ -118,5 +114,7 @@ public class ModBlocks {
             () -> new TrapDoorBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS).noOcclusion(),BlockSetType.OAK));
 
     public static final RegistryObject<Block> FLOW_CAULDRON = registerBlock("flow_cauldron",
-            ()-> new FlowCauldron(BlockBehaviour.Properties.copy(Blocks.CAULDRON), null,CauldronInteraction.EMPTY));
+            () -> new FlowCauldronBlock(BlockBehaviour.Properties.copy(Blocks.CAULDRON), null,CauldronInteraction.EMPTY));
+    public static final RegistryObject<Block> WEDGE = registerBlock("wedge",
+            () -> new WedgeBlock(BlockBehaviour.Properties.copy(Blocks.TRIPWIRE_HOOK)));
 }

@@ -8,6 +8,7 @@ import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.block.ModBlocks;
@@ -76,6 +77,13 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("SSS")
                 .define('S', ModBlocks.NONFLOW_PLANKS.get())
                 .unlockedBy(getHasName(ModBlocks.NONFLOW_PLANKS.get()), has(ModBlocks.NONFLOW_PLANKS.get()))
+                .save(pWriter);
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModBlocks.WEDGE.get())
+                .pattern("S S")
+                .pattern("SSS")
+                .pattern(" S ")
+                .define('S', Items.IRON_NUGGET)
+                .unlockedBy(getHasName(Items.IRON_BARS), has(Items.IRON_BARS))
                 .save(pWriter);
 
 

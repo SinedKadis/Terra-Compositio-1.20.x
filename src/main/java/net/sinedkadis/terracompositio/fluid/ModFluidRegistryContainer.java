@@ -10,10 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -21,7 +18,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockAndTintGetter;
 
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -31,7 +27,7 @@ import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 import net.minecraftforge.registries.RegistryObject;
 import net.sinedkadis.terracompositio.block.ModBlocks;
-import net.sinedkadis.terracompositio.block.custom.FlowCauldron;
+import net.sinedkadis.terracompositio.block.custom.FlowCauldronBlock;
 import net.sinedkadis.terracompositio.item.ModItems;
 import org.apache.commons.lang3.function.TriFunction;
 import org.jetbrains.annotations.NotNull;
@@ -82,7 +78,7 @@ public class ModFluidRegistryContainer {
                 BlockPos pPos = context.getClickedPos();
                 if (context.getItemInHand().getItem() == ModFluids.FLOW_FLUID.bucket.get()){
                     if (context.getLevel().getBlockState(pPos)== Blocks.CAULDRON.defaultBlockState()){
-                        context.getLevel().setBlock(pPos,ModBlocks.FLOW_CAULDRON.get().defaultBlockState().setValue(FlowCauldron.LEVEL,3),1);
+                        context.getLevel().setBlock(pPos,ModBlocks.FLOW_CAULDRON.get().defaultBlockState().setValue(FlowCauldronBlock.LEVEL,3),1);
                         context.getPlayer().setItemInHand(context.getHand(),new ItemStack(Items.BUCKET));
                         context.getPlayer().playSound(SoundEvents.BUCKET_EMPTY); //TODO: fix sound when clicked with empty bucket on flow
                         return InteractionResult.SUCCESS;

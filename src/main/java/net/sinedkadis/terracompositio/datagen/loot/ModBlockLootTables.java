@@ -42,6 +42,7 @@ public class ModBlockLootTables extends BlockLootSubProvider {
         this.dropSelf(ModBlocks.NONFLOW_FENCE.get());
         this.dropSelf(ModBlocks.NONFLOW_FENCE_GATE.get());
         this.dropSelf(ModBlocks.NONFLOW_TRAPDOOR.get());
+        this.dropSelf(ModBlocks.WEDGE.get());
 
         this.add(ModBlocks.NONFLOW_SLAB.get(),
                 block -> createSlabItemTable(ModBlocks.NONFLOW_SLAB.get()));
