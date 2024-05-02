@@ -25,5 +25,6 @@
   "item.terracompositio.flow_bottle": "Bottle of Flow",
   "item.terracompositio.oak_staff": "Oak Staff",
   "fluid_type.terracompositio.flow": "Flow",
-  "block.terracompositio.wedge": "Wedge"
+  "block.terracompositio.wedge": "Wedge",
+  "effect.terracompositio.flow_saturation": "Flow Saturation"
 }

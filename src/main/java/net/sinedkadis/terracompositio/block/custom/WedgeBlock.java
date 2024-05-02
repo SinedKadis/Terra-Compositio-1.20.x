@@ -37,7 +37,7 @@ public class WedgeBlock extends Block {
     protected static final VoxelShape SOUTH_AABB = Block.box(6.0D, 5.0D, 0.0D, 10.0D, 10.0D, 6.0D);
     protected static final VoxelShape WEST_AABB = Block.box(10.0D, 5.0D, 6.0D, 16.0D, 10.0D, 10.0D);
     protected static final VoxelShape EAST_AABB = Block.box(0.0D, 5.0D, 6.0D, 6.0D, 10.0D, 10.0D);
-    private int counter = 0;
+    //private int counter = 0;
 
     private static final Logger LOGGER = LogUtils.getLogger();
 
@@ -100,23 +100,11 @@ public class WedgeBlock extends Block {
         this.calculateState(pState, pLevel, pPos,true);
         double random = Math.random();
         if (pState.getValue(ATTACHED)) {
-            if (!pLevel.isClientSide()){
-                switch (pState.getValue(FACING)){
-                    case EAST -> pLevel.addParticle(ModParticles.FLOW_PARTICLE.get(),
-                            pPos.getX() + 6D, pPos.getY() + 8D, pPos.getZ() + 8D, 0, -1, 0);
-                    case WEST -> pLevel.addParticle(ModParticles.FLOW_PARTICLE.get(),
-                            pPos.getX()+10D,pPos.getY()+8D,pPos.getZ()+8D,0,-1,0);
-                    case NORTH -> pLevel.addParticle(ModParticles.FLOW_PARTICLE.get(),
-                            pPos.getX()+8D,pPos.getY()+8D,pPos.getZ()+10D,0,-1,0);
-                    case SOUTH -> pLevel.addParticle(ModParticles.FLOW_PARTICLE.get(),
-                            pPos.getX()+8D,pPos.getY()+8D,pPos.getZ()+6D,0,-1,0);
-                }
-            } // TODO: fix particles
-            pLevel.playSound(null,pPos, SoundEvents.POINTED_DRIPSTONE_DRIP_WATER_INTO_CAULDRON, SoundSource.BLOCKS);
+
             if (pLevel.getBlockState(pPos.below()).hasProperty(LEVEL)) {
                 //LOGGER.debug("Flow Cauldron detected, trying increase level");
                 int levelValue = pLevel.getBlockState(pPos.below()).getValue(LEVEL);
-                if (random < 0.9D) {
+                if (random < 0.7D) {
                     if (levelValue != 3) {
                         boolean success = pLevel.setBlock(pPos.below(), ModBlocks.FLOW_CAULDRON.get().defaultBlockState().setValue(LEVEL, levelValue + 1), 2);
                         //LOGGER.debug(random + " - Success " + success);
@@ -124,12 +112,12 @@ public class WedgeBlock extends Block {
                 }
             } else if (pLevel.getBlockState(pPos.below()) == Blocks.CAULDRON.defaultBlockState()) {
                 //LOGGER.debug("Vanilla Cauldron detected, trying increase level");
-                if (random < 0.9D) {
+                if (random < 0.7D) {
                     boolean success = pLevel.setBlock(pPos.below(), ModBlocks.FLOW_CAULDRON.get().defaultBlockState().setValue(LEVEL, 1), 2);
                     //LOGGER.debug(random + " - Success " + success);
                 } //else LOGGER.debug(random + " - Fail");
             }
-
+            pLevel.playSound(null,pPos, SoundEvents.POINTED_DRIPSTONE_DRIP_WATER_INTO_CAULDRON, SoundSource.BLOCKS);
 
             //counter++;
            // if (counter==20){
@@ -231,6 +219,8 @@ public class WedgeBlock extends Block {
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
         pBuilder.add(FACING, ATTACHED);
     }
+
+    @Override
     public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
         if (!pIsMoving && !pState.is(pNewState.getBlock())) {
             if (pState.getValue(ATTACHED)) {

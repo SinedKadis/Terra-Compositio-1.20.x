@@ -14,6 +14,7 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.extensions.IForgeLivingEntity;
 
+import net.sinedkadis.terracompositio.effect.ModEffects;
 import net.sinedkadis.terracompositio.fluid.ModFluids;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -69,7 +70,8 @@ public abstract class LivingEntityMixin extends Entity implements IForgeLivingEn
             }
             d0 = gravity.getValue();
             FluidState fluidstate = this.level().getFluidState(this.blockPosition());
-            if ((fluidstate.getFluidType() == ModFluids.FLOW_FLUID.type.get()) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidstate)) {
+            if (((fluidstate.getFluidType() == ModFluids.FLOW_FLUID.type.get()) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidstate))||
+            this.hasEffect(ModEffects.FLOW_SATURATION.get())) {
                 double d9 = this.getY();
                 float f4 = this.isSprinting() ? 0.9F : this.getWaterSlowDown();
                 float f5 = 0.02F;

@@ -15,6 +15,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.sinedkadis.terracompositio.block.ModBlocks;
 import net.sinedkadis.terracompositio.block.entity.ModBlockEntities;
+import net.sinedkadis.terracompositio.effect.ModEffects;
 import net.sinedkadis.terracompositio.fluid.ModFluids;
 import net.sinedkadis.terracompositio.item.ModCreativeModTabs;
 import net.sinedkadis.terracompositio.item.ModItems;
@@ -42,6 +43,7 @@ public class TerraCompositio
         ModBlocks.register(modEventBus);
         modEventBus.addListener(this::commonSetup);
         ModParticles.register(modEventBus);
+        ModEffects.register(modEventBus);
 
         ModBlockEntities.register(modEventBus);
         // Register ourselves for server and other game events we are interested in
