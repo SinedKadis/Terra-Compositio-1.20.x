@@ -8,6 +8,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -19,6 +20,7 @@ import net.minecraftforge.registries.RegistryObject;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.block.custom.*;
 import net.sinedkadis.terracompositio.item.ModItems;
+import net.sinedkadis.terracompositio.particle.ModParticles;
 
 import java.util.function.Supplier;
 

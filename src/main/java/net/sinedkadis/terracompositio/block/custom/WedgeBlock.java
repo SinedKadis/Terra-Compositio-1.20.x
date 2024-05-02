@@ -4,6 +4,8 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -21,6 +23,7 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.sinedkadis.terracompositio.block.ModBlocks;
+import net.sinedkadis.terracompositio.particle.ModParticles;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
@@ -34,6 +37,7 @@ public class WedgeBlock extends Block {
     protected static final VoxelShape SOUTH_AABB = Block.box(6.0D, 5.0D, 0.0D, 10.0D, 10.0D, 6.0D);
     protected static final VoxelShape WEST_AABB = Block.box(10.0D, 5.0D, 6.0D, 16.0D, 10.0D, 10.0D);
     protected static final VoxelShape EAST_AABB = Block.box(0.0D, 5.0D, 6.0D, 6.0D, 10.0D, 10.0D);
+    private int counter = 0;
 
     private static final Logger LOGGER = LogUtils.getLogger();
 
@@ -96,6 +100,19 @@ public class WedgeBlock extends Block {
         this.calculateState(pState, pLevel, pPos,true);
         double random = Math.random();
         if (pState.getValue(ATTACHED)) {
+            if (!pLevel.isClientSide()){
+                switch (pState.getValue(FACING)){
+                    case EAST -> pLevel.addParticle(ModParticles.FLOW_PARTICLE.get(),
+                            pPos.getX() + 6D, pPos.getY() + 8D, pPos.getZ() + 8D, 0, -1, 0);
+                    case WEST -> pLevel.addParticle(ModParticles.FLOW_PARTICLE.get(),
+                            pPos.getX()+10D,pPos.getY()+8D,pPos.getZ()+8D,0,-1,0);
+                    case NORTH -> pLevel.addParticle(ModParticles.FLOW_PARTICLE.get(),
+                            pPos.getX()+8D,pPos.getY()+8D,pPos.getZ()+10D,0,-1,0);
+                    case SOUTH -> pLevel.addParticle(ModParticles.FLOW_PARTICLE.get(),
+                            pPos.getX()+8D,pPos.getY()+8D,pPos.getZ()+6D,0,-1,0);
+                }
+            } // TODO: fix particles
+            pLevel.playSound(null,pPos, SoundEvents.POINTED_DRIPSTONE_DRIP_WATER_INTO_CAULDRON, SoundSource.BLOCKS);
             if (pLevel.getBlockState(pPos.below()).hasProperty(LEVEL)) {
                 //LOGGER.debug("Flow Cauldron detected, trying increase level");
                 int levelValue = pLevel.getBlockState(pPos.below()).getValue(LEVEL);
@@ -112,6 +129,15 @@ public class WedgeBlock extends Block {
                     //LOGGER.debug(random + " - Success " + success);
                 } //else LOGGER.debug(random + " - Fail");
             }
+
+
+            //counter++;
+           // if (counter==20){
+              //  counter = 0;
+
+          //  }
+
+
         }
 
     }

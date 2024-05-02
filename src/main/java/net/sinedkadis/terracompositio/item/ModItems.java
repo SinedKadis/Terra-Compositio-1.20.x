@@ -16,6 +16,7 @@ import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.block.ModBlocks;
 import net.sinedkadis.terracompositio.block.custom.FlowCauldronBlock;
 import net.sinedkadis.terracompositio.item.custom.FlowBottleItem;
+import net.sinedkadis.terracompositio.particle.ModParticles;
 
 public class ModItems {
     public static final DeferredRegister<Item> ITEMS =
@@ -24,7 +25,17 @@ public class ModItems {
     public static final RegistryObject<Item> PEBBLE = ITEMS.register("pebble",
             () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> STONE_STAFF = ITEMS.register("stone_staff",
-            () -> new Item(new Item.Properties().stacksTo(1)));
+            () -> new Item(new Item.Properties().stacksTo(1)){
+                @Override
+                public InteractionResult useOn(UseOnContext pContext) {
+                    for (int i = 0; i<360;i++){
+                        pContext.getLevel().addParticle(ModParticles.FLOW_PARTICLE.get(),
+                                pContext.getClickedPos().getX() + 16D, pContext.getClickedPos().getY() + 18D, pContext.getClickedPos().getZ() + 18D, 0, -1, 0);
+
+                    }
+                    return InteractionResult.SUCCESS;
+                }
+            });
     public static final RegistryObject<Item> FLOW_BOTTLE = ITEMS.register("flow_bottle",
             ()-> new FlowBottleItem(new Item.Properties().stacksTo(1)));
     public static final RegistryObject<Item> OAK_STAFF = ITEMS.register("oak_staff",
