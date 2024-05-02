@@ -20,6 +20,7 @@ import net.sinedkadis.terracompositio.fluid.ModFluids;
 import net.sinedkadis.terracompositio.item.ModCreativeModTabs;
 import net.sinedkadis.terracompositio.item.ModItems;
 import net.sinedkadis.terracompositio.particle.ModParticles;
+import net.sinedkadis.terracompositio.potion.ModPotions;
 import net.sinedkadis.terracompositio.recipe.ModRecipes;
 import net.sinedkadis.terracompositio.screen.FlowBlockPortScreen;
 import net.sinedkadis.terracompositio.screen.ModMenuTypes;
@@ -44,6 +45,7 @@ public class TerraCompositio
         modEventBus.addListener(this::commonSetup);
         ModParticles.register(modEventBus);
         ModEffects.register(modEventBus);
+        ModPotions.register(modEventBus);
 
         ModBlockEntities.register(modEventBus);
         // Register ourselves for server and other game events we are interested in

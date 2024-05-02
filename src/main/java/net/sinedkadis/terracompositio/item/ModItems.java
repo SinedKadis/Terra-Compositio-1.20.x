@@ -37,7 +37,7 @@ public class ModItems {
                 }
             });
     public static final RegistryObject<Item> FLOW_BOTTLE = ITEMS.register("flow_bottle",
-            ()-> new FlowBottleItem(new Item.Properties().stacksTo(1)));
+            ()-> new FlowBottleItem(new Item.Properties().stacksTo(1).food(ModFoods.FLOW)));
     public static final RegistryObject<Item> OAK_STAFF = ITEMS.register("oak_staff",
             ()-> new Item(new Item.Properties().stacksTo(1)));
 

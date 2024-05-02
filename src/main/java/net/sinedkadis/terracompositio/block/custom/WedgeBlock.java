@@ -223,9 +223,9 @@ public class WedgeBlock extends Block {
     @Override
     public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
         if (!pIsMoving && !pState.is(pNewState.getBlock())) {
-            if (pState.getValue(ATTACHED)) {
-                this.calculateState(pState,pLevel, pPos, false);
-            }
+            //if (pState.getValue(ATTACHED)) {
+            //    this.calculateState(pState,pLevel, pPos, false);
+            //}
             super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
         }
     }
