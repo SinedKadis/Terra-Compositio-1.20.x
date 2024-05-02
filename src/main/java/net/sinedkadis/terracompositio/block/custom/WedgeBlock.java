@@ -1,6 +1,6 @@
 package net.sinedkadis.terracompositio.block.custom;
 
-import com.google.common.base.MoreObjects;
+import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -21,8 +21,11 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.sinedkadis.terracompositio.block.ModBlocks;
+import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
+
+import static net.minecraft.world.level.block.LayeredCauldronBlock.LEVEL;
 
 public class WedgeBlock extends Block {
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
@@ -32,6 +35,7 @@ public class WedgeBlock extends Block {
     protected static final VoxelShape WEST_AABB = Block.box(10.0D, 5.0D, 6.0D, 16.0D, 10.0D, 10.0D);
     protected static final VoxelShape EAST_AABB = Block.box(0.0D, 5.0D, 6.0D, 6.0D, 10.0D, 10.0D);
 
+    private static final Logger LOGGER = LogUtils.getLogger();
 
     public WedgeBlock(Properties properties) {
         super(properties);
@@ -83,11 +87,33 @@ public class WedgeBlock extends Block {
     }
 
     @Override
+    public boolean isRandomlyTicking(BlockState pState) {
+        return true;
+    }
+
+    @Override
     public void tick(BlockState pState, ServerLevel pLevel, BlockPos pPos, RandomSource pRandom) {
         this.calculateState(pState, pLevel, pPos,true);
-        if (pState.getValue(ATTACHED)){
-            // TODO: do particles
+        double random = Math.random();
+        if (pState.getValue(ATTACHED)) {
+            if (pLevel.getBlockState(pPos.below()).hasProperty(LEVEL)) {
+                //LOGGER.debug("Flow Cauldron detected, trying increase level");
+                int levelValue = pLevel.getBlockState(pPos.below()).getValue(LEVEL);
+                if (random < 0.9D) {
+                    if (levelValue != 3) {
+                        boolean success = pLevel.setBlock(pPos.below(), ModBlocks.FLOW_CAULDRON.get().defaultBlockState().setValue(LEVEL, levelValue + 1), 2);
+                        //LOGGER.debug(random + " - Success " + success);
+                    } //else LOGGER.debug(random + " - Fail");
+                }
+            } else if (pLevel.getBlockState(pPos.below()) == Blocks.CAULDRON.defaultBlockState()) {
+                //LOGGER.debug("Vanilla Cauldron detected, trying increase level");
+                if (random < 0.9D) {
+                    boolean success = pLevel.setBlock(pPos.below(), ModBlocks.FLOW_CAULDRON.get().defaultBlockState().setValue(LEVEL, 1), 2);
+                    //LOGGER.debug(random + " - Success " + success);
+                } //else LOGGER.debug(random + " - Fail");
+            }
         }
+
     }
 
     @Override

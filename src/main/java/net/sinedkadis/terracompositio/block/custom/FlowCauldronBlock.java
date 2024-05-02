@@ -1,8 +1,11 @@
 package net.sinedkadis.terracompositio.block.custom;
 
+import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.cauldron.CauldronInteraction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -15,11 +18,16 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.sinedkadis.terracompositio.block.ModBlocks;
 import net.sinedkadis.terracompositio.fluid.ModFluids;
 import net.sinedkadis.terracompositio.item.ModItems;
+import org.slf4j.Logger;
 
 import java.util.Map;
 import java.util.function.Predicate;
+
+import static net.sinedkadis.terracompositio.block.custom.WedgeBlock.ATTACHED;
 
 public class FlowCauldronBlock extends LayeredCauldronBlock {
 
@@ -34,30 +42,24 @@ public class FlowCauldronBlock extends LayeredCauldronBlock {
 
     }
 
+    @Override
+    public boolean isRandomlyTicking(BlockState pState) {
+        return true;
+    }
+
+    @Override
+    public void tick(BlockState pState, ServerLevel pLevel, BlockPos pPos, RandomSource pRandom) {
+        super.tick(pState, pLevel, pPos, pRandom);
+
+
+    }
 
     @Override
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         ItemStack itemStack = pPlayer.getItemInHand(pHand);
-        if (pState.getValue(LEVEL) == 3 ){
-            if (itemStack.getItem() == Items.BUCKET){
-                pLevel.setBlock(pPos, Blocks.CAULDRON.defaultBlockState(),1);
-                if (itemStack.getCount()>1){
-                    if (!pPlayer.addItem(new ItemStack(ModFluids.FLOW_FLUID.bucket.get()))){
-                        pPlayer.drop(new ItemStack(ModFluids.FLOW_FLUID.bucket.get()),false);
-                    }
-                    if (!pPlayer.isCreative()){
-                        itemStack.setCount(itemStack.getCount()-1);
-                    }
-                }else {
-                    pPlayer.setItemInHand(pHand, new ItemStack(ModFluids.FLOW_FLUID.bucket.get()));
-                }
-                pPlayer.playSound(SoundEvents.BUCKET_FILL);
-                return InteractionResult.SUCCESS;
-            }
-        }
-        if (itemStack.getItem() == Items.GLASS_BOTTLE){
-            if (pState.getValue(LEVEL)!=1) {
-                pLevel.setBlock(pPos, pState.setValue(LEVEL, pState.getValue(LEVEL) - 1),1);
+        if (pState.getValue(LEVEL) == 3) {
+            if (itemStack.getItem() == Items.BUCKET) {
+                pLevel.setBlock(pPos, Blocks.CAULDRON.defaultBlockState(), 1);
                 if (itemStack.getCount() > 1) {
                     if (!pPlayer.addItem(new ItemStack(ModFluids.FLOW_FLUID.bucket.get()))) {
                         pPlayer.drop(new ItemStack(ModFluids.FLOW_FLUID.bucket.get()), false);
@@ -66,14 +68,43 @@ public class FlowCauldronBlock extends LayeredCauldronBlock {
                         itemStack.setCount(itemStack.getCount() - 1);
                     }
                 } else {
+                    pPlayer.setItemInHand(pHand, new ItemStack(ModFluids.FLOW_FLUID.bucket.get()));
+                }
+                pPlayer.playSound(SoundEvents.BUCKET_FILL);
+                return InteractionResult.SUCCESS;
+            }
+        }
+        if (itemStack.getItem() == Items.GLASS_BOTTLE) {
+            if (pState.getValue(LEVEL) != 1) {
+                pLevel.setBlock(pPos, pState.setValue(LEVEL, pState.getValue(LEVEL) - 1), 1);
+                if (itemStack.getCount() > 1) {
+                    if (!pPlayer.addItem(new ItemStack(ModItems.FLOW_BOTTLE.get()))) {
+                        pPlayer.drop(new ItemStack(ModItems.FLOW_BOTTLE.get()), false);
+                    }
+                    if (!pPlayer.isCreative()) {
+                        itemStack.setCount(itemStack.getCount() - 1);
+                    }
+                } else {
                     pPlayer.setItemInHand(pHand, new ItemStack(ModItems.FLOW_BOTTLE.get()));
                 }
                 pPlayer.playSound(SoundEvents.BOTTLE_FILL);
-            }else {
-                pLevel.setBlock(pPos, Blocks.CAULDRON.defaultBlockState(),1);
+            } else {
+                pLevel.setBlock(pPos, Blocks.CAULDRON.defaultBlockState(), 1);
+                if (itemStack.getCount() > 1) {
+                    if (!pPlayer.addItem(new ItemStack(ModItems.FLOW_BOTTLE.get()))) {
+                        pPlayer.drop(new ItemStack(ModItems.FLOW_BOTTLE.get()), false);
+                    }
+                    if (!pPlayer.isCreative()) {
+                        itemStack.setCount(itemStack.getCount() - 1);
+                    }
+                } else {
+                    pPlayer.setItemInHand(pHand, new ItemStack(ModItems.FLOW_BOTTLE.get()));
+                }
+                pPlayer.playSound(SoundEvents.BOTTLE_FILL);
             }
             return InteractionResult.SUCCESS;
         }
+
 
 
         return InteractionResult.PASS;
