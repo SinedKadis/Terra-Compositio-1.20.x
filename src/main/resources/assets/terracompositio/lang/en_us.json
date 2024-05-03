@@ -26,5 +26,6 @@
   "item.terracompositio.oak_staff": "Oak Staff",
   "fluid_type.terracompositio.flow": "Flow",
   "block.terracompositio.wedge": "Wedge",
-  "effect.terracompositio.flow_saturation": "Flow Saturation"
+  "effect.terracompositio.flow_saturation": "Flow Saturation",
+  "sounds.terracompositio.flow_leak": "Flow Leaking"
 }

@@ -2,7 +2,6 @@ package net.sinedkadis.terracompositio.block.custom;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
@@ -12,8 +11,8 @@ import net.minecraftforge.common.ToolAction;
 import net.sinedkadis.terracompositio.block.ModBlocks;
 import org.jetbrains.annotations.Nullable;
 
-public class FlammableStripableRotatedPillarBlock extends RotatedPillarBlock {
-    public FlammableStripableRotatedPillarBlock(Properties pProperties) {
+public class NonFlowLikeBlock extends RotatedPillarBlock {
+    public NonFlowLikeBlock(Properties pProperties) {
         super(pProperties);
     }
 

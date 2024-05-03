@@ -8,7 +8,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -20,7 +19,7 @@ import net.minecraftforge.registries.RegistryObject;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.block.custom.*;
 import net.sinedkadis.terracompositio.item.ModItems;
-import net.sinedkadis.terracompositio.particle.ModParticles;
+import net.sinedkadis.terracompositio.sound.ModSounds;
 
 import java.util.function.Supplier;
 
@@ -44,22 +43,22 @@ public class ModBlocks {
     }
 
     public static final RegistryObject<Block> FLOW_LOG = registerBlock("flow_log",
-            () -> new StripableRotatedPillarBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LOG).strength(3f)));
+            () -> new FlowLogLikeBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LOG).strength(3f).sound(ModSounds.FLOW_LOG_LIKE_BLOCK_SOUNDS)));
     public static final RegistryObject<Block> FLOW_PORT = registerBlock("flow_log_port",
-            () -> new FlowWoodPortBlock(BlockBehaviour.Properties.copy(Blocks.OAK_WOOD).strength(3f)));
+            () -> new FlowWoodPortBlock(BlockBehaviour.Properties.copy(Blocks.OAK_WOOD).strength(3f).sound(ModSounds.FLOW_LOG_LIKE_BLOCK_SOUNDS)));
     public static final RegistryObject<Block> NONFLOW_PORT = registerBlock("nonflow_log_port",
-            () -> new FlammableStripableRotatedPillarBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LOG).strength(3f)));
+            () -> new NonFlowLikeBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LOG).strength(3f)));
 
     public static final RegistryObject<Block> FLOW_WOOD = registerBlock("flow_wood",
-            () -> new StripableRotatedPillarBlock(BlockBehaviour.Properties.copy(Blocks.OAK_WOOD).strength(3f)));
+            () -> new FlowLogLikeBlock(BlockBehaviour.Properties.copy(Blocks.OAK_WOOD).strength(3f).sound(ModSounds.FLOW_LOG_LIKE_BLOCK_SOUNDS)));
     public static final RegistryObject<Block> STRIPPED_NONFLOW_LOG = registerBlock("stripped_nonflow_log",
-            () -> new FlammableStripableRotatedPillarBlock(BlockBehaviour.Properties.copy(Blocks.STRIPPED_OAK_LOG).strength(3f)));
+            () -> new StrippedFlowLogLikeBlock(BlockBehaviour.Properties.copy(Blocks.STRIPPED_OAK_LOG).strength(3f)));
     public static final RegistryObject<Block> STRIPPED_NONFLOW_WOOD = registerBlock("stripped_nonflow_wood",
-            () -> new FlammableStripableRotatedPillarBlock(BlockBehaviour.Properties.copy(Blocks.STRIPPED_OAK_WOOD).strength(3f)));
+            () -> new StrippedFlowLogLikeBlock(BlockBehaviour.Properties.copy(Blocks.STRIPPED_OAK_WOOD).strength(3f)));
     public static final RegistryObject<Block> NONFLOW_LOG = registerBlock("nonflow_log",
-            () -> new FlammableStripableRotatedPillarBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LOG).strength(3f)));
+            () -> new NonFlowLikeBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LOG).strength(3f)));
     public static final RegistryObject<Block> NONFLOW_WOOD = registerBlock("nonflow_wood",
-            () -> new FlammableStripableRotatedPillarBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LOG).strength(3f)));
+            () -> new NonFlowLikeBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LOG).strength(3f)));
 
     public static final RegistryObject<Block> NONFLOW_PLANKS = registerBlock("nonflow_planks",
             () -> new Block(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS)){
@@ -79,22 +78,7 @@ public class ModBlocks {
                 }
             });
     public static final RegistryObject<Block> FLOW_LEAVES = registerBlock("flow_leaves",
-            () -> new LeavesBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LEAVES).noLootTable()){
-                @Override
-                public boolean isFlammable(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
-                    return false;
-                }
-
-                @Override
-                public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
-                    return 60;
-                }
-
-                @Override
-                public int getFireSpreadSpeed(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
-                    return 30;
-                }
-            });
+            () -> new FlowLeavesBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LEAVES).noLootTable()));
     public static final RegistryObject<Block> NONFLOW_STAIRS = registerBlock("nonflow_stairs",
             () -> new StairBlock(() -> ModBlocks.NONFLOW_PLANKS.get().defaultBlockState(),
                     BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS)));

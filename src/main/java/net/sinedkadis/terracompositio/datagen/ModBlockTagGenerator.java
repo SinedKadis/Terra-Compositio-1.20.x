@@ -10,6 +10,7 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.block.ModBlocks;
 import net.sinedkadis.terracompositio.fluid.ModFluids;
+import net.sinedkadis.terracompositio.util.ModTags;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -79,6 +80,10 @@ public class ModBlockTagGenerator extends BlockTagsProvider {
                 .add(ModBlocks.NONFLOW_FENCE.get());
         this.tag(BlockTags.FENCE_GATES)
                 .add(ModBlocks.NONFLOW_FENCE_GATE.get());
+        this.tag(ModTags.Blocks.FLOW_LOGS)
+                .add(ModBlocks.FLOW_LOG.get(),
+                        ModBlocks.FLOW_WOOD.get(),
+                        ModBlocks.FLOW_PORT.get());
         //this.tag(BlockTags.NEEDS_DIAMOND_TOOL)
         //        .add(ModBlocks.RAW_SAPPHIRE_BLOCK.get());
 

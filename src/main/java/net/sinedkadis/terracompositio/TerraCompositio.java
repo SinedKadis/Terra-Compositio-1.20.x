@@ -7,6 +7,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
+import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -24,6 +25,8 @@ import net.sinedkadis.terracompositio.potion.ModPotions;
 import net.sinedkadis.terracompositio.recipe.ModRecipes;
 import net.sinedkadis.terracompositio.screen.FlowBlockPortScreen;
 import net.sinedkadis.terracompositio.screen.ModMenuTypes;
+import net.sinedkadis.terracompositio.sound.ModSounds;
+import net.sinedkadis.terracompositio.util.ModGameRules;
 import org.slf4j.Logger;
 
 @Mod(TerraCompositio.MOD_ID)
@@ -46,6 +49,7 @@ public class TerraCompositio
         ModParticles.register(modEventBus);
         ModEffects.register(modEventBus);
         ModPotions.register(modEventBus);
+        ModSounds.register(modEventBus);
 
         ModBlockEntities.register(modEventBus);
         // Register ourselves for server and other game events we are interested in
@@ -53,9 +57,14 @@ public class TerraCompositio
 
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
+
         ModRecipes.register(modEventBus);
         ModMenuTypes.register(modEventBus);
+
+
+        ModGameRules.init();
     }
+
 
     private void commonSetup(final FMLCommonSetupEvent event)
     {

@@ -23,7 +23,7 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.sinedkadis.terracompositio.block.ModBlocks;
-import net.sinedkadis.terracompositio.particle.ModParticles;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
@@ -39,7 +39,7 @@ public class WedgeBlock extends Block {
     protected static final VoxelShape EAST_AABB = Block.box(0.0D, 5.0D, 6.0D, 6.0D, 10.0D, 10.0D);
     //private int counter = 0;
 
-    private static final Logger LOGGER = LogUtils.getLogger();
+    //private static final Logger LOGGER = LogUtils.getLogger();
 
     public WedgeBlock(Properties properties) {
         super(properties);
@@ -47,7 +47,7 @@ public class WedgeBlock extends Block {
     }
 
     @Override
-    public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
+    public @NotNull VoxelShape getShape(BlockState pState, @NotNull BlockGetter pLevel, @NotNull BlockPos pPos, @NotNull CollisionContext pContext) {
         return switch (pState.getValue(FACING)) {
             default -> EAST_AABB;
             case WEST -> WEST_AABB;
@@ -65,7 +65,7 @@ public class WedgeBlock extends Block {
     }
 
     @Override
-    public BlockState updateShape(BlockState pState, Direction pFacing, BlockState pFacingState, LevelAccessor pLevel, BlockPos pCurrentPos, BlockPos pFacingPos) {
+    public @NotNull BlockState updateShape(BlockState pState, Direction pFacing, @NotNull BlockState pFacingState, @NotNull LevelAccessor pLevel, @NotNull BlockPos pCurrentPos, @NotNull BlockPos pFacingPos) {
         return pFacing.getOpposite() == pState.getValue(FACING) && !pState.canSurvive(pLevel, pCurrentPos) ? Blocks.AIR.defaultBlockState() : super.updateShape(pState, pFacing, pFacingState, pLevel, pCurrentPos, pFacingPos);
     }
 
@@ -91,12 +91,12 @@ public class WedgeBlock extends Block {
     }
 
     @Override
-    public boolean isRandomlyTicking(BlockState pState) {
+    public boolean isRandomlyTicking(@NotNull BlockState pState) {
         return true;
     }
 
     @Override
-    public void tick(BlockState pState, ServerLevel pLevel, BlockPos pPos, RandomSource pRandom) {
+    public void tick(@NotNull BlockState pState, @NotNull ServerLevel pLevel, @NotNull BlockPos pPos, @NotNull RandomSource pRandom) {
         this.calculateState(pState, pLevel, pPos,true);
         double random = Math.random();
         if (pState.getValue(ATTACHED)) {
@@ -108,6 +108,8 @@ public class WedgeBlock extends Block {
                     if (levelValue != 3) {
                         boolean success = pLevel.setBlock(pPos.below(), ModBlocks.FLOW_CAULDRON.get().defaultBlockState().setValue(LEVEL, levelValue + 1), 2);
                         //LOGGER.debug(random + " - Success " + success);
+                        pLevel.playSound(null,pPos, SoundEvents.POINTED_DRIPSTONE_DRIP_WATER_INTO_CAULDRON, SoundSource.BLOCKS);
+
                     } //else LOGGER.debug(random + " - Fail");
                 }
             } else if (pLevel.getBlockState(pPos.below()) == Blocks.CAULDRON.defaultBlockState()) {
@@ -115,10 +117,11 @@ public class WedgeBlock extends Block {
                 if (random < 0.7D) {
                     boolean success = pLevel.setBlock(pPos.below(), ModBlocks.FLOW_CAULDRON.get().defaultBlockState().setValue(LEVEL, 1), 2);
                     //LOGGER.debug(random + " - Success " + success);
+                    pLevel.playSound(null,pPos, SoundEvents.POINTED_DRIPSTONE_DRIP_WATER_INTO_CAULDRON, SoundSource.BLOCKS);
+
                 } //else LOGGER.debug(random + " - Fail");
             }
-            pLevel.playSound(null,pPos, SoundEvents.POINTED_DRIPSTONE_DRIP_WATER_INTO_CAULDRON, SoundSource.BLOCKS);
-
+            //TODO make particles work
             //counter++;
            // if (counter==20){
               //  counter = 0;
@@ -131,7 +134,7 @@ public class WedgeBlock extends Block {
     }
 
     @Override
-    public void setPlacedBy(Level pLevel, BlockPos pPos, BlockState pState, @org.jetbrains.annotations.Nullable LivingEntity pPlacer, ItemStack pStack) {
+    public void setPlacedBy(@NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState, @org.jetbrains.annotations.Nullable LivingEntity pPlacer, @NotNull ItemStack pStack) {
         this.calculateState(pState,pLevel,pPos,false);
     }
 
@@ -206,12 +209,12 @@ public class WedgeBlock extends Block {
     }
 
     @Override
-    public BlockState rotate(BlockState pState, Rotation pRotation) {
+    public @NotNull BlockState rotate(BlockState pState, Rotation pRotation) {
         return pState.setValue(FACING, pRotation.rotate(pState.getValue(FACING)));
     }
 
     @Override
-    public BlockState mirror(BlockState pState, Mirror pMirror) {
+    public @NotNull BlockState mirror(BlockState pState, Mirror pMirror) {
         return pState.rotate(pMirror.getRotation(pState.getValue(FACING)));
     }
 
@@ -221,7 +224,7 @@ public class WedgeBlock extends Block {
     }
 
     @Override
-    public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
+    public void onRemove(@NotNull BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pNewState, boolean pIsMoving) {
         if (!pIsMoving && !pState.is(pNewState.getBlock())) {
             //if (pState.getValue(ATTACHED)) {
             //    this.calculateState(pState,pLevel, pPos, false);
