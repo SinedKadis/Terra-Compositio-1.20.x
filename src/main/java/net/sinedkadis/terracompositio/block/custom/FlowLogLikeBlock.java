@@ -2,28 +2,20 @@ package net.sinedkadis.terracompositio.block.custom;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.ToolAction;
 import net.sinedkadis.terracompositio.block.ModBlocks;
-import net.sinedkadis.terracompositio.sound.ModSounds;
 import net.sinedkadis.terracompositio.util.ModGameRules;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.function.Predicate;
+import static net.sinedkadis.terracompositio.util.ILikeNeighbours.AnyEquals;
+import static net.sinedkadis.terracompositio.util.ILikeNeighbours.HasNeighbour;
 
 public class FlowLogLikeBlock extends RotatedPillarBlock {
     public FlowLogLikeBlock(Properties pProperties) {
@@ -135,56 +127,6 @@ public class FlowLogLikeBlock extends RotatedPillarBlock {
         }
 
     }
-    public static boolean HasNeighbour(Level pLevel,Block pBlock,BlockPos pPos){
-        return (pLevel.getBlockState(pPos.above()).is(pBlock) ||HasNeighbour(pLevel, pBlock, pPos.above(), new Direction[]{Direction.UP, Direction.DOWN}))
-                || (pLevel.getBlockState(pPos.below()).is(pBlock)||HasNeighbour(pLevel, pBlock, pPos.below(), new Direction[]{Direction.UP, Direction.DOWN}))
-                || (pLevel.getBlockState(pPos.north()).is(pBlock)||HasNeighbour(pLevel, pBlock, pPos.north(), new Direction[]{Direction.NORTH, Direction.SOUTH}))
-                || (pLevel.getBlockState(pPos.south()).is(pBlock)||HasNeighbour(pLevel, pBlock, pPos.south(), new Direction[]{Direction.NORTH, Direction.SOUTH}))
-                || (pLevel.getBlockState(pPos.east()).is(pBlock)||HasNeighbour(pLevel, pBlock, pPos.east(), new Direction[]{Direction.EAST, Direction.WEST}))
-                || (pLevel.getBlockState(pPos.west()).is(pBlock) || HasNeighbour(pLevel, pBlock, pPos.west(), new Direction[]{Direction.EAST, Direction.WEST}));
-    }
-    public static boolean HasNeighbour(Level pLevel,Block pBlock,BlockPos pPos,Direction[] blackListedSides){
-        boolean flag1;
-        boolean flag2;
-        boolean flag3;
-        boolean flag4;
-        boolean flag5;
-        boolean flag6;
-        if (!AnyEquals(blackListedSides,Direction.UP)) {
-            flag1 = pLevel.getBlockState(pPos.above()).is(pBlock);
-        }else flag1 = false;
-        if (!AnyEquals(blackListedSides,Direction.DOWN)) {
-            flag2 = pLevel.getBlockState(pPos.below()).is(pBlock);
-        }else flag2 = false;
-        if (!AnyEquals(blackListedSides,Direction.NORTH)) {
-            flag3 = pLevel.getBlockState(pPos.north()).is(pBlock);
-        }else flag3 = false;
-        if (!AnyEquals(blackListedSides,Direction.SOUTH)) {
-            flag4 = pLevel.getBlockState(pPos.south()).is(pBlock);
-        }else flag4 = false;
-        if (!AnyEquals(blackListedSides,Direction.EAST)) {
-            flag5 = pLevel.getBlockState(pPos.east()).is(pBlock);
-        }else flag5 = false;
-        if (!AnyEquals(blackListedSides,Direction.WEST)) {
-            flag6 = pLevel.getBlockState(pPos.west()).is(pBlock);
-        }else flag6 = false;
-        return flag1||flag2||flag3||flag4||flag5||flag6;
-    }
 
-    public static boolean AnyEquals(Integer[] massive,int number){
-        for (Integer integer : massive) {
-            if (integer == number) {
-                return true;
-            }
-        }
-        return false;
-    }
-    public static boolean AnyEquals(Direction[] massive,Direction direction){
-        for (Direction direction1 : massive) {
-            if (direction1 == direction) {
-                return true;
-            }
-        }
-        return false;
-    }
+
 }

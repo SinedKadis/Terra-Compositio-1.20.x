@@ -1,21 +1,29 @@
 package net.sinedkadis.terracompositio.block.custom;
 
+import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.ToolAction;
 import net.sinedkadis.terracompositio.block.ModBlocks;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+
+import static net.sinedkadis.terracompositio.util.ILikeNeighbours.CountNeighbours;
+import static net.sinedkadis.terracompositio.util.ILikeNeighbours.HasNeighbour;
 
 public class NonFlowLikeBlock extends RotatedPillarBlock {
     public NonFlowLikeBlock(Properties pProperties) {
         super(pProperties);
     }
-
+    private static final Logger LOGGER = LogUtils.getLogger();
     @Override
     public boolean isFlammable(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
         return true;
@@ -41,10 +49,31 @@ public class NonFlowLikeBlock extends RotatedPillarBlock {
             if(state.is(ModBlocks.NONFLOW_WOOD.get())){
                 return ModBlocks.STRIPPED_NONFLOW_WOOD.get().defaultBlockState().setValue(AXIS, state.getValue(AXIS));
             }
-            /*if(state.is(ModBlocks.NONFLOW_PORT.get())) {
+            if(state.is(ModBlocks.NONFLOW_PORT.get())) {
                 return ModBlocks.STRIPPED_NONFLOW_LOG.get().defaultBlockState().setValue(AXIS, state.getValue(AXIS));
-            }*/
             }
+        }
         return super.getToolModifiedState(state, context,toolAction,simulate);
+    }
+
+    @Override
+    public void tick(BlockState pState, ServerLevel pLevel, BlockPos pPos, RandomSource pRandom) {
+        Block[] pBlock = new Block[]{ModBlocks.FLOW_LOG.get(),ModBlocks.FLOW_WOOD.get(),ModBlocks.FLOW_PORT.get()};
+        double number = CountNeighbours(pLevel, pPos, pBlock);
+        if (HasNeighbour(pLevel, ModBlocks.FLOW_LOG.get(), pPos,new Direction[]{})
+                || HasNeighbour(pLevel, ModBlocks.FLOW_WOOD.get(), pPos,new Direction[]{})
+                || HasNeighbour(pLevel, ModBlocks.FLOW_PORT.get(), pPos,new Direction[]{})){
+            LOGGER.debug("Trying to replace");
+            double random = (Math.random()*100)+(((((number/2) * 0.5 * number) /number+1)*number-1)*3);
+            if (random>100){
+                LOGGER.debug("Success "+random);
+                 pLevel.setBlock(pPos,ModBlocks.FLOW_LOG.get().defaultBlockState().setValue(AXIS,pState.getValue(AXIS)),2);
+            }else LOGGER.debug("Fail " + random);
+        }
+    }
+
+    @Override
+    public boolean isRandomlyTicking(BlockState pState) {
+        return true;
     }
 }
