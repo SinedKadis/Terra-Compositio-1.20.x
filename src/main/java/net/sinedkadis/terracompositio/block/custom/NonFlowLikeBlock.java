@@ -58,17 +58,25 @@ public class NonFlowLikeBlock extends RotatedPillarBlock {
 
     @Override
     public void tick(BlockState pState, ServerLevel pLevel, BlockPos pPos, RandomSource pRandom) {
-        Block[] pBlock = new Block[]{ModBlocks.FLOW_LOG.get(),ModBlocks.FLOW_WOOD.get(),ModBlocks.FLOW_PORT.get()};
-        double number = CountNeighbours(pLevel, pPos, pBlock);
+        Block[] pBlocks = new Block[]{ModBlocks.FLOW_LOG.get(),ModBlocks.FLOW_WOOD.get(),ModBlocks.FLOW_PORT.get()};
+        double number = CountNeighbours(pLevel, pPos, pBlocks);
         if (HasNeighbour(pLevel, ModBlocks.FLOW_LOG.get(), pPos,new Direction[]{})
                 || HasNeighbour(pLevel, ModBlocks.FLOW_WOOD.get(), pPos,new Direction[]{})
                 || HasNeighbour(pLevel, ModBlocks.FLOW_PORT.get(), pPos,new Direction[]{})){
-            LOGGER.debug("Trying to replace");
-            double random = (Math.random()*100)+(((((number/2) * 0.5 * number) /number+1)*number-1)*3);
-            if (random>100){
-                LOGGER.debug("Success "+random);
-                 pLevel.setBlock(pPos,ModBlocks.FLOW_LOG.get().defaultBlockState().setValue(AXIS,pState.getValue(AXIS)),2);
-            }else LOGGER.debug("Fail " + random);
+            //LOGGER.debug("Trying to replace");
+            double random = (Math.random()*100)+(1-Math.pow(1-0.1d,number-1))*50;
+            if (random>97){
+                //LOGGER.debug("Success "+random);
+                if (pState.is(ModBlocks.NONFLOW_LOG.get())){
+                    pLevel.setBlock(pPos,ModBlocks.FLOW_LOG.get().defaultBlockState().setValue(AXIS,pState.getValue(AXIS)),2);
+                }
+                if (pState.is(ModBlocks.NONFLOW_WOOD.get())){
+                    pLevel.setBlock(pPos,ModBlocks.FLOW_WOOD.get().defaultBlockState().setValue(AXIS,pState.getValue(AXIS)),2);
+                }
+                if (pState.is(ModBlocks.NONFLOW_PORT.get())){
+                    pLevel.setBlock(pPos,ModBlocks.FLOW_PORT.get().defaultBlockState(),2);
+                }
+            }//else LOGGER.debug("Fail " + random);
         }
     }
 

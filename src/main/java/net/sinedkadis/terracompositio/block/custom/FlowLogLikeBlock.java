@@ -5,11 +5,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.ToolAction;
 import net.sinedkadis.terracompositio.block.ModBlocks;
+import net.sinedkadis.terracompositio.util.ILikeNeighbours;
 import net.sinedkadis.terracompositio.util.ModGameRules;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -53,72 +55,83 @@ public class FlowLogLikeBlock extends RotatedPillarBlock {
                 }
                 Integer[] IndexBlackList = new Integer[61];
                 int ind = 0;
-                for (int b = 1;b<=5;b++){
+                for (int b = 0;b<5;b++){
                     IndexBlackList[ind++] = b;
                     IndexBlackList[ind++] = b+20;
                     IndexBlackList[ind++] = b+100;
                     IndexBlackList[ind++] = b+120;
                 }
                 for (int v = 0;v<5;v++){
-                    IndexBlackList[ind++] = 1+5*v;
-                    IndexBlackList[ind++] = 5*(v+1);
-                    IndexBlackList[ind++] = (1+5*v)+100;
-                    IndexBlackList[ind++] = (5*(v+1))+100;
+                    IndexBlackList[ind++] =5*v;
+                    IndexBlackList[ind++] =(5*(v+1))-1;
+                    IndexBlackList[ind++] =(5*v)+100;
+                    IndexBlackList[ind++] =(5*(v+1))-1+100;
                 }
                 for (int c = 0;c<5;c++){
-                    IndexBlackList[ind++] = 1+25*c;
-                    IndexBlackList[ind++] = 5+25*c;
-                    IndexBlackList[ind++] = 21+25*c;
-                    IndexBlackList[ind++] = 25+25*c;
+                    IndexBlackList[ind++] =c*25;
+                    IndexBlackList[ind++] =(c*25)+4;
+                    IndexBlackList[ind++] =20+(25*c);
+                    IndexBlackList[ind++] =20+(25*c)+4;
                 }
-                IndexBlackList[ind++] = 63;
+                IndexBlackList[ind++] = 62;
 
 
-                for (int k = 1;k<=125;k++){
+                for (int k = 0;k<125;k++){
                     if (!AnyEquals(IndexBlackList,k)) {
-                        LOGGER.debug("Index "+k+" is not blacklisted");
-                        if (LeakRange[k] != pPos.above()
-                                ||LeakRange[k] != pPos.below()
-                                ||LeakRange[k] != pPos.west()
-                                ||LeakRange[k] != pPos.east()
-                                ||LeakRange[k] != pPos.north()
-                                ||LeakRange[k] != pPos.south()) {
-                            LOGGER.debug("Index "+k+" is not nearby source");
-                            if (HasNeighbour(pLevel, ModBlocks.FLOW_LOG.get(), LeakRange[k])
-                                    || HasNeighbour(pLevel, ModBlocks.FLOW_WOOD.get(), LeakRange[k])
-                                    || HasNeighbour(pLevel, ModBlocks.FLOW_PORT.get(), LeakRange[k])) {
-                                BlockPos blockPos = LeakRange[k];
-                                LOGGER.debug("Log like is detected on index "+k+"("+ blockPos +"), replacing");
+                        BlockPos blockPos = LeakRange[k];
+                        if (pLevel.getBlockState(blockPos).is(ModBlocks.FLOW_LOG.get())
+                                ||pLevel.getBlockState(blockPos).is(ModBlocks.FLOW_WOOD.get())
+                                ||pLevel.getBlockState(blockPos).is(ModBlocks.FLOW_PORT.get())) {
+                            //LOGGER.debug("Index "+k+" ("+ LeakRange[k] +") is not blacklisted");
+                            if (blockPos != pPos.above()
+                                    && blockPos != pPos.below()
+                                    && blockPos != pPos.west()
+                                    && blockPos != pPos.east()
+                                    && blockPos != pPos.north()
+                                    && blockPos != pPos.south()) {
+
+
+                                //LOGGER.debug("Index "+k+" is not nearby source");
+                                Block[] flowBlocks = new Block[]{ModBlocks.FLOW_LOG.get(),
+                                        ModBlocks.FLOW_WOOD.get(),
+                                        ModBlocks.FLOW_PORT.get(),
+                                        ModBlocks.NONFLOW_LOG.get(),
+                                        ModBlocks.NONFLOW_WOOD.get(),
+                                        ModBlocks.NONFLOW_PORT.get()};
+                                if (ILikeNeighbours.HasWayFromSource(pLevel, flowBlocks, blockPos, pPos)) {
+                                    //LOGGER.debug("Log like is detected on index "+k+" ("+ blockPos +"), replacing");
+                                    if (pLevel.getBlockState(blockPos).is(ModBlocks.FLOW_LOG.get())) {
+                                        //LOGGER.debug("It`s log");
+                                        pLevel.setBlock(blockPos, ModBlocks.NONFLOW_LOG.get().defaultBlockState().setValue(AXIS, pLevel.getBlockState(blockPos).getValue(AXIS)), 2);
+                                    }
+                                    if (pLevel.getBlockState(blockPos).is(ModBlocks.FLOW_WOOD.get())) {
+                                        //LOGGER.debug("It`s wood");
+                                        pLevel.setBlock(blockPos, ModBlocks.NONFLOW_WOOD.get().defaultBlockState().setValue(AXIS, pLevel.getBlockState(blockPos).getValue(AXIS)), 2);
+                                    }
+                                    if (pLevel.getBlockState(blockPos).is(ModBlocks.FLOW_PORT.get())) {
+                                        //LOGGER.debug("It`s port");
+                                        pLevel.setBlock(blockPos, ModBlocks.NONFLOW_PORT.get().defaultBlockState(), 2);
+                                    }
+                                }
+                            } else {
+                                //LOGGER.debug("Index "+k+" is nearby source");
                                 if (pLevel.getBlockState(blockPos).is(ModBlocks.FLOW_LOG.get())) {
-                                    LOGGER.debug("It`s log");
+                                    //LOGGER.debug("It`s log");
                                     pLevel.setBlock(blockPos, ModBlocks.NONFLOW_LOG.get().defaultBlockState().setValue(AXIS, pLevel.getBlockState(blockPos).getValue(AXIS)), 2);
                                 }
                                 if (pLevel.getBlockState(blockPos).is(ModBlocks.FLOW_WOOD.get())) {
-                                    LOGGER.debug("It`s wood");
+                                    //LOGGER.debug("It`s wood");
                                     pLevel.setBlock(blockPos, ModBlocks.NONFLOW_WOOD.get().defaultBlockState().setValue(AXIS, pLevel.getBlockState(blockPos).getValue(AXIS)), 2);
                                 }
                                 if (pLevel.getBlockState(blockPos).is(ModBlocks.FLOW_PORT.get())) {
-                                    LOGGER.debug("It`s port");
+                                    //LOGGER.debug("It`s port");
                                     pLevel.setBlock(blockPos, ModBlocks.NONFLOW_PORT.get().defaultBlockState(), 2);
                                 }
                             }
-                        }else {
-                            LOGGER.debug("Index "+k+" is nearby source");
-                            BlockPos blockPos = LeakRange[k];
-                            if (pLevel.getBlockState(blockPos).is(ModBlocks.FLOW_LOG.get())) {
-                                LOGGER.debug("It`s log");
-                                pLevel.setBlock(blockPos, ModBlocks.NONFLOW_LOG.get().defaultBlockState().setValue(AXIS, pLevel.getBlockState(blockPos).getValue(AXIS)), 2);
-                            }
-                            if (pLevel.getBlockState(blockPos).is(ModBlocks.FLOW_WOOD.get())) {
-                                LOGGER.debug("It`s wood");
-                                pLevel.setBlock(blockPos, ModBlocks.NONFLOW_WOOD.get().defaultBlockState().setValue(AXIS, pLevel.getBlockState(blockPos).getValue(AXIS)), 2);
-                            }
-                            if (pLevel.getBlockState(blockPos).is(ModBlocks.FLOW_PORT.get())) {
-                                LOGGER.debug("It`s port");
-                                pLevel.setBlock(blockPos, ModBlocks.NONFLOW_PORT.get().defaultBlockState(), 2);
-                            }
                         }
-                    }
+
+
+                    }//else LOGGER.debug("Index "+k+" ("+ LeakRange[k] +") is blacklisted");
                 }
 
 
