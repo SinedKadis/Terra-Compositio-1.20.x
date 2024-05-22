@@ -12,6 +12,8 @@ public class ModRecipes {
             DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, TerraCompositio.MOD_ID);
     public static final RegistryObject<RecipeSerializer<FlowSaturationRecipe>> FLOW_SATURATION_SERIALIZER =
             SERIALIZERS.register("flow_saturation",()->FlowSaturationRecipe.Serializer.INSTANCE);
+
+
     public static void register(IEventBus eventBus){
         SERIALIZERS.register(eventBus);
     }
