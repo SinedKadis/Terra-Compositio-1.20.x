@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "terracompositio:block/wedge_model",
+      "y": 270
+    },
+    "facing=north": {
+      "model": "terracompositio:block/wedge_model",
+      "y": 180
+    },
+    "facing=south": {
+      "model": "terracompositio:block/wedge_model"
+    },
+    "facing=west": {
+      "model": "terracompositio:block/wedge_model",
+      "y": 90
+    }
+  }
+}

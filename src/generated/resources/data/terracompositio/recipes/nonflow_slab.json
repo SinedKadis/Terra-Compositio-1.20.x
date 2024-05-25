@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "S": {
+      "item": "terracompositio:nonflow_planks"
+    }
+  },
+  "pattern": [
+    "SSS"
+  ],
+  "result": {
+    "count": 2,
+    "item": "terracompositio:nonflow_slab"
+  },
+  "show_notification": true
+}

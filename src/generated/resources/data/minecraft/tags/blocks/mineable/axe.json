@@ -1,0 +1,13 @@
+{
+  "values": [
+    "terracompositio:flow_log",
+    "terracompositio:flow_leaves",
+    "terracompositio:flow_log_port",
+    "terracompositio:flow_wood",
+    "terracompositio:nonflow_log",
+    "terracompositio:nonflow_wood",
+    "terracompositio:nonflow_planks",
+    "terracompositio:stripped_nonflow_log",
+    "terracompositio:stripped_nonflow_wood"
+  ]
+}

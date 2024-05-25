@@ -1,0 +1,9 @@
+{
+  "values": [
+    "terracompositio:nonflow_log",
+    "terracompositio:nonflow_wood",
+    "terracompositio:nonflow_log_port",
+    "terracompositio:stripped_nonflow_log",
+    "terracompositio:stripped_nonflow_wood"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "F": {
+      "item": "minecraft:stick"
+    },
+    "S": {
+      "item": "terracompositio:nonflow_planks"
+    }
+  },
+  "pattern": [
+    "FSF",
+    "FSF"
+  ],
+  "result": {
+    "item": "terracompositio:nonflow_fence_gate"
+  },
+  "show_notification": true
+}
