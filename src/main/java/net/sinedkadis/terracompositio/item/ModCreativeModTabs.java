@@ -41,6 +41,7 @@ public class ModCreativeModTabs {
                         pOutput.accept(ModBlocks.NONFLOW_TRAPDOOR.get());
                         pOutput.accept(ModFluids.FLOW_FLUID.bucket.get());
                         pOutput.accept(ModItems.FLOW_BOTTLE.get());
+                        pOutput.accept(ModFluids.BIRCH_JUICE_FLUID.bucket.get());
                         pOutput.accept(ModBlocks.WEDGE.get());
 
 

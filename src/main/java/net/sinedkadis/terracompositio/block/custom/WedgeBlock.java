@@ -160,6 +160,7 @@ public class WedgeBlock extends Block {
                         if (pLevel.getBlockState(pPos.east()).is(block)
                                 && !pState.getValue(ATTACHED)) {
                             pLevel.setBlock(pPos, this.defaultBlockState().setValue(FACING, Direction.WEST).setValue(ATTACHED, true), 1);
+                            setted = true;
                             if (pShouldNotifyNeighbours) {
                                 this.notifyNeighbors(pLevel, pPos, Direction.DOWN);
                             }
@@ -169,30 +170,28 @@ public class WedgeBlock extends Block {
                         }
                     }
                     case NORTH -> {
-                        if ((pLevel.getBlockState(pPos.south()) == ModBlocks.FLOW_LOG.get().defaultBlockState()
-                                || pLevel.getBlockState(pPos.south()) == ModBlocks.FLOW_WOOD.get().defaultBlockState())
+                        if (pLevel.getBlockState(pPos.south()).is(block)
                                 && !pState.getValue(ATTACHED)) {
                             pLevel.setBlock(pPos, this.defaultBlockState().setValue(FACING, Direction.NORTH).setValue(ATTACHED, true), 1);
+                            setted = true;
                             if (pShouldNotifyNeighbours) {
                                 this.notifyNeighbors(pLevel, pPos, Direction.DOWN);
                             }
                         } else if (pState.getValue(ATTACHED)
-                                && !(pLevel.getBlockState(pPos.south()) == ModBlocks.FLOW_LOG.get().defaultBlockState()
-                                || pLevel.getBlockState(pPos.south()) == ModBlocks.FLOW_WOOD.get().defaultBlockState())) {
+                                && !(pLevel.getBlockState(pPos.south()).is(block))) {
                             pLevel.setBlock(pPos, this.defaultBlockState().setValue(FACING, Direction.NORTH).setValue(ATTACHED, false), 1);
                         }
                     }
                     case SOUTH -> {
-                        if ((pLevel.getBlockState(pPos.north()) == ModBlocks.FLOW_LOG.get().defaultBlockState()
-                                || pLevel.getBlockState(pPos.north()) == ModBlocks.FLOW_WOOD.get().defaultBlockState())
+                        if (pLevel.getBlockState(pPos.north()).is(block)
                                 && !pState.getValue(ATTACHED)) {
                             pLevel.setBlock(pPos, this.defaultBlockState().setValue(FACING, Direction.SOUTH).setValue(ATTACHED, true), 1);
+                            setted = true;
                             if (pShouldNotifyNeighbours) {
                                 this.notifyNeighbors(pLevel, pPos, Direction.DOWN);
                             }
                         } else if (pState.getValue(ATTACHED)
-                                && !(pLevel.getBlockState(pPos.north()) == ModBlocks.FLOW_LOG.get().defaultBlockState()
-                                || pLevel.getBlockState(pPos.north()) == ModBlocks.FLOW_WOOD.get().defaultBlockState())) {
+                                && !(pLevel.getBlockState(pPos.north()).is(block))) {
                             pLevel.setBlock(pPos, this.defaultBlockState().setValue(FACING, Direction.SOUTH).setValue(ATTACHED, false), 1);
                         }
                     }
@@ -202,11 +201,13 @@ public class WedgeBlock extends Block {
         }
     }
     protected Block[] AllowAttaching(){
-        return new Block[]{ModBlocks.FLOW_LOG.get(),
-        ModBlocks.FLOW_WOOD.get(),
-        ModBlocks.FLOW_PORT.get(),
-        Blocks.BIRCH_LOG,
-        Blocks.BIRCH_WOOD};
+        return new Block[]{
+                ModBlocks.FLOW_LOG.get(),
+                ModBlocks.FLOW_WOOD.get(),
+                ModBlocks.FLOW_PORT.get(),
+                Blocks.BIRCH_LOG,
+                Blocks.BIRCH_WOOD
+        };
     }
 
     private void notifyNeighbors(Level pLevel, BlockPos pPos, Direction pDirection) {

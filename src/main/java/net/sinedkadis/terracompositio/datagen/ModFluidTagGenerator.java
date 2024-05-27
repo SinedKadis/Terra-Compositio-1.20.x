@@ -19,7 +19,7 @@ public class ModFluidTagGenerator extends FluidTagsProvider {
     @Override
     protected void addTags(HolderLookup.Provider pProvider) {
         this.tag(FluidTags.WATER)
-                .add(ModFluids.FLOW_FLUID.source.get());
-
+                .add(ModFluids.FLOW_FLUID.source.get())
+                .add(ModFluids.BIRCH_JUICE_FLUID.source.get());
     }
 }
