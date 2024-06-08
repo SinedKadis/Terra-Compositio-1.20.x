@@ -30,7 +30,7 @@ public class ModFluids {
     public static final ModFluidRegistryContainer BIRCH_JUICE_FLUID = new ModFluidRegistryContainer("birch_juice",
             FluidType.Properties.create().canDrown(true).canSwim(true).supportsBoating(true).canPushEntity(true),
             () -> ModFluidRegistryContainer.createExtension(new ModFluidRegistryContainer.ClientExtensions(TerraCompositio.MOD_ID,"birch_juice")
-                    .renderOverlay(null)),
+                    .renderOverlay(null).fogColor(176f/255f,173f/255f,150f/255f)),
             new ModFluidRegistryContainer.AdditionalProperties(),
             BlockBehaviour.Properties.copy(Blocks.WATER),
             new Item.Properties().stacksTo(1));

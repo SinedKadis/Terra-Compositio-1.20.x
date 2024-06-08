@@ -2,6 +2,7 @@ package net.sinedkadis.terracompositio.fluid;
 
 import com.mojang.blaze3d.shaders.FogShape;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.logging.LogUtils;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -9,6 +10,7 @@ import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.BucketItem;
@@ -21,8 +23,12 @@ import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.minecraftforge.common.SoundAction;
+import net.minecraftforge.common.SoundActions;
+import net.minecraftforge.common.extensions.IForgeBucketPickup;
 import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 import net.minecraftforge.registries.RegistryObject;
@@ -33,11 +39,13 @@ import org.apache.commons.lang3.function.TriFunction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
+import org.slf4j.Logger;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class ModFluidRegistryContainer {
+public class ModFluidRegistryContainer implements IForgeBucketPickup {
     public final RegistryObject<FluidType> type;
     public final FluidType.Properties typeProperties;
     public final RegistryObject<LiquidBlock> block;
@@ -45,7 +53,7 @@ public class ModFluidRegistryContainer {
     private ForgeFlowingFluid.Properties properties;
     public final RegistryObject<ForgeFlowingFluid.Source> source;
     public final RegistryObject<ForgeFlowingFluid.Flowing> flowing;
-
+    private static final Logger LOGGER = LogUtils.getLogger();
 
     public ModFluidRegistryContainer(String name, FluidType.Properties typeProperties,
                                   Supplier<IClientFluidTypeExtensions> clientExtensions, @Nullable AdditionalProperties additionalProperties,
@@ -55,6 +63,16 @@ public class ModFluidRegistryContainer {
             @Override
             public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
                 consumer.accept(clientExtensions.get());
+            }
+
+            @Override
+            public @Nullable SoundEvent getSound(SoundAction action) {
+                //LOGGER.debug("getSound called");
+                if (action == SoundActions.BUCKET_EMPTY){
+                    LOGGER.debug("getSound called at empty bucket action");
+                    return SoundEvents.BUCKET_EMPTY;
+                }
+                return super.getSound(action);
             }
         });
 
@@ -145,6 +163,11 @@ public class ModFluidRegistryContainer {
                 RenderSystem.setShaderFogEnd(4f);
             }
         };
+    }
+
+    @Override
+    public Optional<SoundEvent> getPickupSound(BlockState state) {
+        return Optional.of(SoundEvents.BUCKET_FILL);
     }
 
     public static class AdditionalProperties {
