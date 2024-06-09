@@ -20,6 +20,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.sinedkadis.terracompositio.block.ModBlocks;
@@ -32,18 +33,18 @@ import static net.minecraft.world.level.block.LayeredCauldronBlock.LEVEL;
 
 public class WedgeBlock extends Block {
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
-    public static final BooleanProperty ATTACHED = BlockStateProperties.ATTACHED;
+    public static final EnumProperty<WedgeFluidTypes> ATTACHED = EnumProperty.create("attached", WedgeFluidTypes.class);
     protected static final VoxelShape NORTH_AABB = Block.box(6.0D, 5.0D, 10.0D, 10.0D, 10.0D, 16.0D);
     protected static final VoxelShape SOUTH_AABB = Block.box(6.0D, 5.0D, 0.0D, 10.0D, 10.0D, 6.0D);
     protected static final VoxelShape WEST_AABB = Block.box(10.0D, 5.0D, 6.0D, 16.0D, 10.0D, 10.0D);
     protected static final VoxelShape EAST_AABB = Block.box(0.0D, 5.0D, 6.0D, 6.0D, 10.0D, 10.0D);
-    //private int counter = 0;
+    private int counter = 0;
 
     //private static final Logger LOGGER = LogUtils.getLogger();
 
     public WedgeBlock(Properties properties) {
         super(properties);
-        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(ATTACHED, Boolean.FALSE));
+        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(ATTACHED,WedgeFluidTypes.NONE));
     }
 
     @Override
@@ -72,7 +73,7 @@ public class WedgeBlock extends Block {
     @Override
     @Nullable
     public BlockState getStateForPlacement(BlockPlaceContext pContext) {
-        BlockState blockstate = this.defaultBlockState().setValue(ATTACHED, Boolean.FALSE);
+        BlockState blockstate = this.defaultBlockState().setValue(ATTACHED, WedgeFluidTypes.NONE);
         LevelReader levelreader = pContext.getLevel();
         BlockPos blockpos = pContext.getClickedPos();
         Direction[] adirection = pContext.getNearestLookingDirections();
@@ -99,34 +100,55 @@ public class WedgeBlock extends Block {
     public void tick(@NotNull BlockState pState, @NotNull ServerLevel pLevel, @NotNull BlockPos pPos, @NotNull RandomSource pRandom) {
         this.calculateState(pState, pLevel, pPos,true);
         double random = Math.random();
-        if (pState.getValue(ATTACHED)) {
-
-            if (pLevel.getBlockState(pPos.below()).hasProperty(LEVEL)) {
+        if (pState.getValue(ATTACHED) == WedgeFluidTypes.FLOW) {
+            if (pLevel.getBlockState(pPos.below()).is(ModBlocks.FLOW_CAULDRON.get())) {
                 //LOGGER.debug("Flow Cauldron detected, trying increase level");
                 int levelValue = pLevel.getBlockState(pPos.below()).getValue(LEVEL);
                 if (random < 0.7D) {
                     if (levelValue != 3) {
-                        boolean success = pLevel.setBlock(pPos.below(), ModBlocks.FLOW_CAULDRON.get().defaultBlockState().setValue(LEVEL, levelValue + 1), 2);
+                        pLevel.setBlock(pPos.below(), ModBlocks.FLOW_CAULDRON.get().defaultBlockState().setValue(LEVEL, levelValue + 1), 2);
                         //LOGGER.debug(random + " - Success " + success);
-                        pLevel.playSound(null,pPos, SoundEvents.POINTED_DRIPSTONE_DRIP_WATER_INTO_CAULDRON, SoundSource.BLOCKS);
-
                     } //else LOGGER.debug(random + " - Fail");
                 }
-            } else if (pLevel.getBlockState(pPos.below()) == Blocks.CAULDRON.defaultBlockState()) {
+            } else if (pLevel.getBlockState(pPos.below()).is(Blocks.CAULDRON)) {
                 //LOGGER.debug("Vanilla Cauldron detected, trying increase level");
                 if (random < 0.7D) {
-                    boolean success = pLevel.setBlock(pPos.below(), ModBlocks.FLOW_CAULDRON.get().defaultBlockState().setValue(LEVEL, 1), 2);
+                    pLevel.setBlock(pPos.below(), ModBlocks.FLOW_CAULDRON.get().defaultBlockState().setValue(LEVEL, 1), 2);
                     //LOGGER.debug(random + " - Success " + success);
-                    pLevel.playSound(null,pPos, SoundEvents.POINTED_DRIPSTONE_DRIP_WATER_INTO_CAULDRON, SoundSource.BLOCKS);
-
                 } //else LOGGER.debug(random + " - Fail");
             }
             //TODO make particles work
-            //counter++;
-           // if (counter==20){
-              //  counter = 0;
+            counter++;
+            if (counter>40){
+                counter = 0;
+                pLevel.playSound(null,pPos, SoundEvents.POINTED_DRIPSTONE_DRIP_WATER_INTO_CAULDRON, SoundSource.BLOCKS);
+            }
 
-          //  }
+
+        }
+        if (pState.getValue(ATTACHED) == WedgeFluidTypes.BIRCH) {
+            if (pLevel.getBlockState(pPos.below()).is(ModBlocks.BIRCH_JUICE_CAULDRON.get())) {
+                //LOGGER.debug("Flow Cauldron detected, trying increase level");
+                int levelValue = pLevel.getBlockState(pPos.below()).getValue(LEVEL);
+                if (random < 0.7D) {
+                    if (levelValue != 3) {
+                        pLevel.setBlock(pPos.below(), ModBlocks.BIRCH_JUICE_CAULDRON.get().defaultBlockState().setValue(LEVEL, levelValue + 1), 2);
+                        //LOGGER.debug(random + " - Success " + success);
+                    } //else LOGGER.debug(random + " - Fail");
+                }
+            } else if (pLevel.getBlockState(pPos.below()).is(Blocks.CAULDRON)) {
+                //LOGGER.debug("Vanilla Cauldron detected, trying increase level");
+                if (random < 0.7D) {
+                    pLevel.setBlock(pPos.below(), ModBlocks.BIRCH_JUICE_CAULDRON.get().defaultBlockState().setValue(LEVEL, 1), 2);
+                    //LOGGER.debug(random + " - Success " + success);
+                } //else LOGGER.debug(random + " - Fail");
+            }
+            //TODO make particles work
+            counter++;
+            if (counter>40){
+                counter = 0;
+                pLevel.playSound(null,pPos, SoundEvents.POINTED_DRIPSTONE_DRIP_WATER_INTO_CAULDRON, SoundSource.BLOCKS);
+            }
 
 
         }
@@ -139,74 +161,45 @@ public class WedgeBlock extends Block {
     }
 
     public void calculateState(BlockState pState, Level pLevel, BlockPos pPos, boolean pShouldNotifyNeighbours) {
-        boolean setted = false;
-        for (Block block : AllowAttaching()) {
-            if (!setted) {
-                switch (pState.getValue(FACING)) {
-                    case EAST -> {
-                        if (pLevel.getBlockState(pPos.west()).is(block)
-                                && !pState.getValue(ATTACHED)) {
-                            pLevel.setBlock(pPos, this.defaultBlockState().setValue(FACING, Direction.EAST).setValue(ATTACHED, true), 1);
-                            setted = true;
-                            if (pShouldNotifyNeighbours) {
-                                this.notifyNeighbors(pLevel, pPos, Direction.DOWN);
-                            }
-                        } else if (pState.getValue(ATTACHED)
-                                && !(pLevel.getBlockState(pPos.west()).is(block))){
-                            pLevel.setBlock(pPos, this.defaultBlockState().setValue(FACING, Direction.EAST).setValue(ATTACHED, false), 1);
-                        }
-                    }
-                    case WEST -> {
-                        if (pLevel.getBlockState(pPos.east()).is(block)
-                                && !pState.getValue(ATTACHED)) {
-                            pLevel.setBlock(pPos, this.defaultBlockState().setValue(FACING, Direction.WEST).setValue(ATTACHED, true), 1);
-                            setted = true;
-                            if (pShouldNotifyNeighbours) {
-                                this.notifyNeighbors(pLevel, pPos, Direction.DOWN);
-                            }
-                        } else if (pState.getValue(ATTACHED)
-                                && !(pLevel.getBlockState(pPos.east()).is(block))) {
-                            pLevel.setBlock(pPos, this.defaultBlockState().setValue(FACING, Direction.WEST).setValue(ATTACHED, false), 1);
-                        }
-                    }
-                    case NORTH -> {
-                        if (pLevel.getBlockState(pPos.south()).is(block)
-                                && !pState.getValue(ATTACHED)) {
-                            pLevel.setBlock(pPos, this.defaultBlockState().setValue(FACING, Direction.NORTH).setValue(ATTACHED, true), 1);
-                            setted = true;
-                            if (pShouldNotifyNeighbours) {
-                                this.notifyNeighbors(pLevel, pPos, Direction.DOWN);
-                            }
-                        } else if (pState.getValue(ATTACHED)
-                                && !(pLevel.getBlockState(pPos.south()).is(block))) {
-                            pLevel.setBlock(pPos, this.defaultBlockState().setValue(FACING, Direction.NORTH).setValue(ATTACHED, false), 1);
-                        }
-                    }
-                    case SOUTH -> {
-                        if (pLevel.getBlockState(pPos.north()).is(block)
-                                && !pState.getValue(ATTACHED)) {
-                            pLevel.setBlock(pPos, this.defaultBlockState().setValue(FACING, Direction.SOUTH).setValue(ATTACHED, true), 1);
-                            setted = true;
-                            if (pShouldNotifyNeighbours) {
-                                this.notifyNeighbors(pLevel, pPos, Direction.DOWN);
-                            }
-                        } else if (pState.getValue(ATTACHED)
-                                && !(pLevel.getBlockState(pPos.north()).is(block))) {
-                            pLevel.setBlock(pPos, this.defaultBlockState().setValue(FACING, Direction.SOUTH).setValue(ATTACHED, false), 1);
-                        }
-                    }
-
+        for (Block block : AllowAttaching(WedgeFluidTypes.FLOW)) {
+            if (pLevel.getBlockState(pPos.relative(pState.getValue(FACING).getOpposite())).is(block)
+                    && pState.getValue(ATTACHED) != WedgeFluidTypes.FLOW) {
+                pLevel.setBlock(pPos, this.defaultBlockState().setValue(FACING, pState.getValue(FACING)).setValue(ATTACHED, WedgeFluidTypes.FLOW), 1);
+                if (pShouldNotifyNeighbours) {
+                    this.notifyNeighbors(pLevel, pPos, Direction.DOWN);
                 }
+                return;
+            } else if (pState.getValue(ATTACHED) == WedgeFluidTypes.FLOW
+                    && !(pLevel.getBlockState(pPos.relative(pState.getValue(FACING).getOpposite())).is(block))){
+                pLevel.setBlock(pPos, this.defaultBlockState().setValue(FACING, pState.getValue(FACING)).setValue(ATTACHED, WedgeFluidTypes.NONE), 1);
+            }
+        }
+        for (Block block : AllowAttaching(WedgeFluidTypes.BIRCH)) {
+            if (pLevel.getBlockState(pPos.relative(pState.getValue(FACING).getOpposite())).is(block)
+                    && pState.getValue(ATTACHED) != WedgeFluidTypes.BIRCH) {
+                pLevel.setBlock(pPos, this.defaultBlockState().setValue(FACING, pState.getValue(FACING)).setValue(ATTACHED, WedgeFluidTypes.BIRCH), 1);
+                if (pShouldNotifyNeighbours) {
+                    this.notifyNeighbors(pLevel, pPos, Direction.DOWN);
+                }
+                return;
+            } else if (pState.getValue(ATTACHED) == WedgeFluidTypes.BIRCH
+                    && !(pLevel.getBlockState(pPos.relative(pState.getValue(FACING).getOpposite())).is(block))){
+                pLevel.setBlock(pPos, this.defaultBlockState().setValue(FACING, pState.getValue(FACING)).setValue(ATTACHED, WedgeFluidTypes.NONE), 1);
             }
         }
     }
-    protected Block[] AllowAttaching(){
-        return new Block[]{
-                ModBlocks.FLOW_LOG.get(),
-                ModBlocks.FLOW_WOOD.get(),
-                ModBlocks.FLOW_PORT.get(),
-                Blocks.BIRCH_LOG,
-                Blocks.BIRCH_WOOD
+    protected Block[] AllowAttaching(WedgeFluidTypes pType){
+        return switch (pType){
+            case FLOW -> new Block[]{
+                        ModBlocks.FLOW_LOG.get(),
+                        ModBlocks.FLOW_WOOD.get(),
+                        ModBlocks.FLOW_PORT.get()
+                };
+            case BIRCH -> new Block[]{
+                    Blocks.BIRCH_LOG,
+                    Blocks.BIRCH_WOOD
+            };
+            default -> null;
         };
     }
 

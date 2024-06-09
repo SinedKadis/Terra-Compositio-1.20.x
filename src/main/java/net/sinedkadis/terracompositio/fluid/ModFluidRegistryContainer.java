@@ -102,6 +102,14 @@ public class ModFluidRegistryContainer implements IForgeBucketPickup {
                         return InteractionResult.SUCCESS;
                     }
                 }
+                if (context.getItemInHand().getItem() == ModFluids.BIRCH_JUICE_FLUID.bucket.get()){
+                    if (context.getLevel().getBlockState(pPos)== Blocks.CAULDRON.defaultBlockState()){
+                        context.getLevel().setBlock(pPos,ModBlocks.BIRCH_JUICE_CAULDRON.get().defaultBlockState().setValue(FlowCauldronBlock.LEVEL,3),1);
+                        context.getPlayer().setItemInHand(context.getHand(),new ItemStack(Items.BUCKET));
+                        context.getPlayer().playSound(SoundEvents.BUCKET_EMPTY);
+                        return InteractionResult.SUCCESS;
+                    }
+                }
 
                 return super.onItemUseFirst(stack, context);
             }

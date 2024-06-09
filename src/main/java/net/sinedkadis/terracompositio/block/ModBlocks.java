@@ -101,6 +101,8 @@ public class ModBlocks {
 
     public static final RegistryObject<Block> FLOW_CAULDRON = registerBlock("flow_cauldron",
             () -> new FlowCauldronBlock(BlockBehaviour.Properties.copy(Blocks.CAULDRON), null,CauldronInteraction.EMPTY));
+    public static final RegistryObject<Block> BIRCH_JUICE_CAULDRON = registerBlock("birch_juice_cauldron",
+            () -> new FlowCauldronBlock(BlockBehaviour.Properties.copy(Blocks.CAULDRON), null,CauldronInteraction.EMPTY));
     public static final RegistryObject<Block> WEDGE = registerBlock("wedge",
             () -> new WedgeBlock(BlockBehaviour.Properties.copy(Blocks.TRIPWIRE_HOOK)));
 }

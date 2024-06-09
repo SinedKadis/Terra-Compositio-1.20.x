@@ -63,6 +63,7 @@ public class ModBlockLootTables extends BlockLootSubProvider {
         this.dropOther(ModBlocks.FLOW_WOOD.get(),ModBlocks.NONFLOW_WOOD.get());
         this.dropOther(ModBlocks.FLOW_PORT.get(),ModBlocks.NONFLOW_PORT.get());
         this.dropOther(ModBlocks.FLOW_CAULDRON.get(), Blocks.CAULDRON);
+        this.dropOther(ModBlocks.BIRCH_JUICE_CAULDRON.get(), Blocks.CAULDRON);
     }
 
     protected LootTable.Builder createCopperLikeOreDrops(Block pBlock, Item item) {
