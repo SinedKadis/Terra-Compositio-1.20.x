@@ -68,7 +68,9 @@ public class FlowCauldronBlock extends LayeredCauldronBlock {
                         itemStack.setCount(itemStack.getCount() - 1);
                     }
                 } else {
-                    pPlayer.setItemInHand(pHand, new ItemStack(ModFluids.FLOW_FLUID.bucket.get()));
+                    if (!pPlayer.isCreative()) {
+                        pPlayer.setItemInHand(pHand, new ItemStack(ModFluids.FLOW_FLUID.bucket.get()));
+                    }
                 }
                 pPlayer.playSound(SoundEvents.BUCKET_FILL);
                 return InteractionResult.SUCCESS;

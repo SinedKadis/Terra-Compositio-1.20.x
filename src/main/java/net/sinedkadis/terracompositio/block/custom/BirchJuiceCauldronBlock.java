@@ -45,7 +45,9 @@ public class BirchJuiceCauldronBlock extends LayeredCauldronBlock {
                         itemStack.setCount(itemStack.getCount() - 1);
                     }
                 } else {
-                    pPlayer.setItemInHand(pHand, new ItemStack(ModFluids.BIRCH_JUICE_FLUID.bucket.get()));
+                    if (!pPlayer.isCreative()) {
+                        pPlayer.setItemInHand(pHand, new ItemStack(ModFluids.BIRCH_JUICE_FLUID.bucket.get()));
+                    }
                 }
                 pPlayer.playSound(SoundEvents.BUCKET_FILL);
                 return InteractionResult.SUCCESS;

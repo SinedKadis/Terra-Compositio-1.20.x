@@ -1,8 +1,15 @@
 package net.sinedkadis.terracompositio.block.custom;
 
+import com.mojang.brigadier.arguments.FloatArgumentType;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.logging.LogUtils;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.ParticleArgument;
+import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -23,11 +30,18 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.sinedkadis.terracompositio.block.ModBlocks;
+//import net.sinedkadis.terracompositio.network.CSpawnParticlesPacket;
+// net.sinedkadis.terracompositio.network.PacketHandler;
+import net.sinedkadis.terracompositio.particle.ModParticles;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
+
+import java.util.Random;
 
 import static net.minecraft.world.level.block.LayeredCauldronBlock.LEVEL;
 
@@ -38,7 +52,6 @@ public class WedgeBlock extends Block {
     protected static final VoxelShape SOUTH_AABB = Block.box(6.0D, 5.0D, 0.0D, 10.0D, 10.0D, 6.0D);
     protected static final VoxelShape WEST_AABB = Block.box(10.0D, 5.0D, 6.0D, 16.0D, 10.0D, 10.0D);
     protected static final VoxelShape EAST_AABB = Block.box(0.0D, 5.0D, 6.0D, 6.0D, 10.0D, 10.0D);
-    private int counter = 0;
 
     //private static final Logger LOGGER = LogUtils.getLogger();
 
@@ -97,9 +110,27 @@ public class WedgeBlock extends Block {
     }
 
     @Override
+    public void animateTick(BlockState pState, Level pLevel, BlockPos pPos, RandomSource pRandom) {
+        super.animateTick(pState, pLevel, pPos, pRandom);
+        if (pLevel.isClientSide) {
+            generateParticles(pLevel, pPos, pState);
+        }
+    }
+
+    @Override
     public void tick(@NotNull BlockState pState, @NotNull ServerLevel pLevel, @NotNull BlockPos pPos, @NotNull RandomSource pRandom) {
         this.calculateState(pState, pLevel, pPos,true);
         double random = Math.random();
+        //pLevel.playSound(null,pPos, SoundEvents.POINTED_DRIPSTONE_DRIP_WATER_INTO_CAULDRON, SoundSource.BLOCKS);
+        /*pLevel.addParticle(ModParticles.FLOW_PARTICLE.get(),
+                pPos.getX() + 0.5,
+                ((float)(pPos.getY() + 1) - 0.6875F) - 0.0625,
+                pPos.getZ() + 0.5,
+                0,0,0);
+
+         */
+
+        //PacketHandler.sendToAllClients(new CSpawnParticlesPacket(pPos, (byte) 0));
         if (pState.getValue(ATTACHED) == WedgeFluidTypes.FLOW) {
             if (pLevel.getBlockState(pPos.below()).is(ModBlocks.FLOW_CAULDRON.get())) {
                 //LOGGER.debug("Flow Cauldron detected, trying increase level");
@@ -117,13 +148,6 @@ public class WedgeBlock extends Block {
                     //LOGGER.debug(random + " - Success " + success);
                 } //else LOGGER.debug(random + " - Fail");
             }
-            //TODO make particles work
-            counter++;
-            if (counter>40){
-                counter = 0;
-                pLevel.playSound(null,pPos, SoundEvents.POINTED_DRIPSTONE_DRIP_WATER_INTO_CAULDRON, SoundSource.BLOCKS);
-            }
-
 
         }
         if (pState.getValue(ATTACHED) == WedgeFluidTypes.BIRCH) {
@@ -143,16 +167,43 @@ public class WedgeBlock extends Block {
                     //LOGGER.debug(random + " - Success " + success);
                 } //else LOGGER.debug(random + " - Fail");
             }
-            //TODO make particles work
-            counter++;
-            if (counter>40){
-                counter = 0;
-                pLevel.playSound(null,pPos, SoundEvents.POINTED_DRIPSTONE_DRIP_WATER_INTO_CAULDRON, SoundSource.BLOCKS);
-            }
-
-
         }
 
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    private void generateParticles(Level pLevel, BlockPos pPos, BlockState pState) {
+        //for (int i = 0; i < 5; i++) {
+        float x;
+        float z;
+        switch (pState.getValue(FACING)){
+            case NORTH -> {
+                x = 0.5f;
+                z = 0.7f;
+            }
+            case SOUTH -> {
+                x = 0.5f;
+                z = 0.3f;
+            }
+            case EAST -> {
+                x = 0.3f;
+                z = 0.5f;
+            }
+            case WEST -> {
+                x = 0.7f;
+                z = 0.5f;
+            }
+            default -> {
+                x = 52;
+                z = 52;
+            }
+        }
+            pLevel.addParticle(ModParticles.FLOW_PARTICLE.get(),
+                    pPos.getX() + x,
+                    ((float)(pPos.getY() + 1) - 0.6875F),
+                    pPos.getZ() + z,
+                    0,0,0);
+        //}
     }
 
     @Override
