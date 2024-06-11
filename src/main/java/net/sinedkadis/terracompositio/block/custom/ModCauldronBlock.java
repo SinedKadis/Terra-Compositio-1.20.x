@@ -14,6 +14,7 @@ public abstract class ModCauldronBlock extends LayeredCauldronBlock {
         super(pProperties, pFillPredicate, pInteractions);
     }
     public boolean canRecieveWedgeDrip(Fluid fluid){
-        return true;
-    };
+        return false;
+    }
+    //public abstract void WedgeDripReceived();
 }
