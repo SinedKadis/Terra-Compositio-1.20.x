@@ -16,6 +16,7 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.BlockHitResult;
 import net.sinedkadis.terracompositio.fluid.ModFluids;
 import net.sinedkadis.terracompositio.item.ModItems;
@@ -23,12 +24,17 @@ import net.sinedkadis.terracompositio.item.ModItems;
 import java.util.Map;
 import java.util.function.Predicate;
 
-public class BirchJuiceCauldronBlock extends LayeredCauldronBlock {
+public class BirchJuiceCauldronBlock extends ModCauldronBlock {
 
 
     public BirchJuiceCauldronBlock(Properties pProperties, Predicate<Biome.Precipitation> pFillPredicate, Map<Item, CauldronInteraction> pInteractions) {
         super(pProperties, pFillPredicate, pInteractions);
 
+    }
+
+    @Override
+    public boolean canRecieveWedgeDrip(Fluid fluid) {
+        return fluid == ModFluids.BIRCH_JUICE_FLUID.source.get();
     }
 
     @Override

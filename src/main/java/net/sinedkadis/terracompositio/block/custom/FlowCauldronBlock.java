@@ -17,6 +17,7 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.sinedkadis.terracompositio.block.ModBlocks;
@@ -29,12 +30,17 @@ import java.util.function.Predicate;
 
 import static net.sinedkadis.terracompositio.block.custom.WedgeBlock.ATTACHED;
 
-public class FlowCauldronBlock extends LayeredCauldronBlock {
+public class FlowCauldronBlock extends ModCauldronBlock {
 
 
     public FlowCauldronBlock(Properties pProperties, Predicate<Biome.Precipitation> pFillPredicate, Map<Item, CauldronInteraction> pInteractions) {
         super(pProperties, pFillPredicate, pInteractions);
 
+    }
+
+    @Override
+    public boolean canRecieveWedgeDrip(Fluid fluid) {
+        return fluid == ModFluids.FLOW_FLUID.source.get();
     }
 
     @Override
@@ -53,7 +59,6 @@ public class FlowCauldronBlock extends LayeredCauldronBlock {
 
 
     }
-    //TODO rework cauldron mechanic
     @Override
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         ItemStack itemStack = pPlayer.getItemInHand(pHand);
