@@ -9,6 +9,7 @@ import net.minecraft.commands.arguments.ParticleArgument;
 import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -44,7 +45,7 @@ import javax.annotation.Nullable;
 import java.util.Random;
 
 import static net.minecraft.world.level.block.LayeredCauldronBlock.LEVEL;
-
+//TODO change enum with tag
 public class WedgeBlock extends Block {
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final EnumProperty<WedgeFluidTypes> ATTACHED = EnumProperty.create("attached", WedgeFluidTypes.class);
@@ -52,7 +53,7 @@ public class WedgeBlock extends Block {
     protected static final VoxelShape SOUTH_AABB = Block.box(6.0D, 5.0D, 0.0D, 10.0D, 10.0D, 6.0D);
     protected static final VoxelShape WEST_AABB = Block.box(10.0D, 5.0D, 6.0D, 16.0D, 10.0D, 10.0D);
     protected static final VoxelShape EAST_AABB = Block.box(0.0D, 5.0D, 6.0D, 6.0D, 10.0D, 10.0D);
-
+    private int AnimTick = 0;
     //private static final Logger LOGGER = LogUtils.getLogger();
 
     public WedgeBlock(Properties properties) {
@@ -112,9 +113,22 @@ public class WedgeBlock extends Block {
     @Override
     public void animateTick(BlockState pState, Level pLevel, BlockPos pPos, RandomSource pRandom) {
         super.animateTick(pState, pLevel, pPos, pRandom);
-        if (pLevel.isClientSide) {
-            generateParticles(pLevel, pPos, pState);
+        if (pState.getValue(ATTACHED) != WedgeFluidTypes.NONE) {
+            if (AnimTick++ > 20) {
+                AnimTick = 0;
+                if (pState.getValue(ATTACHED) == WedgeFluidTypes.FLOW) {
+                    if (pLevel.isClientSide) {
+                        generateParticles(pLevel, pPos, pState, ModParticles.FLOW_PARTICLE.get());
+                    }
+                }
+                if (pState.getValue(ATTACHED) == WedgeFluidTypes.BIRCH) {
+                    if (pLevel.isClientSide) {
+                        generateParticles(pLevel, pPos, pState, ModParticles.BIRCH_JUICE_PARTICLE.get());
+                    }
+                }
+            }
         }
+
     }
 
     @Override
@@ -172,7 +186,7 @@ public class WedgeBlock extends Block {
     }
 
     @OnlyIn(Dist.CLIENT)
-    private void generateParticles(Level pLevel, BlockPos pPos, BlockState pState) {
+    private void generateParticles(Level pLevel, BlockPos pPos, BlockState pState, ParticleOptions particle) {
         //for (int i = 0; i < 5; i++) {
         float x;
         float z;
@@ -198,9 +212,9 @@ public class WedgeBlock extends Block {
                 z = 52;
             }
         }
-            pLevel.addParticle(ModParticles.FLOW_PARTICLE.get(),
+            pLevel.addParticle(particle,
                     pPos.getX() + x,
-                    ((float)(pPos.getY() + 1) - 0.6875F),
+                    pPos.getY()+0.4f,
                     pPos.getZ() + z,
                     0,0,0);
         //}

@@ -19,10 +19,10 @@ import net.sinedkadis.terracompositio.fluid.ModFluids;
 import net.sinedkadis.terracompositio.particle.ModParticles;
 import org.jetbrains.annotations.NotNull;
 
-public class FlowParticle extends TextureSheetParticle {
-    private final Fluid type = ModFluids.FLOW_FLUID.source.get();
+public class BirchJuiceParticle extends TextureSheetParticle {
+    private final Fluid type = ModFluids.BIRCH_JUICE_FLUID.source.get();
     protected boolean isGlowing;
-    FlowParticle(ClientLevel pLevel, double pX, double pY, double pZ,SpriteSet spriteSet) {
+    BirchJuiceParticle(ClientLevel pLevel, double pX, double pY, double pZ, SpriteSet spriteSet) {
         super(pLevel, pX, pY, pZ);
         //this.setSize(0.1F, 0.1F);
         this.quadSize *= 0.25F;
@@ -74,8 +74,8 @@ public class FlowParticle extends TextureSheetParticle {
 
     protected void postMoveUpdate() {
     }
-    public static TextureSheetParticle createFlowFallParticle(ClientLevel pLevel, double pX, double pY, double pZ,SpriteSet spriteSet) {
-        FlowParticle $$8 = new FlowFallAndLandParticle(pLevel, pX, pY, pZ, ModParticles.FLOW_SPLASH_PARTICLE.get(),spriteSet);
+    public static TextureSheetParticle createBirchJuiceFallParticle(ClientLevel pLevel, double pX, double pY, double pZ, SpriteSet spriteSet) {
+        BirchJuiceParticle $$8 = new BirchJuiceFallAndLandParticle(pLevel, pX, pY, pZ, ModParticles.BIRCH_JUICE_SPLASH_PARTICLE.get(),spriteSet);
         //$$8.setColor(0.2F, 0.3F, 1.0F);
         return $$8;
     }
@@ -91,12 +91,12 @@ public class FlowParticle extends TextureSheetParticle {
     public Particle createParticle(SimpleParticleType particleType, ClientLevel level,
                                        double x, double y, double z,
                                        double dx, double dy, double dz) {
-            return createFlowFallParticle(level,x,y,z,sprites);
+            return createBirchJuiceFallParticle(level,x,y,z,sprites);
         }
     }
     @OnlyIn(Dist.CLIENT)
-    static class FlowFallAndLandParticle extends FallAndLandParticle {
-        FlowFallAndLandParticle(ClientLevel level, double x, double y, double z, ParticleOptions particleOptions,SpriteSet spriteSet) {
+    static class BirchJuiceFallAndLandParticle extends FallAndLandParticle {
+        BirchJuiceFallAndLandParticle(ClientLevel level, double x, double y, double z, ParticleOptions particleOptions, SpriteSet spriteSet) {
             super(level, x, y, z, particleOptions,spriteSet);
         }
 
@@ -129,7 +129,7 @@ public class FlowParticle extends TextureSheetParticle {
         }
     }
     @OnlyIn(Dist.CLIENT)
-    private static class FallingParticle extends FlowParticle {
+    private static class FallingParticle extends BirchJuiceParticle {
         FallingParticle(ClientLevel pLevel, double pX, double pY, double pZ,SpriteSet spriteSet) {
             this(pLevel, pX, pY, pZ, (int)(64.0 / (Math.random() * 0.8 + 0.2)),spriteSet);
         }

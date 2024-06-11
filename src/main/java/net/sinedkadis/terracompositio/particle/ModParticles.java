@@ -14,7 +14,12 @@ public class ModParticles {
 
     public static final RegistryObject<SimpleParticleType> FLOW_PARTICLE =
             PARTICLE_TYPES.register("flow_particle",() -> new SimpleParticleType(true));
-
+    public static final RegistryObject<SimpleParticleType> BIRCH_JUICE_PARTICLE =
+            PARTICLE_TYPES.register("birch_juice_particle",() -> new SimpleParticleType(true));
+    public static final RegistryObject<SimpleParticleType> FLOW_SPLASH_PARTICLE =
+            PARTICLE_TYPES.register("flow_splash_particle",() -> new SimpleParticleType(true));
+    public static final RegistryObject<SimpleParticleType> BIRCH_JUICE_SPLASH_PARTICLE =
+            PARTICLE_TYPES.register("birch_juice_splash_particle",() -> new SimpleParticleType(true));
 
     public static void register(IEventBus eventBus) {
         PARTICLE_TYPES.register(eventBus);

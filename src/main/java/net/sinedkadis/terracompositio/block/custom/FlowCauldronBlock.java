@@ -53,7 +53,7 @@ public class FlowCauldronBlock extends LayeredCauldronBlock {
 
 
     }
-
+    //TODO rework cauldron mechanic
     @Override
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         ItemStack itemStack = pPlayer.getItemInHand(pHand);
