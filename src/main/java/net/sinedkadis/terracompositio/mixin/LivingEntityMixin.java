@@ -30,7 +30,7 @@ import javax.annotation.Nullable;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity implements IForgeLivingEntity {
-//TODO fix mixin
+
     public LivingEntityMixin(EntityType<?> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
     }
@@ -55,23 +55,23 @@ public abstract class LivingEntityMixin extends Entity implements IForgeLivingEn
 
     @Shadow public abstract Vec3 getFluidFallingAdjustedMovement(double pGravity, boolean pIsFalling, Vec3 pDeltaMovement);
 
-    @Shadow @Final private static AttributeModifier SLOW_FALLING;
-
-    @Inject(method = "travel",at = @At("RETURN"),cancellable = false)
+    @Inject(method = "travel",at = @At("RETURN"))
     protected void onTravelInFlow(Vec3 pTravelVector,CallbackInfo ci) {
         if (this.isControlledByLocalInstance()) {
+            //Vec3 horizontalVec = new Vec3(pTravelVector.x,0,pTravelVector.z);
+            Vec3 deltaBoosted = this.getDeltaMovement();
             double d0 = 0.08D;
-            AttributeInstance gravity = this.getAttribute(net.minecraftforge.common.ForgeMod.ENTITY_GRAVITY.get());
             boolean flag = this.getDeltaMovement().y <= 0.0D;
-            if (flag && this.hasEffect(MobEffects.SLOW_FALLING)) {
-                if (!gravity.hasModifier(SLOW_FALLING)) gravity.addTransientModifier(SLOW_FALLING);
-            } else if (gravity.hasModifier(SLOW_FALLING)) {
-                gravity.removeModifier(SLOW_FALLING);
-            }
-            d0 = gravity.getValue();
             FluidState fluidstate = this.level().getFluidState(this.blockPosition());
-            if (((fluidstate.getFluidType() == ModFluids.FLOW_FLUID.type.get()) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidstate))||
-            this.hasEffect(ModEffects.FLOW_SATURATION.get())) {
+            if (((fluidstate.getFluidType() == ModFluids.FLOW_FLUID.type.get()) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidstate))
+                    || this.hasEffect(ModEffects.FLOW_SATURATION.get())) {
+
+                if (((fluidstate.getFluidType() == ModFluids.FLOW_FLUID.type.get()) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidstate))
+                        && this.hasEffect(ModEffects.FLOW_SATURATION.get())) {
+                    //horizontalVec = new Vec3(pTravelVector.x*2,pTravelVector.y*2,pTravelVector.z*2);
+                    deltaBoosted = new Vec3(this.getDeltaMovement().x*2,this.getDeltaMovement().y,this.getDeltaMovement().z*2);
+                    //TODO achievement
+                }
                 double d9 = this.getY();
                 float f4 = this.isSprinting() ? 0.9F : this.getWaterSlowDown();
                 float f5 = 0.02F;
@@ -82,10 +82,8 @@ public abstract class LivingEntityMixin extends Entity implements IForgeLivingEn
                     f6 *= 0.5F;
                 }
 
-                if (f6 > 0.0F) {
-                    f4 += (0.54600006F - f4) * f6 / 3.0F;
-                    f5 += (this.getSpeed() - f5) * f6 / 3.0F;
-                }
+                f4 += (0.54600006F - f4) * f6 / 3.0F;
+                f5 += (this.getSpeed() - f5) * f6 / 3.0F;
 
                 if (this.hasEffect(MobEffects.DOLPHINS_GRACE)) {
                     f4 = 0.96F;
@@ -93,17 +91,17 @@ public abstract class LivingEntityMixin extends Entity implements IForgeLivingEn
 
                 f5 *= (float) this.getAttribute(net.minecraftforge.common.ForgeMod.SWIM_SPEED.get()).getValue();
                 this.moveRelative(f5, pTravelVector);
-                this.move(MoverType.SELF, this.getDeltaMovement());
+                this.move(MoverType.SELF, deltaBoosted);
                 Vec3 vec36 = this.getDeltaMovement();
                 if (this.horizontalCollision && this.onClimbable()) {
                     vec36 = new Vec3(vec36.x, 0.2D, vec36.z);
                 }
 
-                this.setDeltaMovement(vec36.multiply((double) f4, (double) 0.8F, (double) f4));
+                this.setDeltaMovement(vec36.multiply(f4, 0.8F, f4));
                 Vec3 vec32 = this.getFluidFallingAdjustedMovement(d0, flag, this.getDeltaMovement());
                 this.setDeltaMovement(vec32);
                 if (this.horizontalCollision && this.isFree(vec32.x, vec32.y + (double) 0.6F - this.getY() + d9, vec32.z)) {
-                    this.setDeltaMovement(vec32.x, (double) 0.3F, vec32.z);
+                    this.setDeltaMovement(vec32.x, 0.3F, vec32.z);
                 }
             }
 
