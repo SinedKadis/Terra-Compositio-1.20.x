@@ -2,6 +2,7 @@ package net.sinedkadis.terracompositio.block.custom;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
@@ -24,7 +25,6 @@ public class FlowLogLikeBlock extends RotatedPillarBlock {
         super(pProperties);
     }
     private static final Logger LOGGER = LogUtils.getLogger();
-//TODO Don't replace when in creative
     @Override
     public @Nullable BlockState getToolModifiedState(BlockState state, UseOnContext context, ToolAction toolAction, boolean simulate) {
         if(context.getItemInHand().getItem() instanceof AxeItem){

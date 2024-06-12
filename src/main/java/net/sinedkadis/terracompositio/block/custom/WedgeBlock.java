@@ -51,7 +51,7 @@ public class WedgeBlock extends Block {
     private int AnimTick = 0;
     private static final VoxelShape REQUIRED_SPACE_TO_DRIP_THROUGH_NON_SOLID_BLOCK = Block.box(6.0, 0.0, 6.0, 10.0, 16.0, 10.0);
     //private static final Logger LOGGER = LogUtils.getLogger();
-
+//TODO achievement don't repeat at home
     public WedgeBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(ATTACHED,false));
