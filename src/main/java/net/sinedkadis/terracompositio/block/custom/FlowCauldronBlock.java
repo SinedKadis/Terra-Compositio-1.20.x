@@ -49,17 +49,6 @@ public class FlowCauldronBlock extends ModCauldronBlock {
     }
 
     @Override
-    public boolean isRandomlyTicking(BlockState pState) {
-        return true;
-    }
-
-    @Override
-    public void tick(BlockState pState, ServerLevel pLevel, BlockPos pPos, RandomSource pRandom) {
-        super.tick(pState, pLevel, pPos, pRandom);
-
-
-    }
-    @Override
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         ItemStack itemStack = pPlayer.getItemInHand(pHand);
         if (pState.getValue(LEVEL) == 3) {

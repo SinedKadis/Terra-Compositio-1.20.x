@@ -59,9 +59,11 @@ public abstract class LivingEntityMixin extends Entity implements IForgeLivingEn
     protected void onTravelInFlow(Vec3 pTravelVector,CallbackInfo ci) {
         if (this.isControlledByLocalInstance()) {
             //Vec3 horizontalVec = new Vec3(pTravelVector.x,0,pTravelVector.z);
-            Vec3 deltaBoosted = this.getDeltaMovement();
+            Vec3 deltaBoosted = new Vec3(this.getDeltaMovement().x,
+                    this.getDeltaMovement().y > 0 ? this.getDeltaMovement().y*3:this.getDeltaMovement().y/2,
+                    this.getDeltaMovement().z);
             double d0 = 0.08D;
-            boolean flag = this.getDeltaMovement().y <= 0.0D;
+            boolean flag = deltaBoosted.y <= 0.0D;
             FluidState fluidstate = this.level().getFluidState(this.blockPosition());
             if (((fluidstate.getFluidType() == ModFluids.FLOW_FLUID.type.get()) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidstate))
                     || this.hasEffect(ModEffects.FLOW_SATURATION.get())) {
@@ -69,7 +71,9 @@ public abstract class LivingEntityMixin extends Entity implements IForgeLivingEn
                 if (((fluidstate.getFluidType() == ModFluids.FLOW_FLUID.type.get()) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidstate))
                         && this.hasEffect(ModEffects.FLOW_SATURATION.get())) {
                     //horizontalVec = new Vec3(pTravelVector.x*2,pTravelVector.y*2,pTravelVector.z*2);
-                    deltaBoosted = new Vec3(this.getDeltaMovement().x*2,this.getDeltaMovement().y,this.getDeltaMovement().z*2);
+                    deltaBoosted = new Vec3(this.getDeltaMovement().x*2,
+                                this.getDeltaMovement().y > 0 ? this.getDeltaMovement().y*6:this.getDeltaMovement().y,
+                            this.getDeltaMovement().z*2);
                     //TODO achievement
                 }
                 double d9 = this.getY();

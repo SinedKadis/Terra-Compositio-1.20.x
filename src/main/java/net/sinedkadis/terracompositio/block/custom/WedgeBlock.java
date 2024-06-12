@@ -1,5 +1,6 @@
 package net.sinedkadis.terracompositio.block.custom;
 
+import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
@@ -31,6 +32,7 @@ import net.sinedkadis.terracompositio.fluid.ModFluids;
 import net.sinedkadis.terracompositio.particle.ModParticles;
 import net.sinedkadis.terracompositio.util.ModTags;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
 
@@ -56,7 +58,7 @@ public class WedgeBlock extends Block {
     }
     @Nullable
     private static BlockPos findFillableCauldronBelowWedge(Level pLevel, BlockPos pPos, Fluid pFluid) {
-        Predicate<BlockState> $$3 = (blockState) -> (blockState.getBlock() instanceof ModCauldronBlock && ((ModCauldronBlock)blockState.getBlock()).canRecieveWedgeDrip(pFluid))
+        Predicate<BlockState> $$3 = (blockState) -> (blockState.getBlock() instanceof ModCauldronBlock && ((ModCauldronBlock) blockState.getBlock()).canRecieveWedgeDrip(pFluid))
                 ||blockState.is(Blocks.CAULDRON);
         BiPredicate<BlockPos, BlockState> $$4 = (blockPos, blockState) -> canDripThrough(pLevel, blockPos, blockState);
         return findBlockVertical(pLevel, pPos, Direction.DOWN.getAxisDirection(), $$4, $$3, 11).orElse(null);
@@ -169,43 +171,46 @@ public class WedgeBlock extends Block {
             //LOGGER.debug("Test");
             double random = Math.random();
             BlockPos cauldronPos = findFillableCauldronBelowWedge(pLevel, pPos, ModFluids.FLOW_FLUID.source.get());
-            if (cauldronPos != null) {
-                //LOGGER.debug("Wedge attached, cauldron at "+cauldronPos);
-                if (pLevel.getBlockState(pPos.relative(pState.getValue(FACING).getOpposite())).is(ModTags.Blocks.FLOW_LOGS)) {
+            BlockPos cauldronPos1 = findFillableCauldronBelowWedge(pLevel, pPos, ModFluids.BIRCH_JUICE_FLUID.source.get());
+            if (cauldronPos != null||cauldronPos1 != null) {
+               // LOGGER.debug("Wedge attached, cauldron at "+cauldronPos);
+                if (pLevel.getBlockState(pPos.relative(pState.getValue(FACING).getOpposite())).is(ModTags.Blocks.FLOW_LOGS)
+                        && cauldronPos != null) {
                     if (pLevel.getBlockState(cauldronPos).is(ModBlocks.FLOW_CAULDRON.get())) {
-                        //LOGGER.debug("Flow Cauldron detected, trying increase level");
+                       // LOGGER.debug("Flow Cauldron detected, trying increase level");
                         int levelValue = pLevel.getBlockState(cauldronPos).getValue(LEVEL);
                         if (random < 0.7D) {
                             if (levelValue != 3) {
                                 boolean success = pLevel.setBlock(cauldronPos, ModBlocks.FLOW_CAULDRON.get().defaultBlockState().setValue(LEVEL, levelValue + 1), 2);
                                 //LOGGER.debug(random + " - Success " + success);
-                            }// else LOGGER.debug(random + " - Fail");
+                            } //else LOGGER.debug(random + " - Fail");
                         }
                     } else if (pLevel.getBlockState(cauldronPos).is(Blocks.CAULDRON)) {
-                        //LOGGER.debug("Vanilla Cauldron detected, trying increase level");
+                       // LOGGER.debug("Vanilla Cauldron detected, trying increase level");
                         if (random < 0.7D) {
                             boolean success = pLevel.setBlock(cauldronPos, ModBlocks.FLOW_CAULDRON.get().defaultBlockState().setValue(LEVEL, 1), 2);
-                            //LOGGER.debug(random + " - Success " + success);
+                           // LOGGER.debug(random + " - Success " + success);
                         }// else LOGGER.debug(random + " - Fail");
                     }
 
                 }
-                if (pLevel.getBlockState(pPos.relative(pState.getValue(FACING).getOpposite())).is(BlockTags.BIRCH_LOGS)) {
-                    if (pLevel.getBlockState(cauldronPos).is(ModBlocks.BIRCH_JUICE_CAULDRON.get())) {
+                if (pLevel.getBlockState(pPos.relative(pState.getValue(FACING).getOpposite())).is(BlockTags.BIRCH_LOGS)
+                        && cauldronPos1 != null) {
+                    if (pLevel.getBlockState(cauldronPos1).is(ModBlocks.BIRCH_JUICE_CAULDRON.get())) {
                         //LOGGER.debug("Birch Juice Cauldron detected, trying increase level");
-                        int levelValue = pLevel.getBlockState(cauldronPos).getValue(LEVEL);
+                        int levelValue = pLevel.getBlockState(cauldronPos1).getValue(LEVEL);
                         if (random < 0.7D) {
                             if (levelValue != 3) {
-                                boolean success = pLevel.setBlock(cauldronPos, ModBlocks.BIRCH_JUICE_CAULDRON.get().defaultBlockState().setValue(LEVEL, levelValue + 1), 2);
+                                boolean success = pLevel.setBlock(cauldronPos1, ModBlocks.BIRCH_JUICE_CAULDRON.get().defaultBlockState().setValue(LEVEL, levelValue + 1), 2);
                                 //LOGGER.debug(random + " - Success " + success);
-                            }// else LOGGER.debug(random + " - Fail");
+                            } //else LOGGER.debug(random + " - Fail");
                         }
-                    } else if (pLevel.getBlockState(cauldronPos).is(Blocks.CAULDRON)) {
+                    } else if (pLevel.getBlockState(cauldronPos1).is(Blocks.CAULDRON)) {
                         //LOGGER.debug("Vanilla Cauldron detected, trying increase level");
                         if (random < 0.7D) {
-                            boolean success = pLevel.setBlock(cauldronPos, ModBlocks.BIRCH_JUICE_CAULDRON.get().defaultBlockState().setValue(LEVEL, 1), 2);
+                            boolean success = pLevel.setBlock(cauldronPos1, ModBlocks.BIRCH_JUICE_CAULDRON.get().defaultBlockState().setValue(LEVEL, 1), 2);
                             //LOGGER.debug(random + " - Success " + success);
-                        }// else LOGGER.debug(random + " - Fail");
+                        } //else LOGGER.debug(random + " - Fail");
                     }
                 }
             }
@@ -264,11 +269,6 @@ public class WedgeBlock extends Block {
         }else if (pState.getValue(ATTACHED)){
             pLevel.setBlockAndUpdate(pPos,this.defaultBlockState().setValue(FACING,pState.getValue(FACING)).setValue(ATTACHED,false));
         }
-    }
-
-    private void notifyNeighbors(Level pLevel, BlockPos pPos, Direction pDirection) {
-        pLevel.updateNeighborsAt(pPos, this);
-        pLevel.updateNeighborsAt(pPos.relative(pDirection), this);
     }
 
     @Override

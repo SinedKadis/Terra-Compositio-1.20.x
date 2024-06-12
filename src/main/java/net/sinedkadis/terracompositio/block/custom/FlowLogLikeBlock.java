@@ -24,7 +24,7 @@ public class FlowLogLikeBlock extends RotatedPillarBlock {
         super(pProperties);
     }
     private static final Logger LOGGER = LogUtils.getLogger();
-
+//TODO Don't replace when in creative
     @Override
     public @Nullable BlockState getToolModifiedState(BlockState state, UseOnContext context, ToolAction toolAction, boolean simulate) {
         if(context.getItemInHand().getItem() instanceof AxeItem){
