@@ -44,6 +44,11 @@ public class ModCreativeModTabs {
                         pOutput.accept(ModFluids.BIRCH_JUICE_FLUID.bucket.get());
                         pOutput.accept(ModBlocks.WEDGE.get());
 
+                        pOutput.accept(ModItems.NONFLOW_WOOD_HELMET.get());
+                        pOutput.accept(ModItems.NONFLOW_WOOD_CHESTPLATE.get());
+                        pOutput.accept(ModItems.NONFLOW_WOOD_LEGGINGS.get());
+                        pOutput.accept(ModItems.NONFLOW_WOOD_BOOTS.get());
+
 
                     })
                     .build());

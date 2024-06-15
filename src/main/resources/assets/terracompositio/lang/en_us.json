@@ -30,5 +30,9 @@
   "fluid_type.terracompositio.birch_juice": "Birch Juice",
   "block.terracompositio.wedge": "Wedge",
   "effect.terracompositio.flow_saturation": "Flow Saturation",
-  "sounds.terracompositio.flow_leak": "Flow Leaking"
+  "sounds.terracompositio.flow_leak": "Flow Leaking",
+  "item.terracompositio.nonflow_wood_helmet": "Non-flow Wood Helmet",
+  "item.terracompositio.nonflow_wood_chestplate": "Non-flow Wood Chestplate",
+  "item.terracompositio.nonflow_wood_leggings": "Non-flow Wood Leggings",
+  "item.terracompositio.nonflow_wood_boots": "Non-flow Wood Boots"
 }
