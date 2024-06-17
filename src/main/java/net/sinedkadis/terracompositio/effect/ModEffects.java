@@ -7,14 +7,16 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.sinedkadis.terracompositio.TerraCompositio;
-import net.sinedkadis.terracompositio.effect.custom.FlowSaturationEffect;
+import net.sinedkadis.terracompositio.effect.custom.ModEffectBase;
 
 public class ModEffects {
     public static final DeferredRegister<MobEffect> MOD_EFFECTS =
             DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, TerraCompositio.MOD_ID);
 
     public static final RegistryObject<MobEffect> FLOW_SATURATION =
-            MOD_EFFECTS.register("flow_saturation",() -> new FlowSaturationEffect(MobEffectCategory.BENEFICIAL,0x1e8dc6));
+            MOD_EFFECTS.register("flow_saturation",() -> new ModEffectBase(MobEffectCategory.BENEFICIAL,0x1e8dc6));
+    public static final RegistryObject<MobEffect> NONFLOW_FULL_SET =
+            MOD_EFFECTS.register("nonflow_full_set",() -> new ModEffectBase(MobEffectCategory.NEUTRAL,0x1e8dc6));
 
     public static void register(IEventBus eventBus){
         MOD_EFFECTS.register(eventBus);

@@ -65,6 +65,10 @@ public class ModItemTagGenerator extends ItemTagsProvider {
                 .add(ModItems.NONFLOW_WOOD_HELMET.get(),
                         ModItems.NONFLOW_WOOD_CHESTPLATE.get(),
                         ModItems.NONFLOW_WOOD_LEGGINGS.get(),
-                        ModItems.NONFLOW_WOOD_BOOTS.get());
+                        ModItems.NONFLOW_WOOD_BOOTS.get(),
+                        ModItems.FLOW_WOOD_HELMET.get(),
+                        ModItems.FLOW_WOOD_CHESTPLATE.get(),
+                        ModItems.FLOW_WOOD_LEGGINGS.get(),
+                        ModItems.FLOW_WOOD_BOOTS.get());
     }
 }

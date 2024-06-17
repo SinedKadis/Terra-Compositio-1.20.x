@@ -62,6 +62,11 @@ public class ModItemModelProvider extends ItemModelProvider {
         trimmedArmorItem(ModItems.NONFLOW_WOOD_LEGGINGS);
         trimmedArmorItem(ModItems.NONFLOW_WOOD_BOOTS);
 
+        trimmedArmorItem(ModItems.FLOW_WOOD_HELMET);
+        trimmedArmorItem(ModItems.FLOW_WOOD_CHESTPLATE);
+        trimmedArmorItem(ModItems.FLOW_WOOD_LEGGINGS);
+        trimmedArmorItem(ModItems.FLOW_WOOD_BOOTS);
+
 
     }
 
