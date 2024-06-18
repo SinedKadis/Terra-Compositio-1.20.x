@@ -37,8 +37,8 @@
   "item.terracompositio.nonflow_wood_leggings": "Non-flow Wood Leggings",
   "item.terracompositio.nonflow_wood_boots": "Non-flow Wood Boots",
 
-  "item.terracompositio.flow_wood_helmet": "Non-flow Wood Helmet",
-  "item.terracompositio.flow_wood_chestplate": "Non-flow Wood Chestplate",
-  "item.terracompositio.flow_wood_leggings": "Non-flow Wood Leggings",
-  "item.terracompositio.flow_wood_boots": "Non-flow Wood Boots"
+  "item.terracompositio.flow_wood_helmet": "Flow Wood Helmet",
+  "item.terracompositio.flow_wood_chestplate": "Flow Wood Chestplate",
+  "item.terracompositio.flow_wood_leggings": "Flow Wood Leggings",
+  "item.terracompositio.flow_wood_boots": "Flow Wood Boots"
 }
