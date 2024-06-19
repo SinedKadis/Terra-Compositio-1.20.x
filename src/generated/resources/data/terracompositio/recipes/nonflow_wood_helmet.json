@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "L": {
+      "item": "minecraft:leather"
+    },
+    "W": {
+      "tag": "terracompositio:nonflow_logs"
+    }
+  },
+  "pattern": [
+    "WWW",
+    "WLW"
+  ],
+  "result": {
+    "item": "terracompositio:nonflow_wood_helmet"
+  },
+  "show_notification": true
+}

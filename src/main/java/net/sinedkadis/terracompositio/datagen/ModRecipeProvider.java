@@ -12,6 +12,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.block.ModBlocks;
+import net.sinedkadis.terracompositio.item.ModItems;
 import net.sinedkadis.terracompositio.util.ModTags;
 import org.jetbrains.annotations.NotNull;
 
@@ -94,6 +95,39 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
         ShapelessRecipeBuilder.shapeless(RecipeCategory.BUILDING_BLOCKS, ModBlocks.NONFLOW_BUTTON.get(), 4)
                 .requires(ModBlocks.NONFLOW_PLANKS.get())
                 .unlockedBy(getHasName(ModBlocks.NONFLOW_PLANKS.get()), has(ModBlocks.NONFLOW_PLANKS.get()))
+                .save(pWriter);
+
+
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.NONFLOW_WOOD_BOOTS.get())
+                .pattern("WLW")
+                .pattern("W W")
+                .define('W', ModTags.Items.NONFLOW_LOGS)
+                .define('L', Items.LEATHER)
+                .unlockedBy(getHasName(ModBlocks.NONFLOW_LOG.get()), has(ModBlocks.NONFLOW_LOG.get()))
+                .save(pWriter);
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.NONFLOW_WOOD_LEGGINGS.get())
+                .pattern("WWW")
+                .pattern("WLW")
+                .pattern("W W")
+                .define('W', ModTags.Items.NONFLOW_LOGS)
+                .define('L', Items.LEATHER)
+                .unlockedBy(getHasName(ModBlocks.NONFLOW_LOG.get()), has(ModBlocks.NONFLOW_LOG.get()))
+                .save(pWriter);
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.NONFLOW_WOOD_CHESTPLATE.get())
+                .pattern("WLW")
+                .pattern("WWW")
+                .pattern("WWW")
+                .define('W', ModTags.Items.NONFLOW_LOGS)
+                .define('L', Items.LEATHER)
+                .unlockedBy(getHasName(ModBlocks.NONFLOW_LOG.get()), has(ModBlocks.NONFLOW_LOG.get()))
+                .save(pWriter);
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.NONFLOW_WOOD_HELMET.get())
+                .pattern("WWW")
+                .pattern("WLW")
+                .define('W', ModTags.Items.NONFLOW_LOGS)
+                .define('L', Items.LEATHER)
+                .unlockedBy(getHasName(ModBlocks.NONFLOW_LOG.get()), has(ModBlocks.NONFLOW_LOG.get()))
                 .save(pWriter);
         /*ShapelessRecipeBuilder.shapeless(RecipeCategory.BUILDING_BLOCKS, ModBlocks.NONFLOW_PLANKS.get(), 4)
                 .requires(ModBlocks.NONFLOW_WOOD.get())
