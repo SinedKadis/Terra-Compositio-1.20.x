@@ -4,14 +4,8 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
 
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.world.item.PotionItem;
-import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.world.item.armortrim.TrimMaterial;
-import net.minecraft.world.item.armortrim.TrimMaterials;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.block.ModBlocks;
@@ -20,7 +14,6 @@ import net.sinedkadis.terracompositio.util.ModTags;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.LinkedHashMap;
 import java.util.concurrent.CompletableFuture;
 
 public class ModItemTagGenerator extends ItemTagsProvider {
@@ -32,43 +25,43 @@ public class ModItemTagGenerator extends ItemTagsProvider {
     @Override
     protected void addTags(HolderLookup.@NotNull Provider pProvider) {
         this.tag(ItemTags.LOGS)
-                .add(ModBlocks.FLOW_LOG.get().asItem(),
-                        ModBlocks.FLOW_WOOD.get().asItem());
+                .add(ModBlocks.FLOWING_FLOW_CEDAR_LOG.get().asItem(),
+                        ModBlocks.FLOWING_FLOW_CEDAR_WOOD.get().asItem());
         this.tag(ItemTags.LOGS_THAT_BURN)
-                .add(ModBlocks.NONFLOW_LOG.get().asItem(),
-                        ModBlocks.NONFLOW_WOOD.get().asItem(),
-                        ModBlocks.NONFLOW_PORT.get().asItem(),
-                        ModBlocks.STRIPPED_NONFLOW_LOG.get().asItem(),
-                        ModBlocks.STRIPPED_NONFLOW_WOOD.get().asItem());
+                .add(ModBlocks.FLOW_CEDAR_LOG.get().asItem(),
+                        ModBlocks.FLOW_CEDAR_WOOD.get().asItem(),
+                        ModBlocks.FLOW_PORT.get().asItem(),
+                        ModBlocks.STRIPPED_FLOW_CEDAR_LOG.get().asItem(),
+                        ModBlocks.STRIPPED_FLOW_CEDAR_WOOD.get().asItem());
         this.tag(ItemTags.PLANKS)
-                .add(ModBlocks.NONFLOW_PLANKS.get().asItem());
+                .add(ModBlocks.FLOW_CEDAR_PLANKS.get().asItem());
         this.tag(ItemTags.LEAVES)
-                .add(ModBlocks.FLOW_LEAVES.get().asItem());
+                .add(ModBlocks.FLOW_CEDAR_LEAVES.get().asItem());
         this.tag(ItemTags.STAIRS)
-                .add(ModBlocks.NONFLOW_STAIRS.get().asItem());
+                .add(ModBlocks.FLOW_CEDAR_STAIRS.get().asItem());
         this.tag(ItemTags.DOORS)
-                .add(ModBlocks.NONFLOW_DOOR.get().asItem());
+                .add(ModBlocks.FLOW_CEDAR_DOOR.get().asItem());
         this.tag(ItemTags.TRAPDOORS)
-                .add(ModBlocks.NONFLOW_TRAPDOOR.get().asItem());
+                .add(ModBlocks.FLOW_CEDAR_TRAPDOOR.get().asItem());
         this.tag(ItemTags.BUTTONS)
-                .add(ModBlocks.NONFLOW_BUTTON.get().asItem());
+                .add(ModBlocks.FLOW_CEDAR_BUTTON.get().asItem());
         this.tag(ItemTags.WOODEN_PRESSURE_PLATES)
-                .add(ModBlocks.NONFLOW_PRESSURE_PLATE.get().asItem());
+                .add(ModBlocks.FLOW_CEDAR_PRESSURE_PLATE.get().asItem());
         this.tag(ItemTags.FENCES)
-                .add(ModBlocks.NONFLOW_FENCE.get().asItem());
+                .add(ModBlocks.FLOW_CEDAR_FENCE.get().asItem());
         this.tag(ItemTags.FENCE_GATES)
-                .add(ModBlocks.NONFLOW_FENCE_GATE.get().asItem());
+                .add(ModBlocks.FLOW_CEDAR_FENCE_GATE.get().asItem());
         this.tag(ModTags.Items.NONFLOW_LOGS)
-                .add(ModBlocks.NONFLOW_LOG.get().asItem(),
-                        ModBlocks.NONFLOW_WOOD.get().asItem());
+                .add(ModBlocks.FLOW_CEDAR_LOG.get().asItem(),
+                        ModBlocks.FLOW_CEDAR_WOOD.get().asItem());
         this.tag(ItemTags.TRIMMABLE_ARMOR)
-                .add(ModItems.NONFLOW_WOOD_HELMET.get(),
-                        ModItems.NONFLOW_WOOD_CHESTPLATE.get(),
-                        ModItems.NONFLOW_WOOD_LEGGINGS.get(),
-                        ModItems.NONFLOW_WOOD_BOOTS.get(),
-                        ModItems.FLOW_WOOD_HELMET.get(),
-                        ModItems.FLOW_WOOD_CHESTPLATE.get(),
-                        ModItems.FLOW_WOOD_LEGGINGS.get(),
-                        ModItems.FLOW_WOOD_BOOTS.get());
+                .add(ModItems.FLOW_CEDAR_HELMET.get(),
+                        ModItems.FLOW_CEDAR_CHESTPLATE.get(),
+                        ModItems.FLOW_CEDAR_LEGGINGS.get(),
+                        ModItems.FLOW_CEDAR_BOOTS.get(),
+                        ModItems.FLOWING_FLOW_CEDAR_HELMET.get(),
+                        ModItems.FLOWING_FLOW_CEDAR_CHESTPLATE.get(),
+                        ModItems.FLOWING_FLOW_CEDAR_LEGGINGS.get(),
+                        ModItems.FLOWING_FLOW_CEDAR_BOOTS.get());
     }
 }

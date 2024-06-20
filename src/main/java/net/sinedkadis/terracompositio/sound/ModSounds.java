@@ -15,7 +15,7 @@ public class ModSounds {
 
     public static final RegistryObject<SoundEvent> FLOW_LEAK = registerSoundEvents("flow_leak");
 
-    public static final ForgeSoundType FLOW_LOG_LIKE_BLOCK_SOUNDS = new ForgeSoundType(1f,1f,
+    public static final ForgeSoundType FLOWING_FLOW_CEDAR_LIKE_BLOCK_SOUNDS = new ForgeSoundType(1f,1f,
             () -> SoundEvents.BEACON_DEACTIVATE, () -> SoundEvents.WOOD_STEP,() -> SoundEvents.WOOD_PLACE,
             () -> SoundEvents.WOOD_HIT,() -> SoundEvents.WOOD_FALL);
 

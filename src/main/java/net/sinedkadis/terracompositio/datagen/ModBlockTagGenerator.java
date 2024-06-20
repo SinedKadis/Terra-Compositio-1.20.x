@@ -4,12 +4,10 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;
 
-import net.minecraft.tags.FluidTags;
 import net.minecraftforge.common.data.BlockTagsProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.block.ModBlocks;
-import net.sinedkadis.terracompositio.fluid.ModFluids;
 import net.sinedkadis.terracompositio.util.ModTags;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -35,55 +33,55 @@ public class ModBlockTagGenerator extends BlockTagsProvider {
                         ModBlocks.END_STONE_SAPPHIRE_ORE.get(),
                         ModBlocks.SOUND_BLOCK.get());*/
         this.tag(BlockTags.MINEABLE_WITH_AXE)
-                .add(ModBlocks.FLOW_LOG.get(),
-                        ModBlocks.FLOW_LEAVES.get(),
-                        ModBlocks.FLOW_PORT.get(),
+                .add(ModBlocks.FLOWING_FLOW_CEDAR_LOG.get(),
+                        ModBlocks.FLOW_CEDAR_LEAVES.get(),
+                        ModBlocks.FLOWING_FLOW_PORT.get(),
                         //ModBlocks.NONFLOW_PORT.get(),
-                        ModBlocks.FLOW_WOOD.get(),
-                        ModBlocks.NONFLOW_LOG.get(),
-                        ModBlocks.NONFLOW_WOOD.get(),
-                        ModBlocks.NONFLOW_PLANKS.get(),
-                        ModBlocks.STRIPPED_NONFLOW_LOG.get(),
-                        ModBlocks.STRIPPED_NONFLOW_WOOD.get());
+                        ModBlocks.FLOWING_FLOW_CEDAR_WOOD.get(),
+                        ModBlocks.FLOW_CEDAR_LOG.get(),
+                        ModBlocks.FLOW_CEDAR_WOOD.get(),
+                        ModBlocks.FLOW_CEDAR_PLANKS.get(),
+                        ModBlocks.STRIPPED_FLOW_CEDAR_LOG.get(),
+                        ModBlocks.STRIPPED_FLOW_CEDAR_WOOD.get());
 
 
         this.tag(BlockTags.NEEDS_IRON_TOOL)
-                .add(ModBlocks.FLOW_LOG.get(),
-                        ModBlocks.FLOW_LEAVES.get(),
-                        ModBlocks.FLOW_PORT.get(),
-                        ModBlocks.FLOW_WOOD.get());
+                .add(ModBlocks.FLOWING_FLOW_CEDAR_LOG.get(),
+                        ModBlocks.FLOW_CEDAR_LEAVES.get(),
+                        ModBlocks.FLOWING_FLOW_PORT.get(),
+                        ModBlocks.FLOWING_FLOW_CEDAR_WOOD.get());
         this.tag(BlockTags.LOGS)
-                .add(ModBlocks.FLOW_LOG.get(),
-                        ModBlocks.FLOW_WOOD.get());
+                .add(ModBlocks.FLOWING_FLOW_CEDAR_LOG.get(),
+                        ModBlocks.FLOWING_FLOW_CEDAR_WOOD.get());
         this.tag(BlockTags.LOGS_THAT_BURN)
-                .add(ModBlocks.NONFLOW_LOG.get(),
-                        ModBlocks.NONFLOW_WOOD.get(),
-                        ModBlocks.NONFLOW_PORT.get(),
-                        ModBlocks.STRIPPED_NONFLOW_LOG.get(),
-                        ModBlocks.STRIPPED_NONFLOW_WOOD.get());
+                .add(ModBlocks.FLOW_CEDAR_LOG.get(),
+                        ModBlocks.FLOW_CEDAR_WOOD.get(),
+                        ModBlocks.FLOW_PORT.get(),
+                        ModBlocks.STRIPPED_FLOW_CEDAR_LOG.get(),
+                        ModBlocks.STRIPPED_FLOW_CEDAR_WOOD.get());
         this.tag(BlockTags.PLANKS)
-                .add(ModBlocks.NONFLOW_PLANKS.get());
+                .add(ModBlocks.FLOW_CEDAR_PLANKS.get());
         this.tag(BlockTags.LEAVES)
-                .add(ModBlocks.FLOW_LEAVES.get());
+                .add(ModBlocks.FLOW_CEDAR_LEAVES.get());
 
         this.tag(BlockTags.STAIRS)
-                .add(ModBlocks.NONFLOW_STAIRS.get());
+                .add(ModBlocks.FLOW_CEDAR_STAIRS.get());
         this.tag(BlockTags.DOORS)
-                .add(ModBlocks.NONFLOW_DOOR.get());
+                .add(ModBlocks.FLOW_CEDAR_DOOR.get());
         this.tag(BlockTags.TRAPDOORS)
-                .add(ModBlocks.NONFLOW_TRAPDOOR.get());
+                .add(ModBlocks.FLOW_CEDAR_TRAPDOOR.get());
         this.tag(BlockTags.BUTTONS)
-                .add(ModBlocks.NONFLOW_BUTTON.get());
+                .add(ModBlocks.FLOW_CEDAR_BUTTON.get());
         this.tag(BlockTags.PRESSURE_PLATES)
-                .add(ModBlocks.NONFLOW_PRESSURE_PLATE.get());
+                .add(ModBlocks.FLOW_CEDAR_PRESSURE_PLATE.get());
         this.tag(BlockTags.FENCES)
-                .add(ModBlocks.NONFLOW_FENCE.get());
+                .add(ModBlocks.FLOW_CEDAR_FENCE.get());
         this.tag(BlockTags.FENCE_GATES)
-                .add(ModBlocks.NONFLOW_FENCE_GATE.get());
+                .add(ModBlocks.FLOW_CEDAR_FENCE_GATE.get());
         this.tag(ModTags.Blocks.FLOW_LOGS)
-                .add(ModBlocks.FLOW_LOG.get(),
-                        ModBlocks.FLOW_WOOD.get(),
-                        ModBlocks.FLOW_PORT.get());
+                .add(ModBlocks.FLOWING_FLOW_CEDAR_LOG.get(),
+                        ModBlocks.FLOWING_FLOW_CEDAR_WOOD.get(),
+                        ModBlocks.FLOWING_FLOW_PORT.get());
         //this.tag(BlockTags.NEEDS_DIAMOND_TOOL)
         //        .add(ModBlocks.RAW_SAPPHIRE_BLOCK.get());
 

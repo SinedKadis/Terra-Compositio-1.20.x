@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=false": {
+      "model": "terracompositio:block/flow_cedar_pressure_plate"
+    },
+    "powered=true": {
+      "model": "terracompositio:block/flow_cedar_pressure_plate_down"
+    }
+  }
+}

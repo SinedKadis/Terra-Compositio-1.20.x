@@ -21,33 +21,33 @@ public class ModCreativeModTabs {
                         pOutput.accept(ModItems.PEBBLE.get());
                         pOutput.accept(ModItems.STONE_STAFF.get());
                         pOutput.accept(ModItems.OAK_STAFF.get());
-                        pOutput.accept(ModBlocks.FLOW_LOG.get());
-                        pOutput.accept(ModBlocks.NONFLOW_LOG.get());
-                        pOutput.accept(ModBlocks.STRIPPED_NONFLOW_LOG.get());
-                        pOutput.accept(ModBlocks.FLOW_WOOD.get());
-                        pOutput.accept(ModBlocks.NONFLOW_WOOD.get());
-                        pOutput.accept(ModBlocks.STRIPPED_NONFLOW_WOOD.get());
+                        pOutput.accept(ModBlocks.FLOWING_FLOW_CEDAR_LOG.get());
+                        pOutput.accept(ModBlocks.FLOW_CEDAR_LOG.get());
+                        pOutput.accept(ModBlocks.STRIPPED_FLOW_CEDAR_LOG.get());
+                        pOutput.accept(ModBlocks.FLOWING_FLOW_CEDAR_WOOD.get());
+                        pOutput.accept(ModBlocks.FLOW_CEDAR_WOOD.get());
+                        pOutput.accept(ModBlocks.STRIPPED_FLOW_CEDAR_WOOD.get());
+                        pOutput.accept(ModBlocks.FLOWING_FLOW_PORT.get());
                         pOutput.accept(ModBlocks.FLOW_PORT.get());
-                        pOutput.accept(ModBlocks.NONFLOW_PORT.get());
-                        pOutput.accept(ModBlocks.FLOW_LEAVES.get());
-                        pOutput.accept(ModBlocks.NONFLOW_PLANKS.get());
-                        pOutput.accept(ModBlocks.NONFLOW_STAIRS.get());
-                        pOutput.accept(ModBlocks.NONFLOW_SLAB.get());
-                        pOutput.accept(ModBlocks.NONFLOW_BUTTON.get());
-                        pOutput.accept(ModBlocks.NONFLOW_PRESSURE_PLATE.get());
-                        pOutput.accept(ModBlocks.NONFLOW_FENCE.get());
-                        pOutput.accept(ModBlocks.NONFLOW_FENCE_GATE.get());
-                        pOutput.accept(ModBlocks.NONFLOW_DOOR.get());
-                        pOutput.accept(ModBlocks.NONFLOW_TRAPDOOR.get());
+                        pOutput.accept(ModBlocks.FLOW_CEDAR_LEAVES.get());
+                        pOutput.accept(ModBlocks.FLOW_CEDAR_PLANKS.get());
+                        pOutput.accept(ModBlocks.FLOW_CEDAR_STAIRS.get());
+                        pOutput.accept(ModBlocks.FLOW_CEDAR_SLAB.get());
+                        pOutput.accept(ModBlocks.FLOW_CEDAR_BUTTON.get());
+                        pOutput.accept(ModBlocks.FLOW_CEDAR_PRESSURE_PLATE.get());
+                        pOutput.accept(ModBlocks.FLOW_CEDAR_FENCE.get());
+                        pOutput.accept(ModBlocks.FLOW_CEDAR_FENCE_GATE.get());
+                        pOutput.accept(ModBlocks.FLOW_CEDAR_DOOR.get());
+                        pOutput.accept(ModBlocks.FLOW_CEDAR_TRAPDOOR.get());
                         pOutput.accept(ModFluids.FLOW_FLUID.bucket.get());
                         pOutput.accept(ModItems.FLOW_BOTTLE.get());
                         pOutput.accept(ModFluids.BIRCH_JUICE_FLUID.bucket.get());
                         pOutput.accept(ModBlocks.WEDGE.get());
 
-                        pOutput.accept(ModItems.NONFLOW_WOOD_HELMET.get());
-                        pOutput.accept(ModItems.NONFLOW_WOOD_CHESTPLATE.get());
-                        pOutput.accept(ModItems.NONFLOW_WOOD_LEGGINGS.get());
-                        pOutput.accept(ModItems.NONFLOW_WOOD_BOOTS.get());
+                        pOutput.accept(ModItems.FLOW_CEDAR_HELMET.get());
+                        pOutput.accept(ModItems.FLOW_CEDAR_CHESTPLATE.get());
+                        pOutput.accept(ModItems.FLOW_CEDAR_LEGGINGS.get());
+                        pOutput.accept(ModItems.FLOW_CEDAR_BOOTS.get());
 
 
                     })

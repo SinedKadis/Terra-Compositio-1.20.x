@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/inner_stairs",
-  "textures": {
-    "bottom": "terracompositio:block/nonflow_planks",
-    "side": "terracompositio:block/nonflow_planks",
-    "top": "terracompositio:block/nonflow_planks"
-  }
-}

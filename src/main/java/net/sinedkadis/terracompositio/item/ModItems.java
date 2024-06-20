@@ -37,22 +37,22 @@ public class ModItems {
     public static final RegistryObject<Item> OAK_STAFF = ITEMS.register("oak_staff",
             () -> new Item(new Item.Properties().stacksTo(1)));
 
-    public static final RegistryObject<Item> NONFLOW_WOOD_HELMET = ITEMS.register("nonflow_wood_helmet",
-            () -> new ModArmorItem(ModArmorMaterials.NONFLOW_WOOD, ArmorItem.Type.HELMET,new Item.Properties()));
-    public static final RegistryObject<Item> NONFLOW_WOOD_CHESTPLATE = ITEMS.register("nonflow_wood_chestplate",
-            () -> new ModArmorItem(ModArmorMaterials.NONFLOW_WOOD, ArmorItem.Type.CHESTPLATE,new Item.Properties()));
-    public static final RegistryObject<Item> NONFLOW_WOOD_LEGGINGS = ITEMS.register("nonflow_wood_leggings",
-            () -> new ModArmorItem(ModArmorMaterials.NONFLOW_WOOD, ArmorItem.Type.LEGGINGS,new Item.Properties()));
-    public static final RegistryObject<Item> NONFLOW_WOOD_BOOTS = ITEMS.register("nonflow_wood_boots",
-            () -> new ModArmorItem(ModArmorMaterials.NONFLOW_WOOD, ArmorItem.Type.BOOTS,new Item.Properties()));
-    public static final RegistryObject<Item> FLOW_WOOD_HELMET = ITEMS.register("flow_wood_helmet",
-            () -> new FlowArmorItem(ModArmorMaterials.FLOW_WOOD, ArmorItem.Type.HELMET,new Item.Properties()));
-    public static final RegistryObject<Item> FLOW_WOOD_CHESTPLATE = ITEMS.register("flow_wood_chestplate",
-            () -> new FlowArmorItem(ModArmorMaterials.FLOW_WOOD, ArmorItem.Type.CHESTPLATE,new Item.Properties()));
-    public static final RegistryObject<Item> FLOW_WOOD_LEGGINGS = ITEMS.register("flow_wood_leggings",
-            () -> new FlowArmorItem(ModArmorMaterials.FLOW_WOOD, ArmorItem.Type.LEGGINGS,new Item.Properties()));
-    public static final RegistryObject<Item> FLOW_WOOD_BOOTS = ITEMS.register("flow_wood_boots",
-            () -> new FlowArmorItem(ModArmorMaterials.FLOW_WOOD, ArmorItem.Type.BOOTS,new Item.Properties()));
+    public static final RegistryObject<Item> FLOW_CEDAR_HELMET = ITEMS.register("flow_cedar_helmet",
+            () -> new ModArmorItem(ModArmorMaterials.FLOW_CEDAR, ArmorItem.Type.HELMET,new Item.Properties()));
+    public static final RegistryObject<Item> FLOW_CEDAR_CHESTPLATE = ITEMS.register("flow_cedar_chestplate",
+            () -> new ModArmorItem(ModArmorMaterials.FLOW_CEDAR, ArmorItem.Type.CHESTPLATE,new Item.Properties()));
+    public static final RegistryObject<Item> FLOW_CEDAR_LEGGINGS = ITEMS.register("flow_cedar_leggings",
+            () -> new ModArmorItem(ModArmorMaterials.FLOW_CEDAR, ArmorItem.Type.LEGGINGS,new Item.Properties()));
+    public static final RegistryObject<Item> FLOW_CEDAR_BOOTS = ITEMS.register("flow_cedar_boots",
+            () -> new ModArmorItem(ModArmorMaterials.FLOW_CEDAR, ArmorItem.Type.BOOTS,new Item.Properties()));
+    public static final RegistryObject<Item> FLOWING_FLOW_CEDAR_HELMET = ITEMS.register("flowing_flow_cedar_helmet",
+            () -> new FlowArmorItem(ModArmorMaterials.FLOWING_FLOW_CEDAR, ArmorItem.Type.HELMET,new Item.Properties()));
+    public static final RegistryObject<Item> FLOWING_FLOW_CEDAR_CHESTPLATE = ITEMS.register("flowing_flow_cedar_chestplate",
+            () -> new FlowArmorItem(ModArmorMaterials.FLOWING_FLOW_CEDAR, ArmorItem.Type.CHESTPLATE,new Item.Properties()));
+    public static final RegistryObject<Item> FLOWING_FLOW_CEDAR_LEGGINGS = ITEMS.register("flowing_flow_cedar_leggings",
+            () -> new FlowArmorItem(ModArmorMaterials.FLOWING_FLOW_CEDAR, ArmorItem.Type.LEGGINGS,new Item.Properties()));
+    public static final RegistryObject<Item> FLOWING_FLOW_CEDAR_BOOTS = ITEMS.register("flowing_flow_cedar_boots",
+            () -> new FlowArmorItem(ModArmorMaterials.FLOWING_FLOW_CEDAR, ArmorItem.Type.BOOTS,new Item.Properties()));
 
     public static void register(IEventBus eventBus){
         ITEMS.register(eventBus);

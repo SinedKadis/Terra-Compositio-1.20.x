@@ -6,7 +6,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.armortrim.TrimMaterial;
 import net.minecraft.world.item.armortrim.TrimMaterials;
@@ -45,27 +44,27 @@ public class ModItemModelProvider extends ItemModelProvider {
     @Override
     protected void registerModels() {
         simpleItem(ModItems.PEBBLE);
-        trapdoorItem(ModBlocks.NONFLOW_TRAPDOOR);
-        fenceItem(ModBlocks.NONFLOW_FENCE,ModBlocks.NONFLOW_PLANKS);
-        simpleBlockItem(ModBlocks.NONFLOW_DOOR);
-        buttonItem(ModBlocks.NONFLOW_BUTTON,ModBlocks.NONFLOW_PLANKS);
-        evenSimplerBlockItem(ModBlocks.NONFLOW_STAIRS);
-        evenSimplerBlockItem(ModBlocks.NONFLOW_SLAB);
-        evenSimplerBlockItem(ModBlocks.NONFLOW_PRESSURE_PLATE);
-        evenSimplerBlockItem(ModBlocks.NONFLOW_FENCE_GATE);
+        trapdoorItem(ModBlocks.FLOW_CEDAR_TRAPDOOR);
+        fenceItem(ModBlocks.FLOW_CEDAR_FENCE,ModBlocks.FLOW_CEDAR_PLANKS);
+        simpleBlockItem(ModBlocks.FLOW_CEDAR_DOOR);
+        buttonItem(ModBlocks.FLOW_CEDAR_BUTTON,ModBlocks.FLOW_CEDAR_PLANKS);
+        evenSimplerBlockItem(ModBlocks.FLOW_CEDAR_STAIRS);
+        evenSimplerBlockItem(ModBlocks.FLOW_CEDAR_SLAB);
+        evenSimplerBlockItem(ModBlocks.FLOW_CEDAR_PRESSURE_PLATE);
+        evenSimplerBlockItem(ModBlocks.FLOW_CEDAR_FENCE_GATE);
         simpleItem(ModFluids.FLOW_FLUID.bucket);
         simpleItem(ModItems.FLOW_BOTTLE);
         simpleItem(ModFluids.BIRCH_JUICE_FLUID.bucket);
 
-        trimmedArmorItem(ModItems.NONFLOW_WOOD_HELMET);
-        trimmedArmorItem(ModItems.NONFLOW_WOOD_CHESTPLATE);
-        trimmedArmorItem(ModItems.NONFLOW_WOOD_LEGGINGS);
-        trimmedArmorItem(ModItems.NONFLOW_WOOD_BOOTS);
+        trimmedArmorItem(ModItems.FLOW_CEDAR_HELMET);
+        trimmedArmorItem(ModItems.FLOW_CEDAR_CHESTPLATE);
+        trimmedArmorItem(ModItems.FLOW_CEDAR_LEGGINGS);
+        trimmedArmorItem(ModItems.FLOW_CEDAR_BOOTS);
 
-        trimmedArmorItem(ModItems.FLOW_WOOD_HELMET);
-        trimmedArmorItem(ModItems.FLOW_WOOD_CHESTPLATE);
-        trimmedArmorItem(ModItems.FLOW_WOOD_LEGGINGS);
-        trimmedArmorItem(ModItems.FLOW_WOOD_BOOTS);
+        trimmedArmorItem(ModItems.FLOWING_FLOW_CEDAR_HELMET);
+        trimmedArmorItem(ModItems.FLOWING_FLOW_CEDAR_CHESTPLATE);
+        trimmedArmorItem(ModItems.FLOWING_FLOW_CEDAR_LEGGINGS);
+        trimmedArmorItem(ModItems.FLOWING_FLOW_CEDAR_BOOTS);
 
 
     }

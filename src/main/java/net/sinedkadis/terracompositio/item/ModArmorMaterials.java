@@ -11,10 +11,10 @@ import net.sinedkadis.terracompositio.block.ModBlocks;
 import java.util.function.Supplier;
 
 public enum ModArmorMaterials implements ArmorMaterial {
-    NONFLOW_WOOD("nonflow_wood",10,new int[]{ 1, 3, 2, 1 },25,
-            SoundEvents.ARMOR_EQUIP_LEATHER,1f,0f,() -> Ingredient.of(ModBlocks.NONFLOW_WOOD.get().asItem())),
-    FLOW_WOOD("flow_wood",1,new int[]{ 3, 5, 3, 2 },25,
-            SoundEvents.BEACON_ACTIVATE,3f,2f,() -> Ingredient.of(ModBlocks.FLOW_WOOD.get().asItem()));
+    FLOW_CEDAR("flow_cedar",10,new int[]{ 1, 3, 2, 1 },25,
+            SoundEvents.ARMOR_EQUIP_LEATHER,1f,0f,() -> Ingredient.of(ModBlocks.FLOW_CEDAR_WOOD.get().asItem())),
+    FLOWING_FLOW_CEDAR("flowing_flow_cedar",1,new int[]{ 3, 5, 3, 2 },25,
+            SoundEvents.BEACON_ACTIVATE,3f,2f,() -> Ingredient.of(ModBlocks.FLOWING_FLOW_CEDAR_WOOD.get().asItem()));
 
     private final String name;
     private final int durabilityMultiplier;

@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab",
+  "textures": {
+    "bottom": "terracompositio:block/flow_cedar_planks",
+    "side": "terracompositio:block/flow_cedar_planks",
+    "top": "terracompositio:block/flow_cedar_planks"
+  }
+}

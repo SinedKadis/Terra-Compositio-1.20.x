@@ -10,7 +10,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.block.ModBlocks;
-import net.sinedkadis.terracompositio.fluid.ModFluids;
 
 public class ModBlockStateProvider extends BlockStateProvider {
     public ModBlockStateProvider(PackOutput output, ExistingFileHelper exFileHelper) {
@@ -19,27 +18,27 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        logBlockWithItem(ModBlocks.FLOW_LOG);
+        logBlockWithItem(ModBlocks.FLOWING_FLOW_CEDAR_LOG);
+        blockWithItem(ModBlocks.FLOWING_FLOW_PORT);
+        blockWithItem(ModBlocks.FLOW_CEDAR_LEAVES);
         blockWithItem(ModBlocks.FLOW_PORT);
-        blockWithItem(ModBlocks.FLOW_LEAVES);
-        blockWithItem(ModBlocks.NONFLOW_PORT);
-        woodBlockWithItem(ModBlocks.FLOW_WOOD,ModBlocks.FLOW_LOG);
-        logBlockWithItem(ModBlocks.NONFLOW_LOG);
-        blockWithItem(ModBlocks.NONFLOW_PLANKS);
-        woodBlockWithItem(ModBlocks.NONFLOW_WOOD,ModBlocks.NONFLOW_LOG);
-        logBlockWithItem(ModBlocks.STRIPPED_NONFLOW_LOG);
-        woodBlockWithItem(ModBlocks.STRIPPED_NONFLOW_WOOD,ModBlocks.STRIPPED_NONFLOW_LOG);
+        woodBlockWithItem(ModBlocks.FLOWING_FLOW_CEDAR_WOOD,ModBlocks.FLOWING_FLOW_CEDAR_LOG);
+        logBlockWithItem(ModBlocks.FLOW_CEDAR_LOG);
+        blockWithItem(ModBlocks.FLOW_CEDAR_PLANKS);
+        woodBlockWithItem(ModBlocks.FLOW_CEDAR_WOOD,ModBlocks.FLOW_CEDAR_LOG);
+        logBlockWithItem(ModBlocks.STRIPPED_FLOW_CEDAR_LOG);
+        woodBlockWithItem(ModBlocks.STRIPPED_FLOW_CEDAR_WOOD,ModBlocks.STRIPPED_FLOW_CEDAR_LOG);
 
 
 
-        stairsBlock(((StairBlock) ModBlocks.NONFLOW_STAIRS.get()),blockTexture(ModBlocks.NONFLOW_PLANKS.get()));
-        slabBlock(((SlabBlock) ModBlocks.NONFLOW_SLAB.get()),blockTexture(ModBlocks.NONFLOW_PLANKS.get()),blockTexture(ModBlocks.NONFLOW_PLANKS.get()));
-        buttonBlock(((ButtonBlock) ModBlocks.NONFLOW_BUTTON.get()),blockTexture(ModBlocks.NONFLOW_PLANKS.get()));
-        pressurePlateBlock(((PressurePlateBlock) ModBlocks.NONFLOW_PRESSURE_PLATE.get()),blockTexture(ModBlocks.NONFLOW_PLANKS.get()));
-        fenceBlock(((FenceBlock) ModBlocks.NONFLOW_FENCE.get()),blockTexture(ModBlocks.NONFLOW_PLANKS.get()));
-        fenceGateBlock(((FenceGateBlock) ModBlocks.NONFLOW_FENCE_GATE.get()),blockTexture(ModBlocks.NONFLOW_PLANKS.get()));
-        doorBlockWithRenderType(((DoorBlock) ModBlocks.NONFLOW_DOOR.get()),modLoc("block/nonflow_door_bottom"),modLoc("block/nonflow_door_top"),"cutout");
-        trapdoorBlockWithRenderType(((TrapDoorBlock) ModBlocks.NONFLOW_TRAPDOOR.get()),modLoc("block/nonflow_trapdoor"),true,"cutout");
+        stairsBlock(((StairBlock) ModBlocks.FLOW_CEDAR_STAIRS.get()),blockTexture(ModBlocks.FLOW_CEDAR_PLANKS.get()));
+        slabBlock(((SlabBlock) ModBlocks.FLOW_CEDAR_SLAB.get()),blockTexture(ModBlocks.FLOW_CEDAR_PLANKS.get()),blockTexture(ModBlocks.FLOW_CEDAR_PLANKS.get()));
+        buttonBlock(((ButtonBlock) ModBlocks.FLOW_CEDAR_BUTTON.get()),blockTexture(ModBlocks.FLOW_CEDAR_PLANKS.get()));
+        pressurePlateBlock(((PressurePlateBlock) ModBlocks.FLOW_CEDAR_PRESSURE_PLATE.get()),blockTexture(ModBlocks.FLOW_CEDAR_PLANKS.get()));
+        fenceBlock(((FenceBlock) ModBlocks.FLOW_CEDAR_FENCE.get()),blockTexture(ModBlocks.FLOW_CEDAR_PLANKS.get()));
+        fenceGateBlock(((FenceGateBlock) ModBlocks.FLOW_CEDAR_FENCE_GATE.get()),blockTexture(ModBlocks.FLOW_CEDAR_PLANKS.get()));
+        doorBlockWithRenderType(((DoorBlock) ModBlocks.FLOW_CEDAR_DOOR.get()),modLoc("block/flow_cedar_door_bottom"),modLoc("block/flow_cedar_door_top"),"cutout");
+        trapdoorBlockWithRenderType(((TrapDoorBlock) ModBlocks.FLOW_CEDAR_TRAPDOOR.get()),modLoc("block/flow_cedar_trapdoor"),true,"cutout");
 
 
 

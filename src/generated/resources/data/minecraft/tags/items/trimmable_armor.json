@@ -1,12 +1,12 @@
 {
   "values": [
-    "terracompositio:nonflow_wood_helmet",
-    "terracompositio:nonflow_wood_chestplate",
-    "terracompositio:nonflow_wood_leggings",
-    "terracompositio:nonflow_wood_boots",
-    "terracompositio:flow_wood_helmet",
-    "terracompositio:flow_wood_chestplate",
-    "terracompositio:flow_wood_leggings",
-    "terracompositio:flow_wood_boots"
+    "terracompositio:flow_cedar_helmet",
+    "terracompositio:flow_cedar_chestplate",
+    "terracompositio:flow_cedar_leggings",
+    "terracompositio:flow_cedar_boots",
+    "terracompositio:flowing_flow_cedar_helmet",
+    "terracompositio:flowing_flow_cedar_chestplate",
+    "terracompositio:flowing_flow_cedar_leggings",
+    "terracompositio:flowing_flow_cedar_boots"
   ]
 }

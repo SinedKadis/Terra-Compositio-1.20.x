@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/door_bottom_right",
-  "render_type": "minecraft:cutout",
-  "textures": {
-    "bottom": "terracompositio:block/nonflow_door_bottom",
-    "top": "terracompositio:block/nonflow_door_top"
-  }
-}

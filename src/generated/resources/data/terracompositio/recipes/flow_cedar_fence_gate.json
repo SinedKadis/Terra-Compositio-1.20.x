@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "F": {
+      "item": "minecraft:stick"
+    },
+    "S": {
+      "item": "terracompositio:flow_cedar_planks"
+    }
+  },
+  "pattern": [
+    "FSF",
+    "FSF"
+  ],
+  "result": {
+    "item": "terracompositio:flow_cedar_fence_gate"
+  },
+  "show_notification": true
+}

@@ -42,25 +42,25 @@ public class ModBlocks {
         BLOCKS.register(eventBus);
     }
 
-    public static final RegistryObject<Block> FLOW_LOG = registerBlock("flow_log",
-            () -> new FlowLogLikeBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LOG).strength(3f).sound(ModSounds.FLOW_LOG_LIKE_BLOCK_SOUNDS)));
-    public static final RegistryObject<Block> FLOW_PORT = registerBlock("flow_log_port",
-            () -> new FlowWoodPortBlock(BlockBehaviour.Properties.copy(Blocks.OAK_WOOD).strength(3f).sound(ModSounds.FLOW_LOG_LIKE_BLOCK_SOUNDS)));
-    public static final RegistryObject<Block> NONFLOW_PORT = registerBlock("nonflow_log_port",
-            () -> new NonFlowLikeBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LOG).strength(3f)));
+    public static final RegistryObject<Block> FLOWING_FLOW_CEDAR_LOG = registerBlock("flowing_flow_cedar_log",
+            () -> new FlowingFlowCedarLikeBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LOG).strength(3f).sound(ModSounds.FLOWING_FLOW_CEDAR_LIKE_BLOCK_SOUNDS)));
+    public static final RegistryObject<Block> FLOWING_FLOW_PORT = registerBlock("flowing_flow_port",
+            () -> new FlowPortBlock(BlockBehaviour.Properties.copy(Blocks.OAK_WOOD).strength(3f).sound(ModSounds.FLOWING_FLOW_CEDAR_LIKE_BLOCK_SOUNDS)));
+    public static final RegistryObject<Block> FLOW_PORT = registerBlock("flow_port",
+            () -> new FlowCedarLikeBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LOG).strength(3f)));
 
-    public static final RegistryObject<Block> FLOW_WOOD = registerBlock("flow_wood",
-            () -> new FlowLogLikeBlock(BlockBehaviour.Properties.copy(Blocks.OAK_WOOD).strength(3f).sound(ModSounds.FLOW_LOG_LIKE_BLOCK_SOUNDS)));
-    public static final RegistryObject<Block> STRIPPED_NONFLOW_LOG = registerBlock("stripped_nonflow_log",
-            () -> new StrippedFlowLogLikeBlock(BlockBehaviour.Properties.copy(Blocks.STRIPPED_OAK_LOG).strength(3f)));
-    public static final RegistryObject<Block> STRIPPED_NONFLOW_WOOD = registerBlock("stripped_nonflow_wood",
-            () -> new StrippedFlowLogLikeBlock(BlockBehaviour.Properties.copy(Blocks.STRIPPED_OAK_WOOD).strength(3f)));
-    public static final RegistryObject<Block> NONFLOW_LOG = registerBlock("nonflow_log",
-            () -> new NonFlowLikeBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LOG).strength(3f)));
-    public static final RegistryObject<Block> NONFLOW_WOOD = registerBlock("nonflow_wood",
-            () -> new NonFlowLikeBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LOG).strength(3f)));
+    public static final RegistryObject<Block> FLOWING_FLOW_CEDAR_WOOD = registerBlock("flowing_flow_cedar_wood",
+            () -> new FlowingFlowCedarLikeBlock(BlockBehaviour.Properties.copy(Blocks.OAK_WOOD).strength(3f).sound(ModSounds.FLOWING_FLOW_CEDAR_LIKE_BLOCK_SOUNDS)));
+    public static final RegistryObject<Block> STRIPPED_FLOW_CEDAR_LOG = registerBlock("stripped_flow_cedar_log",
+            () -> new StrippedFlowCedarLikeBlock(BlockBehaviour.Properties.copy(Blocks.STRIPPED_OAK_LOG).strength(3f)));
+    public static final RegistryObject<Block> STRIPPED_FLOW_CEDAR_WOOD = registerBlock("stripped_flow_cedar_wood",
+            () -> new StrippedFlowCedarLikeBlock(BlockBehaviour.Properties.copy(Blocks.STRIPPED_OAK_WOOD).strength(3f)));
+    public static final RegistryObject<Block> FLOW_CEDAR_LOG = registerBlock("flow_cedar_log",
+            () -> new FlowCedarLikeBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LOG).strength(3f)));
+    public static final RegistryObject<Block> FLOW_CEDAR_WOOD = registerBlock("flow_cedar_wood",
+            () -> new FlowCedarLikeBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LOG).strength(3f)));
 
-    public static final RegistryObject<Block> NONFLOW_PLANKS = registerBlock("nonflow_planks",
+    public static final RegistryObject<Block> FLOW_CEDAR_PLANKS = registerBlock("flow_cedar_planks",
             () -> new Block(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS)){
                 @Override
                 public boolean isFlammable(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
@@ -77,26 +77,26 @@ public class ModBlocks {
                     return 5;
                 }
             });
-    public static final RegistryObject<Block> FLOW_LEAVES = registerBlock("flow_leaves",
-            () -> new FlowLeavesBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LEAVES).noLootTable()));
-    public static final RegistryObject<Block> NONFLOW_STAIRS = registerBlock("nonflow_stairs",
-            () -> new StairBlock(() -> ModBlocks.NONFLOW_PLANKS.get().defaultBlockState(),
+    public static final RegistryObject<Block> FLOW_CEDAR_LEAVES = registerBlock("flow_cedar_leaves",
+            () -> new FlowCedarLeavesBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LEAVES).noLootTable()));
+    public static final RegistryObject<Block> FLOW_CEDAR_STAIRS = registerBlock("flow_cedar_stairs",
+            () -> new StairBlock(() -> ModBlocks.FLOW_CEDAR_PLANKS.get().defaultBlockState(),
                     BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS)));
-    public static final RegistryObject<Block> NONFLOW_SLAB = registerBlock("nonflow_slab",
+    public static final RegistryObject<Block> FLOW_CEDAR_SLAB = registerBlock("flow_cedar_slab",
             () -> new SlabBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS).strength(3f)));
-    public static final RegistryObject<Block> NONFLOW_BUTTON = registerBlock("nonflow_button",
+    public static final RegistryObject<Block> FLOW_CEDAR_BUTTON = registerBlock("flow_cedar_button",
             () -> new ButtonBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS),
                     BlockSetType.OAK,30,true));
-    public static final RegistryObject<Block> NONFLOW_PRESSURE_PLATE = registerBlock("nonflow_pressure_plate",
+    public static final RegistryObject<Block> FLOW_CEDAR_PRESSURE_PLATE = registerBlock("flow_cedar_pressure_plate",
             () -> new PressurePlateBlock(PressurePlateBlock.Sensitivity.EVERYTHING,
                     BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS),BlockSetType.OAK));
-    public static final RegistryObject<Block> NONFLOW_FENCE = registerBlock("nonflow_fence",
+    public static final RegistryObject<Block> FLOW_CEDAR_FENCE = registerBlock("flow_cedar_fence",
             () -> new FenceBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS)));
-    public static final RegistryObject<Block> NONFLOW_FENCE_GATE = registerBlock("nonflow_fence_gate",
+    public static final RegistryObject<Block> FLOW_CEDAR_FENCE_GATE = registerBlock("flow_cedar_fence_gate",
             () -> new FenceGateBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS), SoundEvents.FENCE_GATE_OPEN,SoundEvents.FENCE_GATE_CLOSE));
-    public static final RegistryObject<Block> NONFLOW_DOOR = registerBlock("nonflow_door",
+    public static final RegistryObject<Block> FLOW_CEDAR_DOOR = registerBlock("flow_cedar_door",
             () -> new DoorBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS).noOcclusion(), BlockSetType.OAK));
-    public static final RegistryObject<Block> NONFLOW_TRAPDOOR = registerBlock("nonflow_trapdoor",
+    public static final RegistryObject<Block> FLOW_CEDAR_TRAPDOOR = registerBlock("flow_cedar_trapdoor",
             () -> new TrapDoorBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS).noOcclusion(),BlockSetType.OAK));
 
     public static final RegistryObject<Block> FLOW_CAULDRON = registerBlock("flow_cauldron",

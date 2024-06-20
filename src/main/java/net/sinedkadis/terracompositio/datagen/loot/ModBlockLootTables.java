@@ -29,25 +29,25 @@ public class ModBlockLootTables extends BlockLootSubProvider {
 
     @Override
     protected void generate() {
-        this.dropSelf(ModBlocks.NONFLOW_LOG.get());
-        this.dropSelf(ModBlocks.NONFLOW_WOOD.get());
-        this.dropSelf(ModBlocks.NONFLOW_PLANKS.get());
-        this.dropSelf(ModBlocks.STRIPPED_NONFLOW_LOG.get());
-        this.dropSelf(ModBlocks.STRIPPED_NONFLOW_WOOD.get());
-        this.dropSelf(ModBlocks.NONFLOW_PORT.get());
+        this.dropSelf(ModBlocks.FLOW_CEDAR_LOG.get());
+        this.dropSelf(ModBlocks.FLOW_CEDAR_WOOD.get());
+        this.dropSelf(ModBlocks.FLOW_CEDAR_PLANKS.get());
+        this.dropSelf(ModBlocks.STRIPPED_FLOW_CEDAR_LOG.get());
+        this.dropSelf(ModBlocks.STRIPPED_FLOW_CEDAR_WOOD.get());
+        this.dropSelf(ModBlocks.FLOW_PORT.get());
 
-        this.dropSelf(ModBlocks.NONFLOW_STAIRS.get());
-        this.dropSelf(ModBlocks.NONFLOW_BUTTON.get());
-        this.dropSelf(ModBlocks.NONFLOW_PRESSURE_PLATE.get());
-        this.dropSelf(ModBlocks.NONFLOW_FENCE.get());
-        this.dropSelf(ModBlocks.NONFLOW_FENCE_GATE.get());
-        this.dropSelf(ModBlocks.NONFLOW_TRAPDOOR.get());
+        this.dropSelf(ModBlocks.FLOW_CEDAR_STAIRS.get());
+        this.dropSelf(ModBlocks.FLOW_CEDAR_BUTTON.get());
+        this.dropSelf(ModBlocks.FLOW_CEDAR_PRESSURE_PLATE.get());
+        this.dropSelf(ModBlocks.FLOW_CEDAR_FENCE.get());
+        this.dropSelf(ModBlocks.FLOW_CEDAR_FENCE_GATE.get());
+        this.dropSelf(ModBlocks.FLOW_CEDAR_TRAPDOOR.get());
         this.dropSelf(ModBlocks.WEDGE.get());
 
-        this.add(ModBlocks.NONFLOW_SLAB.get(),
-                block -> createSlabItemTable(ModBlocks.NONFLOW_SLAB.get()));
-        this.add(ModBlocks.NONFLOW_DOOR.get(),
-                block -> createDoorTable(ModBlocks.NONFLOW_DOOR.get()));
+        this.add(ModBlocks.FLOW_CEDAR_SLAB.get(),
+                block -> createSlabItemTable(ModBlocks.FLOW_CEDAR_SLAB.get()));
+        this.add(ModBlocks.FLOW_CEDAR_DOOR.get(),
+                block -> createDoorTable(ModBlocks.FLOW_CEDAR_DOOR.get()));
 
 
         /*this.add(ModBlocks.SAPPHIRE_ORE.get(),
@@ -59,9 +59,9 @@ public class ModBlockLootTables extends BlockLootSubProvider {
         this.add(ModBlocks.END_STONE_SAPPHIRE_ORE.get(),
                 block -> createCopperLikeOreDrops(ModBlocks.END_STONE_SAPPHIRE_ORE.get(), ModItems.RAW_SAPPHIRE.get()));
         */
-        this.dropOther(ModBlocks.FLOW_LOG.get(), ModBlocks.NONFLOW_LOG.get());
-        this.dropOther(ModBlocks.FLOW_WOOD.get(),ModBlocks.NONFLOW_WOOD.get());
-        this.dropOther(ModBlocks.FLOW_PORT.get(),ModBlocks.NONFLOW_PORT.get());
+        this.dropOther(ModBlocks.FLOWING_FLOW_CEDAR_LOG.get(), ModBlocks.FLOW_CEDAR_LOG.get());
+        this.dropOther(ModBlocks.FLOWING_FLOW_CEDAR_WOOD.get(),ModBlocks.FLOW_CEDAR_WOOD.get());
+        this.dropOther(ModBlocks.FLOWING_FLOW_PORT.get(),ModBlocks.FLOW_PORT.get());
         this.dropOther(ModBlocks.FLOW_CAULDRON.get(), Blocks.CAULDRON);
         this.dropOther(ModBlocks.BIRCH_JUICE_CAULDRON.get(), Blocks.CAULDRON);
     }

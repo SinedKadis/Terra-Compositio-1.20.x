@@ -8,7 +8,6 @@ import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.block.ModBlocks;
@@ -34,50 +33,50 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
         //oreSmelting(pWriter, SAPPHIRE_SMELTABLES, RecipeCategory.MISC, ModItems.SAPPHIRE.get(), 0.25f, 200, "sapphire");
         //oreBlasting(pWriter, SAPPHIRE_SMELTABLES, RecipeCategory.MISC, ModItems.SAPPHIRE.get(), 0.25f, 100, "sapphire");
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, ModBlocks.NONFLOW_STAIRS.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, ModBlocks.FLOW_CEDAR_STAIRS.get())
                 .pattern("S  ")
                 .pattern("SS ")
                 .pattern("SSS")
-                .define('S', ModBlocks.NONFLOW_PLANKS.get())
-                .unlockedBy(getHasName(ModBlocks.NONFLOW_PLANKS.get()), has(ModBlocks.NONFLOW_PLANKS.get()))
+                .define('S', ModBlocks.FLOW_CEDAR_PLANKS.get())
+                .unlockedBy(getHasName(ModBlocks.FLOW_CEDAR_PLANKS.get()), has(ModBlocks.FLOW_CEDAR_PLANKS.get()))
                 .save(pWriter);
-        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, ModBlocks.NONFLOW_SLAB.get(),2)
+        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, ModBlocks.FLOW_CEDAR_SLAB.get(),2)
                 .pattern("SSS")
-                .define('S', ModBlocks.NONFLOW_PLANKS.get())
-                .unlockedBy(getHasName(ModBlocks.NONFLOW_PLANKS.get()), has(ModBlocks.NONFLOW_PLANKS.get()))
+                .define('S', ModBlocks.FLOW_CEDAR_PLANKS.get())
+                .unlockedBy(getHasName(ModBlocks.FLOW_CEDAR_PLANKS.get()), has(ModBlocks.FLOW_CEDAR_PLANKS.get()))
                 .save(pWriter);
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, ModBlocks.NONFLOW_PRESSURE_PLATE.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, ModBlocks.FLOW_CEDAR_PRESSURE_PLATE.get())
                 .pattern("SS")
-                .define('S', ModBlocks.NONFLOW_PLANKS.get())
-                .unlockedBy(getHasName(ModBlocks.NONFLOW_PLANKS.get()), has(ModBlocks.NONFLOW_PLANKS.get()))
+                .define('S', ModBlocks.FLOW_CEDAR_PLANKS.get())
+                .unlockedBy(getHasName(ModBlocks.FLOW_CEDAR_PLANKS.get()), has(ModBlocks.FLOW_CEDAR_PLANKS.get()))
                 .save(pWriter);
-        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, ModBlocks.NONFLOW_FENCE.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, ModBlocks.FLOW_CEDAR_FENCE.get())
                 .pattern("SFS")
                 .pattern("SFS")
-                .define('S', ModBlocks.NONFLOW_PLANKS.get())
+                .define('S', ModBlocks.FLOW_CEDAR_PLANKS.get())
                 .define('F', Items.STICK)
-                .unlockedBy(getHasName(ModBlocks.NONFLOW_PLANKS.get()), has(ModBlocks.NONFLOW_PLANKS.get()))
+                .unlockedBy(getHasName(ModBlocks.FLOW_CEDAR_PLANKS.get()), has(ModBlocks.FLOW_CEDAR_PLANKS.get()))
                 .save(pWriter);
-        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, ModBlocks.NONFLOW_FENCE_GATE.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, ModBlocks.FLOW_CEDAR_FENCE_GATE.get())
                 .pattern("FSF")
                 .pattern("FSF")
-                .define('S', ModBlocks.NONFLOW_PLANKS.get())
+                .define('S', ModBlocks.FLOW_CEDAR_PLANKS.get())
                 .define('F', Items.STICK)
-                .unlockedBy(getHasName(ModBlocks.NONFLOW_PLANKS.get()), has(ModBlocks.NONFLOW_PLANKS.get()))
+                .unlockedBy(getHasName(ModBlocks.FLOW_CEDAR_PLANKS.get()), has(ModBlocks.FLOW_CEDAR_PLANKS.get()))
                 .save(pWriter);
-        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, ModBlocks.NONFLOW_DOOR.get(),3)
+        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, ModBlocks.FLOW_CEDAR_DOOR.get(),3)
                 .pattern("SS")
                 .pattern("SS")
                 .pattern("SS")
-                .define('S', ModBlocks.NONFLOW_PLANKS.get())
-                .unlockedBy(getHasName(ModBlocks.NONFLOW_PLANKS.get()), has(ModBlocks.NONFLOW_PLANKS.get()))
+                .define('S', ModBlocks.FLOW_CEDAR_PLANKS.get())
+                .unlockedBy(getHasName(ModBlocks.FLOW_CEDAR_PLANKS.get()), has(ModBlocks.FLOW_CEDAR_PLANKS.get()))
                 .save(pWriter);
-        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, ModBlocks.NONFLOW_TRAPDOOR.get(),2)
+        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, ModBlocks.FLOW_CEDAR_TRAPDOOR.get(),2)
                 .pattern("SSS")
                 .pattern("SSS")
-                .define('S', ModBlocks.NONFLOW_PLANKS.get())
-                .unlockedBy(getHasName(ModBlocks.NONFLOW_PLANKS.get()), has(ModBlocks.NONFLOW_PLANKS.get()))
+                .define('S', ModBlocks.FLOW_CEDAR_PLANKS.get())
+                .unlockedBy(getHasName(ModBlocks.FLOW_CEDAR_PLANKS.get()), has(ModBlocks.FLOW_CEDAR_PLANKS.get()))
                 .save(pWriter);
         ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModBlocks.WEDGE.get())
                 .pattern("S S")
@@ -88,46 +87,46 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .save(pWriter);
 
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.BUILDING_BLOCKS, ModBlocks.NONFLOW_PLANKS.get(), 4)
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.BUILDING_BLOCKS, ModBlocks.FLOW_CEDAR_PLANKS.get(), 4)
                 .requires(ModTags.Items.NONFLOW_LOGS)
-                .unlockedBy(getHasName(ModBlocks.NONFLOW_LOG.get()), has(ModBlocks.NONFLOW_LOG.get()))
+                .unlockedBy(getHasName(ModBlocks.FLOW_CEDAR_LOG.get()), has(ModBlocks.FLOW_CEDAR_LOG.get()))
                 .save(pWriter);
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.BUILDING_BLOCKS, ModBlocks.NONFLOW_BUTTON.get(), 4)
-                .requires(ModBlocks.NONFLOW_PLANKS.get())
-                .unlockedBy(getHasName(ModBlocks.NONFLOW_PLANKS.get()), has(ModBlocks.NONFLOW_PLANKS.get()))
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.BUILDING_BLOCKS, ModBlocks.FLOW_CEDAR_BUTTON.get(), 4)
+                .requires(ModBlocks.FLOW_CEDAR_PLANKS.get())
+                .unlockedBy(getHasName(ModBlocks.FLOW_CEDAR_PLANKS.get()), has(ModBlocks.FLOW_CEDAR_PLANKS.get()))
                 .save(pWriter);
 
 
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.NONFLOW_WOOD_BOOTS.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.FLOW_CEDAR_BOOTS.get())
                 .pattern("WLW")
                 .pattern("W W")
                 .define('W', ModTags.Items.NONFLOW_LOGS)
                 .define('L', Items.LEATHER)
-                .unlockedBy(getHasName(ModBlocks.NONFLOW_LOG.get()), has(ModBlocks.NONFLOW_LOG.get()))
+                .unlockedBy(getHasName(ModBlocks.FLOW_CEDAR_LOG.get()), has(ModBlocks.FLOW_CEDAR_LOG.get()))
                 .save(pWriter);
-        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.NONFLOW_WOOD_LEGGINGS.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.FLOW_CEDAR_LEGGINGS.get())
                 .pattern("WWW")
                 .pattern("WLW")
                 .pattern("W W")
                 .define('W', ModTags.Items.NONFLOW_LOGS)
                 .define('L', Items.LEATHER)
-                .unlockedBy(getHasName(ModBlocks.NONFLOW_LOG.get()), has(ModBlocks.NONFLOW_LOG.get()))
+                .unlockedBy(getHasName(ModBlocks.FLOW_CEDAR_LOG.get()), has(ModBlocks.FLOW_CEDAR_LOG.get()))
                 .save(pWriter);
-        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.NONFLOW_WOOD_CHESTPLATE.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.FLOW_CEDAR_CHESTPLATE.get())
                 .pattern("WLW")
                 .pattern("WWW")
                 .pattern("WWW")
                 .define('W', ModTags.Items.NONFLOW_LOGS)
                 .define('L', Items.LEATHER)
-                .unlockedBy(getHasName(ModBlocks.NONFLOW_LOG.get()), has(ModBlocks.NONFLOW_LOG.get()))
+                .unlockedBy(getHasName(ModBlocks.FLOW_CEDAR_LOG.get()), has(ModBlocks.FLOW_CEDAR_LOG.get()))
                 .save(pWriter);
-        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.NONFLOW_WOOD_HELMET.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.FLOW_CEDAR_HELMET.get())
                 .pattern("WWW")
                 .pattern("WLW")
                 .define('W', ModTags.Items.NONFLOW_LOGS)
                 .define('L', Items.LEATHER)
-                .unlockedBy(getHasName(ModBlocks.NONFLOW_LOG.get()), has(ModBlocks.NONFLOW_LOG.get()))
+                .unlockedBy(getHasName(ModBlocks.FLOW_CEDAR_LOG.get()), has(ModBlocks.FLOW_CEDAR_LOG.get()))
                 .save(pWriter);
         /*ShapelessRecipeBuilder.shapeless(RecipeCategory.BUILDING_BLOCKS, ModBlocks.NONFLOW_PLANKS.get(), 4)
                 .requires(ModBlocks.NONFLOW_WOOD.get())

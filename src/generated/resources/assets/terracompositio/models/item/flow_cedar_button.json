@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/button_inventory",
+  "textures": {
+    "texture": "terracompositio:block/flow_cedar_planks"
+  }
+}

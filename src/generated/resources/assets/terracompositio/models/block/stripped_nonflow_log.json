@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:block/cube_column",
-  "textures": {
-    "end": "terracompositio:block/stripped_nonflow_log_top",
-    "side": "terracompositio:block/stripped_nonflow_log"
-  }
-}

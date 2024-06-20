@@ -15,7 +15,7 @@ public class ModBlockEntities {
     public static final RegistryObject<BlockEntityType<FlowPortBlockEntity>> FLOW_PORT_BE=
             BLOCK_ENTITIES.register("flow_port_be", ()->
                     BlockEntityType.Builder.of(FlowPortBlockEntity::new,
-                            ModBlocks.FLOW_PORT.get()).build(null));
+                            ModBlocks.FLOWING_FLOW_PORT.get()).build(null));
     public static void register(IEventBus eventBus){
         BLOCK_ENTITIES.register(eventBus);
     }

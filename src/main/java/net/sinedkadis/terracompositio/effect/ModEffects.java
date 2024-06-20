@@ -15,9 +15,6 @@ public class ModEffects {
 
     public static final RegistryObject<MobEffect> FLOW_SATURATION =
             MOD_EFFECTS.register("flow_saturation",() -> new ModEffectBase(MobEffectCategory.BENEFICIAL,0x1e8dc6));
-    public static final RegistryObject<MobEffect> NONFLOW_FULL_SET =
-            MOD_EFFECTS.register("nonflow_full_set",() -> new ModEffectBase(MobEffectCategory.NEUTRAL,0x1e8dc6));
-
     public static void register(IEventBus eventBus){
         MOD_EFFECTS.register(eventBus);
     }

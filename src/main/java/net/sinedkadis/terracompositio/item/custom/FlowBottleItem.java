@@ -43,7 +43,7 @@ public class FlowBottleItem extends Item {
             CriteriaTriggers.CONSUME_ITEM.trigger((ServerPlayer)player, pStack);
         }
         if (player != null
-                && hasCorrectArmorOn(ModArmorMaterials.NONFLOW_WOOD,player)){
+                && hasCorrectArmorOn(ModArmorMaterials.FLOW_CEDAR,player)){
 
             float bootsDamagePercentage = (float) getDamage(player.getInventory().getArmor(0)) / player.getInventory().getArmor(0).getMaxDamage();
             float leggingsDamagePercentage = (float) getDamage(player.getInventory().getArmor(1)) / player.getInventory().getArmor(1).getMaxDamage();
@@ -57,22 +57,22 @@ public class FlowBottleItem extends Item {
                     helmetDamagePercentage,
             };
 
-            ItemStack boots = new ItemStack(((FlowArmorItem) ModItems.FLOW_WOOD_BOOTS.get())
+            ItemStack boots = new ItemStack(((FlowArmorItem) ModItems.FLOWING_FLOW_CEDAR_BOOTS.get())
                     .setOldDamage(tags));
             boots.setTag(player.getInventory().getArmor(0).getTag());
             boots.setDamageValue((int) (bootsDamagePercentage * boots.getMaxDamage()));
 
-            ItemStack leggings = new ItemStack(((FlowArmorItem) ModItems.FLOW_WOOD_LEGGINGS.get())
+            ItemStack leggings = new ItemStack(((FlowArmorItem) ModItems.FLOWING_FLOW_CEDAR_LEGGINGS.get())
                     .setOldDamage(tags));
             leggings.setTag(player.getInventory().getArmor(1).getTag());
             leggings.setDamageValue((int) (leggingsDamagePercentage * leggings.getMaxDamage()));
 
-            ItemStack chestplate = new ItemStack(((FlowArmorItem) ModItems.FLOW_WOOD_CHESTPLATE.get())
+            ItemStack chestplate = new ItemStack(((FlowArmorItem) ModItems.FLOWING_FLOW_CEDAR_CHESTPLATE.get())
                     .setOldDamage(tags));
             chestplate.setTag(player.getInventory().getArmor(2).getTag());
             chestplate.setDamageValue((int) (chestplateDamagePercentage * chestplate.getMaxDamage()));
 
-            ItemStack helmet = new ItemStack(((FlowArmorItem) ModItems.FLOW_WOOD_HELMET.get())
+            ItemStack helmet = new ItemStack(((FlowArmorItem) ModItems.FLOWING_FLOW_CEDAR_HELMET.get())
                     .setOldDamage(tags));
             helmet.setTag(player.getInventory().getArmor(3).getTag());
             helmet.setDamageValue((int) (helmetDamagePercentage * helmet.getMaxDamage()));

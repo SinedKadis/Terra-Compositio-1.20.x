@@ -27,7 +27,7 @@ public class FlowPortCategory implements IRecipeCategory<FlowSaturationRecipe> {
 
     public FlowPortCategory(IGuiHelper helper) {
         this.background = helper.createDrawable(TEXTURE,0,0,176,85);
-        this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK,new ItemStack(ModBlocks.FLOW_PORT.get()));
+        this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK,new ItemStack(ModBlocks.FLOWING_FLOW_PORT.get()));
     }
 
     @Override
@@ -37,7 +37,7 @@ public class FlowPortCategory implements IRecipeCategory<FlowSaturationRecipe> {
 
     @Override
     public Component getTitle() {
-        return Component.translatable("block.terracompositio.flow_log_port");
+        return Component.translatable("block.terracompositio.flow_port");
     }
 
     @Override

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "L": {
+      "item": "minecraft:leather"
+    },
+    "W": {
+      "tag": "terracompositio:nonflow_logs"
+    }
+  },
+  "pattern": [
+    "WWW",
+    "WLW",
+    "W W"
+  ],
+  "result": {
+    "item": "terracompositio:flow_cedar_leggings"
+  },
+  "show_notification": true
+}
