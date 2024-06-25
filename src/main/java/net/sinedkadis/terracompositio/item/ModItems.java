@@ -12,9 +12,11 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.block.ModBlocks;
+import net.sinedkadis.terracompositio.entity.custom.ModBoatEntity;
 import net.sinedkadis.terracompositio.item.custom.FlowArmorItem;
 import net.sinedkadis.terracompositio.item.custom.FlowBottleItem;
 import net.sinedkadis.terracompositio.item.custom.ModArmorItem;
+import net.sinedkadis.terracompositio.item.custom.ModBoatItem;
 import net.sinedkadis.terracompositio.particle.ModParticles;
 
 public class ModItems {
@@ -62,7 +64,10 @@ public class ModItems {
     public static final RegistryObject<Item> FLOW_CEDAR_HANGING_SIGN = ITEMS.register("flow_cedar_hanging_sign",
             () -> new HangingSignItem(ModBlocks.FLOW_CEDAR_HANGING_SIGN.get(),ModBlocks.FLOW_CEDAR_WALL_HANGING_SIGN.get(),new Item.Properties().stacksTo(16)));
 
-
+    public static final RegistryObject<Item> FLOW_CEDAR_BOAT = ITEMS.register("flow_cedar_boat",
+            () -> new ModBoatItem(false, ModBoatEntity.Type.FLOW_CEDAR, new Item.Properties()));
+    public static final RegistryObject<Item> FLOW_CEDAR_CHEST_BOAT = ITEMS.register("flow_cedar_chest_boat",
+            () -> new ModBoatItem(true, ModBoatEntity.Type.FLOW_CEDAR, new Item.Properties()));
 
 
     public static void register(IEventBus eventBus){

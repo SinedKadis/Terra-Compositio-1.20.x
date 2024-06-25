@@ -63,5 +63,9 @@ public class ModItemTagGenerator extends ItemTagsProvider {
                         ModItems.FLOWING_FLOW_CEDAR_CHESTPLATE.get(),
                         ModItems.FLOWING_FLOW_CEDAR_LEGGINGS.get(),
                         ModItems.FLOWING_FLOW_CEDAR_BOOTS.get());
+        this.tag(ItemTags.BOATS)
+                .add(ModItems.FLOW_CEDAR_BOAT.get());
+        this.tag(ItemTags.CHEST_BOATS)
+                .add(ModItems.FLOW_CEDAR_CHEST_BOAT.get());
     }
 }

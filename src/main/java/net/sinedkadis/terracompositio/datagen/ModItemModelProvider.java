@@ -69,6 +69,9 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.FLOW_CEDAR_SIGN);
         simpleItem(ModItems.FLOW_CEDAR_HANGING_SIGN);
 
+        simpleItem(ModItems.FLOW_CEDAR_BOAT);
+        simpleItem(ModItems.FLOW_CEDAR_CHEST_BOAT);
+
 
     }
 

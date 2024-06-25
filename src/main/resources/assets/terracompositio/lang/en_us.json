@@ -43,5 +43,8 @@
   "item.terracompositio.flowing_flow_cedar_boots": "Flowing Flow Cedar Boots",
 
   "block.terracompositio.flow_cedar_sign": "Flow Cedar Sign",
-  "block.terracompositio.flow_cedar_hanging_sign": "Flow Cedar Hanging Sign"
+  "block.terracompositio.flow_cedar_hanging_sign": "Flow Cedar Hanging Sign",
+
+  "item.terracompositio.flow_cedar_boat": "Flow Cedar Boat",
+  "item.terracompositio.flow_cedar_chest_boat": "Flow Cedar Boat with Chest"
 }

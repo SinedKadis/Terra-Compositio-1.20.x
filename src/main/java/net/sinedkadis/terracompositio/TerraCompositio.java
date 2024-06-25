@@ -6,6 +6,7 @@ import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Sheets;
+import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
@@ -20,6 +21,8 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.sinedkadis.terracompositio.block.ModBlocks;
 import net.sinedkadis.terracompositio.block.entity.ModBlockEntities;
 import net.sinedkadis.terracompositio.effect.ModEffects;
+import net.sinedkadis.terracompositio.entity.ModEntities;
+import net.sinedkadis.terracompositio.entity.client.ModBoatRenderer;
 import net.sinedkadis.terracompositio.fluid.ModFluids;
 import net.sinedkadis.terracompositio.item.ModCreativeModTabs;
 import net.sinedkadis.terracompositio.item.ModItems;
@@ -46,14 +49,19 @@ public class TerraCompositio
         ModCreativeModTabs.register(modEventBus);
 
         ModItems.register(modEventBus);
+
         ModFluids.FLUIDS.register(modEventBus);
         ModFluids.FLUID_TYPES.register(modEventBus);
+
         ModBlocks.register(modEventBus);
+
         modEventBus.addListener(this::commonSetup);
+
         ModParticles.register(modEventBus);
         ModEffects.register(modEventBus);
         ModPotions.register(modEventBus);
         ModSounds.register(modEventBus);
+        ModEntities.register(modEventBus);
 
         ModBlockEntities.register(modEventBus);
         // Register ourselves for server and other game events we are interested in
@@ -89,7 +97,7 @@ public class TerraCompositio
     public void onServerStarting(ServerStartingEvent event)
     {
         // Do something when the server starts
-        LOGGER.info("HELLO from server starting");
+        //LOGGER.info("HELLO from server starting");
     }
 
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
@@ -103,6 +111,9 @@ public class TerraCompositio
             //LOGGER.info("HELLO FROM CLIENT SETUP");
             //LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
             Sheets.addWoodType(ModWoodTypes.FLOW_CEDAR);
+
+            EntityRenderers.register(ModEntities.MOD_BOAT.get(), pContext -> new ModBoatRenderer(pContext, false));
+            EntityRenderers.register(ModEntities.MOD_CHEST_BOAT.get(), pContext -> new ModBoatRenderer(pContext, true));
 
             MenuScreens.register(ModMenuTypes.FLOW_PORT_MENU.get(), FlowBlockPortScreen::new);
             ItemBlockRenderTypes.setRenderLayer(ModFluids.BIRCH_JUICE_FLUID.source.get(), RenderType.translucent());
