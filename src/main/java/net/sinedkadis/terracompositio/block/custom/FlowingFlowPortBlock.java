@@ -13,10 +13,7 @@ import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -27,17 +24,20 @@ import net.minecraftforge.network.NetworkHooks;
 import net.sinedkadis.terracompositio.block.ModBlocks;
 import net.sinedkadis.terracompositio.block.entity.FlowPortBlockEntity;
 import net.sinedkadis.terracompositio.block.entity.ModBlockEntities;
-import net.sinedkadis.terracompositio.util.ILikeNeighbours;
 import net.sinedkadis.terracompositio.util.ModGameRules;
+import net.sinedkadis.terracompositio.util.ModTags;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
-import net.minecraft.world.level.block.RotatedPillarBlock;
 
+import java.util.List;
+
+import static net.minecraft.world.level.block.RotatedPillarBlock.AXIS;
+import static net.sinedkadis.terracompositio.block.custom.FlowingFlowCedarLikeBlock.getNearBlocks;
 import static net.sinedkadis.terracompositio.util.ILikeNeighbours.AnyEquals;
 
 
-public class FlowPortBlock extends BaseEntityBlock {
-    public FlowPortBlock(Properties pProperties) {
+public class FlowingFlowPortBlock extends BaseEntityBlock {
+    public FlowingFlowPortBlock(Properties pProperties) {
         super(pProperties);
     }
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -67,101 +67,32 @@ public class FlowPortBlock extends BaseEntityBlock {
             }
         }
         super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
-        if (pNewState.is(Blocks.AIR)) {
+        if (pNewState.is(Blocks.AIR) || pIsMoving) {
             if (!pLevel.getGameRules().getBoolean(ModGameRules.DISABLE_FLOW_LEAKING)) {
-                BlockPos[] LeakRange = new BlockPos[125];
-                //BlockPos offset = new BlockPos(pPos.below(2).north(2).west(2));
-                int i =0;
-                for (int y = -2;y<=2;y++){
-                    for (int z = -2;z<=2;z++){
-                        for (int x = -2;x<=2;x++){
-                            LeakRange[i++] = new BlockPos(pPos.getX()+x,pPos.getY()+y,pPos.getZ()+z);
-                        }
-                    }
-                }
-                Integer[] IndexBlackList = new Integer[61];
-                int ind = 0;
-                for (int b = 0;b<5;b++){
-                    IndexBlackList[ind++] = b;
-                    IndexBlackList[ind++] = b+20;
-                    IndexBlackList[ind++] = b+100;
-                    IndexBlackList[ind++] = b+120;
-                }
-                for (int v = 0;v<5;v++){
-                    IndexBlackList[ind++] =5*v;
-                    IndexBlackList[ind++] =(5*(v+1))-1;
-                    IndexBlackList[ind++] =(5*v)+100;
-                    IndexBlackList[ind++] =(5*(v+1))-1+100;
-                }
-                for (int c = 0;c<5;c++){
-                    IndexBlackList[ind++] =c*25;
-                    IndexBlackList[ind++] =(c*25)+4;
-                    IndexBlackList[ind++] =20+(25*c);
-                    IndexBlackList[ind++] =20+(25*c)+4;
-                }
-                IndexBlackList[ind++] = 62;
-
-
-                for (int k = 0;k<125;k++){
-                    if (!AnyEquals(IndexBlackList,k)) {
-                        BlockPos blockPos = LeakRange[k];
-                        if (pLevel.getBlockState(blockPos).is(ModBlocks.FLOWING_FLOW_CEDAR_LOG.get())
-                                ||pLevel.getBlockState(blockPos).is(ModBlocks.FLOWING_FLOW_CEDAR_WOOD.get())
-                                ||pLevel.getBlockState(blockPos).is(ModBlocks.FLOWING_FLOW_PORT.get())) {
-                            //LOGGER.debug("Index "+k+" ("+ LeakRange[k] +") is not blacklisted");
-                            if (blockPos != pPos.above()
-                                    && blockPos != pPos.below()
-                                    && blockPos != pPos.west()
-                                    && blockPos != pPos.east()
-                                    && blockPos != pPos.north()
-                                    && blockPos != pPos.south()) {
-
-
-                                //LOGGER.debug("Index "+k+" is not nearby source");
-                                Block[] flowBlocks = new Block[]{ModBlocks.FLOWING_FLOW_CEDAR_LOG.get(),
-                                        ModBlocks.FLOWING_FLOW_CEDAR_WOOD.get(),
-                                        ModBlocks.FLOWING_FLOW_PORT.get(),
-                                        ModBlocks.FLOW_CEDAR_LOG.get(),
-                                        ModBlocks.FLOW_CEDAR_WOOD.get(),
-                                        ModBlocks.FLOW_PORT.get()};
-                                if (ILikeNeighbours.HasWayFromSource(pLevel, flowBlocks, blockPos, pPos)) {
-                                    //LOGGER.debug("Log like is detected on index "+k+" ("+ blockPos +"), replacing");
+                List<BlockPos> totoReplace = getNearBlocks(pPos);
+                for (BlockPos pos : totoReplace) {
+                    if (pos != pPos){
+                        if (pLevel.getBlockState(pos).is(ModTags.Blocks.FLOW_LOGS)) {
+                            List<BlockPos> toReplace = getNearBlocks(pos);
+                            for (BlockPos blockPos : toReplace) {
+                                if (!AnyEquals(totoReplace, blockPos)) {
                                     if (pLevel.getBlockState(blockPos).is(ModBlocks.FLOWING_FLOW_CEDAR_LOG.get())) {
-                                        //LOGGER.debug("It`s log");
-                                        pLevel.setBlock(blockPos, ModBlocks.FLOW_CEDAR_LOG.get().defaultBlockState().setValue(RotatedPillarBlock.AXIS, pLevel.getBlockState(blockPos).getValue(RotatedPillarBlock.AXIS)), 2);
+                                        pLevel.setBlockAndUpdate(blockPos,
+                                                ModBlocks.FLOW_CEDAR_LOG.get().defaultBlockState().setValue(AXIS, pLevel.getBlockState(blockPos).getValue(AXIS)));
                                     }
                                     if (pLevel.getBlockState(blockPos).is(ModBlocks.FLOWING_FLOW_CEDAR_WOOD.get())) {
-                                        //LOGGER.debug("It`s wood");
-                                        pLevel.setBlock(blockPos, ModBlocks.FLOW_CEDAR_WOOD.get().defaultBlockState().setValue(RotatedPillarBlock.AXIS, pLevel.getBlockState(blockPos).getValue(RotatedPillarBlock.AXIS)), 2);
+                                        pLevel.setBlockAndUpdate(blockPos,
+                                                ModBlocks.FLOW_CEDAR_WOOD.get().defaultBlockState().setValue(AXIS, pLevel.getBlockState(blockPos).getValue(AXIS)));
                                     }
                                     if (pLevel.getBlockState(blockPos).is(ModBlocks.FLOWING_FLOW_PORT.get())) {
-                                        //LOGGER.debug("It`s port");
-                                        pLevel.setBlock(blockPos, ModBlocks.FLOW_PORT.get().defaultBlockState(), 2);
+                                        pLevel.setBlockAndUpdate(blockPos,
+                                                ModBlocks.FLOW_PORT.get().defaultBlockState());
                                     }
-                                }
-                            } else {
-                                //LOGGER.debug("Index "+k+" is nearby source");
-                                if (pLevel.getBlockState(blockPos).is(ModBlocks.FLOWING_FLOW_CEDAR_LOG.get())) {
-                                    //LOGGER.debug("It`s log");
-                                    pLevel.setBlock(blockPos, ModBlocks.FLOW_CEDAR_LOG.get().defaultBlockState().setValue(RotatedPillarBlock.AXIS, pLevel.getBlockState(blockPos).getValue(RotatedPillarBlock.AXIS)), 2);
-                                }
-                                if (pLevel.getBlockState(blockPos).is(ModBlocks.FLOWING_FLOW_CEDAR_WOOD.get())) {
-                                    //LOGGER.debug("It`s wood");
-                                    pLevel.setBlock(blockPos, ModBlocks.FLOW_CEDAR_WOOD.get().defaultBlockState().setValue(RotatedPillarBlock.AXIS, pLevel.getBlockState(blockPos).getValue(RotatedPillarBlock.AXIS)), 2);
-                                }
-                                if (pLevel.getBlockState(blockPos).is(ModBlocks.FLOWING_FLOW_PORT.get())) {
-                                    //LOGGER.debug("It`s port");
-                                    pLevel.setBlock(blockPos, ModBlocks.FLOW_PORT.get().defaultBlockState(), 2);
                                 }
                             }
                         }
-
-
-                    }//else LOGGER.debug("Index "+k+" ("+ LeakRange[k] +") is blacklisted");
+                    }
                 }
-
-
-                //pLevel.playSeededSound(null,pPos.getX(),pPos.getY(),pPos.getZ(), SoundEvents.BEACON_DEACTIVATE, SoundSource.BLOCKS,0.1f,1.5f,0);
             }
         }
     }

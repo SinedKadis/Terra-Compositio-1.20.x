@@ -49,9 +49,6 @@ public class FlowCedarLikeBlock extends RotatedPillarBlock {
             if(state.is(ModBlocks.FLOW_CEDAR_WOOD.get())){
                 return ModBlocks.STRIPPED_FLOW_CEDAR_WOOD.get().defaultBlockState().setValue(AXIS, state.getValue(AXIS));
             }
-            if(state.is(ModBlocks.FLOW_PORT.get())) {
-                return ModBlocks.STRIPPED_FLOW_CEDAR_LOG.get().defaultBlockState().setValue(AXIS, state.getValue(AXIS));
-            }
         }
         return super.getToolModifiedState(state, context,toolAction,simulate);
     }
@@ -74,7 +71,7 @@ public class FlowCedarLikeBlock extends RotatedPillarBlock {
                     pLevel.setBlock(pPos,ModBlocks.FLOWING_FLOW_CEDAR_WOOD.get().defaultBlockState().setValue(AXIS,pState.getValue(AXIS)),2);
                 }
                 if (pState.is(ModBlocks.FLOW_PORT.get())){
-                    pLevel.setBlock(pPos,ModBlocks.FLOWING_FLOW_PORT.get().defaultBlockState(),2);
+                    pLevel.setBlock(pPos,ModBlocks.FLOWING_FLOW_PORT.get().defaultBlockState().setValue(AXIS,pState.getValue(AXIS)),2);
                 }
             }//else LOGGER.debug("Fail " + random);
         }

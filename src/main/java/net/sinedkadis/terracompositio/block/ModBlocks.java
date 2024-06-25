@@ -46,7 +46,7 @@ public class ModBlocks {
     public static final RegistryObject<Block> FLOWING_FLOW_CEDAR_LOG = registerBlock("flowing_flow_cedar_log",
             () -> new FlowingFlowCedarLikeBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LOG).strength(3f).sound(ModSounds.FLOWING_FLOW_CEDAR_LIKE_BLOCK_SOUNDS)));
     public static final RegistryObject<Block> FLOWING_FLOW_PORT = registerBlock("flowing_flow_port",
-            () -> new FlowPortBlock(BlockBehaviour.Properties.copy(Blocks.OAK_WOOD).strength(3f).sound(ModSounds.FLOWING_FLOW_CEDAR_LIKE_BLOCK_SOUNDS)));
+            () -> new FlowingFlowPortBlock(BlockBehaviour.Properties.copy(Blocks.OAK_WOOD).strength(3f).sound(ModSounds.FLOWING_FLOW_CEDAR_LIKE_BLOCK_SOUNDS)));
     public static final RegistryObject<Block> FLOW_PORT = registerBlock("flow_port",
             () -> new FlowCedarLikeBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LOG).strength(3f)));
 
