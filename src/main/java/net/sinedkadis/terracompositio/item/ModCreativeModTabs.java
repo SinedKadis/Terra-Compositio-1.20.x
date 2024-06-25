@@ -39,6 +39,10 @@ public class ModCreativeModTabs {
                         pOutput.accept(ModBlocks.FLOW_CEDAR_FENCE_GATE.get());
                         pOutput.accept(ModBlocks.FLOW_CEDAR_DOOR.get());
                         pOutput.accept(ModBlocks.FLOW_CEDAR_TRAPDOOR.get());
+
+                        pOutput.accept(ModItems.FLOW_CEDAR_SIGN.get());
+                        pOutput.accept(ModItems.FLOW_CEDAR_HANGING_SIGN.get());
+
                         pOutput.accept(ModFluids.FLOW_FLUID.bucket.get());
                         pOutput.accept(ModItems.FLOW_BOTTLE.get());
                         pOutput.accept(ModFluids.BIRCH_JUICE_FLUID.bucket.get());

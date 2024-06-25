@@ -40,5 +40,8 @@
   "item.terracompositio.flowing_flow_cedar_helmet": "Flowing Flow Cedar Helmet",
   "item.terracompositio.flowing_flow_cedar_chestplate": "Flowing Flow Cedar Chestplate",
   "item.terracompositio.flowing_flow_cedar_leggings": "Flowing Flow Cedar Leggings",
-  "item.terracompositio.flowing_flow_cedar_boots": "Flowing Flow Cedar Boots"
+  "item.terracompositio.flowing_flow_cedar_boots": "Flowing Flow Cedar Boots",
+
+  "block.terracompositio.flow_cedar_sign": "Flow Cedar Sign",
+  "block.terracompositio.flow_cedar_hanging_sign": "Flow Cedar Hanging Sign"
 }

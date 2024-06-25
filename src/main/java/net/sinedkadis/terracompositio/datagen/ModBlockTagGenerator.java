@@ -91,5 +91,20 @@ public class ModBlockTagGenerator extends BlockTagsProvider {
         //this.tag(Tags.Blocks.NEEDS_NETHERITE_TOOL)
         //        .add(ModBlocks.END_STONE_SAPPHIRE_ORE.get());
 
+        this.tag(BlockTags.ALL_HANGING_SIGNS)
+                .add(ModBlocks.FLOW_CEDAR_HANGING_SIGN.get(),
+                        ModBlocks.FLOW_CEDAR_WALL_HANGING_SIGN.get());
+        this.tag(BlockTags.WALL_HANGING_SIGNS)
+                .add(ModBlocks.FLOW_CEDAR_WALL_HANGING_SIGN.get());
+        this.tag(BlockTags.CEILING_HANGING_SIGNS)
+                .add(ModBlocks.FLOW_CEDAR_HANGING_SIGN.get());
+        this.tag(BlockTags.ALL_SIGNS)
+                .add(ModBlocks.FLOW_CEDAR_SIGN.get(),
+                        ModBlocks.FLOW_CEDAR_WALL_SIGN.get());
+        this.tag(BlockTags.WALL_SIGNS)
+                .add(ModBlocks.FLOW_CEDAR_WALL_SIGN.get());
+        this.tag(BlockTags.STANDING_SIGNS)
+                .add(ModBlocks.FLOW_CEDAR_SIGN.get());
+
     }
 }

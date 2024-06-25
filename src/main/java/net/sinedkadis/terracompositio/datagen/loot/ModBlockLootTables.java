@@ -17,6 +17,7 @@ import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import net.minecraftforge.registries.RegistryObject;
 import net.sinedkadis.terracompositio.block.ModBlocks;
+import net.sinedkadis.terracompositio.item.ModItems;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -64,6 +65,15 @@ public class ModBlockLootTables extends BlockLootSubProvider {
         this.dropOther(ModBlocks.FLOWING_FLOW_PORT.get(),ModBlocks.FLOW_PORT.get());
         this.dropOther(ModBlocks.FLOW_CAULDRON.get(), Blocks.CAULDRON);
         this.dropOther(ModBlocks.BIRCH_JUICE_CAULDRON.get(), Blocks.CAULDRON);
+
+        this.add(ModBlocks.FLOW_CEDAR_SIGN.get(), block ->
+                createSingleItemTable(ModItems.FLOW_CEDAR_SIGN.get()));
+        this.add(ModBlocks.FLOW_CEDAR_WALL_SIGN.get(), block ->
+                createSingleItemTable(ModItems.FLOW_CEDAR_SIGN.get()));
+        this.add(ModBlocks.FLOW_CEDAR_HANGING_SIGN.get(), block ->
+                createSingleItemTable(ModItems.FLOW_CEDAR_HANGING_SIGN.get()));
+        this.add(ModBlocks.FLOW_CEDAR_WALL_HANGING_SIGN.get(), block ->
+                createSingleItemTable(ModItems.FLOW_CEDAR_HANGING_SIGN.get()));
     }
 
     protected LootTable.Builder createCopperLikeOreDrops(Block pBlock, Item item) {

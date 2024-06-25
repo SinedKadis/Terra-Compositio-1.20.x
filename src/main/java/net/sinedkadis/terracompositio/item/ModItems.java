@@ -2,13 +2,16 @@ package net.sinedkadis.terracompositio.item;
 
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.HangingSignItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.SignItem;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.sinedkadis.terracompositio.TerraCompositio;
+import net.sinedkadis.terracompositio.block.ModBlocks;
 import net.sinedkadis.terracompositio.item.custom.FlowArmorItem;
 import net.sinedkadis.terracompositio.item.custom.FlowBottleItem;
 import net.sinedkadis.terracompositio.item.custom.ModArmorItem;
@@ -53,6 +56,14 @@ public class ModItems {
             () -> new FlowArmorItem(ModArmorMaterials.FLOWING_FLOW_CEDAR, ArmorItem.Type.LEGGINGS,new Item.Properties()));
     public static final RegistryObject<Item> FLOWING_FLOW_CEDAR_BOOTS = ITEMS.register("flowing_flow_cedar_boots",
             () -> new FlowArmorItem(ModArmorMaterials.FLOWING_FLOW_CEDAR, ArmorItem.Type.BOOTS,new Item.Properties()));
+
+    public static final RegistryObject<Item> FLOW_CEDAR_SIGN = ITEMS.register("flow_cedar_sign",
+            () -> new SignItem(new Item.Properties().stacksTo(16), ModBlocks.FLOW_CEDAR_SIGN.get(),ModBlocks.FLOW_CEDAR_WALL_SIGN.get()));
+    public static final RegistryObject<Item> FLOW_CEDAR_HANGING_SIGN = ITEMS.register("flow_cedar_hanging_sign",
+            () -> new HangingSignItem(ModBlocks.FLOW_CEDAR_HANGING_SIGN.get(),ModBlocks.FLOW_CEDAR_WALL_HANGING_SIGN.get(),new Item.Properties().stacksTo(16)));
+
+
+
 
     public static void register(IEventBus eventBus){
         ITEMS.register(eventBus);

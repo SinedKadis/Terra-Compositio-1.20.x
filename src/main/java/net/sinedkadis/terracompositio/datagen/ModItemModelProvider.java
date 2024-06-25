@@ -66,6 +66,9 @@ public class ModItemModelProvider extends ItemModelProvider {
         trimmedArmorItem(ModItems.FLOWING_FLOW_CEDAR_LEGGINGS);
         trimmedArmorItem(ModItems.FLOWING_FLOW_CEDAR_BOOTS);
 
+        simpleItem(ModItems.FLOW_CEDAR_SIGN);
+        simpleItem(ModItems.FLOW_CEDAR_HANGING_SIGN);
+
 
     }
 
