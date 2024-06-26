@@ -6,7 +6,7 @@
       "item": "minecraft:leather"
     },
     "W": {
-      "tag": "terracompositio:nonflow_logs"
+      "tag": "terracompositio:flow_cedar_logs"
     }
   },
   "pattern": [

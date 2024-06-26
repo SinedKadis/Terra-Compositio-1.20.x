@@ -51,7 +51,7 @@ public class ModItemTagGenerator extends ItemTagsProvider {
                 .add(ModBlocks.FLOW_CEDAR_FENCE.get().asItem());
         this.tag(ItemTags.FENCE_GATES)
                 .add(ModBlocks.FLOW_CEDAR_FENCE_GATE.get().asItem());
-        this.tag(ModTags.Items.NONFLOW_LOGS)
+        this.tag(ModTags.Items.FLOW_CEDAR_LOGS)
                 .add(ModBlocks.FLOW_CEDAR_LOG.get().asItem(),
                         ModBlocks.FLOW_CEDAR_WOOD.get().asItem());
         this.tag(ItemTags.TRIMMABLE_ARMOR)

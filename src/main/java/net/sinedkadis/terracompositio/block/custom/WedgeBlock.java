@@ -1,6 +1,5 @@
 package net.sinedkadis.terracompositio.block.custom;
 
-import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
@@ -32,7 +31,6 @@ import net.sinedkadis.terracompositio.fluid.ModFluids;
 import net.sinedkadis.terracompositio.particle.ModParticles;
 import net.sinedkadis.terracompositio.util.ModTags;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
 
@@ -149,7 +147,7 @@ public class WedgeBlock extends Block {
         if (pState.getValue(ATTACHED)) {
             if (AnimTick++ > 20) {
                 AnimTick = 0;
-                if (pLevel.getBlockState(pPos.relative(pState.getValue(FACING).getOpposite())).is(ModTags.Blocks.FLOW_LOGS)) {
+                if (pLevel.getBlockState(pPos.relative(pState.getValue(FACING).getOpposite())).is(ModTags.Blocks.FLOWING_FLOW_CEDAR_LOGS)) {
                     if (pLevel.isClientSide) {
                         generateParticles(pLevel, pPos, pState, ModParticles.FLOW_PARTICLE.get());
                     }
@@ -174,7 +172,7 @@ public class WedgeBlock extends Block {
             BlockPos cauldronPos1 = findFillableCauldronBelowWedge(pLevel, pPos, ModFluids.BIRCH_JUICE_FLUID.source.get());
             if (cauldronPos != null||cauldronPos1 != null) {
                // LOGGER.debug("Wedge attached, cauldron at "+cauldronPos);
-                if (pLevel.getBlockState(pPos.relative(pState.getValue(FACING).getOpposite())).is(ModTags.Blocks.FLOW_LOGS)
+                if (pLevel.getBlockState(pPos.relative(pState.getValue(FACING).getOpposite())).is(ModTags.Blocks.FLOWING_FLOW_CEDAR_LOGS)
                         && cauldronPos != null) {
                     if (pLevel.getBlockState(cauldronPos).is(ModBlocks.FLOW_CAULDRON.get())) {
                        // LOGGER.debug("Flow Cauldron detected, trying increase level");
@@ -260,7 +258,7 @@ public class WedgeBlock extends Block {
     }
 
     public void calculateState(BlockState pState, Level pLevel, BlockPos pPos) {
-        if (pLevel.getBlockState(pPos.relative(pState.getValue(FACING).getOpposite())).is(ModTags.Blocks.FLOW_LOGS)
+        if (pLevel.getBlockState(pPos.relative(pState.getValue(FACING).getOpposite())).is(ModTags.Blocks.FLOWING_FLOW_CEDAR_LOGS)
         || pLevel.getBlockState(pPos.relative(pState.getValue(FACING).getOpposite())).is(BlockTags.BIRCH_LOGS)){
             if (!pState.getValue(ATTACHED)){
                 pLevel.setBlockAndUpdate(pPos,this.defaultBlockState().setValue(FACING,pState.getValue(FACING)).setValue(ATTACHED,true));

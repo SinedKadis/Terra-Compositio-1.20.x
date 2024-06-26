@@ -54,7 +54,7 @@ public class FlowCedarLeavesBlock extends LeavesBlock {
         return getOptionalDistanceAt(pNeighbor).orElse(7);
     }
     public static @NotNull OptionalInt getOptionalDistanceAt(BlockState pState) {
-        if (pState.is(ModTags.Blocks.FLOW_LOGS)) {
+        if (pState.is(ModTags.Blocks.FLOWING_FLOW_CEDAR_LOGS)) {
             return OptionalInt.of(0);
         } else {
             return pState.hasProperty(DISTANCE) ? OptionalInt.of(pState.getValue(DISTANCE)) : OptionalInt.empty();

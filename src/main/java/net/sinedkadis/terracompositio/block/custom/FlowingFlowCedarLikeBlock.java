@@ -2,6 +2,8 @@ package net.sinedkadis.terracompositio.block.custom;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
@@ -18,8 +20,6 @@ import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static net.sinedkadis.terracompositio.util.ILikeNeighbours.AnyEquals;
 
 public class FlowingFlowCedarLikeBlock extends RotatedPillarBlock {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -49,7 +49,7 @@ public class FlowingFlowCedarLikeBlock extends RotatedPillarBlock {
                 List<BlockPos> totoReplace = getNearBlocks(pPos);
                 for (BlockPos pos : totoReplace) {
                     if (pos != pPos){
-                        if (pLevel.getBlockState(pos).is(ModTags.Blocks.FLOW_LOGS)) {
+                        if (pLevel.getBlockState(pos).is(ModTags.Blocks.FLOWING_FLOW_CEDAR_LOGS)) {
                             List<BlockPos> toReplace = getNearBlocks(pos);
                             for (BlockPos blockPos : toReplace) {
                                 if (!AnyEquals(totoReplace,blockPos)) {
@@ -104,5 +104,44 @@ public class FlowingFlowCedarLikeBlock extends RotatedPillarBlock {
         return toReplace;
     }
 
+    static boolean AnyEquals(List<BlockPos> massive,BlockPos blockPos){
+        for (BlockPos blockPos1 : massive) {
+            if (blockPos1 == blockPos) {
+                return true;
+            }
+        }
+        return false;
+    }
 
+    @Override
+    public void tick(BlockState pState, ServerLevel pLevel, BlockPos pPos, RandomSource pRandom) {
+        for (BlockPos blockPos : getNearBlocks(pPos)){
+            if (blockPos != pPos){
+                //LOGGER.debug("Trying to replace at {}",blockPos);
+                if (pLevel.getBlockState(blockPos).is(ModTags.Blocks.FLOW_CEDAR_LOGS)) {
+                    float random = pRandom.nextFloat();
+                    //LOGGER.debug("Block has tag, random is {}",random);
+                    if (random > 0.99f) {
+                        if (pLevel.getBlockState(blockPos).is(ModBlocks.FLOW_CEDAR_LOG.get())) {
+                            pLevel.setBlockAndUpdate(blockPos,
+                                    ModBlocks.FLOWING_FLOW_CEDAR_LOG.get().defaultBlockState().setValue(AXIS, pLevel.getBlockState(blockPos).getValue(AXIS)));
+                        }
+                        if (pLevel.getBlockState(blockPos).is(ModBlocks.FLOW_CEDAR_WOOD.get())) {
+                            pLevel.setBlockAndUpdate(blockPos,
+                                    ModBlocks.FLOWING_FLOW_CEDAR_WOOD.get().defaultBlockState().setValue(AXIS, pLevel.getBlockState(blockPos).getValue(AXIS)));
+                        }
+                        if (pLevel.getBlockState(blockPos).is(ModBlocks.FLOW_PORT.get())) {
+                            pLevel.setBlockAndUpdate(blockPos,
+                                    ModBlocks.FLOWING_FLOW_PORT.get().defaultBlockState());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public boolean isRandomlyTicking(BlockState pState) {
+        return true;
+    }
 }

@@ -88,7 +88,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
 
 
         ShapelessRecipeBuilder.shapeless(RecipeCategory.BUILDING_BLOCKS, ModBlocks.FLOW_CEDAR_PLANKS.get(), 4)
-                .requires(ModTags.Items.NONFLOW_LOGS)
+                .requires(ModTags.Items.FLOW_CEDAR_LOGS)
                 .unlockedBy(getHasName(ModBlocks.FLOW_CEDAR_LOG.get()), has(ModBlocks.FLOW_CEDAR_LOG.get()))
                 .save(pWriter);
         ShapelessRecipeBuilder.shapeless(RecipeCategory.BUILDING_BLOCKS, ModBlocks.FLOW_CEDAR_BUTTON.get(), 4)
@@ -101,7 +101,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
         ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.FLOW_CEDAR_BOOTS.get())
                 .pattern("WLW")
                 .pattern("W W")
-                .define('W', ModTags.Items.NONFLOW_LOGS)
+                .define('W', ModTags.Items.FLOW_CEDAR_LOGS)
                 .define('L', Items.LEATHER)
                 .unlockedBy(getHasName(ModBlocks.FLOW_CEDAR_LOG.get()), has(ModBlocks.FLOW_CEDAR_LOG.get()))
                 .save(pWriter);
@@ -109,7 +109,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("WWW")
                 .pattern("WLW")
                 .pattern("W W")
-                .define('W', ModTags.Items.NONFLOW_LOGS)
+                .define('W', ModTags.Items.FLOW_CEDAR_LOGS)
                 .define('L', Items.LEATHER)
                 .unlockedBy(getHasName(ModBlocks.FLOW_CEDAR_LOG.get()), has(ModBlocks.FLOW_CEDAR_LOG.get()))
                 .save(pWriter);
@@ -117,14 +117,14 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("WLW")
                 .pattern("WWW")
                 .pattern("WWW")
-                .define('W', ModTags.Items.NONFLOW_LOGS)
+                .define('W', ModTags.Items.FLOW_CEDAR_LOGS)
                 .define('L', Items.LEATHER)
                 .unlockedBy(getHasName(ModBlocks.FLOW_CEDAR_LOG.get()), has(ModBlocks.FLOW_CEDAR_LOG.get()))
                 .save(pWriter);
         ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.FLOW_CEDAR_HELMET.get())
                 .pattern("WWW")
                 .pattern("WLW")
-                .define('W', ModTags.Items.NONFLOW_LOGS)
+                .define('W', ModTags.Items.FLOW_CEDAR_LOGS)
                 .define('L', Items.LEATHER)
                 .unlockedBy(getHasName(ModBlocks.FLOW_CEDAR_LOG.get()), has(ModBlocks.FLOW_CEDAR_LOG.get()))
                 .save(pWriter);

@@ -11,8 +11,8 @@ import net.sinedkadis.terracompositio.TerraCompositio;
 
 public class ModTags {
     public static class  Blocks{
-        public static final TagKey<Block> NONFLOW_LOGS = tag("nonflow_logs");
-        public static final TagKey<Block> FLOW_LOGS = tag("flow_logs");
+        public static final TagKey<Block> FLOW_CEDAR_LOGS = tag("flow_cedar_logs");
+        public static final TagKey<Block> FLOWING_FLOW_CEDAR_LOGS = tag("flowing_flow_cedar_logs");
 
 
         private static TagKey<Block> tag(String name){
@@ -20,8 +20,9 @@ public class ModTags {
         }
     }
     public static class  Items{
-        public static final TagKey<Item> NONFLOW_LOGS = tag("nonflow_logs");
-        public static final TagKey<Item> FLOW_LOGS = tag("flow_logs");
+        public static final TagKey<Item> FLOW_CEDAR_LOGS = tag("flow_cedar_logs");
+        public static final TagKey<Item> FLOWING_FLOW_CEDAR_LOGS = tag("flowing_flow_cedar_logs");
+
         private static TagKey<Item> tag(String name){
             return ItemTags.create(new ResourceLocation(TerraCompositio.MOD_ID, name));
         }

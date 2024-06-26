@@ -32,8 +32,9 @@ import org.slf4j.Logger;
 import java.util.List;
 
 import static net.minecraft.world.level.block.RotatedPillarBlock.AXIS;
+import static net.sinedkadis.terracompositio.block.custom.FlowingFlowCedarLikeBlock.AnyEquals;
 import static net.sinedkadis.terracompositio.block.custom.FlowingFlowCedarLikeBlock.getNearBlocks;
-import static net.sinedkadis.terracompositio.util.ILikeNeighbours.AnyEquals;
+
 
 
 public class FlowingFlowPortBlock extends BaseEntityBlock {
@@ -72,7 +73,7 @@ public class FlowingFlowPortBlock extends BaseEntityBlock {
                 List<BlockPos> totoReplace = getNearBlocks(pPos);
                 for (BlockPos pos : totoReplace) {
                     if (pos != pPos){
-                        if (pLevel.getBlockState(pos).is(ModTags.Blocks.FLOW_LOGS)) {
+                        if (pLevel.getBlockState(pos).is(ModTags.Blocks.FLOWING_FLOW_CEDAR_LOGS)) {
                             List<BlockPos> toReplace = getNearBlocks(pos);
                             for (BlockPos blockPos : toReplace) {
                                 if (!AnyEquals(totoReplace, blockPos)) {
@@ -90,6 +91,22 @@ public class FlowingFlowPortBlock extends BaseEntityBlock {
                                     }
                                 }
                             }
+                        }
+                    }
+                }
+                for (BlockPos blockPos : totoReplace) {
+                    if (blockPos != pPos) {
+                        if (pLevel.getBlockState(blockPos).is(ModBlocks.FLOWING_FLOW_CEDAR_LOG.get())) {
+                            pLevel.setBlockAndUpdate(blockPos,
+                                    ModBlocks.FLOW_CEDAR_LOG.get().defaultBlockState().setValue(AXIS, pLevel.getBlockState(blockPos).getValue(AXIS)));
+                        }
+                        if (pLevel.getBlockState(blockPos).is(ModBlocks.FLOWING_FLOW_CEDAR_WOOD.get())) {
+                            pLevel.setBlockAndUpdate(blockPos,
+                                    ModBlocks.FLOW_CEDAR_WOOD.get().defaultBlockState().setValue(AXIS, pLevel.getBlockState(blockPos).getValue(AXIS)));
+                        }
+                        if (pLevel.getBlockState(blockPos).is(ModBlocks.FLOWING_FLOW_PORT.get())) {
+                            pLevel.setBlockAndUpdate(blockPos,
+                                    ModBlocks.FLOW_PORT.get().defaultBlockState());
                         }
                     }
                 }
