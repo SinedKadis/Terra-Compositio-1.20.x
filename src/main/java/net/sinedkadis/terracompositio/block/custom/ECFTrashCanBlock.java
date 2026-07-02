@@ -11,7 +11,8 @@ public class ECFTrashCanBlock extends TCBaseEntityBlock {
     }
 
     @Override
-    protected @NotNull BlockEntityType<? extends TCBlockEntity> getBlockEntityType() {
+    @NotNull
+    public BlockEntityType<? extends TCBlockEntity> getBlockEntityType() {
         return TCBlockEntities.ECF_TRASH_CAN_BE.get();
     }
 
