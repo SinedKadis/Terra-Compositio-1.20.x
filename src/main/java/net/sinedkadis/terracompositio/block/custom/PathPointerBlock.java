@@ -133,7 +133,7 @@ public class PathPointerBlock extends TCBaseEntityBlock {
 
 
     @Override
-    public BlockEntityType<? extends TCBlockEntity> getBlockEntityType() {
+    protected BlockEntityType<? extends TCBlockEntity> getBlockEntityType() {
         return TCBlockEntities.PATH_POINTER_BE.get();
     }
 

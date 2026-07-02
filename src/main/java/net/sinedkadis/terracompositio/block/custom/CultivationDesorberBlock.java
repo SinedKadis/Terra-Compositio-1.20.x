@@ -55,8 +55,7 @@ public class CultivationDesorberBlock extends AbstractDesorberBlock{
 
 
     @Override
-    @NotNull
-    public BlockEntityType<? extends TCBlockEntity> getBlockEntityType() {
+    protected @NotNull BlockEntityType<? extends TCBlockEntity> getBlockEntityType() {
         return TCBlockEntities.CULTIVATION_DESORBER_BE.get();
     }
 }

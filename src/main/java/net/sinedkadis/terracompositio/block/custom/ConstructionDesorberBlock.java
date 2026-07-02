@@ -48,8 +48,7 @@ public class ConstructionDesorberBlock extends AbstractDesorberBlock{
     }
 
     @Override
-    @NotNull
-    public BlockEntityType<? extends TCBlockEntity> getBlockEntityType() {
+    protected @NotNull BlockEntityType<? extends TCBlockEntity> getBlockEntityType() {
         return TCBlockEntities.CONSTRUCTION_DESORBER_BE.get();
     }
 }

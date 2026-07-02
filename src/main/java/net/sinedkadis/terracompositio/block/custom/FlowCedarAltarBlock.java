@@ -68,7 +68,7 @@ public class FlowCedarAltarBlock extends TCBaseEntityBlock {
     }
 
     @Override
-    public BlockEntityType<? extends TCBlockEntity> getBlockEntityType() {
+    protected BlockEntityType<? extends TCBlockEntity> getBlockEntityType() {
         return TCBlockEntities.FLOW_ALTAR_BE.get();
     }
 

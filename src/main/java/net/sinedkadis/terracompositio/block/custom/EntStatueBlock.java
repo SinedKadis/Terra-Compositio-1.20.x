@@ -36,7 +36,7 @@ public class EntStatueBlock extends TCBaseEntityBlock implements IFluidApplicabl
         super(pProperties);
     }
     @Override
-    public BlockEntityType<? extends TCBlockEntity> getBlockEntityType() {
+    protected BlockEntityType<? extends TCBlockEntity> getBlockEntityType() {
         return TCBlockEntities.ENT_STATUE_BE.get();
     }
 

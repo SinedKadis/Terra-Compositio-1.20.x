@@ -20,8 +20,7 @@ public class FlowInfuserBlock extends TCBaseEntityBlock {
     }
 
     @Override
-    @NotNull
-    public BlockEntityType<? extends TCBlockEntity> getBlockEntityType() {
+    protected @NotNull BlockEntityType<? extends TCBlockEntity> getBlockEntityType() {
         return TCBlockEntities.FLOW_INFUSER_BE.get();
     }
 

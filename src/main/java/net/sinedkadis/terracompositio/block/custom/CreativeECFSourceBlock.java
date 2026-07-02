@@ -11,8 +11,7 @@ public class CreativeECFSourceBlock extends TCBaseEntityBlock {
     }
 
     @Override
-    @NotNull
-    public BlockEntityType<? extends TCBlockEntity> getBlockEntityType() {
+    protected @NotNull BlockEntityType<? extends TCBlockEntity> getBlockEntityType() {
         return TCBlockEntities.CREATIVE_ECF_SOURCE_BE.get();
     }
 

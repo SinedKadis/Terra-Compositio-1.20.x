@@ -56,7 +56,7 @@ public class AirSaturatorBlock extends TCBaseEntityBlock {
     }
 
     @Override
-    public BlockEntityType<? extends TCBlockEntity> getBlockEntityType() {
+    protected BlockEntityType<? extends TCBlockEntity> getBlockEntityType() {
         return TCBlockEntities.AIR_SATURATOR_BE.get();
     }
 }
