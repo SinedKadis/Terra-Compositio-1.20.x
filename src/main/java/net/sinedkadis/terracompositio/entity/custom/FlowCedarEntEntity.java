@@ -49,6 +49,7 @@ import net.sinedkadis.terracompositio.config.TCClientConfigs;
 import net.sinedkadis.terracompositio.config.TCCommonConfigs;
 import net.sinedkadis.terracompositio.config.TCInnerConfig;
 import net.sinedkadis.terracompositio.ecf.DefaultECFHandler;
+import net.sinedkadis.terracompositio.ecf.ECFNetworkHandler;
 import net.sinedkadis.terracompositio.ecf.PPECFMemberProxy;
 import net.sinedkadis.terracompositio.entity.goals.ECFExtractGoal;
 import net.sinedkadis.terracompositio.entity.goals.ECFHoldGoal;
@@ -143,11 +144,19 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
                 innerECFOptional.ifPresent(icfeHandler1 -> {
                     if (tickCount % 20 == 0) {
                         int cfe = TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get();
-                        int taken = icfeHandler.takeECF(cfe, false);
-                        icfeHandler1.addECF(
+                        int taken = icfeHandler.takeECF(cfe, true);
+                        int added = icfeHandler1.addECF(
                                 taken,
-                                false
+                                true
                         );
+
+                        if (added > 0) {
+                            icfeHandler.takeECF(taken, true);
+                            icfeHandler1.addECF(
+                                    added,
+                                    true
+                            );
+                        }
                         if (taken > 0) {
                             if (this.level() instanceof ServerLevel serverLevel)
                                 ParticleHelperInternal.sendECFParticles(
@@ -180,6 +189,7 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
                     entity.setPersistenceRequired();
                     event.setCancellationResult(InteractionResult.SUCCESS);
                     event.setCanceled(true);
+                    ECFNetworkHandler.INSTANCE.updateInRange(entity.level(),entity.blockPosition(), entity.getRange());
                     return;
                 }
             }

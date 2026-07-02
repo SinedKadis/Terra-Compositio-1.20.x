@@ -17,6 +17,7 @@ import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetwork;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.api.registries.TCCapabilities;
+import net.sinedkadis.terracompositio.block.entity.PathPointerBlockEntity;
 import net.sinedkadis.terracompositio.block.entity.TCBlockEntity;
 import net.sinedkadis.terracompositio.config.TCCommonConfigs;
 import net.sinedkadis.terracompositio.config.TCInnerConfig;
@@ -100,7 +101,9 @@ public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
             targets.forEach(target -> {
                 if (target.getMainHandler().getFreeSpace() > TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get())
                     scheduleMemberUpdate(target);
-                ECFHelper.newTransfer().targetAndSource(target, this).build();
+                ECFHelper.ECFTransferBuilder transferBuilder = ECFHelper.newTransfer().targetAndSource(target, this);
+                if (target.getEntityInstance() instanceof PathPointerBlockEntity) transferBuilder.speed(2/20f);
+                transferBuilder.build();
             });
         }
     }
@@ -109,12 +112,14 @@ public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
     public void onECFNetworkMemberUpdate(ECFNetworkMember updated) {
         if (getMainHandler().getECF() > 0 && isValidMember(updated)) {
             if (updated.getMainHandler().getFreeSpace() > TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get()) {
-                if (updated instanceof PPECFMemberProxy proxy && ((IEntityInstance) proxy.target()).tc$isEntity()) {
+                if (updated instanceof PPECFMemberProxy proxy && proxy.target().getEntityInstance().tc$isEntity()) {
                     if (updated.getEntityInstance().tc$getBlockPos().closerThan(proxy.proxy().getOutputPos(), getRange()))
                         scheduleMemberUpdate(updated);
                 } else scheduleMemberUpdate(updated);
             }
-            ECFHelper.newTransfer().targetAndSource(updated, this).build();
+            ECFHelper.ECFTransferBuilder transferBuilder = ECFHelper.newTransfer().targetAndSource(updated, this);
+            if (updated.getEntityInstance() instanceof PathPointerBlockEntity) transferBuilder.speed(2/20f);
+            transferBuilder.build();
         } else onECFNetworkMemberUpdate();
     }
 

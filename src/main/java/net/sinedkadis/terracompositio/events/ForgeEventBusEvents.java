@@ -2,7 +2,9 @@ package net.sinedkadis.terracompositio.events;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -10,7 +12,9 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.sinedkadis.terracompositio.TerraCompositio;
+import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
 import net.sinedkadis.terracompositio.api.registries.TCCapabilities;
+import net.sinedkadis.terracompositio.config.TCServerConfigs;
 import net.sinedkadis.terracompositio.ecf.PlayerECFProvider;
 import net.sinedkadis.terracompositio.entity.custom.FlowCedarEntEntity;
 import net.sinedkadis.terracompositio.item.custom.KnowledgeAppleItem;
@@ -47,5 +51,16 @@ public class ForgeEventBusEvents {
     public static void onPlayerCloned(PlayerEvent.Clone event) {
         KnowledgeAppleItem.onPlayerClonedEvent(event);
     }
+
+    @SubscribeEvent
+    public static void onTickLevelTick(TickEvent.LevelTickEvent event) {
+        Level level = event.level;
+        if (level.getGameTime() % TCServerConfigs.LAZY_UPDATE_RATE.get() == 0) {
+            TerraCompositioAPI.instance().getECFNetworkInstance().updateAll(level);
+        }
+
+
+    }
+
 
 }

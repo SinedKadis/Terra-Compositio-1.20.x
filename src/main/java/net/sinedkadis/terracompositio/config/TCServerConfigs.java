@@ -9,6 +9,8 @@ public class TCServerConfigs {
     public static final ForgeConfigSpec.ConfigValue<Integer> IF_DURATION;
     public static final ForgeConfigSpec.ConfigValue<Double> IF_RANDOM_TICK_PER_TICK;
 
+    public static final ForgeConfigSpec.ConfigValue<Integer> LAZY_UPDATE_RATE;
+
     public static final ForgeConfigSpec.ConfigValue<Integer> STRESS_UNIT_GEN;
 
     static {
@@ -19,8 +21,11 @@ public class TCServerConfigs {
         IF_RANDOM_TICK_PER_TICK = BUILDER.comment("How many random ticks per tick will infused fertiliser do")
                 .define("Infused Fertilizer random ticks per Tick", 0.5d);
 
-//        BUILDER.pop();
-//        BUILDER.push("CFE");
+        BUILDER.pop();
+        BUILDER.push("CFE");
+
+        LAZY_UPDATE_RATE = BUILDER.comment("How often will lazy update occur, 20 means 1 per second")
+                .define("Lazy Tick Rate", 100);
 
 
         BUILDER.pop();

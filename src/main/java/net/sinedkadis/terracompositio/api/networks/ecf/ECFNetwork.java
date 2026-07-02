@@ -38,6 +38,8 @@ public interface ECFNetwork {
      */
     void updateInRange(Level level, BlockPos origin, int range);
 
+    void updateAll(Level level);
+
     /**
      * Searches for available to sent ECF members
      *
