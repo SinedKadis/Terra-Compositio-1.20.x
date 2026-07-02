@@ -102,7 +102,7 @@ public class DefaultECFHandler implements IECFHandler, INBTSerializable<Compound
             return 0;
         Level level = target.getEntityInstance().tc$getLevel();
 
-        if (target instanceof PPECFMemberProxy proxy && ((IEntityInstance) proxy.target()).tc$isEntity()) {
+        if (target instanceof PPECFMemberProxy proxy && proxy.target().getEntityInstance().tc$isEntity()) {
             BlockPos pos = proxy.proxy().getOutputPos();
             PathPointerBlockEntity ppBE = (PathPointerBlockEntity) (level.getBlockEntity(pos));
             if (ppBE != null) {

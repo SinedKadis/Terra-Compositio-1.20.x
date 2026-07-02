@@ -65,6 +65,11 @@ public class DummyNetwork implements ECFNetwork, FluidNetwork {
     }
 
     @Override
+    public void updateAll(Level level) {
+
+    }
+
+    @Override
     public Set<FluidNetworkMember> getAvailableNetworkTargets(FluidNetworkMember requesterMember) {
         return Set.of();
     }

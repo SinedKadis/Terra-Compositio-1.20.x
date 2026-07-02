@@ -9,6 +9,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
 import net.sinedkadis.terracompositio.api.helpers.ECFHelper;
+import net.sinedkadis.terracompositio.api.networks.NetworkAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.api.registries.TCBlockStateProperties;
@@ -95,7 +96,7 @@ public class ECFExtractGoal extends Goal {
 
             if (member instanceof FlowCedarEntEntity ent) {
                 boolean hasEnough = ent.getCapability(TCCapabilities.ECF)
-                        .filter(h -> h.getECF() > 1000)
+                        .filter(h -> h.getECF() > 64)
                         .isPresent();
                 if (!hasEnough) continue;
             }
@@ -163,6 +164,7 @@ public class ECFExtractGoal extends Goal {
                             .maxTransfer(1000)
                             .speed(2 / 20f)
                             .build();
+                    TerraCompositioAPI.instance().getECFNetworkInstance().fireECFNetworkEvent(targetMember, NetworkAction.UPDATE);
                 } else {
                     extractFromLog();
                 }

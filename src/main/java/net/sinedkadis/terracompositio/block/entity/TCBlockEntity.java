@@ -17,6 +17,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.sinedkadis.terracompositio.api.IHaveKnowledge;
+import net.sinedkadis.terracompositio.block.custom.TCBaseEntityBlock;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEECFBehaviour;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEItemBehaviour;
@@ -32,6 +33,10 @@ public abstract class TCBlockEntity extends BlockEntity implements IHaveKnowledg
     @Getter
     protected List<IBEBehaviour> behaviours = new ArrayList<>();
 
+    public TCBlockEntity(BlockPos pos, BlockState state) {
+        super(((TCBaseEntityBlock) state.getBlock()).getBlockEntityType(), pos, state);
+        addBEBehaviours(behaviours);
+    }
     public TCBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
         addBEBehaviours(behaviours);
