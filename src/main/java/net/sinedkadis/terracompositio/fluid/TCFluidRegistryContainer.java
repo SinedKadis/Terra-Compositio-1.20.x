@@ -33,19 +33,21 @@ import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.minecraftforge.common.SoundAction;
-import net.minecraftforge.common.SoundActions;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.extensions.IForgeBucketPickup;
-import net.minecraftforge.fluids.FluidType;
-import net.minecraftforge.fluids.ForgeFlowingFluid;
-import net.minecraftforge.fluids.capability.wrappers.FluidBucketWrapper;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.common.SoundAction;
+import net.neoforged.neoforge.common.SoundActions;
+import net.neoforged.neoforge.common.extensions.IBucketPickupExtension;
+import net.neoforged.neoforge.fluids.BaseFlowingFluid;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.capability.wrappers.FluidBucketWrapper;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.sinedkadis.terracompositio.block.custom.FlowCauldronBlock;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
 import net.sinedkadis.terracompositio.registries.TCFluids;
@@ -61,15 +63,15 @@ import java.util.function.Supplier;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class TCFluidRegistryContainer implements IForgeBucketPickup{
-    public final RegistryObject<FluidType> type;
+public class TCFluidRegistryContainer implements IBucketPickupExtension {
+    public final DeferredHolder<FluidType, FluidType> type;
     public final FluidType.Properties typeProperties;
-    public final RegistryObject<LiquidBlock> block;
-    public final RegistryObject<Item> bucket;
+    public final DeferredHolder<LiquidBlock, LiquidBlock> block;
+    public final DeferredItem<Item> bucket;
+    public final DeferredHolder<Fluid, BaseFlowingFluid.Source> source;
+    public final DeferredHolder<Fluid, BaseFlowingFluid.Flowing> flowing;
     @Getter
-    private ForgeFlowingFluid.Properties properties;
-    public final RegistryObject<ForgeFlowingFluid.Source> source;
-    public final RegistryObject<ForgeFlowingFluid.Flowing> flowing;
+    private BaseFlowingFluid.Properties properties;
 
     public TCFluidRegistryContainer(String name, FluidType.Properties typeProperties,
                                     Supplier<IClientFluidTypeExtensions> clientExtensions, @Nullable AdditionalProperties additionalProperties,
@@ -99,11 +101,11 @@ public class TCFluidRegistryContainer implements IForgeBucketPickup{
         });
 
         this.source = TCFluids.FLUIDS.register(name + "_source",
-                () -> new ForgeFlowingFluid.Source(this.properties));
+                () -> new BaseFlowingFluid.Source(this.properties));
         this.flowing = TCFluids.FLUIDS.register(name + "_flowing",
-                () -> new ForgeFlowingFluid.Flowing(this.properties));
+                () -> new BaseFlowingFluid.Flowing(this.properties));
 
-        this.properties = new ForgeFlowingFluid.Properties(this.type, this.source, this.flowing);
+        this.properties = new BaseFlowingFluid.Properties(this.type, this.source, this.flowing);
         if (additionalProperties != null) {
             this.properties.explosionResistance(additionalProperties.explosionResistance)
                     .levelDecreasePerBlock(additionalProperties.levelDecreasePerBlock)

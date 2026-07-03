@@ -17,11 +17,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.common.util.ForgeSoundType;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.block.custom.*;
 import net.sinedkadis.terracompositio.block.entity.PathPointerBlockEntity;
@@ -35,23 +32,19 @@ import java.util.function.Supplier;
 
 @ParametersAreNonnullByDefault
 public class TCBlocks {
-    public static final DeferredRegister<Block> BLOCKS =
-            DeferredRegister.create(ForgeRegistries.BLOCKS, TerraCompositio.MOD_ID);
-
-
-
-    //Cedar blocks
-    public static final RegistryObject<Block> FLOW_CEDAR_LOG = registerBlock("flow_cedar_log",
-            () -> new FlowCedarLikeBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LOG).strength(3f), TCBlocks.STRIPPED_FLOW_CEDAR_LOG));
-    public static final RegistryObject<Block> FLOW_CEDAR_ALTAR = registerBlock("flow_cedar_altar",
+    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(TerraCompositio.MOD_ID);
+    public static final DeferredBlock<Block> FLOW_CEDAR_ALTAR = registerBlock("flow_cedar_altar",
             () -> new FlowCedarAltarBlock(BlockBehaviour.Properties.copy(Blocks.OAK_WOOD).strength(3f)));
-    public static final RegistryObject<Block> FLOW_CEDAR_WOOD = registerBlock("flow_cedar_wood",
-            () -> new FlowCedarLikeBlock(BlockBehaviour.Properties.copy(Blocks.OAK_WOOD).strength(3f), TCBlocks.STRIPPED_FLOW_CEDAR_WOOD));
-    public static final RegistryObject<Block> STRIPPED_FLOW_CEDAR_LOG = registerBlock("stripped_flow_cedar_log",
+    public static final DeferredBlock<Block> STRIPPED_FLOW_CEDAR_LOG = registerBlock("stripped_flow_cedar_log",
             () -> new FlowCedarLikeBlock(BlockBehaviour.Properties.copy(Blocks.STRIPPED_OAK_LOG).strength(3f)));
-    public static final RegistryObject<Block> STRIPPED_FLOW_CEDAR_WOOD = registerBlock("stripped_flow_cedar_wood",
+    //Cedar blocks
+    public static final DeferredBlock<Block> FLOW_CEDAR_LOG = registerBlock("flow_cedar_log",
+            () -> new FlowCedarLikeBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LOG).strength(3f), TCBlocks.STRIPPED_FLOW_CEDAR_LOG));
+    public static final DeferredBlock<Block> STRIPPED_FLOW_CEDAR_WOOD = registerBlock("stripped_flow_cedar_wood",
             () -> new FlowCedarLikeBlock(BlockBehaviour.Properties.copy(Blocks.STRIPPED_OAK_WOOD).strength(3f)));
-    public static final RegistryObject<Block> FLOW_CEDAR_PLANKS = registerBlock("flow_cedar_planks",
+    public static final DeferredBlock<Block> FLOW_CEDAR_WOOD = registerBlock("flow_cedar_wood",
+            () -> new FlowCedarLikeBlock(BlockBehaviour.Properties.copy(Blocks.OAK_WOOD).strength(3f), TCBlocks.STRIPPED_FLOW_CEDAR_WOOD));
+    public static final DeferredBlock<Block> FLOW_CEDAR_PLANKS = registerBlock("flow_cedar_planks",
             () -> new Block(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS)){
                 @Override
                 public boolean isFlammable(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
@@ -68,121 +61,121 @@ public class TCBlocks {
                     return 5;
                 }
             });
-    public static final RegistryObject<Block> FLOW_CEDAR_LEAVES = registerBlock("flow_cedar_leaves",
-            () -> new FlowCedarLeavesBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LEAVES)));
-    public static final RegistryObject<Block> FLOW_CEDAR_STAIRS = registerBlock("flow_cedar_stairs",
+    public static final DeferredBlock<Block> FLOW_CEDAR_STAIRS = registerBlock("flow_cedar_stairs",
             () -> new StairBlock(() -> TCBlocks.FLOW_CEDAR_PLANKS.get().defaultBlockState(),
                     BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS)));
-    public static final RegistryObject<Block> FLOW_CEDAR_SLAB = registerBlock("flow_cedar_slab",
+    public static final DeferredBlock<Block> FLOW_CEDAR_LEAVES = registerBlock("flow_cedar_leaves",
+            () -> new FlowCedarLeavesBlock(BlockBehaviour.Properties.copy(Blocks.OAK_LEAVES)));
+    public static final DeferredBlock<Block> FLOW_CEDAR_SLAB = registerBlock("flow_cedar_slab",
             () -> new SlabBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS).strength(3f)));
-    public static final RegistryObject<Block> FLOW_CEDAR_BUTTON = registerBlock("flow_cedar_button",
+    public static final DeferredBlock<Block> FLOW_CEDAR_BUTTON = registerBlock("flow_cedar_button",
             () -> new ButtonBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS),
                     BlockSetType.OAK,30,true));
-    public static final RegistryObject<Block> FLOW_CEDAR_PRESSURE_PLATE = registerBlock("flow_cedar_pressure_plate",
+    public static final DeferredBlock<Block> FLOW_CEDAR_PRESSURE_PLATE = registerBlock("flow_cedar_pressure_plate",
             () -> new PressurePlateBlock(PressurePlateBlock.Sensitivity.EVERYTHING,
                     BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS),BlockSetType.OAK));
-    public static final RegistryObject<Block> FLOW_CEDAR_FENCE = registerBlock("flow_cedar_fence",
+    public static final DeferredBlock<Block> FLOW_CEDAR_FENCE = registerBlock("flow_cedar_fence",
             () -> new FenceBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS)));
-    public static final RegistryObject<Block> FLOW_CEDAR_FENCE_GATE = registerBlock("flow_cedar_fence_gate",
+    public static final DeferredBlock<Block> FLOW_CEDAR_FENCE_GATE = registerBlock("flow_cedar_fence_gate",
             () -> new FenceGateBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS), SoundEvents.FENCE_GATE_OPEN,SoundEvents.FENCE_GATE_CLOSE));
-    public static final RegistryObject<Block> FLOW_CEDAR_DOOR = registerBlock("flow_cedar_door",
+    public static final DeferredBlock<Block> FLOW_CEDAR_DOOR = registerBlock("flow_cedar_door",
             () -> new DoorBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS).noOcclusion(), BlockSetType.OAK));
-    public static final RegistryObject<Block> FLOW_CEDAR_TRAPDOOR = registerBlock("flow_cedar_trapdoor",
+    public static final DeferredBlock<Block> FLOW_CEDAR_TRAPDOOR = registerBlock("flow_cedar_trapdoor",
             () -> new TrapDoorBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS).noOcclusion(),BlockSetType.OAK));
-    public static final RegistryObject<Block> FLOW_CEDAR_SIGN = BLOCKS.register("flow_cedar_sign",
+    public static final DeferredBlock<Block> FLOW_CEDAR_SIGN = BLOCKS.register("flow_cedar_sign",
             () -> new TCStandingSignBlock(BlockBehaviour.Properties.copy(Blocks.OAK_SIGN), TCWoodTypes.FLOW_CEDAR));
-    public static final RegistryObject<Block> FLOW_CEDAR_WALL_SIGN = BLOCKS.register("flow_cedar_wall_sign",
+    public static final DeferredBlock<Block> FLOW_CEDAR_WALL_SIGN = BLOCKS.register("flow_cedar_wall_sign",
             () -> new TCWallSignBlock(BlockBehaviour.Properties.copy(Blocks.OAK_WALL_SIGN), TCWoodTypes.FLOW_CEDAR));
-    public static final RegistryObject<Block> FLOW_CEDAR_HANGING_SIGN = BLOCKS.register("flow_cedar_hanging_sign",
+    public static final DeferredBlock<Block> FLOW_CEDAR_HANGING_SIGN = BLOCKS.register("flow_cedar_hanging_sign",
             () -> new TCHangingSignBlock(BlockBehaviour.Properties.copy(Blocks.OAK_HANGING_SIGN), TCWoodTypes.FLOW_CEDAR));
-    public static final RegistryObject<Block> FLOW_CEDAR_WALL_HANGING_SIGN = BLOCKS.register("flow_cedar_wall_hanging_sign",
+    public static final DeferredBlock<Block> FLOW_CEDAR_WALL_HANGING_SIGN = BLOCKS.register("flow_cedar_wall_hanging_sign",
             () -> new TCWallHangingSignBlock(BlockBehaviour.Properties.copy(Blocks.OAK_WALL_HANGING_SIGN), TCWoodTypes.FLOW_CEDAR));
-    public static final RegistryObject<Block> FLOW_INFUSER = registerBlock("flow_infuser",
+    public static final DeferredBlock<Block> FLOW_INFUSER = registerBlock("flow_infuser",
             () -> new FlowInfuserBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).noOcclusion()));
-    public static final RegistryObject<Block> FLOW_CEDAR_SAPLING = registerBlock("flow_cedar_sapling",
+    public static final DeferredBlock<Block> FLOW_CEDAR_SAPLING = registerBlock("flow_cedar_sapling",
             () -> new FlowCedarSaplingBlock(new FlowCedarTreeGrower(), BlockBehaviour.Properties.copy(Blocks.OAK_SAPLING)));
 
 
 
 
     //Cauldron related
-    public static final RegistryObject<Block> FLOW_CAULDRON = registerBlock("flow_cauldron",
+    public static final DeferredBlock<Block> FLOW_CAULDRON = registerBlock("flow_cauldron",
             () -> new FlowCauldronBlock(BlockBehaviour.Properties.copy(Blocks.CAULDRON), null,CauldronInteraction.EMPTY));
-    public static final RegistryObject<Block> BIRCH_JUICE_CAULDRON = registerBlock("birch_juice_cauldron",
+    public static final DeferredBlock<Block> BIRCH_JUICE_CAULDRON = registerBlock("birch_juice_cauldron",
             () -> new BirchJuiceCauldronBlock(BlockBehaviour.Properties.copy(Blocks.CAULDRON), null,CauldronInteraction.EMPTY));
-    public static final RegistryObject<Block> WEDGE = registerBlock("wedge",
+    public static final DeferredBlock<Block> WEDGE = registerBlock("wedge",
             () -> new WedgeBlock(BlockBehaviour.Properties.copy(Blocks.TRIPWIRE_HOOK)));
 
 
     //Creative
-    public static final RegistryObject<Block> CREATIVE_ECF_SOURCE = registerBlock("creative_ecf_source",
+    public static final DeferredBlock<Block> CREATIVE_ECF_SOURCE = registerBlock("creative_ecf_source",
             () -> new CreativeECFSourceBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)));
-    public static final RegistryObject<Block> ECF_TRASH_CAN = registerBlock("ecf_trash_can",
+    public static final DeferredBlock<Block> ECF_TRASH_CAN = registerBlock("ecf_trash_can",
             () -> new ECFTrashCanBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)));
 
 
     //Technetium
-    public static final RegistryObject<Block> TECHNETIUM_ORE = registerUnstableTechnetiumBlock("technetium_ore",
+    public static final DeferredBlock<Block> TECHNETIUM_ORE = registerUnstableTechnetiumBlock("technetium_ore",
             () -> new Block(BlockBehaviour.Properties.copy(Blocks.IRON_ORE)),2);
-    public static final RegistryObject<Block> TECHNETIUM_DEEPSLATE_ORE = registerUnstableTechnetiumBlock("technetium_deepslate_ore",
+    public static final DeferredBlock<Block> TECHNETIUM_DEEPSLATE_ORE = registerUnstableTechnetiumBlock("technetium_deepslate_ore",
             () -> new Block(BlockBehaviour.Properties.copy(Blocks.DEEPSLATE_IRON_ORE)),2);
-    public static final RegistryObject<Block> TECHNETIUM_RAW_ORE_BLOCK = registerUnstableTechnetiumBlock("technetium_raw_ore_block",
+    public static final DeferredBlock<Block> TECHNETIUM_RAW_ORE_BLOCK = registerUnstableTechnetiumBlock("technetium_raw_ore_block",
             () -> new Block(BlockBehaviour.Properties.copy(Blocks.RAW_IRON_BLOCK)),8);
-    public static final RegistryObject<Block> TECHNETIUM_BLOCK = registerBlock("technetium_block",
+    public static final DeferredBlock<Block> TECHNETIUM_BLOCK = registerBlock("technetium_block",
             () -> new Block(BlockBehaviour.Properties.copy(Blocks.NETHERITE_BLOCK)));
 
 
     //Infused Iron
-    public static final RegistryObject<Block> INFUSED_IRON_BLOCK = registerBlock("infused_iron_block",
+    public static final DeferredBlock<Block> INFUSED_IRON_BLOCK = registerBlock("infused_iron_block",
             () -> new Block(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)));
 
 
     //Matter infuser
-    public static final RegistryObject<Block> FLOW_CEDAR_CASING = registerBlock("flow_cedar_casing",
+    public static final DeferredBlock<Block> FLOW_CEDAR_CASING = registerBlock("flow_cedar_casing",
             () -> new FlowCedarCasingBlock(BlockBehaviour.Properties.copy(Blocks.STRIPPED_OAK_LOG).strength(3f)));
-    public static final RegistryObject<Block> MATTER_INFUSER_PORT = registerBlock("matter_infuser_port",
+    public static final DeferredBlock<Block> MATTER_INFUSER_PORT = registerBlock("matter_infuser_port",
             () -> new MatterInfuserPortBlock(BlockBehaviour.Properties.copy(Blocks.TRIPWIRE_HOOK).sound(SoundType.COPPER).strength(3f)));
-    public static final RegistryObject<Block> MATTER_INFUSER_UNIT = registerBlock("matter_infuser_unit",
+    public static final DeferredBlock<Block> MATTER_INFUSER_UNIT = registerBlock("matter_infuser_unit",
             () -> new MatterInfuserUnitBlock(BlockBehaviour.Properties.copy(Blocks.TRIPWIRE_HOOK).sound(SoundType.COPPER).strength(3f)));
 
 
     //Desorbers
-    public static final RegistryObject<Block> CONSTRUCTION_DESORBER = registerBlock("construction_desorber",
+    public static final DeferredBlock<Block> CONSTRUCTION_DESORBER = registerBlock("construction_desorber",
             () -> new ConstructionDesorberBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(3f).noOcclusion()));
-    public static final RegistryObject<Block> CULTIVATION_DESORBER = registerBlock("cultivation_desorber",
+    public static final DeferredBlock<Block> CULTIVATION_DESORBER = registerBlock("cultivation_desorber",
             () -> new CultivationDesorberBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(3f).noOcclusion()));
-    public static final RegistryObject<Block> TIME_PASSAGE_DESORBER = registerBlock("time_passage_desorber",
+    public static final DeferredBlock<Block> TIME_PASSAGE_DESORBER = registerBlock("time_passage_desorber",
             () -> new TimePassageDesorberBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(3f).noOcclusion()));
 
 
     //Cedar tanks
-    public static final RegistryObject<Block> FLOW_CEDAR_PEDESTAL = registerBlock("flow_cedar_pedestal",
+    public static final DeferredBlock<Block> FLOW_CEDAR_PEDESTAL = registerBlock("flow_cedar_pedestal",
             () -> new FlowCedarPedestalBlock(BlockBehaviour.Properties.copy(Blocks.AZALEA).noOcclusion()));
-    public static final RegistryObject<Block> FLOW_CEDAR_TANK = registerBlock("flow_cedar_tank",
+    public static final DeferredBlock<Block> FLOW_CEDAR_TANK = registerBlock("flow_cedar_tank",
             () -> new FlowCedarTankBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS).noOcclusion()));
-    public static final RegistryObject<Block> FLOW_CEDAR_TANK_2 = registerBlock("flow_cedar_tank_2",
+    public static final DeferredBlock<Block> FLOW_CEDAR_TANK_2 = registerBlock("flow_cedar_tank_2",
             () -> new Block(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS).noOcclusion().noLootTable()));
-    public static final RegistryObject<Block> FLOW_CEDAR_TANK_3 = registerBlock("flow_cedar_tank_3",
+    public static final DeferredBlock<Block> FLOW_CEDAR_TANK_3 = registerBlock("flow_cedar_tank_3",
             () -> new Block(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS).noOcclusion().noLootTable()));
 
 
     //Path pointers
-    public static final RegistryObject<Block> PP_RECEIVER = registerBlock("pp_receiver",
+    public static final DeferredBlock<Block> PP_RECEIVER = registerBlock("pp_receiver",
             () -> new PathPointerBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS).noOcclusion(), PathPointerBlockEntity.PPPart.RECEIVER));
-    public static final RegistryObject<Block> PP_COLLECTOR = registerBlock("pp_collector",
+    public static final DeferredBlock<Block> PP_COLLECTOR = registerBlock("pp_collector",
             () -> new PathPointerBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS).noOcclusion(), PathPointerBlockEntity.PPPart.COLLECTOR));
-    public static final RegistryObject<Block> PP_SENDER = registerBlock("pp_sender",
+    public static final DeferredBlock<Block> PP_SENDER = registerBlock("pp_sender",
             () -> new PathPointerBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS).noOcclusion(), PathPointerBlockEntity.PPPart.SENDER));
-    public static final RegistryObject<Block> PP_EMITTER = registerBlock("pp_emitter",
+    public static final DeferredBlock<Block> PP_EMITTER = registerBlock("pp_emitter",
             () -> new PathPointerBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS).noOcclusion(), PathPointerBlockEntity.PPPart.EMITTER));
-    public static final RegistryObject<Block> PP_EXTRACTOR = registerBlock("pp_extractor",
+    public static final DeferredBlock<Block> PP_EXTRACTOR = registerBlock("pp_extractor",
             () -> new PathPointerBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS).noOcclusion(), PathPointerBlockEntity.PPPart.EXTRACTOR));
-    public static final RegistryObject<Block> PP_INFUSER = registerBlock("pp_infuser",
+    public static final DeferredBlock<Block> PP_INFUSER = registerBlock("pp_infuser",
             () -> new PathPointerBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS).noOcclusion(), PathPointerBlockEntity.PPPart.INFUSER));
 
 
     //Infused Iron Based redstone
-    public static final RegistryObject<Block> FLOATING_REDSTONE = registerBlock("floating_redstone",
+    public static final DeferredBlock<Block> FLOATING_REDSTONE = registerBlock("floating_redstone",
             () -> new RedStoneWireBlock(BlockBehaviour.Properties.copy(Blocks.REDSTONE_WIRE)){
                 @Override
                 public boolean canSurvive(BlockState pState, LevelReader pLevel, BlockPos pPos) {
@@ -190,7 +183,7 @@ public class TCBlocks {
                 }
 
             });
-    public static final RegistryObject<Block> FLOATING_REPEATER = registerBlock("floating_repeater",
+    public static final DeferredBlock<Block> FLOATING_REPEATER = registerBlock("floating_repeater",
             () -> new RepeaterBlock(BlockBehaviour.Properties.copy(Blocks.REPEATER)){
                 @Override
                 public boolean canSurvive(BlockState pState, LevelReader pLevel, BlockPos pPos) {
@@ -202,7 +195,7 @@ public class TCBlocks {
                     return facing == direction || facing.getOpposite() == direction;
                 }
             });
-    public static final RegistryObject<Block> FLOATING_COMPARATOR = registerBlock("floating_comparator",
+    public static final DeferredBlock<Block> FLOATING_COMPARATOR = registerBlock("floating_comparator",
             () -> new ComparatorBlock(BlockBehaviour.Properties.copy(Blocks.COMPARATOR)){
                 @Override
                 public boolean canSurvive(BlockState pState, LevelReader pLevel, BlockPos pPos) {
@@ -213,9 +206,9 @@ public class TCBlocks {
                     return true;
                 }
             });
-    public static final RegistryObject<Block> FLOATING_TORCH_HOLDER = registerBlock("floating_torch_holder",
+    public static final DeferredBlock<Block> FLOATING_TORCH_HOLDER = registerBlock("floating_torch_holder",
             () -> new FloatingTorchHolderBlock(BlockBehaviour.Properties.copy(Blocks.TORCH)));
-    public static final RegistryObject<Block> INFUSED_IRON_PRESSURE_PLATE = registerBlock("infused_iron_pressure_plate",
+    public static final DeferredBlock<Block> INFUSED_IRON_PRESSURE_PLATE = registerBlock("infused_iron_pressure_plate",
             () -> new PressurePlateBlock(PressurePlateBlock.Sensitivity.EVERYTHING,BlockBehaviour.Properties.copy(Blocks.OAK_PRESSURE_PLATE),BlockSetType.IRON){
                 @Override
                 public boolean canSurvive(BlockState pState, LevelReader pLevel, BlockPos pPos) {
@@ -226,7 +219,7 @@ public class TCBlocks {
                     return true;
                 }
             });
-    public static final RegistryObject<Block> INFUSED_IRON_DOOR = registerBlock("infused_iron_door",
+    public static final DeferredBlock<Block> INFUSED_IRON_DOOR = registerBlock("infused_iron_door",
             () -> new DoorBlock(BlockBehaviour.Properties.copy(Blocks.IRON_DOOR),BlockSetType.IRON){
                 @Override
                 public boolean canSurvive(BlockState pState, LevelReader pLevel, BlockPos pPos) {
@@ -258,7 +251,7 @@ public class TCBlocks {
                     super.playerWillDestroy(pLevel, pPos, pState, pPlayer);
                 }
             });
-    public static final RegistryObject<Block> FLOATING_BUTTON = registerBlock("floating_button",
+    public static final DeferredBlock<Block> FLOATING_BUTTON = registerBlock("floating_button",
             () -> new ButtonBlock(BlockBehaviour.Properties.copy(Blocks.OAK_BUTTON), BlockSetType.IRON, 20, false) {
                 @Override
                 public boolean canSurvive(BlockState pState, LevelReader pLevel, BlockPos pPos) {
@@ -270,7 +263,7 @@ public class TCBlocks {
                     return true;
                 }
             });
-    public static final RegistryObject<Block> FLOATING_LEVER = registerBlock("floating_lever",
+    public static final DeferredBlock<Block> FLOATING_LEVER = registerBlock("floating_lever",
             () -> new LeverBlock(BlockBehaviour.Properties.copy(Blocks.OAK_BUTTON)) {
                 @Override
                 public boolean canSurvive(BlockState pState, LevelReader pLevel, BlockPos pPos) {
@@ -284,9 +277,9 @@ public class TCBlocks {
             });
 
     //Misc
-    public static final RegistryObject<Block> FLOW_CEDAR_ENT_STATUE = registerBlock("flow_cedar_ent_statue",
+    public static final DeferredBlock<Block> FLOW_CEDAR_ENT_STATUE = registerBlock("flow_cedar_ent_statue",
             () -> new EntStatueBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS)));
-    public static final RegistryObject<Block> ECF_BOARD = registerBlock("ecf_board",
+    public static final DeferredBlock<Block> ECF_BOARD = registerBlock("ecf_board",
             () -> new ECFBoardBlock(BlockBehaviour.Properties.copy(Blocks.GLASS).sound(new ForgeSoundType(1.0F,
                     1.0F,
                     () -> SoundEvents.AMETHYST_BLOCK_STEP,
@@ -294,7 +287,7 @@ public class TCBlocks {
                     () -> SoundEvents.AMETHYST_BLOCK_PLACE,
                     () -> SoundEvents.AMETHYST_BLOCK_HIT,
                     () -> SoundEvents.AMETHYST_BLOCK_FALL)).noLootTable().noOcclusion()));
-    public static final RegistryObject<Block> AIR_SATURATOR = registerBlock("air_saturator",
+    public static final DeferredBlock<Block> AIR_SATURATOR = registerBlock("air_saturator",
             () -> new AirSaturatorBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS).strength(3f)));
 
 

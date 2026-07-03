@@ -3,21 +3,17 @@ package net.sinedkadis.terracompositio;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.common.NeoForge;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
-import net.sinedkadis.terracompositio.ecf.ECFNetworkHandler;
 import net.sinedkadis.terracompositio.compat.patchouli.TCPatchouliCompat;
 import net.sinedkadis.terracompositio.compat.soft_compat.ISoftCompat;
 import net.sinedkadis.terracompositio.config.TCClientConfigs;
 import net.sinedkadis.terracompositio.config.TCCommonConfigs;
 import net.sinedkadis.terracompositio.config.TCServerConfigs;
+import net.sinedkadis.terracompositio.ecf.ECFNetworkHandler;
 import net.sinedkadis.terracompositio.events.ECFNetworkEvent;
 import net.sinedkadis.terracompositio.events.FluidNetworkEvent;
 import net.sinedkadis.terracompositio.fluid.FluidNetworkHandler;
@@ -38,13 +34,12 @@ public class TerraCompositio
 
     public static ISoftCompat createCompat;
 
-    public TerraCompositio(FMLJavaModLoadingContext context) {
+    public TerraCompositio(IEventBus modEventBus, ModContainer modContainer) {
 
-        IEventBus modEventBus = context.getModEventBus();
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::addCreative);
 
-        MinecraftForge.EVENT_BUS.register(this);
+        NeoForge.EVENT_BUS.register(this);
         TCFluids.FLUIDS.register(modEventBus);
         TCFluids.FLUID_TYPES.register(modEventBus);
 

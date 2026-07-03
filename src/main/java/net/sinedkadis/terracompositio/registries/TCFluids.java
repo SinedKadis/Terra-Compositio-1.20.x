@@ -1,6 +1,7 @@
 package net.sinedkadis.terracompositio.registries;
 
 
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Blocks;
@@ -8,18 +9,19 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.fluids.FluidType;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.event.entity.living.LivingEvent;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.fluid.TCFluidRegistryContainer;
 
 
 public class TCFluids {
 
-    public static final DeferredRegister<FluidType> FLUID_TYPES = DeferredRegister.create(ForgeRegistries.Keys.FLUID_TYPES, TerraCompositio.MOD_ID);
-    public static final DeferredRegister<Fluid> FLUIDS = DeferredRegister.create(ForgeRegistries.FLUIDS,TerraCompositio.MOD_ID);
+    public static final DeferredRegister<FluidType> FLUID_TYPES =
+            DeferredRegister.create(NeoForgeRegistries.Keys.FLUID_TYPES, TerraCompositio.MOD_ID);
+    public static final DeferredRegister<Fluid> FLUIDS = DeferredRegister.create(Registries.FLUID, TerraCompositio.MOD_ID);
 
     public static final TCFluidRegistryContainer FLOW_FLUID = new TCFluidRegistryContainer("flow",
             FluidType.Properties.create().canDrown(true).canSwim(true).supportsBoating(true).canPushEntity(true).lightLevel(2).motionScale(0.5f).temperature(100),
