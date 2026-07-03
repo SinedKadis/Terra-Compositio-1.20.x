@@ -11,10 +11,28 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
-    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
-    id 'org.spongepowered.mixin' version '0.7.+'
+    // NeoGradle replaces the old net.minecraftforge.gradle ForgeGradle plugin.
+    // org.parchmentmc.librarian.forgegradle is NOT used anymore: NeoGradle reads Parchment
+    // settings directly from gradle.properties (neogradle.subsystems.parchment.*).
+    id 'net.neoforged.gradle.userdev' version '7.1.38'
+    // NOTE: 'org.spongepowered.mixin' is intentionally NOT applied here. That plugin is
+    // ForgeGradle-only tooling: on apply it reaches for ForgeGradle's `reobf` extension to hook
+    // mixin-config registration into the reobfJar task, which does not exist under NeoGradle
+    // ("Could not get unknown property 'reobf'"). NeoGradle generates the mixin refmap
+    // automatically on its own; you only need to list your mixin config file under `[[mixins]]`
+    // in src/main/resources/META-INF/neoforge.mods.toml, e.g.:
+    //   [[mixins]]
+    //   config = "mixins.terracompositio.json"
     //id 'io.freefair.lombok' version '8.6'
+}
+
+tasks.named('wrapper', Wrapper).configure {
+    // Define wrapper values here so as to not have to always do so when updating gradlew.properties.
+    // Switching this to Wrapper.DistributionType.ALL will download the full gradle sources that comes with
+    // documentation attached on cursor hover of gradle classes and methods. However, this comes with increased
+    // file size for Gradle. If you do switch this to ALL, run the Gradle wrapper task twice afterwards.
+    // (Verify by checking gradle/wrapper/gradle-wrapper.properties to see if distributionUrl now points to `-all`)
+    distributionType = Wrapper.DistributionType.BIN
 }
 
 version = mod_version
@@ -24,14 +42,14 @@ base {
     archivesName = mod_id
 }
 
-// Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+// Mojang ships Java 21 to end users in 1.21.1, so mods should target Java 21.
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 
 repositories {
     mavenCentral()
     // Put repositories for dependencies here
-    // ForgeGradle automatically adds the Forge maven and Maven Central for you
+    // NeoGradle automatically adds the NeoForged maven and Maven Central for you
     maven {
         // location of the maven that hosts JEI files since January 2023
         name = "Jared's maven"
@@ -55,12 +73,29 @@ repositories {
         name = 'tterrag maven'
         url = 'https://maven.tterrag.com/'
     }
+    // Create, Ponder and Flywheel are all published here for NeoForge builds as well.
     maven { url = "https://maven.createmod.net" }
+    // Registrate moved off maven.tterrag.com for its NeoForge builds and now lives here.
+    maven { url = "https://maven.ithundxr.dev/snapshots" }
+    // Mirror used for TerraBlender's NeoForge artifacts.
     maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/" }
 
     maven {
         name = "Illusive Soulworks maven"
         url = "https://maven.theillusivec4.top/"
+    }
+
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        // forRepositories(fg.repository) // Uncomment when using ForgeGradle
+        filter {
+            includeGroup "maven.modrinth"
+        }
     }
 
 }
@@ -77,43 +112,21 @@ sourceSets {
 
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 minecraft {
-    // The mappings can be changed at any time and must be in the following format.
-    // Channel:   Version:
-    // official   MCVersion             Official field/method names from Mojang mapping files
-    // parchment  YYYY.MM.DD-MCVersion  Open community-sourced parameter names and javadocs layered on top of official
-    //
-    // You must be aware of the Mojang license when using the 'official' or 'parchment' mappings.
-    // See more information here: https://github.com/MinecraftForge/MCPConfig/blob/master/Mojang.md
-    //
-    // Parchment is an unofficial project maintained by ParchmentMC, separate from MinecraftForge
-    // Additional setup is needed to use their mappings: https://parchmentmc.org/docs/getting-started
-    //
-    // Use non-default mappings at your own risk. They may not always work.
-    // Simply re-run your setup task after changing the mappings to update your workspace.
-    mappings channel: mapping_channel, version: mapping_version
+    // Mappings are NOT configured here under NeoGradle.
+    // ForgeGradle used `mappings channel: mapping_channel, version: mapping_version`, but that
+    // property does not exist on NeoGradle's minecraft{} extension at all. Parchment mappings
+    // are instead picked up automatically from gradle.properties:
+    //   neogradle.subsystems.parchment.minecraftVersion
+    //   neogradle.subsystems.parchment.mappingsVersion
+    // See https://docs.neoforged.net/toolchain/docs/parchment/ for details.
 
     // When true, this property will have all Eclipse/IntelliJ IDEA run configurations run the "prepareX" task for the given run configuration before launching the game.
     // In most cases, it is not necessary to enable.
     // enableEclipsePrepareRuns = true
     // enableIdeaPrepareRuns = true
 
-    // This property allows configuring Gradle's ProcessResources task(s) to run on IDE output locations before launching the game.
-    // It is REQUIRED to be set to true for this template to function.
-    // See https://docs.gradle.org/current/dsl/org.gradle.language.jvm.tasks.ProcessResources.html
-    copyIdeResources = true
-
-    // When true, this property will add the folder name of all declared run configurations to generated IDE run configurations.
-    // The folder name can be set on a run configuration using the "folderName" property.
-    // By default, the folder name of a run configuration is the name of the Gradle project containing it.
-    // generateRunFolders = true
-
-    // This property enables access transformers for use in development.
-    // They will be applied to the Minecraft artifact.
-    // The access transformer file can be anywhere in the project.
-    // However, it must be at "META-INF/accesstransformer.cfg" in the final mod jar to be loaded by Forge.
-    // This default location is a best practice to automatically put the file in the right place in the final jar.
-    // See https://docs.minecraftforge.net/en/latest/advanced/accesstransformers/ for more information.
-    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+    // NOTE: "copyIdeResources" from the ForgeGradle template does not exist on NeoGradle; resource
+    // processing for IDE runs is handled automatically instead, so it has simply been dropped here.
 
     // Default run configurations.
     // These can be tweaked, removed, or duplicated as needed.
@@ -127,44 +140,42 @@ minecraft {
             // "SCAN": For mods scan.
             // "REGISTRIES": For firing of registry events.
             // "REGISTRYDUMP": For getting the contents of all registries.
-            property 'forge.logging.markers', 'REGISTRIES'
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
 
             // Recommended logging level for the console
             // You can set various levels here.
             // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
-            property 'forge.logging.console.level', 'debug'
+            systemProperty 'forge.logging.console.level', 'debug'
 
-            mods {
-                "${mod_id}" {
-                    source sourceSets.main
-                    source sourceSets.createcompat
-                }
-            }
+            // NeoGradle's DSL for attaching source sets to a run replaces ForgeGradle's
+            // `mods { "${mod_id}" { source sourceSets.main } }` block. Call modSource once per
+            // source set that should be loaded as part of this mod.
+            modSource project.sourceSets.main
+            modSource project.sourceSets.createcompat
 
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            // The old `mixin.env.remapRefMap` / `mixin.env.refMapRemappingFile` properties pointed
+            // at a `createSrgToMcp/output.srg` file. NeoForge no longer has an SRG mapping stage
+            // (everything uses official Mojang mappings directly), so that file never gets
+            // generated under NeoGradle and these properties have been removed.
         }
 
         client {
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
-
-            property("mixin.env.remapRefMap", "true")
-            property("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")
-
-            property 'forge.enabledGameTestNamespaces', mod_id
-            jvmArgs += "-Dfml.earlyprogresswindow=false"
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            //jvmArgs += "-Dfml.earlyprogresswindow=false"
         }
 
         server {
-            property 'forge.enabledGameTestNamespaces', mod_id
-            jvmArgs += "-Dfml.earlyprogresswindow=false"
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            argument '--nogui'
+            //jvmArgs += "-Dfml.earlyprogresswindow=false"
         }
 
         // This run config launches GameTestServer and runs all registered gametests, then exits.
         // By default, the server will crash when no gametests are provided.
         // The gametest system is also enabled by default for other run configs under the /test command.
         gameTestServer {
-            property 'forge.enabledGameTestNamespaces', mod_id
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
         data {
@@ -172,25 +183,35 @@ minecraft {
             workingDirectory project.file('run-data')
 
             // Specify the mod_id for data generation, where to output the resulting resource, and where to look for existing resources.
-            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            // NeoGradle uses `arguments.addAll` here instead of ForgeGradle's `args`.
+            // (getProgramArguments() is deprecated as of NeoGradle 7.1 in favor of getArguments().)
+            arguments.addAll '--mod', project.mod_id, '--all',
+                    '--output', file('src/generated/resources/').absolutePath,
+                    '--existing', file('src/main/resources/').absolutePath
         }
     }
 }
+
+// Access transformers use a different entry point under NeoGradle than ForgeGradle's
+// `accessTransformer = file(...)` inside the minecraft{} block.
+minecraft.accessTransformers.file rootProject.file('src/main/resources/META-INF/accesstransformer.cfg')
 
 // Include resources generated by data generators.
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 
-
-
-
-
 dependencies {
 
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    implementation "net.neoforged:neoforge:${neo_version}"
 
+    // NeoForge has bundled the MixinExtras runtime jar since 20.2.84+, so only the
+    // annotationProcessor is needed here for the extra injector annotations at compile time.
+    // https://github.com/LlamaLad7/MixinExtras
+    annotationProcessor "io.github.llamalad7:mixinextras-common:${mixinextras_version}"
 
-    implementation 'org.spongepowered:mixin:0.8.5'
+    // Mixin itself: NeoForge already bundles a Mixin runtime, but the annotation processor is
+    // still needed at compile time to process your @Mixin classes. No separate Gradle plugin
+    // or refmap task is needed anymore (see the note next to the plugins block above).
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
 
@@ -200,165 +221,85 @@ dependencies {
     testCompileOnly 'org.projectlombok:lombok:1.18.34'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.34'
 
-    //compileOnly fg.deobf("vazkii.patchouli:Patchouli:1.20.1-84.1-FORGE:api")
-    implementation fg.deobf("vazkii.patchouli:Patchouli:1.20.1-84.1-FORGE")
+    // NeoGradle dependencies no longer need to be wrapped in `fg.deobf(...)`: that ForgeGradle
+    // helper doesn't exist under NeoGradle's userdev plugin, and it isn't needed anymore since
+    // everything is published against official Mojang mappings directly.
 
-    compileOnly fg.deobf("vazkii.botania:Botania:1.20.1-453-FORGE:api")
-    runtimeOnly fg.deobf("vazkii.botania:Botania:1.20.1-453-FORGE")
+    // Patchouli publishes a NeoForge build for 1.21.1.
+    implementation "vazkii.patchouli:Patchouli:${patchouli_version}"
+
+    // --- Botania -----------------------------------------------------------------------------
+    // Botania currently has NO published NeoForge build at all (it is still on Forge 1.20.1 as of
+    // this writing). The old `vazkii.botania:Botania:1.20.1-453-FORGE` coordinate simply does not
+    // exist for NeoForge 1.21.1, so the dependency has been disabled below. Check
+    // https://www.curseforge.com/minecraft/mc-mods/botania/files for an updated NeoForge release
+    // before re-enabling this.
+    // compileOnly "vazkii.botania:Botania:${botania_version}:api"
+    // runtimeOnly "vazkii.botania:Botania:${botania_version}"
+
     // Compile against only the API artifact
-    compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}:api")
+    compileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}:api"
     // Use the full Curios API jar at runtime
-    runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
-   // testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
-   // testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    runtimeOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}"
+    // testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    // testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
     // For more info:
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
     // compile against the JEI API but do not include it at runtime
-    compileOnly(fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"))
-    compileOnly(fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}"))
-    // at runtime, use the full JEI jar for Forge
-    runtimeOnly(fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}"))
+    compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
+    compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
+    // at runtime, use the full JEI jar for NeoForge
+    runtimeOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
 
 //    compileOnly "mekanism:Mekanism:${mekanism_version}:api"
 //
 //    // If you want to test/use Mekanism & its modules during `runClient` invocation, use the following
-//    runtimeOnly fg.deobf("mekanism:Mekanism:${mekanism_version}:all")// core
-//    //runtimeOnly fg.deobf("mekanism:Mekanism:${mekanism_version}:generators")// Mekanism: Generators
+//    runtimeOnly "mekanism:Mekanism:${mekanism_version}:all"// core
+//    //runtimeOnly "mekanism:Mekanism:${mekanism_version}:generators"// Mekanism: Generators
+//    // NOTE: no published NeoForge 1.21.1 build was found for Mekanism either - verify before enabling.
 
-    implementation(fg.deobf("com.simibubi.create:create-${minecraft_version}:${create_version}:slim") { transitive = false })
-    implementation(fg.deobf("net.createmod.ponder:Ponder-Forge-${minecraft_version}:${ponder_version}"))
-    compileOnly(fg.deobf("dev.engine-room.flywheel:flywheel-forge-api-${minecraft_version}:${flywheel_version}"))
-    runtimeOnly(fg.deobf("dev.engine-room.flywheel:flywheel-forge-${minecraft_version}:${flywheel_version}"))
-    implementation(fg.deobf("com.tterrag.registrate:Registrate:${registrate_version}"))
+    // Versions and coordinates below match the official Create wiki NeoForge 1.21.1 dependency guide:
+    // https://wiki.createmod.net/developers/depend-on-create/neoforge-1.21.1
+    implementation("com.simibubi.create:create-${minecraft_version}:${create_version}:slim") { transitive = false }
+    implementation("net.createmod.ponder:ponder-neoforge:${ponder_version}+mc${minecraft_version}")
+    compileOnly("dev.engine-room.flywheel:flywheel-neoforge-api-${minecraft_version}:${flywheel_version}")
+    runtimeOnly("dev.engine-room.flywheel:flywheel-neoforge-${minecraft_version}:${flywheel_version}")
+    implementation("com.tterrag.registrate:Registrate:${registrate_version}")
 
-    createcompatCompileOnly fg.deobf("com.simibubi.create:create-${minecraft_version}:${create_version}:slim") { transitive = false }
+    createcompatCompileOnly("com.simibubi.create:create-${minecraft_version}:${create_version}:slim") { transitive = false }
 
-
-    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.4.1"))
-    implementation("io.github.llamalad7:mixinextras-forge:0.4.1")
-    implementation fg.deobf("com.github.glitchfiend:TerraBlender-forge:${minecraft_version}-${terrablender_version}")
+    implementation "com.github.glitchfiend:TerraBlender-neoforge:${minecraft_version}-${terrablender_version}"
 }
 
-mixin {
-    // MixinGradle Settings
-    add sourceSets.main, 'terracompositio.refmap.json'
-    config 'mixins.terracompositio.json'
-//    debug.verbose = true
-//    debug.export = true
-}
+// NOTE: there is no `mixin { ... }` configuration block anymore (that came from the
+// org.spongepowered.mixin Gradle plugin, which isn't applied - see the note by the plugins block).
+// The refmap (terracompositio.refmap.json) is generated automatically by NeoGradle. Make sure
+// your mixin config file is still listed in src/main/resources/mixins.terracompositio.json,
+// referenced from a `[[mixins]]` table in META-INF/neoforge.mods.toml, e.g.:
+//   [[mixins]]
+//   config = "mixins.terracompositio.json"
+
 // This block of code expands all declared replace properties in the specified resource targets.
 // A missing property will result in an error. Properties are expanded using ${} Groovy notation.
-// When "copyIdeResources" is enabled, this will also run before the game launches in IDE environments.
 // See https://docs.gradle.org/current/dsl/org.gradle.language.jvm.tasks.ProcessResources.html
-tasks.named('processResources', ProcessResources).configure {
+tasks.withType(ProcessResources).configureEach {
     var replaceProperties = [
-            minecraft_version: minecraft_version, minecraft_version_range: minecraft_version_range,
-            forge_version: forge_version, forge_version_range: forge_version_range,
-            loader_version_range: loader_version_range,
-            mod_id: mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
-            mod_authors: mod_authors, mod_description: mod_description,
-            terrablender_version_range: terrablender_version_range
+            minecraft_version      : minecraft_version,
+            minecraft_version_range: minecraft_version_range,
+            neo_version            : neo_version,
+            neo_version_range      : neo_version_range,
+            loader_version_range   : loader_version_range,
+            mod_id                 : mod_id,
+            mod_name               : mod_name,
+            mod_license            : mod_license,
+            mod_version            : mod_version,
     ]
     inputs.properties replaceProperties
 
-    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
-        expand replaceProperties + [project: project]
-    }
-}
-
-tasks.register('checkAbstractMethods') {
-    dependsOn compileJava
-    doLast {
-        def classesDir = file("build/classes/java/main")
-        if (!classesDir.exists()) {
-            println "WARN: classes dir not found, skipping"
-            return
-        }
-
-        def errors = []
-
-        def baseUrls = []
-        configurations.each { config ->
-            try {
-                if (config.canBeResolved) {
-                    config.resolvedConfiguration.resolvedArtifacts.each { artifact ->
-                        baseUrls << artifact.file.toURI().toURL()
-                    }
-                }
-            } catch (Exception ignored) {
-            }
-        }
-
-        def classFiles = fileTree(classesDir).matching {
-            include "**/*.class"
-            // анонимные и inner-классы пропускаем — они не могут быть "не реализованы"
-            exclude "**/*\$*.class"
-        }.files
-
-        for (def classFile : classFiles) {
-            def className = classFile.path
-                    .replace(classesDir.path + "/", "")
-                    .replace("/", ".")
-                    .replace(".class", "")
-
-            // Пересоздаём classloader для каждого класса,
-            // чтобы ExceptionInInitializerError одного не ломал остальные
-            def urls = [classesDir.toURI().toURL()] + baseUrls
-            def classLoader = new URLClassLoader(
-                    urls as URL[],
-                    ClassLoader.getSystemClassLoader()
-            )
-
-            try {
-                def clazz = classLoader.loadClass(className)
-
-                if (clazz.isInterface() || clazz.isEnum() || Modifier.isAbstract(clazz.modifiers)) continue
-
-                def allIfaces = []
-                def queue = new ArrayDeque(clazz.interfaces.toList())
-                while (!queue.isEmpty()) {
-                    def iface = queue.poll()
-                    allIfaces << iface
-                    iface.interfaces.each { queue.add(it) }
-                }
-
-                for (def iface : allIfaces) {
-                    for (def method : iface.methods) {
-                        if (Modifier.isAbstract(method.modifiers)) {
-                            try {
-                                clazz.getMethod(method.name, method.parameterTypes)
-                            } catch (NoSuchMethodException ignored) {
-                                errors << "⚠ MISSING: ${className}\n  не реализует [${iface.name}].${method.name}(${method.parameterTypes*.simpleName.join(', ')})\n"
-                            }
-                        }
-                    }
-                }
-
-            } catch (ClassNotFoundException | NoClassDefFoundError | ExceptionInInitializerError | VerifyError ignored) {
-                // требует FML/Forge окружения — пропускаем
-            } catch (Throwable e) {
-                println "WARN skipped ${className}: ${e.class.simpleName}: ${e.message}"
-            } finally {
-                try {
-                    classLoader.close()
-                } catch (Exception ignored) {
-                }
-            }
-        }
-
-        System.out.flush()
-        println "\n========== checkAbstractMethods results =========="
-        if (errors) {
-            println "Найдено проблем: ${errors.size()}"
-            errors.each { println it }
-            System.out.flush()
-            println "=================================================="
-            throw new GradleException("Найдены нереализованные методы интерфейсов!")
-        } else {
-            println "✓ Все методы интерфейсов реализованы"
-            println "=================================================="
-        }
+    // NeoForge's mod metadata file is named neoforge.mods.toml (ForgeGradle's was mods.toml).
+    filesMatching(['META-INF/neoforge.mods.toml']) {
+        expand replaceProperties
     }
 }
 
@@ -376,35 +317,36 @@ tasks.named('jar', Jar).configure {
         ])
     }
 
-    // This is the preferred method to reobfuscate your jar file
-    finalizedBy 'reobfJar'
+    // NeoGradle's userdev plugin already produces a correctly remapped jar; there is no separate
+    // "reobfJar" task to finalize by like there was under ForgeGradle, so nothing further is needed.
 }
 
-// However if you are in a multi-project build, dev time needs unobfuscated jar files, so you can delay the obfuscation until publishing by doing:
-// tasks.named('publish').configure {
-//     dependsOn 'reobfJar'
-// }
 
-
-// Example configuration to allow publishing using the maven-publish plugin
 publishing {
     publications {
         register('mavenJava', MavenPublication) {
-            artifact jar
+            from components.java
         }
     }
     repositories {
         maven {
-            url "file://${project.projectDir}/mcmodsrepo"
+            url "file://${project.projectDir}/repo"
         }
     }
 }
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
-    options.compilerArgs << "-Xmaxerrs" << "1000" << "-Xmaxwarns" << "1000"
-    options.incremental = true
 }
+
+// IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}
+
 tasks.withType(AbstractArchiveTask).configureEach {
     archiveBaseName.set(mod_id)
     archiveVersion.set("${minecraft_version}-${mod_version}")
@@ -416,9 +358,9 @@ jar {
 
 
 configurations {
-    annotationProcessor.extendsFrom mixinAnnotation
+    // `mixinAnnotation` no longer exists: it was created by the org.spongepowered.mixin Gradle
+    // plugin, which isn't applied anymore (see the note by the plugins block).
 
     createcompatImplementation.extendsFrom implementation
     createcompatCompileOnly.extendsFrom compileOnly
-
 }
