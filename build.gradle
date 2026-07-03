@@ -1,5 +1,3 @@
-import java.lang.reflect.Modifier
-
 //file:noinspection GroovyAssignabilityCheck
 //file:noinspection DependencyNotationArgument
 buildscript {
@@ -97,8 +95,9 @@ repositories {
             includeGroup "maven.modrinth"
         }
     }
-
 }
+
+
 
 
 sourceSets {
@@ -269,7 +268,8 @@ dependencies {
 
     createcompatCompileOnly("com.simibubi.create:create-${minecraft_version}:${create_version}:slim") { transitive = false }
 
-    implementation "com.github.glitchfiend:TerraBlender-neoforge:${minecraft_version}-${terrablender_version}"
+    //implementation "com.github.glitchfiend:TerraBlender-neoforge:${minecraft_version}-${terrablender_version}"
+    implementation "maven.modrinth:kkmrDlKT:6e8GCrLb"
 }
 
 // NOTE: there is no `mixin { ... }` configuration block anymore (that came from the
