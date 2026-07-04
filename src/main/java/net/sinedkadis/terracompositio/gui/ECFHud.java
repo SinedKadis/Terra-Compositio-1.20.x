@@ -7,7 +7,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.api.dummies.DummyECFHandler;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
@@ -18,8 +17,7 @@ public class ECFHud {
     public static final ResourceLocation ECF_HUD_RL = TerraCompositio.modLoc("textures/gui/ecf_hud.png");
     public static final ResourceLocation ECF_HUD_SHADOW_RL = TerraCompositio.modLoc("textures/gui/ecf_hud_shadow.png");
 
-    public static void render(ForgeGui ignoredGui,
-                              GuiGraphics guiGraphics,
+    public static void render(GuiGraphics guiGraphics,
                               float ignoredPartialTick,
                               int screenWidth,
                               int screenHeight) {
