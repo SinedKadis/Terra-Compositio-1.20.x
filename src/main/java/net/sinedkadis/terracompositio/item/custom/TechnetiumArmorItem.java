@@ -32,13 +32,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.api.IECFStorageExtensionItem;
 import net.sinedkadis.terracompositio.api.IHaveExtensibleECFStorageItem;
@@ -76,7 +72,7 @@ import static net.minecraft.world.level.block.state.properties.BlockStatePropert
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-@Mod.EventBusSubscriber(modid = TerraCompositio.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = TerraCompositio.MOD_ID)
 public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleECFStorageItem {
 
     private static final String last = "last";
@@ -91,29 +87,29 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
     private final Type type;
 
     public TechnetiumArmorItem(Type pType, Properties pProperties) {
-        super(TCArmorMaterials.TECHNETIUM, pType, pProperties);
+        super(TCArmorMaterials.TECHNETIUM.value(), pType, pProperties);
         this.type = pType;
     }
 
 
-
-    public static void onLivingHurtEvent(LivingAttackEvent event) {
-        LivingEntity livingEntity = event.getEntity();
-        if (!(livingEntity instanceof Player)) return;
+    public static void onLivingHurtEvent(EntityInvulnerabilityCheckEvent event) {
+        Entity entity = event.getEntity();
+        if (!(entity instanceof Player player)) return;
 
         DamageSource source = event.getSource();
         Entity damager = source.getEntity();
         if (damager == null) return;
 
-        ItemStack itemBySlot = livingEntity.getItemBySlot(EquipmentSlot.CHEST);
+        ItemStack itemBySlot = player.getItemBySlot(EquipmentSlot.CHEST);
         if (itemBySlot.is(TCItems.TECHNETIUM_CHESTPLATE.get())) {
-            IECFHandler IECFHandler = itemBySlot.getCapability(TCCapabilities.ECF).orElse(DummyECFHandler.instance);
-            if (IECFHandler.takeECF(1, true) > 0) {
-                Level level = livingEntity.level();
-                BlockPos pPos = livingEntity.blockPosition();
-                if (livingEntity.getRandom().nextFloat() > 0.3f) {
-                    IECFHandler.takeECF(1, false);
-                    if (IECFHandler.getECF() <= 0) {
+            IECFHandler iECFHandler = itemBySlot.getCapability(TCCapabilities.ECF);
+            if (iECFHandler == null) iECFHandler = DummyECFHandler.instance;
+            if (iECFHandler.takeECF(1, true) > 0) {
+                Level level = player.level();
+                BlockPos pPos = player.blockPosition();
+                if (player.getRandom().nextFloat() > 0.3f) {
+                    iECFHandler.takeECF(1, false);
+                    if (iECFHandler.getECF() <= 0) {
                         level.playSound(null,
                                 pPos,
                                 SoundEvents.SHIELD_BREAK,
@@ -128,7 +124,7 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
                         SoundSource.PLAYERS);
 
                 ParticleHelperInternal.spawnParticlesIn(level, pPos.above());
-                event.setCanceled(true);
+                event.setInvulnerable(true);
             }
         }
     }
@@ -136,7 +132,7 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
     public static void onBlockChanged(LivingEntity livingEntity) {
         if (!(livingEntity instanceof Player player))
             return;
-        if (player.getAbilities().mayfly) return;
+        if (player.mayFly()) return;
 
         Level level = livingEntity.level();
         if (!level.isClientSide()) return;
@@ -152,9 +148,11 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
 
         CompoundTag persistentData = player.getPersistentData();
 
-        IECFHandler IECFHandler = player.getItemBySlot(EquipmentSlot.FEET).getCapability(TCCapabilities.ECF).orElse(DummyECFHandler.instance);
+        IECFHandler iECFHandler = player.getItemBySlot(EquipmentSlot.FEET).getCapability(TCCapabilities.ECF);
 
-        boolean fallSaveActivated = setHeightIfFalling(level, player, IECFHandler, onPos, persistentData);
+        if (iECFHandler == null) return;
+
+        boolean fallSaveActivated = setHeightIfFalling(level, player, iECFHandler, onPos, persistentData);
 
         boolean standingOnBoard = standingState.is(TCBlocks.ECF_BOARD.get()) && !standingState.getValue(TCBlockStateProperties.PERMANENT);
 
@@ -203,7 +201,7 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
 
             BlockState boardState = TCBlocks.ECF_BOARD.get().defaultBlockState().setValue(WATERLOGGED, waterlogged);
 
-            takeECFAndSetBoard(IECFHandler, level, posOnHeight, boardState);
+            takeECFAndSetBoard(iECFHandler, level, posOnHeight, boardState);
             persistentData.put(last, BlockPosHelper.saveBlockPos(posOnHeight));
         }
     }

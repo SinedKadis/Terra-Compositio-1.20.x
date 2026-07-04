@@ -1,15 +1,15 @@
 package net.sinedkadis.terracompositio.registries;
 
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.recipe.*;
 
 public class TCRecipes {
     public static final DeferredRegister<RecipeSerializer<?>> SERIALIZERS =
-            DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, TerraCompositio.MOD_ID);
+            DeferredRegister.create(Registries.RECIPE_SERIALIZER, TerraCompositio.MOD_ID);
 
     static {
         SERIALIZERS.register(AltarTransformationRecipe.Type.ID, () -> AltarTransformationRecipe.Serializer.INSTANCE);

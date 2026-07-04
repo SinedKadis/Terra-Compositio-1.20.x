@@ -10,7 +10,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -27,6 +26,7 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
@@ -38,16 +38,19 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.neoforged.neoforge.capabilities.ICapabilityProvider;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.common.SoundAction;
 import net.neoforged.neoforge.common.SoundActions;
 import net.neoforged.neoforge.common.extensions.IBucketPickupExtension;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.fluids.capability.wrappers.FluidBucketWrapper;
+import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
+import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
 import net.sinedkadis.terracompositio.block.custom.FlowCauldronBlock;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
 import net.sinedkadis.terracompositio.registries.TCFluids;
@@ -56,33 +59,37 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
+@EventBusSubscriber(modid = TerraCompositioAPI.MOD_ID)
 public class TCFluidRegistryContainer implements IBucketPickupExtension {
     public final DeferredHolder<FluidType, FluidType> type;
     public final FluidType.Properties typeProperties;
-    public final DeferredHolder<LiquidBlock, LiquidBlock> block;
+    private static final Map<Supplier<IClientFluidTypeExtensions>, DeferredHolder<FluidType, FluidType>> clientExtensionsMap = new HashMap<>();
     public final DeferredItem<Item> bucket;
     public final DeferredHolder<Fluid, BaseFlowingFluid.Source> source;
     public final DeferredHolder<Fluid, BaseFlowingFluid.Flowing> flowing;
     @Getter
     private BaseFlowingFluid.Properties properties;
+    public final DeferredBlock<LiquidBlock> block;
 
     public TCFluidRegistryContainer(String name, FluidType.Properties typeProperties,
                                     Supplier<IClientFluidTypeExtensions> clientExtensions, @Nullable AdditionalProperties additionalProperties,
                                     BlockBehaviour.Properties blockProperties, Item.Properties itemProperties) {
+        this(name, typeProperties, clientExtensions, additionalProperties, blockProperties, itemProperties, 1);
+    }
+
+    public TCFluidRegistryContainer(String name, FluidType.Properties typeProperties,
+                                    Supplier<IClientFluidTypeExtensions> clientExtensions, @Nullable AdditionalProperties additionalProperties,
+                                    BlockBehaviour.Properties blockProperties, Item.Properties itemProperties, int useDuration) {
         this.typeProperties = typeProperties;
         this.type = TCFluids.FLUID_TYPES.register(name, () -> new FluidType(this.typeProperties) {
-            @Override
-            public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
-                consumer.accept(clientExtensions.get());
-            }
-
             @Override
             public @Nullable SoundEvent getSound(SoundAction action) {
                 //LOGGER.debug("getSound called");
@@ -99,6 +106,7 @@ public class TCFluidRegistryContainer implements IBucketPickupExtension {
                 return super.canHydrate(state, getter, pos, source, sourcePos);
             }
         });
+        clientExtensionsMap.put(clientExtensions, type);
 
         this.source = TCFluids.FLUIDS.register(name + "_source",
                 () -> new BaseFlowingFluid.Source(this.properties));
@@ -112,7 +120,7 @@ public class TCFluidRegistryContainer implements IBucketPickupExtension {
                     .slopeFindDistance(additionalProperties.slopeFindDistance).tickRate(additionalProperties.tickRate);
         }
 
-        this.block = TCBlocks.BLOCKS.register(name, () -> new LiquidBlock(this.source, blockProperties.noLootTable()){
+        this.block = TCBlocks.BLOCKS.register(name, () -> new LiquidBlock(this.source.get(), blockProperties.noLootTable()) {
             @Override
             public Optional<SoundEvent> getPickupSound() {
                 return Optional.of(SoundEvents.BUCKET_FILL);
@@ -120,7 +128,7 @@ public class TCFluidRegistryContainer implements IBucketPickupExtension {
         });
         this.properties.block(this.block);
 
-        this.bucket = TCItems.ITEMS.register(name + "_bucket", () -> new BucketItem(this.source, itemProperties){
+        this.bucket = TCItems.ITEMS.register(name + "_bucket", () -> new BucketItem(this.source.get(), itemProperties) {
             @Override
             public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
                 BlockPos pPos = context.getClickedPos();
@@ -155,7 +163,9 @@ public class TCFluidRegistryContainer implements IBucketPickupExtension {
             @Override
             @ParametersAreNonnullByDefault
             public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pHand) {
-                BlockHitResult blockhitresult = getPlayerPOVHitResult(pLevel, pPlayer, super.getFluid() == Fluids.EMPTY ? net.minecraft.world.level.ClipContext.Fluid.SOURCE_ONLY : net.minecraft.world.level.ClipContext.Fluid.NONE);
+                BlockHitResult blockhitresult = getPlayerPOVHitResult(pLevel, pPlayer, super.content == Fluids.EMPTY ?
+                        ClipContext.Fluid.SOURCE_ONLY
+                        : ClipContext.Fluid.NONE);
                 if (blockhitresult.getType() == HitResult.Type.MISS) {
                     return ItemUtils.startUsingInstantly(pLevel, pPlayer, pHand);
                 }
@@ -163,8 +173,9 @@ public class TCFluidRegistryContainer implements IBucketPickupExtension {
             }
 
             @Override
-            public int getUseDuration(ItemStack pStack) {
-                return pStack.is(TCFluids.BIRCH_JUICE_FLUID.bucket.get()) ? 32 : 1;
+            public int getUseDuration(ItemStack stack, LivingEntity entity) {
+                //return stack.is(TCFluids.BIRCH_JUICE_FLUID.bucket.get()) ? 32 : 1;
+                return useDuration;
             }
 
             @Override
@@ -197,11 +208,14 @@ public class TCFluidRegistryContainer implements IBucketPickupExtension {
                 }
                 return pStack;
             }
-            public ICapabilityProvider initCapabilities(ItemStack stack, @javax.annotation.Nullable CompoundTag nbt) {
-                return new FluidBucketWrapper(stack);
-            }
         });
         this.properties.bucket(this.bucket);
+    }
+
+    @SubscribeEvent
+    public static void onRegisterClientExtensions(RegisterClientExtensionsEvent event) {
+        clientExtensionsMap.forEach((key, value) ->
+                event.registerFluidType(key.get(), value.get()));
     }
 
     public static IClientFluidTypeExtensions createExtension(ClientExtensions extensions) {

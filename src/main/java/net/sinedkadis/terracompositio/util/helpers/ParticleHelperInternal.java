@@ -8,7 +8,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.sinedkadis.terracompositio.particle.ECFParticleData;
 import net.sinedkadis.terracompositio.particle.FluidParticleData;
 import net.sinedkadis.terracompositio.registries.TCParticles;
@@ -134,43 +134,36 @@ public class ParticleHelperInternal {
     public static void drawEcfParticle(PoseStack pPoseStack, int pPackedLight, VertexConsumer buffer) {
         PoseStack.Pose pose = pPoseStack.last();
         var matrix = pose.pose();
-        var normal = pose.normal();
-
-        //pPackedLight = 0xF000F0;
 
         float size = 0.1f;
 
         int pAlpha = 200;
-        buffer.vertex(matrix, -size, -size, 0)
-                .color(255, 255, 255, pAlpha)
-                .uv(0, 1)
-                .overlayCoords(OverlayTexture.NO_OVERLAY)
-                .uv2(pPackedLight)
-                .normal(normal, 0, 0, 1)
-                .endVertex();
+        buffer.addVertex(matrix, -size, -size, 0)
+                .setColor(255, 255, 255, pAlpha)
+                .setUv(0, 1)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(pPackedLight)
+                .setNormal(pose, 0, 0, 1);
 
-        buffer.vertex(matrix, size, -size, 0)
-                .color(255, 255, 255, pAlpha)
-                .uv(1, 1)
-                .overlayCoords(OverlayTexture.NO_OVERLAY)
-                .uv2(pPackedLight)
-                .normal(normal, 0, 0, 1)
-                .endVertex();
+        buffer.addVertex(matrix, size, -size, 0)
+                .setColor(255, 255, 255, pAlpha)
+                .setUv(1, 1)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(pPackedLight)
+                .setNormal(pose, 0, 0, 1);
 
-        buffer.vertex(matrix, size, size, 0)
-                .color(255, 255, 255, pAlpha)
-                .uv(1, 0)
-                .overlayCoords(OverlayTexture.NO_OVERLAY)
-                .uv2(pPackedLight)
-                .normal(normal, 0, 0, 1)
-                .endVertex();
+        buffer.addVertex(matrix, size, size, 0)
+                .setColor(255, 255, 255, pAlpha)
+                .setUv(1, 0)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(pPackedLight)
+                .setNormal(pose, 0, 0, 1);
 
-        buffer.vertex(matrix, -size, size, 0)
-                .color(255, 255, 255, pAlpha)
-                .uv(0, 0)
-                .overlayCoords(OverlayTexture.NO_OVERLAY)
-                .uv2(pPackedLight)
-                .normal(normal, 0, 0, 1)
-                .endVertex();
+        buffer.addVertex(matrix, -size, size, 0)
+                .setColor(255, 255, 255, pAlpha)
+                .setUv(0, 0)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(pPackedLight)
+                .setNormal(pose, 0, 0, 1);
     }
 }

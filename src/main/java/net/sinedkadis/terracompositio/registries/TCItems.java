@@ -3,7 +3,6 @@ package net.sinedkadis.terracompositio.registries;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.*;
-import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -11,7 +10,6 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.entity.custom.TCBoatEntity;
 import net.sinedkadis.terracompositio.item.custom.*;
-import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
@@ -21,21 +19,21 @@ public class TCItems {
 
     //Cedar armor
     public static final DeferredItem<Item> FLOW_CEDAR_HELMET = ITEMS.register("flow_cedar_helmet",
-            () -> new TCArmorItem(TCArmorMaterials.FLOW_CEDAR, ArmorItem.Type.HELMET,new Item.Properties()));
+            () -> new TCArmorItem(TCArmorMaterials.FLOW_CEDAR.value(), ArmorItem.Type.HELMET, new Item.Properties()));
     public static final DeferredItem<Item> FLOW_CEDAR_CHESTPLATE = ITEMS.register("flow_cedar_chestplate",
-            () -> new TCArmorItem(TCArmorMaterials.FLOW_CEDAR, ArmorItem.Type.CHESTPLATE,new Item.Properties()));
+            () -> new TCArmorItem(TCArmorMaterials.FLOW_CEDAR.value(), ArmorItem.Type.CHESTPLATE, new Item.Properties()));
     public static final DeferredItem<Item> FLOW_CEDAR_LEGGINGS = ITEMS.register("flow_cedar_leggings",
-            () -> new TCArmorItem(TCArmorMaterials.FLOW_CEDAR, ArmorItem.Type.LEGGINGS,new Item.Properties()));
+            () -> new TCArmorItem(TCArmorMaterials.FLOW_CEDAR.value(), ArmorItem.Type.LEGGINGS, new Item.Properties()));
     public static final DeferredItem<Item> FLOW_CEDAR_BOOTS = ITEMS.register("flow_cedar_boots",
-            () -> new TCArmorItem(TCArmorMaterials.FLOW_CEDAR, ArmorItem.Type.BOOTS,new Item.Properties()));
+            () -> new TCArmorItem(TCArmorMaterials.FLOW_CEDAR.value(), ArmorItem.Type.BOOTS, new Item.Properties()));
     public static final DeferredItem<Item> FLOWING_FLOW_CEDAR_HELMET = ITEMS.register("flowing_flow_cedar_helmet",
-            () -> new CedarArmorItem(TCArmorMaterials.FLOWING_FLOW_CEDAR, ArmorItem.Type.HELMET, new Item.Properties()));
+            () -> new CedarArmorItem(TCArmorMaterials.FLOWING_FLOW_CEDAR.value(), ArmorItem.Type.HELMET, new Item.Properties()));
     public static final DeferredItem<Item> FLOWING_FLOW_CEDAR_CHESTPLATE = ITEMS.register("flowing_flow_cedar_chestplate",
-            () -> new CedarArmorItem(TCArmorMaterials.FLOWING_FLOW_CEDAR, ArmorItem.Type.CHESTPLATE, new Item.Properties()));
+            () -> new CedarArmorItem(TCArmorMaterials.FLOWING_FLOW_CEDAR.value(), ArmorItem.Type.CHESTPLATE, new Item.Properties()));
     public static final DeferredItem<Item> FLOWING_FLOW_CEDAR_LEGGINGS = ITEMS.register("flowing_flow_cedar_leggings",
-            () -> new CedarArmorItem(TCArmorMaterials.FLOWING_FLOW_CEDAR, ArmorItem.Type.LEGGINGS, new Item.Properties()));
+            () -> new CedarArmorItem(TCArmorMaterials.FLOWING_FLOW_CEDAR.value(), ArmorItem.Type.LEGGINGS, new Item.Properties()));
     public static final DeferredItem<Item> FLOWING_FLOW_CEDAR_BOOTS = ITEMS.register("flowing_flow_cedar_boots",
-            () -> new CedarArmorItem(TCArmorMaterials.FLOWING_FLOW_CEDAR, ArmorItem.Type.BOOTS, new Item.Properties()));
+            () -> new CedarArmorItem(TCArmorMaterials.FLOWING_FLOW_CEDAR.value(), ArmorItem.Type.BOOTS, new Item.Properties()));
 
 
     //Flow infused iron materials
@@ -131,9 +129,9 @@ public class TCItems {
             () -> new Item(new Item.Properties()){
                 @Override
                 @ParametersAreNonnullByDefault
-                public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
-                    super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
-                    pTooltipComponents.add(Component.translatable("item.terracompositio.flow_infuser_kit.tooltip").withStyle(ChatFormatting.GRAY));
+                public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+                    super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+                    tooltipComponents.add(Component.translatable("item.terracompositio.flow_infuser_kit.tooltip").withStyle(ChatFormatting.GRAY));
                 }
             });
     public static final DeferredItem<Item> SHIELDED_BUNDLE = ITEMS.register("shielded_bundle",

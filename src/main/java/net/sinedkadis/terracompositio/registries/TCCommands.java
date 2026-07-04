@@ -3,17 +3,18 @@ package net.sinedkadis.terracompositio.registries;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
+import com.tterrag.registrate.util.nullness.NonNullSupplier;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.common.util.NonNullSupplier;
-import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.network.PacketDistributor;
+import net.minecraft.world.entity.LivingEntity;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
@@ -24,7 +25,7 @@ import net.sinedkadis.terracompositio.network.packets.S2CPlayerEcfContainerSync;
 
 import java.util.Arrays;
 
-@Mod.EventBusSubscriber(modid = TerraCompositio.MOD_ID)
+@EventBusSubscriber(modid = TerraCompositio.MOD_ID)
 public class TCCommands {
 
     @SubscribeEvent
@@ -97,9 +98,10 @@ public class TCCommands {
         }
 
         NonNullSupplier<Exception> exception = Exception::new;
-        memberEntity.getEntityInstance().tc$asEntity().getArmorSlots().forEach(itemStack -> {
+        ((LivingEntity) memberEntity.getEntityInstance()).getArmorSlots().forEach(itemStack -> {
             try {
-                itemStack.getCapability(TCCapabilities.ECF).orElseThrow(exception).clear();
+                IECFHandler capability = itemStack.getCapability(TCCapabilities.ECF);
+                if (capability == null) throw exception.get();
             } catch (Exception ignored) {
 
             }

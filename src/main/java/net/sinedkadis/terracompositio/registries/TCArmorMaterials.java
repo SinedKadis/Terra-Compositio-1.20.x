@@ -1,86 +1,89 @@
 package net.sinedkadis.terracompositio.registries;
 
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import net.sinedkadis.terracompositio.TerraCompositio;
-import org.jetbrains.annotations.NotNull;
+import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
+import org.jetbrains.annotations.ApiStatus;
 
+import java.util.EnumMap;
+import java.util.List;
 import java.util.function.Supplier;
 
-public enum TCArmorMaterials implements ArmorMaterial {
-    FLOW_CEDAR("flow_cedar",10,new int[]{ 1, 3, 2, 1 },25,
-            SoundEvents.ARMOR_EQUIP_LEATHER,1f,0f,() -> Ingredient.of(TCBlocks.FLOW_CEDAR_WOOD.get().asItem())),
-    FLOWING_FLOW_CEDAR("flowing_flow_cedar", 1, new int[]{3, 8, 3, 2}, 25,
-            SoundEvents.BEACON_ACTIVATE,3f,2f,() -> Ingredient.of(TCBlocks.FLOW_CEDAR_WOOD.get().asItem())),
-    TECHNETIUM("technetium",30,new int[]{ 5, 6, 6, 5 },50,
-            SoundEvents.ARMOR_EQUIP_NETHERITE,5f,4f,() -> Ingredient.of(TCBlocks.TECHNETIUM_BLOCK.get().asItem()));
+public class TCArmorMaterials {
+    private static final DeferredRegister<ArmorMaterial> ARMOR_MATERIALS =
+            DeferredRegister.create(Registries.ARMOR_MATERIAL, TerraCompositioAPI.MOD_ID);
 
-    private final String name;
-    private final int durabilityMultiplier;
-    private final int[] protectionAmounts;
-    private final int enchantmentValue;
-    private final SoundEvent equipSound;
-    private final float toughness;
-    private final float knockbackResistance;
-    private final Supplier<Ingredient> repairIngredient;
+    public static Holder<ArmorMaterial> FLOW_CEDAR = register("flow_cedar",
+            new int[]{1, 3, 2, 1},
+            25,
+            SoundEvents.ARMOR_EQUIP_LEATHER,
+            1f,
+            0f,
+            () -> Ingredient.of(TCBlocks.FLOW_CEDAR_WOOD.get().asItem()));
 
-    private static final int[] BASE_DURABILITY = { 11, 16, 16, 13 };
+    public static Holder<ArmorMaterial> FLOWING_FLOW_CEDAR = register("flowing_flow_cedar",
+            new int[]{3, 8, 3, 2},
+            25,
+            BuiltInRegistries.SOUND_EVENT.getHolder(SoundEvents.BEACON_ACTIVATE.getLocation())
+                    .orElse((Holder.Reference<SoundEvent>) SoundEvents.ARMOR_EQUIP_DIAMOND),
+            3f,
+            2f,
+            () -> Ingredient.of(TCBlocks.FLOW_CEDAR_WOOD.get().asItem()));
 
-    TCArmorMaterials(String name, int durabilityMultiplier, int[] protectionAmounts, int enchantmentValue, SoundEvent equipSound, float toughness, float knockbackResistance, Supplier<Ingredient> repairIngredient) {
-        this.name = name;
-        this.durabilityMultiplier = durabilityMultiplier;
-        this.protectionAmounts = protectionAmounts;
-        this.enchantmentValue = enchantmentValue;
-        this.equipSound = equipSound;
-        this.toughness = toughness;
-        this.knockbackResistance = knockbackResistance;
-        this.repairIngredient = repairIngredient;
+    public static Holder<ArmorMaterial> TECHNETIUM = register("technetium",
+            new int[]{5, 6, 6, 5},
+            50,
+            SoundEvents.ARMOR_EQUIP_NETHERITE,
+            5f,
+            4f,
+            () -> Ingredient.of(TCBlocks.TECHNETIUM_BLOCK.get()));
+
+
+    private static Holder<ArmorMaterial> register(
+            String name,
+            int[] defense,
+            int enchantmentValue,
+            Holder<SoundEvent> equipSound,
+            float toughness,
+            float knockbackResistance,
+            Supplier<Ingredient> repairIngredient
+    ) {
+        List<ArmorMaterial.Layer> list = List.of(new ArmorMaterial.Layer(TerraCompositio.modLoc(name)));
+        return register(name, defense, enchantmentValue, equipSound, toughness, knockbackResistance, repairIngredient, list);
     }
 
-    @Override
-    public int getDurabilityForType(ArmorItem.Type pType) {
-        return BASE_DURABILITY[pType.ordinal()] * this.durabilityMultiplier;
+    private static Holder<ArmorMaterial> register(
+            String name,
+            int[] defense,
+            int enchantmentValue,
+            Holder<SoundEvent> equipSound,
+            float toughness,
+            float knockbackResistance,
+            Supplier<Ingredient> repairIngredient,
+            List<ArmorMaterial.Layer> layers
+    ) {
+        EnumMap<ArmorItem.Type, Integer> enummap = new EnumMap<>(ArmorItem.Type.class);
+
+        for (ArmorItem.Type armoritem$type : ArmorItem.Type.values()) {
+            enummap.put(armoritem$type, defense[armoritem$type.ordinal()]);
+        }
+
+        return ARMOR_MATERIALS.register(name,
+                () -> new ArmorMaterial(enummap, enchantmentValue, equipSound, repairIngredient, layers, toughness, knockbackResistance)
+        );
     }
 
-    @Override
-    public int getDefenseForType(ArmorItem.Type pType) {
-        return this.protectionAmounts[pType.ordinal()];
-    }
-
-    @Override
-    public int getEnchantmentValue() {
-        return enchantmentValue;
-    }
-
-    @Override
-    public @NotNull SoundEvent getEquipSound() {
-        return this.equipSound;
-    }
-
-    @Override
-    public @NotNull Ingredient getRepairIngredient() {
-        return this.repairIngredient.get();
-    }
-
-    @Override
-    public @NotNull String getName() {
-        return TerraCompositio.MOD_ID + ":" + this.name;
-    }
-
-    public String getClearName(){
-        return this.name;
-    }
-
-    @Override
-    public float getToughness() {
-        return this.toughness;
-    }
-
-    @Override
-    public float getKnockbackResistance() {
-        return this.knockbackResistance;
+    @ApiStatus.Internal
+    public static void register(IEventBus eventBus) {
+        ARMOR_MATERIALS.register(eventBus);
     }
 }

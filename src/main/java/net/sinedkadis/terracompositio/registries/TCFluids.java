@@ -28,16 +28,23 @@ public class TCFluids {
             () -> TCFluidRegistryContainer.createExtension(new TCFluidRegistryContainer.ClientExtensions(TerraCompositio.MOD_ID, "flow")
                     .renderOverlay(null).fogColor(30f/255f,141f/255f,198f/255f)),
             new TCFluidRegistryContainer.AdditionalProperties().levelDecreasePerBlock(1).slopeFindDistance(4).tickRate(1),
-            BlockBehaviour.Properties.copy(Blocks.WATER),
+            BlockBehaviour.Properties.ofFullCopy(Blocks.WATER),
             new Item.Properties().stacksTo(1));
+    public static final TCFluidRegistryContainer BIRCH_JUICE_FLUID = new TCFluidRegistryContainer("birch_juice",
+            FluidType.Properties.create().canDrown(true).canSwim(true).supportsBoating(true).canPushEntity(true),
+            () -> TCFluidRegistryContainer.createExtension(new TCFluidRegistryContainer.ClientExtensions(TerraCompositio.MOD_ID, "birch_juice")
+                    .renderOverlay(null).fogColor(176f / 255f, 173f / 255f, 150f / 255f)),
+            new TCFluidRegistryContainer.AdditionalProperties(),
+            BlockBehaviour.Properties.ofFullCopy(Blocks.WATER),
+            new Item.Properties().stacksTo(1), 32);
 
     public static void applyLiquidFlowEffect(LivingEvent.LivingTickEvent event) {
         LivingEntity livingEntity = event.getEntity();
         FluidState fluidstate = livingEntity.level().getFluidState(livingEntity.blockPosition());
-        if (fluidstate.getFluidType() == FLOW_FLUID.type.get() && !livingEntity.canStandOnFluid(fluidstate) || livingEntity.hasEffect(TCEffects.FLOW_SATURATION.get())) {
-            if (fluidstate.getFluidType() == FLOW_FLUID.type.get() && !livingEntity.canStandOnFluid(fluidstate) && livingEntity.hasEffect(TCEffects.FLOW_SATURATION.get())) {
+        if (fluidstate.getFluidType() == FLOW_FLUID.type.get() && !livingEntity.canStandOnFluid(fluidstate) || livingEntity.hasEffect(TCEffects.FLOW_SATURATION.getDelegate())) {
+            if (fluidstate.getFluidType() == FLOW_FLUID.type.get() && !livingEntity.canStandOnFluid(fluidstate) && livingEntity.hasEffect(TCEffects.FLOW_SATURATION.getDelegate())) {
                 livingEntity.setDeltaMovement(livingEntity.getDeltaMovement().scale(1.4F)); //todo: Achievement to both
-            } else if (livingEntity.hasEffect(TCEffects.FLOW_SATURATION.get())) {
+            } else if (livingEntity.hasEffect(TCEffects.FLOW_SATURATION.getDelegate())) {
                 if (livingEntity.onGround() || livingEntity.onClimbable())
                     livingEntity.setDeltaMovement(livingEntity.getDeltaMovement().scale(1.2F));
             } else {
@@ -45,14 +52,6 @@ public class TCFluids {
             }
         }
     }
-
-    public static final TCFluidRegistryContainer BIRCH_JUICE_FLUID = new TCFluidRegistryContainer("birch_juice",
-            FluidType.Properties.create().canDrown(true).canSwim(true).supportsBoating(true).canPushEntity(true),
-            () -> TCFluidRegistryContainer.createExtension(new TCFluidRegistryContainer.ClientExtensions(TerraCompositio.MOD_ID,"birch_juice")
-                    .renderOverlay(null).fogColor(176f/255f,173f/255f,150f/255f)),
-            new TCFluidRegistryContainer.AdditionalProperties(),
-            BlockBehaviour.Properties.copy(Blocks.WATER),
-            new Item.Properties().stacksTo(1));
 
 
 }

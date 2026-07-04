@@ -48,7 +48,7 @@ public class TCEffects {
                 public boolean applyEffectTick(LivingEntity pLivingEntity, int pAmplifier) {
                     if (pLivingEntity instanceof PlayerKnowledgeAccessor accessor) {
                         accessor.setCreationKnowledge(false);
-                        return true
+                        return true;
                     }
                     return false;
                 }

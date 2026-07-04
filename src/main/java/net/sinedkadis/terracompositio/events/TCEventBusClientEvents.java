@@ -10,22 +10,21 @@ import net.minecraft.client.renderer.blockentity.SignRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.RedStoneWireBlock;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.*;
-import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.*;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.block.entity.renderer.*;
 import net.sinedkadis.terracompositio.ecf.burst.ECFBurstRenderer;
@@ -49,7 +48,7 @@ import net.sinedkadis.terracompositio.registries.*;
 import java.util.Map;
 import java.util.Optional;
 
-@Mod.EventBusSubscriber(modid = TerraCompositio.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD,value = Dist.CLIENT)
+@EventBusSubscriber(modid = TerraCompositio.MOD_ID, value = Dist.CLIENT)
 public class TCEventBusClientEvents {
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event)
@@ -72,7 +71,6 @@ public class TCEventBusClientEvents {
         ItemBlockRenderTypes.setRenderLayer(TCFluids.FLOW_FLUID.source.get(), RenderType.translucent());
         ItemBlockRenderTypes.setRenderLayer(TCFluids.FLOW_FLUID.flowing.get(), RenderType.translucent());
 
-        //noinspection removal
         ItemBlockRenderTypes.setRenderLayer(TCBlocks.FLOATING_TORCH_HOLDER.get(),RenderType.cutout());
 
         ItemProperties.register(
@@ -123,20 +121,20 @@ public class TCEventBusClientEvents {
     public static void registerItemColorHandlers(RegisterColorHandlersEvent.Item event) {
         event.register((pStack, pTintIndex) -> {
             if (pTintIndex == 1) {
-                Optional<IFluidHandlerItem> fluidHandler = FluidUtil.getFluidHandler(pStack).resolve();
+                Optional<IFluidHandlerItem> fluidHandler = FluidUtil.getFluidHandler(pStack);
                 if (fluidHandler.isPresent()) {
                     FluidStack fluid = fluidHandler.get().getFluidInTank(0);
                     if (!fluid.isEmpty()) {
                         if (fluid.getFluid().isSame(Fluids.LAVA)) {
                             return 0xFF7A00; //0xFF7A00
                         }
-                        ResourceLocation id = ForgeRegistries.FLUIDS.getKey(fluid.getFluid());
-                        if (id != null) {
-                            String string = id.toString();
-                            if (HARDCODED_COLORS.containsKey(string)) {
-                                return HARDCODED_COLORS.get(string);
-                            }
+                        ResourceLocation id = BuiltInRegistries.FLUID.getKey(fluid.getFluid());
+
+                        String string = id.toString();
+                        if (HARDCODED_COLORS.containsKey(string)) {
+                            return HARDCODED_COLORS.get(string);
                         }
+
                         IClientFluidTypeExtensions extensions = IClientFluidTypeExtensions.of(fluid.getFluid());
 
                         return extensions.getTintColor();
@@ -210,12 +208,13 @@ public class TCEventBusClientEvents {
 
     @SubscribeEvent
     public static void onRegisterItemDecorations(RegisterItemDecorationsEvent event) {
-        for (Item item : ForgeRegistries.ITEMS) {
+        for (Item item : BuiltInRegistries.ITEM) {
             if (item instanceof TechnetiumArmorItem) {
                 event.register(item, ECFBarRenderer.INSTANCE);
             }
         }
     }
+
 }
 
 
