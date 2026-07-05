@@ -11,8 +11,8 @@ import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
 import net.sinedkadis.terracompositio.api.helpers.ECFHelper;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
-import net.sinedkadis.terracompositio.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.entity.custom.FlowCedarEntEntity;
+import net.sinedkadis.terracompositio.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.registries.TCTags;
 import org.jetbrains.annotations.Nullable;
 
@@ -48,7 +48,7 @@ public class ReachSourceGoal extends Goal {
         if (searchCooldown-- > 0) return false;
         searchCooldown = SEARCH_INTERVAL;
 
-        Optional<IECFHandler> cfeHandler = mob.getInnerECFOptional().resolve();
+        Optional<IECFHandler> cfeHandler = mob.getInnerECFHandler().resolve();
         if (cfeHandler.isEmpty() || cfeHandler.get().getECF() > 6) return false;
         if (mob.isExtracting() || mob.isHolding()) return false;
 

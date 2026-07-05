@@ -13,8 +13,8 @@ import net.sinedkadis.terracompositio.api.networks.NetworkAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.api.registries.TCBlockStateProperties;
-import net.sinedkadis.terracompositio.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.entity.custom.FlowCedarEntEntity;
+import net.sinedkadis.terracompositio.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.registries.TCTags;
 import org.jetbrains.annotations.Nullable;
 
@@ -54,7 +54,7 @@ public class ECFExtractGoal extends Goal {
         if (!ForgeEventFactory.getMobGriefingEvent(this.level, this.mob)) return false;
 
         cachedHeld = mob.getCapability(TCCapabilities.ECF).resolve().orElse(null);
-        cachedInner = mob.getInnerECFOptional().resolve().orElse(null);
+        cachedInner = mob.getInnerECFHandler().resolve().orElse(null);
 
         if (cachedInner == null || cachedInner.getECF() >= 6) return false;
         if (!isECFQueueEmpty()) return false;
@@ -135,7 +135,7 @@ public class ECFExtractGoal extends Goal {
                 : mob.getCapability(TCCapabilities.ECF).resolve().orElse(null);
         IECFHandler inner = cachedInner != null
                 ? cachedInner
-                : mob.getInnerECFOptional().resolve().orElse(null);
+                : mob.getInnerECFHandler().resolve().orElse(null);
 
         if (held == null || inner == null) return true;
         return held.getECF() + held.getQueued() + inner.getQueued() <= 0;

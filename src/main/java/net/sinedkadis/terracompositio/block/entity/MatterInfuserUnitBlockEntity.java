@@ -14,17 +14,16 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.wrapper.EmptyHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
-import net.sinedkadis.terracompositio.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.block.behaviours.ECFHandlerBehaviour;
 import net.sinedkadis.terracompositio.block.behaviours.ItemStateHolderBehaviour;
 import net.sinedkadis.terracompositio.block.custom.MatterInfuserBaseEntityBlock;
 import net.sinedkadis.terracompositio.config.TCInnerConfig;
 import net.sinedkadis.terracompositio.recipe.MatterInfusionRecipe;
 import net.sinedkadis.terracompositio.registries.TCBlockEntities;
+import net.sinedkadis.terracompositio.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.registries.TCItems;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEECFBehaviour;
@@ -128,8 +127,8 @@ public class MatterInfuserUnitBlockEntity extends MatterInfuserBaseBlockEntity{
         if (casingBE == null) {
             return false;
         }
-        IItemHandler casingItemHandler = casingBE.getCapability(TCCapabilities.ITEM_STATE_HOLDER).orElse(((IItemHandlerModifiable) EmptyHandler.INSTANCE));
-        if (casingItemHandler.getStackInSlot(UP_CONNECTION_SLOT).isEmpty()
+        IItemHandler casingItemHandler = level.getCapability(TCCapabilities.ITEM_STATE_HOLDER_BLOCK, worldPosition, null);
+        if (casingItemHandler == null || casingItemHandler.getStackInSlot(UP_CONNECTION_SLOT).isEmpty()
                 || casingItemHandler.getStackInSlot(DOWN_CONNECTION_SLOT).isEmpty())
             return false;
 
@@ -138,9 +137,9 @@ public class MatterInfuserUnitBlockEntity extends MatterInfuserBaseBlockEntity{
             BlockPos currentPos = worldPosition.relative(dir, i);
             BlockEntity blockEntity = level.getBlockEntity(currentPos);
             if (blockEntity instanceof MatterInfuserPortBlockEntity) break;
-            if (blockEntity instanceof MatterInfuserUnitBlockEntity unitBlockEntity) {
-                IItemHandler unitItemHandler = unitBlockEntity.getCapability(TCCapabilities.ITEM_STATE_HOLDER).orElse(((IItemHandlerModifiable) EmptyHandler.INSTANCE));
-                if (unitItemHandler.getStackInSlot(0).isEmpty()) return false;
+            if (blockEntity instanceof MatterInfuserUnitBlockEntity) {
+                IItemHandler unitItemHandler = level.getCapability(TCCapabilities.ITEM_STATE_HOLDER_BLOCK, currentPos, null);
+                if (unitItemHandler == null || unitItemHandler.getStackInSlot(0).isEmpty()) return false;
                 continue;
             }
             return false;

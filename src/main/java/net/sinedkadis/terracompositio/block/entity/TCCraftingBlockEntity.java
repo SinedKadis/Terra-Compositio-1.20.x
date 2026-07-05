@@ -13,13 +13,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.sinedkadis.terracompositio.api.IHaveKnowledge;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
-import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
-import net.sinedkadis.terracompositio.registries.TCCapabilities;
+import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.config.TCCommonConfigs;
+import net.sinedkadis.terracompositio.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.util.behaviors.DummyBehaviour;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEItemBehaviour;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEItemWordlyContainerBehaviour;
@@ -57,19 +57,22 @@ public abstract class TCCraftingBlockEntity extends TCBlockEntity implements Wor
         partialECF += tickECFCost - floorECF;
         int floorPart = (int) Math.floor(partialECF);
         partialECF = partialECF - floorPart;
-        this.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER).takeECF(floorECF + floorPart, false);
+        if (this.level == null) return;
+        IECFHandler capability = level.getCapability(TCCapabilities.ECF_HANDLER_BLOCK, worldPosition, null);
+        if (capability == null) return;
+        capability.takeECF(floorECF + floorPart, false);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag pTag) {
-        pTag.putInt("flow_port_progress", progress);
-        super.saveAdditional(pTag);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        tag.putInt("flow_port_progress", progress);
+        super.saveAdditional(tag, registries);
     }
 
     @Override
-    public void load(CompoundTag pTag) {
-        super.load(pTag);
-        progress = pTag.getInt("flow_port_progress");
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        progress = tag.getInt("flow_port_progress");
+        super.loadAdditional(tag, registries);
     }
 
     protected void increaseCraftingProgress() {

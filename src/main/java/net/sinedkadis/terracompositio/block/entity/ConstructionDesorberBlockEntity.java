@@ -1,6 +1,7 @@
 package net.sinedkadis.terracompositio.block.entity;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -9,12 +10,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetwork;
@@ -24,15 +25,16 @@ import net.sinedkadis.terracompositio.ecf.burst.ECFBurstProjectileEntity;
 import net.sinedkadis.terracompositio.registries.TCBlockEntities;
 import net.sinedkadis.terracompositio.util.IEntityInstance;
 import net.sinedkadis.terracompositio.util.helpers.ParticleHelperInternal;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Mod.EventBusSubscriber(modid = TerraCompositio.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@ParametersAreNonnullByDefault
+@EventBusSubscriber(modid = TerraCompositio.MOD_ID)
 public class ConstructionDesorberBlockEntity extends AbstractDesorberBlockEntity {
 
     private final ItemStackHandler renderStack = new ItemStackHandler();
@@ -143,9 +145,15 @@ public class ConstructionDesorberBlockEntity extends AbstractDesorberBlockEntity
     }
 
     @Override
-    public void load(@NotNull CompoundTag pTag) {
-        super.load(pTag);
-        renderStack.deserializeNBT(pTag.getCompound("render"));
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        tag.put("render", renderStack.serializeNBT(registries));
+        super.saveAdditional(tag, registries);
+    }
+
+    @Override
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        renderStack.deserializeNBT(registries, tag.getCompound("render"));
+        super.loadAdditional(tag, registries);
     }
 
     public void setRenderStack(ItemStack itemStack) {
@@ -159,12 +167,6 @@ public class ConstructionDesorberBlockEntity extends AbstractDesorberBlockEntity
     @Override
     protected int getMaxCFE() {
         return 64;
-    }
-
-    @Override
-    protected void saveAdditional(@NotNull CompoundTag pTag) {
-        pTag.put("render", renderStack.serializeNBT());
-        super.saveAdditional(pTag);
     }
 
 }

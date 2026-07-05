@@ -2,8 +2,8 @@ package net.sinedkadis.terracompositio.entity.goals;
 
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
-import net.sinedkadis.terracompositio.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.entity.custom.FlowCedarEntEntity;
+import net.sinedkadis.terracompositio.registries.TCCapabilities;
 
 import java.util.EnumSet;
 import java.util.Optional;
@@ -33,7 +33,7 @@ public class ECFHoldGoal extends Goal {
 
     private boolean isCFEQueueEmpty() {
         Optional<IECFHandler> held = this.mob.getCapability(TCCapabilities.ECF).resolve();
-        Optional<IECFHandler> inner = this.mob.getInnerECFOptional().resolve();
+        Optional<IECFHandler> inner = this.mob.getInnerECFHandler().resolve();
         if (held.isPresent() && inner.isPresent()){
             IECFHandler helded = held.get();
             IECFHandler innered = inner.get();

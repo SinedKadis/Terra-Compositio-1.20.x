@@ -7,10 +7,10 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.EmptyFluidHandler;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.EmptyFluidHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
 import net.sinedkadis.terracompositio.api.networks.NetworkAction;
 import net.sinedkadis.terracompositio.api.networks.fluid.FluidNetwork;
@@ -23,11 +23,12 @@ import net.sinedkadis.terracompositio.registries.TCFluids;
 import net.sinedkadis.terracompositio.registries.TCItems;
 import net.sinedkadis.terracompositio.util.IEntityInstance;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
+@ParametersAreNonnullByDefault
 public class EntStatueBlockEntity extends TCBlockEntity implements FluidNetworkMember {
 
     private final EmptyFluidHandler fluidHandler = new EmptyFluidHandler() {
@@ -52,17 +53,17 @@ public class EntStatueBlockEntity extends TCBlockEntity implements FluidNetworkM
     int cd = 20;
 
     @Override
-    public void addBEBehaviours(@NotNull List<IBEBehaviour> list) {
+    public void addBEBehaviours(List<IBEBehaviour> list) {
         list.add(new ItemHandlerBehaviour(this) {
             @Override
-            public boolean allowInsert(int pSlot, @NotNull ItemStack pStack, @Nullable Direction pDirection, boolean manual) {
+            public boolean allowInsert(int pSlot, ItemStack pStack, @Nullable Direction pDirection, boolean manual) {
                 return pStack.is(TCItems.TECHNETIUM_CROWN.get());
             }
         });
     }
 
     @Override
-    public void tick(@NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState) {
+    public void tick(Level pLevel, BlockPos pPos, BlockState pState) {
         super.tick(pLevel, pPos, pState);
         FluidNetwork fluidNetworkInstance = TerraCompositioAPI.INSTANCE.getFluidNetworkInstance();
         boolean inNetwork = fluidNetworkInstance.isIn(level, this);
@@ -82,7 +83,7 @@ public class EntStatueBlockEntity extends TCBlockEntity implements FluidNetworkM
             FlowCedarEntEntity pEntity = TCEntities.FLOW_CEDAR_ENT.get().create(level);
             if (pEntity != null) {
                 level.addFreshEntity(pEntity);
-                pEntity.getInnerECFOptional().ifPresent(iecfHandler -> iecfHandler.setECF(30));
+                pEntity.getInnerECFHandler().setECF(30);
                 ItemStack crown = this.itemHandler().getStackInSlot(0);
                 if (crown.is(TCItems.TECHNETIUM_CROWN.get())) {
                     pEntity.setItemSlot(EquipmentSlot.HEAD,crown.copyAndClear());
@@ -98,7 +99,7 @@ public class EntStatueBlockEntity extends TCBlockEntity implements FluidNetworkM
     }
 
     private IItemHandler itemHandler() {
-        return ((ItemHandlerBehaviour) (behaviours.get(0))).getItemHandler();
+        return ((ItemHandlerBehaviour) (behaviours.getFirst())).getItemHandler();
     }
 
     @Override

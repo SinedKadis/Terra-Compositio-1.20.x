@@ -15,6 +15,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.EmptyFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.wrapper.EmptyItemHandler;
 import net.sinedkadis.terracompositio.api.IHaveKnowledge;
@@ -133,6 +135,15 @@ public abstract class TCBlockEntity extends BlockEntity implements IHaveKnowledg
                 .filter(Objects::nonNull)
                 .findAny();
         return behaviourCap.orElse(SentinelHelper.EMPTY_ECF_HANDLER);
+    }
+
+    @Override
+    public IFluidHandler getFluidCapability(@Nullable Direction direction) {
+        Optional<IFluidHandler> behaviourCap = behaviours.stream()
+                .map(iBehaviour -> iBehaviour.getFluidCapability(direction))
+                .filter(Objects::nonNull)
+                .findAny();
+        return behaviourCap.orElse(EmptyFluidHandler.INSTANCE);
     }
 
     @Override

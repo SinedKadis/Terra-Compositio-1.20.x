@@ -1,56 +1,64 @@
 package net.sinedkadis.terracompositio.recipe;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import lombok.Getter;
+import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 import net.sinedkadis.terracompositio.TerraCompositio;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public class FlowInfusionRecipe implements Recipe<SimpleContainer> {
+import javax.annotation.ParametersAreNonnullByDefault;
+
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
+public class FlowInfusionRecipe implements Recipe<RecipeWrapper> {
     private final NonNullList<Ingredient> inputItems;
     private final ItemStack output;
-    private final ResourceLocation id;
     @Getter
     private final int ecf;
     @Getter
     private final int ticks;
 
-    public FlowInfusionRecipe(NonNullList<Ingredient> inputItems, ItemStack output, ResourceLocation id, int ecf, int ticks) {
+    public FlowInfusionRecipe(NonNullList<Ingredient> inputItems, ItemStack output, int ecf, int ticks) {
         this.inputItems = inputItems;
         this.output = output;
         this.ecf = ecf;
         this.ticks = ticks;
-        this.id = id;
     }
 
     @Override
-    public boolean matches(@NotNull SimpleContainer pContainer, Level pLevel) {
+    public boolean matches(RecipeWrapper pContainer, Level pLevel) {
         if(pLevel.isClientSide()){
             return false;
         }
 
-        return inputItems.get(0).test(pContainer.getItem(0));
+        return inputItems.getFirst().test(pContainer.getItem(0));
     }
 
     @Override
-    public @NotNull NonNullList<Ingredient> getIngredients() {
+    public ItemStack assemble(RecipeWrapper input, HolderLookup.Provider registries) {
+        return output.copy();
+    }
+
+    @Override
+    public NonNullList<Ingredient> getIngredients() {
         return inputItems;
     }
 
-    @Override
-    public @NotNull ItemStack assemble(@NotNull SimpleContainer pContainer, @NotNull RegistryAccess pRegistryAccess) {
-        return output.copy();
-    }
 
     @Override
     public boolean canCraftInDimensions(int pWidth, int pHeight) {
@@ -58,25 +66,22 @@ public class FlowInfusionRecipe implements Recipe<SimpleContainer> {
     }
 
     @Override
-    public @NotNull ItemStack getResultItem(@Nullable RegistryAccess pRegistryAccess) {
+    public ItemStack getResultItem(HolderLookup.Provider registries) {
         return output.copy();
     }
 
     public float getECFTick() {
         return (float) ecf / ticks;
     }
-    @Override
-    public @NotNull ResourceLocation getId() {
-        return id;
-    }
+
 
     @Override
-    public @NotNull RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<?> getSerializer() {
         return Serializer.INSTANCE;
     }
 
     @Override
-    public @NotNull RecipeType<?> getType() {
+    public RecipeType<?> getType() {
         return Type.INSTANCE;
     }
     public static class Type implements RecipeType<FlowInfusionRecipe>{
@@ -86,41 +91,49 @@ public class FlowInfusionRecipe implements Recipe<SimpleContainer> {
     public static class Serializer implements RecipeSerializer<FlowInfusionRecipe>{
         public static final Serializer INSTANCE = new Serializer();
         public static final ResourceLocation ID = TerraCompositio.modLoc("flow_infusion");
+
+
         @Override
-        public @NotNull FlowInfusionRecipe fromJson(@NotNull ResourceLocation pRecipeId, @NotNull JsonObject pSerializedRecipe) {
-            ItemStack output = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "output"));
-            int cfe = GsonHelper.getAsInt(pSerializedRecipe, "ecf");
-            int ticks = GsonHelper.getAsInt(pSerializedRecipe,"time");
-            JsonArray ingredients = GsonHelper.getAsJsonArray(pSerializedRecipe,"ingredients");
-            NonNullList<Ingredient> inputs = NonNullList.withSize(1,Ingredient.EMPTY);
-            for (int i=0; i < inputs.size();i++){
-                inputs.set(i,Ingredient.fromJson(ingredients.get(i)));
-            }
-
-
-
-            return new FlowInfusionRecipe(inputs,output,pRecipeId,cfe,ticks);
+        public MapCodec<FlowInfusionRecipe> codec() {
+            return RecordCodecBuilder.mapCodec(instance ->
+                    instance.group(
+                                    NonNullList.codecOf(Ingredient.CODEC).fieldOf("ingredients")
+                                            .forGetter(FlowInfusionRecipe::getIngredients),
+                                    ItemStack.CODEC.fieldOf("result")
+                                            .forGetter(recipe -> recipe.getResultItem(RegistryAccess.EMPTY)),
+                                    Codec.INT.fieldOf("ecf")
+                                            .forGetter(FlowInfusionRecipe::getEcf),
+                                    Codec.INT.fieldOf("ticks")
+                                            .forGetter(FlowInfusionRecipe::getTicks)
+                            )
+                            .apply(instance, FlowInfusionRecipe::new)
+            );
         }
 
         @Override
-        public @Nullable FlowInfusionRecipe fromNetwork(@NotNull ResourceLocation pRecipeId, FriendlyByteBuf pBuffer) {
-            NonNullList<Ingredient> inputs = NonNullList.withSize(pBuffer.readInt(),Ingredient.EMPTY);
-            inputs.replaceAll(ignored -> Ingredient.fromNetwork(pBuffer));
-            ItemStack output = pBuffer.readItem();
-            int cfe = pBuffer.readInt();
-            int ticks = pBuffer.readInt();
-            return new FlowInfusionRecipe(inputs,output,pRecipeId,cfe,ticks);
-        }
+        public StreamCodec<RegistryFriendlyByteBuf, FlowInfusionRecipe> streamCodec() {
+            return new StreamCodec<>() {
+                @Override
+                public FlowInfusionRecipe decode(RegistryFriendlyByteBuf buffer) {
+                    NonNullList<Ingredient> ingredients = NonNullList.create();
+                    for (int i = 0; i < buffer.readVarInt(); i++) {
+                        ingredients.add(Ingredient.CONTENTS_STREAM_CODEC.decode(buffer));
+                    }
+                    ItemStack output = ItemStack.STREAM_CODEC.decode(buffer);
+                    int ecf = ByteBufCodecs.VAR_INT.decode(buffer);
+                    int tick = ByteBufCodecs.VAR_INT.decode(buffer);
+                    return new FlowInfusionRecipe(ingredients, output, ecf, tick);
+                }
 
-        @Override
-        public void toNetwork(FriendlyByteBuf pBuffer, FlowInfusionRecipe pRecipe) {
-            pBuffer.writeInt(pRecipe.inputItems.size());
-            for (Ingredient ingredient:pRecipe.getIngredients()){
-                ingredient.toNetwork(pBuffer);
-            }
-            pBuffer.writeItemStack(pRecipe.getResultItem(null),false);
-            pBuffer.writeInt(pRecipe.ecf);
-            pBuffer.writeInt(pRecipe.ticks);
+                @Override
+                public void encode(RegistryFriendlyByteBuf buffer, FlowInfusionRecipe value) {
+                    buffer.writeVarInt(value.getIngredients().size());
+                    for (Ingredient ingredient : value.getIngredients()) {
+                        Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, ingredient);
+                    }
+                    ItemStack.STREAM_CODEC.encode(buffer, value.getResultItem(RegistryAccess.EMPTY));
+                }
+            };
         }
     }
 }

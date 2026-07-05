@@ -69,11 +69,11 @@ public class AirSaturatorBlockEntity extends TCBlockEntity implements IFluidAppl
     }
 
     private IECFHandler ecfContainer() {
-        return ((ECFHandlerBehaviour) behaviours.get(0)).getMainHandler();
+        return ((ECFHandlerBehaviour) behaviours.getFirst()).getMainHandler();
     }
 
     private void scheduleMemberUpdate() {
-        ((ECFHandlerBehaviour) behaviours.get(0)).scheduleMemberUpdate();
+        ((ECFHandlerBehaviour) behaviours.getFirst()).scheduleMemberUpdate();
     }
 
 }

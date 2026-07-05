@@ -9,8 +9,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.wrapper.EmptyHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.wrapper.EmptyItemHandler;
 import net.sinedkadis.terracompositio.registries.TCBlockEntities;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
 
@@ -30,7 +30,7 @@ public class MatterInfuserPortBlockEntity extends MatterInfuserBaseBlockEntity {
         if (casingBE != null) {
             return casingBE.getItemHandler();
         }
-        return ((IItemHandlerModifiable) EmptyHandler.INSTANCE);
+        return ((IItemHandlerModifiable) EmptyItemHandler.INSTANCE);
     }
 
     @Override

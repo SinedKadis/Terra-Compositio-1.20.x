@@ -4,13 +4,14 @@ package net.sinedkadis.terracompositio.block.entity;
 import lombok.Getter;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
@@ -23,10 +24,10 @@ import net.sinedkadis.terracompositio.block.behaviours.ECFHandlerBehaviour;
 import net.sinedkadis.terracompositio.config.TCInnerConfig;
 import net.sinedkadis.terracompositio.registries.TCFluids;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
-import java.util.Optional;
 
 @Getter
 @ParametersAreNonnullByDefault
@@ -71,12 +72,9 @@ public abstract class AbstractDesorberBlockEntity extends TCBlockEntity {
         } else if (fluidHandler.isEmpty() && pState.getValue(TCBlockStateProperties.INFUSED)) {
             pLevel.setBlockAndUpdate(pPos, pState.setValue(TCBlockStateProperties.INFUSED, false));
         }
-        BlockEntity blockEntity = pLevel.getBlockEntity(pPos.below());
-        Optional<IFluidHandler> fluidHandlerOptional = Optional.empty();
-        if (blockEntity != null) {
-            fluidHandlerOptional = blockEntity.getCapability(ForgeCapabilities.FLUID_HANDLER).resolve();
-        }
-        if (fluidHandlerOptional.isPresent() && fluidHandlerOptional.get() instanceof FluidTank sourceTank){
+
+        IFluidHandler fluidHandlerOptional = pLevel.getCapability(Capabilities.FluidHandler.BLOCK, pPos.below(), null);
+        if (fluidHandlerOptional instanceof FluidTank sourceTank) {
             FluidUtil.tryFluidTransfer(this.fluidHandler,sourceTank,1000,true);
         }
     }
@@ -84,7 +82,7 @@ public abstract class AbstractDesorberBlockEntity extends TCBlockEntity {
 
 
     protected IECFHandler ecfContainer() {
-        return ((ECFHandlerBehaviour) behaviours.get(0)).getMainHandler();
+        return ((ECFHandlerBehaviour) behaviours.getFirst()).getMainHandler();
     }
 
     @Override
@@ -107,5 +105,10 @@ public abstract class AbstractDesorberBlockEntity extends TCBlockEntity {
                     t -> t.add(FluidComponent.of(fluidStack)));
         }
 
+    }
+
+    @Override
+    public IFluidHandler getFluidCapability(@Nullable Direction direction) {
+        return fluidHandler;
     }
 }

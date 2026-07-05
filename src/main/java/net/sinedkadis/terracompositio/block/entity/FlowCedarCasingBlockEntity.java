@@ -10,24 +10,23 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.wrapper.EmptyHandler;
-import net.sinedkadis.terracompositio.registries.TCCapabilities;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.wrapper.EmptyItemHandler;
 import net.sinedkadis.terracompositio.block.behaviours.ItemHandlerBehaviour;
 import net.sinedkadis.terracompositio.block.behaviours.ItemStateHolderBehaviour;
 import net.sinedkadis.terracompositio.block.custom.MatterInfuserBaseEntityBlock;
 import net.sinedkadis.terracompositio.block.custom.MatterInfuserUnitBlock;
 import net.sinedkadis.terracompositio.registries.TCBlockEntities;
+import net.sinedkadis.terracompositio.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.registries.TCItems;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.IntStream;
 
 import static net.minecraft.world.level.block.entity.HopperBlockEntity.getContainerAt;
@@ -125,12 +124,18 @@ public class FlowCedarCasingBlockEntity extends TCCraftingBlockEntity{
 
     }
 
-    public boolean noInputBus() {
-        return this.getCapability(TCCapabilities.ITEM_STATE_HOLDER).orElse(((IItemHandlerModifiable) EmptyHandler.INSTANCE)).getStackInSlot(INPUT_BUS_SLOT).isEmpty();
+    private static boolean canMergeItems(ItemStack pStack1, ItemStack pStack2) {
+        return pStack1.getCount() <= pStack1.getMaxStackSize() && ItemStack.matches(pStack1, pStack2);
     }
 
-    public boolean noOutputBus() {
-        return this.getCapability(TCCapabilities.ITEM_STATE_HOLDER).orElse(((IItemHandlerModifiable) EmptyHandler.INSTANCE)).getStackInSlot(OUTPUT_BUS_SLOT).isEmpty();
+    public boolean noInputBus() {
+        if (this.level != null) {
+            IItemHandler capability = this.level.getCapability(TCCapabilities.ITEM_STATE_HOLDER_BLOCK, this.worldPosition, null);
+            if (capability != null) {
+                return capability.getStackInSlot(INPUT_BUS_SLOT).isEmpty();
+            }
+        }
+        return false;
     }
 
     public void tick(Level pLevel, BlockPos pPos, BlockState pState) {
@@ -142,10 +147,14 @@ public class FlowCedarCasingBlockEntity extends TCCraftingBlockEntity{
         }
     }
 
-    private boolean hasOutputBusConnection() {
-        IItemHandler iItemHandler = this.getCapability(TCCapabilities.ITEM_STATE_HOLDER).orElse(((IItemHandlerModifiable) EmptyHandler.INSTANCE));
-        return !iItemHandler.getStackInSlot(OUTPUT_BUS_SLOT).isEmpty()
-                && !iItemHandler.getStackInSlot(DOWN_CONNECTION_SLOT).isEmpty();
+    public boolean noOutputBus() {
+        if (this.level != null) {
+            IItemHandler capability = this.level.getCapability(TCCapabilities.ITEM_STATE_HOLDER_BLOCK, this.worldPosition, null);
+            if (capability != null) {
+                return capability.getStackInSlot(OUTPUT_BUS_SLOT).isEmpty();
+            }
+        }
+        return false;
     }
 
     @Override
@@ -153,13 +162,15 @@ public class FlowCedarCasingBlockEntity extends TCCraftingBlockEntity{
         return 0;
     }
 
-    protected IItemHandlerModifiable getItemHandler() {
-        Optional<IItemHandler> capability = this.getCapability(ForgeCapabilities.ITEM_HANDLER).resolve();
-        if (capability.isPresent()) {
-            return ((ItemStackHandler) capability.get());
+    private boolean hasOutputBusConnection() {
+        if (this.level != null) {
+            IItemHandler capability = this.level.getCapability(TCCapabilities.ITEM_STATE_HOLDER_BLOCK, this.worldPosition, null);
+            if (capability != null) {
+                return !capability.getStackInSlot(OUTPUT_BUS_SLOT).isEmpty()
+                        && !capability.getStackInSlot(DOWN_CONNECTION_SLOT).isEmpty();
+            }
         }
-        return (IItemHandlerModifiable) EmptyHandler.INSTANCE;
-        //throw new RuntimeException("Item handler not present: " + this);
+        return false;
     }
 
     private void tryMoveItems(Level pLevel, BlockPos pPos, BlockState pState) {
@@ -240,8 +251,13 @@ public class FlowCedarCasingBlockEntity extends TCCraftingBlockEntity{
         return pStack;
     }
 
-    private static boolean canMergeItems(ItemStack pStack1, ItemStack pStack2) {
-        return pStack1.getCount() <= pStack1.getMaxStackSize() && ItemStack.isSameItemSameTags(pStack1, pStack2);
+    protected IItemHandlerModifiable getItemHandler() {
+        if (this.level == null) return (IItemHandlerModifiable) EmptyItemHandler.INSTANCE;
+        IItemHandler capability = level.getCapability(Capabilities.ItemHandler.BLOCK, worldPosition, null);
+        if (capability != null) {
+            return ((ItemStackHandler) capability);
+        }
+        return (IItemHandlerModifiable) EmptyItemHandler.INSTANCE;
     }
 
     private static boolean canPlaceItemInContainer(Container pContainer, ItemStack pStack, int pSlot, @javax.annotation.Nullable Direction pDirection) {

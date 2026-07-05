@@ -7,6 +7,8 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.BlockHitResult;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.EmptyFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.wrapper.EmptyItemHandler;
 import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
@@ -33,6 +35,10 @@ public interface IBEBehaviour {
     //New 1.21.1 caps
     default IItemHandler getItemCapability(@Nullable Direction direction) {
         return EmptyItemHandler.INSTANCE;
+    }
+
+    default IFluidHandler getFluidCapability(@Nullable Direction direction) {
+        return EmptyFluidHandler.INSTANCE;
     }
 
     default IECFHandler getECFCapability(@Nullable Direction direction) {

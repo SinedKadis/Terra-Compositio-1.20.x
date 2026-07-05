@@ -3,15 +3,17 @@ package net.sinedkadis.terracompositio.block.entity;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.wrapper.EmptyHandler;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.wrapper.EmptyItemHandler;
+import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 import net.sinedkadis.terracompositio.block.IFluidApplicable;
 import net.sinedkadis.terracompositio.block.behaviours.ItemHandlerBehaviour;
 import net.sinedkadis.terracompositio.recipe.AltarTransformationRecipe;
@@ -27,7 +29,6 @@ import java.util.Optional;
 
 import static net.sinedkadis.terracompositio.api.registries.TCBlockStateProperties.INFUSED;
 
-@SuppressWarnings("DataFlowIssue")
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 public class FlowCedarAltarBlockEntity extends TCCraftingBlockEntity implements IFluidApplicable {
@@ -78,15 +79,22 @@ public class FlowCedarAltarBlockEntity extends TCCraftingBlockEntity implements 
     }
 
     protected IItemHandlerModifiable getItemHandler() {
-        return (IItemHandlerModifiable) this.getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(EmptyHandler.INSTANCE);
+        Level level1 = this.level;
+        if (level1 == null) return (IItemHandlerModifiable) EmptyItemHandler.INSTANCE;
+        return (IItemHandlerModifiable) level1
+                .getCapability(Capabilities.ItemHandler.BLOCK, this.worldPosition, null);
     }
 
     protected boolean hasRecipe() {
-        Optional<AltarTransformationRecipe> recipe = getCurrentRecipe();
+        Optional<RecipeHolder<AltarTransformationRecipe>> recipe = getCurrentRecipe();
         if (recipe.isEmpty()){
             return false;
         }
-        ItemStack result = recipe.get().getResultItem(null);
+        if (level == null) {
+            return false;
+        }
+        ItemStack result = recipe.get().value().getResultItem(level.registryAccess());
+
         boolean outputTest = enoughSpaceInOutput(result.getCount()) && sameItemInOutput(result.getItem());
         if (outputTest){
             maxProgress = 80;
@@ -95,23 +103,19 @@ public class FlowCedarAltarBlockEntity extends TCCraftingBlockEntity implements 
     }
 
     protected void craftItem() {
-        Optional<AltarTransformationRecipe> recipe = getCurrentRecipe();
+        Optional<RecipeHolder<AltarTransformationRecipe>> recipe = getCurrentRecipe();
         if (recipe.isPresent()) {
-            ItemStack result = recipe.get().getResultItem(null);
+            ItemStack result = recipe.get().value().getResultItem(RegistryAccess.EMPTY);
             this.getItemHandler().setStackInSlot(0, ItemStack.EMPTY);
             this.getItemHandler().setStackInSlot(1, ItemStack.EMPTY);
             this.getItemHandler().setStackInSlot(2, result);
         }
     }
 
-    protected Optional<AltarTransformationRecipe> getCurrentRecipe() {
-        SimpleContainer inventory = new SimpleContainer(this.getItemHandler().getSlots());
-        for (int i = 0; i < getItemHandler().getSlots(); i++) {
-            inventory.setItem(i, this.getItemHandler().getStackInSlot(i));
-        }
+    protected Optional<RecipeHolder<AltarTransformationRecipe>> getCurrentRecipe() {
 
         assert this.level != null;
-        return this.level.getRecipeManager().getRecipeFor(AltarTransformationRecipe.Type.INSTANCE, inventory, level);
+        return this.level.getRecipeManager().getRecipeFor(AltarTransformationRecipe.Type.INSTANCE, new RecipeWrapper(this.getItemHandler()), level);
     }
 
     @Override

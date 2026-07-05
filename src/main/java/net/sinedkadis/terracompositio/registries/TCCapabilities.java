@@ -8,6 +8,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.capabilities.*;
+import net.neoforged.neoforge.fluids.capability.templates.EmptyFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.wrapper.EmptyItemHandler;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -62,6 +63,9 @@ public class TCCapabilities {
             event.registerBlockEntity(TCCapabilities.ITEM_STATE_HOLDER_BLOCK, blockEntityType,
                     (be, cxt) -> be instanceof ITCCapabilityProviderInstance providerInstance ?
                             providerInstance.getStateHolderCapability(cxt) : EmptyItemHandler.INSTANCE);
+            event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, blockEntityType,
+                    (be, cxt) -> be instanceof ITCCapabilityProviderInstance providerInstance ?
+                            providerInstance.getFluidCapability(cxt) : EmptyFluidHandler.INSTANCE);
         }
         for (DeferredHolder<EntityType<?>, ? extends EntityType<?>> holder : TCEntities.ENTITY_TYPES.getEntries()) {
             EntityType<?> entityType = holder.get();
@@ -74,7 +78,6 @@ public class TCCapabilities {
             event.registerEntity(Capabilities.ItemHandler.ENTITY, entityType,
                     (be, cxt) -> be instanceof ITCCapabilityProviderInstance providerInstance ?
                             providerInstance.getItemCapability(null) : EmptyItemHandler.INSTANCE);
-            ;
         }
         for (DeferredHolder<Item, ? extends Item> holder : TCItems.ITEMS.getEntries()) {
             Item item = holder.get();
