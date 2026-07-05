@@ -2,7 +2,7 @@ package net.sinedkadis.terracompositio.api.dummies;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
 import net.sinedkadis.terracompositio.api.networks.NetworkAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetwork;
@@ -16,7 +16,6 @@ import java.util.Set;
  * The placeholder, returned by {@link TerraCompositioAPI#getECFNetworkInstance()} and {@link TerraCompositioAPI#getFluidNetworkInstance()}, if Terracompositio is not present
  */
 public class DummyNetwork implements ECFNetwork, FluidNetwork {
-    public static final DummyNetwork instance = new DummyNetwork();
 
 
     @Override

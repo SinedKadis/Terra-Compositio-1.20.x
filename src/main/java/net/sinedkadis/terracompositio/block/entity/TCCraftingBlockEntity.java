@@ -16,9 +16,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.sinedkadis.terracompositio.api.IHaveKnowledge;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
-import net.sinedkadis.terracompositio.api.dummies.DummyECFHandler;
+import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
-import net.sinedkadis.terracompositio.api.registries.TCCapabilities;
+import net.sinedkadis.terracompositio.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.config.TCCommonConfigs;
 import net.sinedkadis.terracompositio.util.behaviors.DummyBehaviour;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEItemBehaviour;
@@ -57,7 +57,7 @@ public abstract class TCCraftingBlockEntity extends TCBlockEntity implements Wor
         partialECF += tickECFCost - floorECF;
         int floorPart = (int) Math.floor(partialECF);
         partialECF = partialECF - floorPart;
-        this.getCapability(TCCapabilities.ECF).orElse(DummyECFHandler.instance).takeECF(floorECF + floorPart, false);
+        this.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER).takeECF(floorECF + floorPart, false);
     }
 
     @Override

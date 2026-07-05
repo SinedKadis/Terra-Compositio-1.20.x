@@ -22,12 +22,12 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import net.sinedkadis.terracompositio.api.registries.TCBlockStateProperties;
 import net.sinedkadis.terracompositio.registries.TCFluids;
 import net.sinedkadis.terracompositio.registries.TCItems;
@@ -42,9 +42,6 @@ public abstract class AbstractDesorberBlock extends TCBaseEntityBlock implements
         pBuilder.add(INFUSED,WATERLOGGED);
     }
 
-
-
-    @SuppressWarnings("deprecation")
     public @NotNull FluidState getFluidState(BlockState pState) {
         return pState.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(pState);
     }
@@ -71,7 +68,7 @@ public abstract class AbstractDesorberBlock extends TCBaseEntityBlock implements
             return InteractionResult.PASS;
         }
 
-        IFluidHandler fluidHandlerBlock = blockEntity.getCapability(ForgeCapabilities.FLUID_HANDLER, Direction.DOWN).resolve().orElse(null);
+        IFluidHandler fluidHandlerBlock = pLevel.getCapability(Capabilities.FluidHandler.BLOCK, pPos, Direction.DOWN);
         if (!(fluidHandlerBlock instanceof FluidTank tank)) {
             return InteractionResult.PASS;
         }
@@ -80,7 +77,7 @@ public abstract class AbstractDesorberBlock extends TCBaseEntityBlock implements
             return InteractionResult.PASS;
         }
 
-        IFluidHandlerItem fluidHandlerItem = heldItem.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).resolve().orElse(null);
+        IFluidHandlerItem fluidHandlerItem = heldItem.getCapability(Capabilities.FluidHandler.ITEM);
         if (fluidHandlerItem == null) {
             FluidStack fluidStack = new FluidStack(TCFluids.FLOW_FLUID.source.get().getSource(), 250);
             if (heldItem.is(TCItems.FLOW_BOTTLE.get())){
@@ -97,7 +94,7 @@ public abstract class AbstractDesorberBlock extends TCBaseEntityBlock implements
             }
             if (heldItem.getItem() instanceof BottleItem) {
                 FluidStack drained = tank.drain(fluidStack, IFluidHandler.FluidAction.SIMULATE);
-                if (drained.isFluidStackIdentical(fluidStack)){
+                if (FluidStack.matches(drained, fluidStack)) {
                     tank.drain(fluidStack, IFluidHandler.FluidAction.EXECUTE);
                     heldItem.shrink(1);
                     pPlayer.getInventory().add(new ItemStack(TCItems.FLOW_BOTTLE.get()));

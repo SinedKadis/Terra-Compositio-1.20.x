@@ -25,8 +25,8 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.sinedkadis.terracompositio.block.entity.EntStatueBlockEntity;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
 import net.sinedkadis.terracompositio.registries.TCFluids;
@@ -43,7 +43,6 @@ import java.util.function.Predicate;
 import static net.minecraft.world.level.block.LayeredCauldronBlock.LEVEL;
 import static net.sinedkadis.terracompositio.api.registries.TCBlockStateProperties.INFUSED;
 
-@SuppressWarnings("deprecation")
 public class WedgeBlock extends Block {
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty ATTACHED = BlockStateProperties.ATTACHED;
@@ -53,7 +52,7 @@ public class WedgeBlock extends Block {
     protected static final VoxelShape EAST_AABB = Block.box(0.0D, 5.0D, 6.0D, 6.0D, 10.0D, 10.0D);
     private int AnimTick = 0;
     private static final VoxelShape REQUIRED_SPACE_TO_DRIP_THROUGH_NON_SOLID_BLOCK = Block.box(6.0, 0.0, 6.0, 10.0, 16.0, 10.0);
-    //private static final Logger LOGGER = LogUtils.getLogger();
+
 //TODO achievement don't repeat at home(stack multiple on each other)
     public WedgeBlock(Properties properties) {
         super(properties);
@@ -230,7 +229,6 @@ public class WedgeBlock extends Block {
 
     @OnlyIn(Dist.CLIENT)
     private void generateParticles(Level pLevel, BlockPos pPos, BlockState pState, ParticleOptions particle) {
-        //for (int i = 0; i < 5; i++) {
         float x;
         float z;
         switch (pState.getValue(FACING)){
@@ -287,22 +285,12 @@ public class WedgeBlock extends Block {
     }
 
     @Override
-    public @NotNull BlockState mirror(BlockState pState, Mirror pMirror) {
-        return pState.rotate(pMirror.getRotation(pState.getValue(FACING)));
+    public @NotNull BlockState mirror(BlockState pState, @NotNull Mirror pMirror) {
+        return pState.mirror(pMirror);
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
         pBuilder.add(FACING, ATTACHED);
-    }
-
-    @Override
-    public void onRemove(@NotNull BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pNewState, boolean pIsMoving) {
-        if (!pIsMoving && !pState.is(pNewState.getBlock())) {
-            //if (pState.getValue(ATTACHED)) {
-            //    this.calculateState(pState,pLevel, pPos, false);
-            //}
-            super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
-        }
     }
 }

@@ -18,6 +18,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
+import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.sinedkadis.terracompositio.api.IHaveKnowledge;
@@ -269,5 +270,10 @@ public class ItemHandlerBehaviour implements IBEItemBehaviour, WorldlyContainer,
 
             }
         });
+    }
+
+    @Override
+    public IItemHandler getItemCapability(@Nullable Direction direction) {
+        return itemHandler;
     }
 }

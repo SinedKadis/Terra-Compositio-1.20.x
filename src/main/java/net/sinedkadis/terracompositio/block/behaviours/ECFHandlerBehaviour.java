@@ -2,6 +2,7 @@ package net.sinedkadis.terracompositio.block.behaviours;
 
 import lombok.Data;
 import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -22,6 +23,7 @@ import net.sinedkadis.terracompositio.ecf.PPECFMemberProxy;
 import net.sinedkadis.terracompositio.util.IEntityInstance;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEECFBehaviour;
 import net.sinedkadis.terracompositio.util.helpers.ECFHelperInternal;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashSet;
@@ -229,5 +231,10 @@ public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
     @Override
     public IEntityInstance getEntityInstance() {
         return IEntityInstance.wrap(blockEntity);
+    }
+
+    @Override
+    public IECFHandler getECFCapability(@Nullable Direction direction) {
+        return ecfHandler;
     }
 }

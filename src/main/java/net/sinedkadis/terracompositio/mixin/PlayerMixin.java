@@ -10,16 +10,14 @@ import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.PacketDistributor;
-import net.sinedkadis.terracompositio.api.dummies.DummyECFHandler;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
-import net.sinedkadis.terracompositio.api.registries.TCCapabilities;
+import net.sinedkadis.terracompositio.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.block.custom.ECFBoardBlock;
 import net.sinedkadis.terracompositio.config.TCInnerConfig;
-import net.sinedkadis.terracompositio.network.TCPayloads;
-import net.sinedkadis.terracompositio.network.packets.S2CAddPlayerKnowledge;
-import net.sinedkadis.terracompositio.network.packets.S2CPlayerEcfContainerSync;
+import net.sinedkadis.terracompositio.network.payloads.S2CAddPlayerKnowledgePayload;
 import net.sinedkadis.terracompositio.util.IEntityInstance;
 import net.sinedkadis.terracompositio.util.accessors.PlayerKnowledgeAccessor;
 import org.spongepowered.asm.mixin.Mixin;
@@ -76,7 +74,7 @@ public abstract class PlayerMixin extends LivingEntity implements ECFNetworkMemb
 
     @Override
     public IECFHandler getMainHandler() {
-        return this.getCapability(TCCapabilities.ECF).orElse(DummyECFHandler.instance);
+        return this.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER);
     }
 
     @Unique
@@ -137,10 +135,7 @@ public abstract class PlayerMixin extends LivingEntity implements ECFNetworkMemb
             if (((Player) (Object) this) instanceof ServerPlayer serverPlayer) {
                 wasSent = true;
                 if (((PlayerKnowledgeAccessor) serverPlayer).isCreationAcknowledged())
-                    TCPayloads.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer),
-                        new S2CAddPlayerKnowledge());
-                TCPayloads.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer),
-                        new S2CPlayerEcfContainerSync(((ECFNetworkMember) serverPlayer).getMainHandler().getECF()));
+                    PacketDistributor.sendToPlayer(serverPlayer, new S2CAddPlayerKnowledgePayload());
             }
     }
 

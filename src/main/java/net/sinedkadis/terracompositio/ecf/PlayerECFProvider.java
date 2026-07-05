@@ -1,56 +1,30 @@
 package net.sinedkadis.terracompositio.ecf;
 
-import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.common.util.LazyOptional;
+import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
-import net.sinedkadis.terracompositio.api.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.util.IEntityInstance;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class PlayerECFProvider implements net.minecraftforge.common.capabilities.ICapabilityProvider, INBTSerializable<CompoundTag> {
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.HashMap;
+import java.util.Map;
 
-    private ECFHandlerPlayerArmor handler = null;
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
+public class PlayerECFProvider implements ICapabilityProvider<Player, Void, IECFHandler> {
 
-    public PlayerECFProvider(Player player) {
-        this.player = player;
+    private final Map<Player, ECFHandlerPlayerArmor> providers = new HashMap<>();
+
+    public PlayerECFProvider() {
     }
 
-    private final Player player;
-    private final LazyOptional<IECFHandler> optional = LazyOptional.of(this::createPlayerECFContainer);
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if(cap == TCCapabilities.ECF) {
-            return optional.cast();
-        }
-
-        return LazyOptional.empty();
-    }
-
-    private IECFHandler createPlayerECFContainer() {
-        if (this.handler == null) {
-            this.handler = new ECFHandlerPlayerArmor(new DefaultECFHandler(IEntityInstance.wrap(player))
-                    .setMaxECF(0) // I haven't thought of a use for this yet
-                    .setOffset(vec3 -> vec3.add(0, 1, 0)));
-        }
-
-        return this.handler;
-    }
-
-    @Override
-    public CompoundTag serializeNBT() {
-        CompoundTag nbt = new CompoundTag();
-        createPlayerECFContainer().writeToNBT(nbt);
-        return nbt;
-    }
-
-    @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        createPlayerECFContainer().readFromNBT(nbt);
+    public @Nullable IECFHandler getCapability(Player player, Void context) {
+        return providers.computeIfAbsent(player, p -> new ECFHandlerPlayerArmor(new DefaultECFHandler(IEntityInstance.wrap(player))
+                .setMaxECF(0) // I haven't thought of a use for this yet
+                .setOffset(vec3 -> vec3.add(0, 1, 0))));
     }
 }

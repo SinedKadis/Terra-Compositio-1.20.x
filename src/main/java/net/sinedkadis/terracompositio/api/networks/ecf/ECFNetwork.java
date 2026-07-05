@@ -2,7 +2,7 @@ package net.sinedkadis.terracompositio.api.networks.ecf;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
-import net.sinedkadis.terracompositio.api.dummies.DummyECFHandler;
+import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.networks.NetworkAction;
 import net.sinedkadis.terracompositio.util.IEntityInstance;
 
@@ -72,6 +72,6 @@ public interface ECFNetwork {
      * @return the iecf handler
      */
     default IECFHandler createDefaultECFHandler(IEntityInstance entityInstance) {
-        return DummyECFHandler.instance;
+        return SentinelHelper.EMPTY_ECF_HANDLER;
     }
 }

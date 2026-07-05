@@ -7,53 +7,52 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.SaplingBlock;
+import net.minecraft.world.level.block.grower.TreeGrower;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.sinedkadis.terracompositio.api.registries.TCBlockStateProperties;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
-import net.sinedkadis.terracompositio.worldgen.tree.FlowCedarTreeGrower;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-@SuppressWarnings("deprecation")
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class FlowCedarSaplingBlock extends SaplingBlock {
-    public FlowCedarSaplingBlock(FlowCedarTreeGrower flowCedarTreeGrower, BlockBehaviour.Properties copy) {
+    public FlowCedarSaplingBlock(TreeGrower flowCedarTreeGrower, BlockBehaviour.Properties copy) {
         super(flowCedarTreeGrower,copy);
     }
 
     @Override
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
-        ItemStack itemInHand = pPlayer.getItemInHand(pHand);
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        ItemStack itemInHand = player.getItemInHand(hand);
         if (itemInHand.is(Items.BONE_MEAL)){
-            BlockState blockState = pLevel.getBlockState(pPos.above());
+            BlockState blockState = level.getBlockState(pos.above());
             boolean success = false;
             if (blockState.is(TCBlocks.FLOW_CEDAR_TANK.get()) && blockState.getValue(FlowCedarTankBlock.STAGE).equals(3)) {
                 success = true;
-                pLevel.setBlockAndUpdate(pPos.above(),blockState.setValue(FlowCedarTankBlock.STAGE,4));
+                level.setBlockAndUpdate(pos.above(), blockState.setValue(FlowCedarTankBlock.STAGE, 4));
             }
             if (blockState.is(TCBlocks.FLOW_CEDAR_ALTAR.get())) {
                 success = true;
-                pLevel.setBlockAndUpdate(pPos.above(), blockState.setValue(TCBlockStateProperties.INFUSED, true));
+                level.setBlockAndUpdate(pos.above(), blockState.setValue(TCBlockStateProperties.INFUSED, true));
             }
             if (success) {
-                pLevel.setBlockAndUpdate(pPos, TCBlocks.FLOW_CEDAR_PEDESTAL.get().defaultBlockState());
+                level.setBlockAndUpdate(pos, TCBlocks.FLOW_CEDAR_PEDESTAL.get().defaultBlockState());
                 itemInHand.shrink(1);
-                spawnFertilizeParticles(pLevel, pPos, 10);
-                playFertilizeSound(pLevel, pPos);
-                return InteractionResult.SUCCESS;
+                spawnFertilizeParticles(level, pos, 10);
+                playFertilizeSound(level, pos);
+                return ItemInteractionResult.SUCCESS;
             }
         }
-        return super.use(pState, pLevel, pPos, pPlayer, pHand, pHit);
+        return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
     }
 
     public static void playFertilizeSound(Level level, BlockPos pos) {

@@ -5,12 +5,18 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.neoforge.capabilities.BlockCapability;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.items.IItemHandler;
 
 import java.util.ArrayList;
@@ -36,32 +42,13 @@ public class ItemHelper {
         if (itemContainerContents == null) return List.of();
         return itemContainerContents.nonEmptyItemsCopy();
 
-//        CompoundTag stackTag = containerStack.getTag();
-//        if (stackTag == null) {
-//            return List.of();
-//        }
-//
-//        CompoundTag blockEntityTag = stackTag.getCompound("BlockEntityTag");
-//        if (blockEntityTag.contains("Items", CompoundTag.TAG_LIST)) {
-//            return readItemList(blockEntityTag.getList("Items", CompoundTag.TAG_COMPOUND));
-//        }
-//
-//        if (stackTag.contains("Items", CompoundTag.TAG_LIST)) {
-//            return readItemList(stackTag.getList("Items", CompoundTag.TAG_COMPOUND));
-//        }
-//
-//        if (stackTag.contains("Inventory", CompoundTag.TAG_LIST)) {
-//            return readItemList(stackTag.getList("Inventory", CompoundTag.TAG_COMPOUND));
-//        }
-//
-//        return List.of();
     }
 
     /**
      * Reads items from {@link ListTag}.
      *
      * @param itemsTag the items tag
-     * @param provider
+     * @param provider the registry access
      * @return the list
      */
     public static List<ItemStack> readItemList(ListTag itemsTag, HolderLookup.Provider provider) {
@@ -80,7 +67,7 @@ public class ItemHelper {
      * Writes items to {@link ListTag}.
      *
      * @param stacks   the items
-     * @param provider
+     * @param provider the registry access
      * @return the list tag
      */
     public static ListTag writeItemList(Iterable<ItemStack> stacks, HolderLookup.Provider provider) {
@@ -113,7 +100,7 @@ public class ItemHelper {
      * @param slots       the last slot index, that will be dropped. If Empty, all slots will be dropped
      */
     public static void dropContents(BlockEntity blockEntity, int... slots) {
-        dropContents(blockEntity, ForgeCapabilities.ITEM_HANDLER, slots);
+        dropContents(blockEntity, Capabilities.ItemHandler.BLOCK, slots);
     }
 
     /**
@@ -124,24 +111,30 @@ public class ItemHelper {
      * @param cap         the capability that extends {@link IItemHandler}
      * @param slots       the last slot index, that will be dropped. If Empty, all slots will be dropped
      */
-    public static <T extends IItemHandler> void dropContents(BlockEntity blockEntity, Capability<T> cap, int... slots) {
-        blockEntity.getCapability(cap).ifPresent(itemHandler -> {
-            SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
-            if (slots.length == 0) {
-                for (int i = 0; i < itemHandler.getSlots(); i++) {
-                    inventory.setItem(i, itemHandler.getStackInSlot(i));
-                }
-            } else {
-                for (int i = 0; i < slots.length; i++) {
-                    int slot = slots[i];
-                    inventory.setItem(i, itemHandler.getStackInSlot(slot));
-                }
+    public static <T extends IItemHandler, C> void dropContents(BlockEntity blockEntity, BlockCapability<T, C> cap, int... slots) {
+        Level level = blockEntity.getLevel();
+        if (level == null) return;
+
+        T itemHandler = level.getCapability(cap, blockEntity.getBlockPos(), blockEntity.getBlockState(), blockEntity, null);
+        if (itemHandler == null) return;
+
+        SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
+        if (slots.length == 0) {
+            for (int i = 0; i < itemHandler.getSlots(); i++) {
+                inventory.setItem(i, itemHandler.getStackInSlot(i));
             }
-            Level level = blockEntity.getLevel();
-            BlockPos worldPosition = blockEntity.getBlockPos();
-            if (level != null) {
-                Containers.dropContents(level, worldPosition, inventory);
+        } else {
+            for (int i = 0; i < slots.length; i++) {
+                int slot = slots[i];
+                inventory.setItem(i, itemHandler.getStackInSlot(slot));
             }
-        });
+        }
+        BlockPos worldPosition = blockEntity.getBlockPos();
+        Containers.dropContents(level, worldPosition, inventory);
+
+    }
+
+    public static void hurtAndBreakItem(ServerLevel level, Player player, ItemStack item) {
+        item.hurtAndBreak(1, level, player, player1 -> EventHooks.onPlayerDestroyItem(player, item, InteractionHand.MAIN_HAND));
     }
 }

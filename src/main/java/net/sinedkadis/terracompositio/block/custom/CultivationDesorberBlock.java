@@ -18,7 +18,6 @@ public class CultivationDesorberBlock extends AbstractDesorberBlock{
         super(pProperties);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public @NotNull VoxelShape getShape(@NotNull BlockState pState, @NotNull BlockGetter pLevel, @NotNull BlockPos pPos, @NotNull CollisionContext pContext) {
 

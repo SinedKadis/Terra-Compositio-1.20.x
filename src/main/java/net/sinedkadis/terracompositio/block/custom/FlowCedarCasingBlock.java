@@ -4,9 +4,10 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.BlockItem;
@@ -23,6 +24,8 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.sinedkadis.terracompositio.api.helpers.ItemHelper;
 import net.sinedkadis.terracompositio.api.registries.TCBlockStateProperties;
 import net.sinedkadis.terracompositio.block.IFluidApplicable;
 import net.sinedkadis.terracompositio.block.entity.TCBlockEntity;
@@ -48,30 +51,38 @@ public class FlowCedarCasingBlock extends TCBaseEntityBlock implements IFluidApp
                 .setValue(WAXED, false));
     }
 
+
     @Override
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
-        ItemStack item = pPlayer.getItemInHand(InteractionHand.MAIN_HAND);
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        ItemStack item = player.getItemInHand(InteractionHand.MAIN_HAND);
         if (item.getItem() instanceof BlockItem blockItem) {
 
             BlockPlaceContext context = new BlockPlaceContext(
-                    pPlayer,
-                    pHand,
+                    player,
+                    hand,
                     item,
-                    pHit
+                    hitResult
             );
 
-            if (blockItem.canPlace(context, blockItem.getBlock().defaultBlockState())) {
-                return InteractionResult.PASS;
+            if (canPlace(context, blockItem.getBlock().defaultBlockState())) {
+                return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
             }
         }
-        if (item.is(Items.HONEYCOMB) && !pState.getValue(WAXED)) {
-            return handleInWorldBlockCraft(pState, pState.setValue(WAXED, true), pLevel, pPos, item, 1, ParticleTypes.WAX_ON, SoundEvents.HONEYCOMB_WAX_ON);
+        if (item.is(Items.HONEYCOMB) && !state.getValue(WAXED)) {
+            return handleInWorldBlockCraft(state, state.setValue(WAXED, true), level, pos, item, 1, ParticleTypes.WAX_ON, SoundEvents.HONEYCOMB_WAX_ON);
         }
-        if (item.getItem() instanceof AxeItem && pState.getValue(WAXED)) {
-            item.hurtAndBreak(1, pPlayer, player1 -> player1.broadcastBreakEvent(InteractionHand.MAIN_HAND));
-            return handleInWorldBlockCraft(pState, pState.setValue(WAXED, false), pLevel, pPos, item, 0, ParticleTypes.WAX_OFF, SoundEvents.AXE_WAX_OFF);
+        if (item.getItem() instanceof AxeItem && state.getValue(WAXED)) {
+            ItemHelper.hurtAndBreakItem((ServerLevel) level, player, item);
+            return handleInWorldBlockCraft(state, state.setValue(WAXED, false), level, pos, item, 0, ParticleTypes.WAX_OFF, SoundEvents.AXE_WAX_OFF);
         }
-        return super.use(pState, pLevel, pPos, pPlayer, pHand, pHit);
+        return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
+    }
+
+    protected boolean canPlace(BlockPlaceContext context, BlockState state) {
+        Player player = context.getPlayer();
+        CollisionContext collisioncontext = player == null ? CollisionContext.empty() : CollisionContext.of(player);
+        return (state.canSurvive(context.getLevel(), context.getClickedPos()))
+                && context.getLevel().isUnobstructed(state, context.getClickedPos(), collisioncontext);
     }
 
     //returns null if no port, true if clockwise, false if counterclockwise
@@ -133,7 +144,6 @@ public class FlowCedarCasingBlock extends TCBaseEntityBlock implements IFluidApp
     }
 
 
-    @SuppressWarnings("deprecation")
     @Override
     public BlockState rotate(BlockState pState, Rotation pRotation) {
         return pState.setValue(AXIS,pRotation.rotate(Direction.get(Direction.AxisDirection.POSITIVE,pState.getValue(AXIS))).getAxis());

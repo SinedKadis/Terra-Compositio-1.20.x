@@ -8,8 +8,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.MinecraftForge;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
-import net.sinedkadis.terracompositio.api.dummies.DummyECFHandler;
 import net.sinedkadis.terracompositio.api.helpers.ECFHelper;
+import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.networks.NetworkAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetwork;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
@@ -216,7 +216,7 @@ public class ECFNetworkHandler implements ECFNetwork {
         Set<ECFNetworkMember> members = ecfSources.get(level);
         if (members == null) return false;
         IECFHandler mainHandler = networkMember.getMainHandler();
-        if (!mainHandler.equals(DummyECFHandler.instance)) {
+        if (!mainHandler.equals(SentinelHelper.EMPTY_ECF_HANDLER)) {
             for (ECFNetworkMember member : members) {
                 if (member.getMainHandler().equals(mainHandler)) return true;
             }

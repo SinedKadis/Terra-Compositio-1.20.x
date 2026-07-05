@@ -7,7 +7,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -47,7 +47,6 @@ public class PathPointerBlock extends TCBaseEntityBlock {
 
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public RenderShape getRenderShape(BlockState pState) {
         return RenderShape.ENTITYBLOCK_ANIMATED;
@@ -58,7 +57,6 @@ public class PathPointerBlock extends TCBaseEntityBlock {
         return true;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
         PathPointerBlockEntity blockEntity = (PathPointerBlockEntity) pLevel.getBlockEntity(pPos);
@@ -95,11 +93,10 @@ public class PathPointerBlock extends TCBaseEntityBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
-        ItemStack hand = pPlayer.getItemInHand(pHand);
-        PathPointerBlockEntity pp = (PathPointerBlockEntity) pLevel.getBlockEntity(pPos);
-        PathPointerBlockEntity.PPPart newPart = getPart(hand);
-        if (!pPlayer.isCrouching()
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        PathPointerBlockEntity pp = (PathPointerBlockEntity) level.getBlockEntity(pos);
+        PathPointerBlockEntity.PPPart newPart = getPart(stack);
+        if (!player.isCrouching()
                 && pp != null) {
             int replacePart = pp.parts.indexOf(PathPointerBlockEntity.PPPart.NONE);
             if (replacePart >= 0) {
@@ -107,17 +104,16 @@ public class PathPointerBlock extends TCBaseEntityBlock {
                 if (oPart.isInput() != newPart.isInput()) {
                     pp.parts.set(replacePart, newPart);
                     PathPointerBlockEntity.update(pp);
-                    if (!pPlayer.isCreative()) {
-                        hand.shrink(1);
+                    if (!player.isCreative()) {
+                        stack.shrink(1);
                     }
-                    pLevel.playSound(null, pPos, SoundEvents.WOOD_PLACE, SoundSource.BLOCKS);
-                    return InteractionResult.SUCCESS;
+                    level.playSound(null, pos, SoundEvents.WOOD_PLACE, SoundSource.BLOCKS);
+                    return ItemInteractionResult.SUCCESS;
 
                 }
             }
         }
-
-        return super.use(pState, pLevel, pPos, pPlayer, pHand, pHit);
+        return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
     }
 
     private static PathPointerBlockEntity.PPPart getPart(ItemStack hand) {
@@ -147,12 +143,11 @@ public class PathPointerBlock extends TCBaseEntityBlock {
         super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public List<ItemStack> getDrops(BlockState pState, LootParams.Builder pParams) {
         List<ItemStack> drops = super.getDrops(pState, pParams);
 
-        Entity entity = pParams.getOptionalParameter(LootContextParams.KILLER_ENTITY);
+        Entity entity = pParams.getOptionalParameter(LootContextParams.ATTACKING_ENTITY);
         if (!(entity instanceof Player player) || !player.isCreative()) {
             PathPointerBlockEntity blockEntity = (PathPointerBlockEntity) pParams.getParameter(LootContextParams.BLOCK_ENTITY);
             ItemStack toDrop = new ItemStack(switch (blockEntity.parts.get(1)) {

@@ -1,20 +1,15 @@
 package net.sinedkadis.terracompositio.block.custom;
 
 import net.minecraft.core.cauldron.CauldronInteraction;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.material.Fluid;
 
-import java.util.Map;
-import java.util.function.Predicate;
-
 public abstract class TCCauldronBlock extends LayeredCauldronBlock {
-    public TCCauldronBlock(Properties pProperties, Predicate<Biome.Precipitation> pFillPredicate, Map<Item, CauldronInteraction> pInteractions) {
-        super(pProperties, pFillPredicate, pInteractions);
+    public TCCauldronBlock(Properties pProperties, Biome.Precipitation precipitation, CauldronInteraction.InteractionMap pInteractions) {
+        super(precipitation, pInteractions, pProperties);
     }
     public boolean canReceiveWedgeDrip(Fluid fluid){
         return false;
     }
-    //public abstract void WedgeDripReceived();
 }

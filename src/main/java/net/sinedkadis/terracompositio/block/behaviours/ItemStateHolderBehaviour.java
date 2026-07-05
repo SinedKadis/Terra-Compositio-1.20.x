@@ -14,14 +14,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import net.sinedkadis.terracompositio.api.helpers.ItemHelper;
 import net.sinedkadis.terracompositio.api.helpers.PlayerHelper;
-import net.sinedkadis.terracompositio.api.registries.TCCapabilities;
+import net.sinedkadis.terracompositio.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.block.entity.TCBlockEntity;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEItemBehaviour;
 import org.jetbrains.annotations.Nullable;
@@ -35,9 +33,14 @@ import static net.sinedkadis.terracompositio.block.behaviours.ItemHandlerBehavio
 public class ItemStateHolderBehaviour implements IBEItemBehaviour {
     @Getter
     private final TCBlockEntity blockEntity;
-    protected LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
+
     public ItemStateHolderBehaviour(TCBlockEntity blockEntity) {
         this.blockEntity = blockEntity;
+    }
+
+    @Override
+    public void onRemoved() {
+        ItemHelper.dropContents(blockEntity, TCCapabilities.ITEM_STATE_HOLDER_BLOCK);
     }    protected ItemStackHandler itemHandler = new ItemStackHandler() {
         @Override
         public int getSlotLimit(int slot) {
@@ -120,32 +123,23 @@ public class ItemStateHolderBehaviour implements IBEItemBehaviour {
 
     @Override
     public void onChunkLoad() {
-        lazyItemHandler = LazyOptional.of(this::getItemHandler);
-    }
 
-    @Override
-    public @Nullable LazyOptional<?> getCapability(Capability<?> cap, @Nullable Direction side) {
-        if (cap == TCCapabilities.ITEM_STATE_HOLDER) return lazyItemHandler.cast();
-        return null;
-    }
-
-    @Override
-    public void onRemoved() {
-        ItemHelper.dropContents(blockEntity, TCCapabilities.ITEM_STATE_HOLDER);
-    }
-
-    @Override
-    public void onInvalidateCaps() {
-        lazyItemHandler.invalidate();
     }
 
     @Override
     public void onSave(CompoundTag compoundTag, HolderLookup.Provider registries) {
-        compoundTag.put("item_state_holder", itemHandler.serializeNBT());
+        compoundTag.put("item_state_holder", itemHandler.serializeNBT(registries));
     }
 
     @Override
     public void onLoad(CompoundTag compoundTag, HolderLookup.Provider registries) {
-        itemHandler.deserializeNBT(compoundTag.getCompound("item_state_holder"));
+        itemHandler.deserializeNBT(registries, compoundTag.getCompound("item_state_holder"));
     }
+
+    @Override
+    public IItemHandler getStateHolderCapability(@Nullable Direction direction) {
+        return itemHandler;
+    }
+
+
 }

@@ -6,14 +6,14 @@ import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.sinedkadis.terracompositio.api.helpers.PlayerHelper;
 import net.sinedkadis.terracompositio.block.behaviours.ItemHandlerBehaviour;
 import net.sinedkadis.terracompositio.block.entity.FlowCedarCasingBlockEntity;
@@ -38,10 +38,10 @@ public class MatterInfuserPortBlock extends MatterInfuserBaseEntityBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
-        var itemInHand = pPlayer.getItemInHand(InteractionHand.MAIN_HAND);
-        BlockPos casingPos = pPos.relative(pState.getValue(FACING).getOpposite());
-        FlowCedarCasingBlockEntity casingBE = (FlowCedarCasingBlockEntity) pLevel.getBlockEntity(casingPos);
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        var itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
+        BlockPos casingPos = pos.relative(state.getValue(FACING).getOpposite());
+        FlowCedarCasingBlockEntity casingBE = (FlowCedarCasingBlockEntity) level.getBlockEntity(casingPos);
         if (casingBE != null) {
             ItemHandlerBehaviour itemBehaviour = casingBE.getItemBehaviours().stream()
                     .filter(ItemHandlerBehaviour.class::isInstance)
@@ -55,9 +55,9 @@ public class MatterInfuserPortBlock extends MatterInfuserBaseEntityBlock {
 
                     itemHandler.setStackInSlot(i, ItemStack.EMPTY);
 
-                    PlayerHelper.addOrDropToPlayer(pPlayer, stackInSlot, true);
-                    pLevel.playSound(pPlayer, pPos, SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS);
-                    return InteractionResult.SUCCESS;
+                    PlayerHelper.addOrDropToPlayer(player, stackInSlot, true);
+                    level.playSound(player, pos, SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS);
+                    return ItemInteractionResult.SUCCESS;
                 }
                 if (!itemInHand.isEmpty() && itemBehaviour.allowInsert(i, itemInHand, Direction.UP, true)
                         && hasSpace(itemHandler, i)
@@ -77,13 +77,12 @@ public class MatterInfuserPortBlock extends MatterInfuserBaseEntityBlock {
                         handCopy = ItemStack.EMPTY;
                     }
                     itemHandler.setStackInSlot(i, storageCopy);
-                    pPlayer.setItemInHand(pHand, handCopy);
-                    pLevel.playSound(pPlayer, pPos, SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.BLOCKS);
-                    return InteractionResult.SUCCESS;
+                    player.setItemInHand(hand, handCopy);
+                    level.playSound(player, pos, SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.BLOCKS);
+                    return ItemInteractionResult.SUCCESS;
                 }
             }
         }
-
-        return super.use(pState, pLevel, pPos, pPlayer, pHand, pHit);
+        return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
     }
 }

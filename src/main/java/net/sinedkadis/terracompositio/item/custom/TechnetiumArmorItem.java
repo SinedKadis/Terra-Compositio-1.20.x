@@ -39,22 +39,21 @@ import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.api.IECFStorageExtensionItem;
 import net.sinedkadis.terracompositio.api.IHaveExtensibleECFStorageItem;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
-import net.sinedkadis.terracompositio.api.dummies.DummyECFHandler;
 import net.sinedkadis.terracompositio.api.helpers.BlockPosHelper;
+import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
 import net.sinedkadis.terracompositio.api.networks.NetworkAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.api.registries.TCBlockStateProperties;
-import net.sinedkadis.terracompositio.api.registries.TCCapabilities;
+import net.sinedkadis.terracompositio.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.config.TCClientConfigs;
 import net.sinedkadis.terracompositio.config.TCCommonConfigs;
 import net.sinedkadis.terracompositio.ecf.ECFItemWrapper;
 import net.sinedkadis.terracompositio.item.models.TechnetiumBootsModel;
 import net.sinedkadis.terracompositio.item.models.TechnetiumChestplateModel;
 import net.sinedkadis.terracompositio.item.models.TechnetiumCrownModel;
-import net.sinedkadis.terracompositio.network.TCPayloads;
-import net.sinedkadis.terracompositio.network.packets.C2SBoardSync;
+import net.sinedkadis.terracompositio.network.payloads.C2SBoardSyncPayload;
 import net.sinedkadis.terracompositio.registries.TCArmorMaterials;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
 import net.sinedkadis.terracompositio.registries.TCItems;
@@ -103,7 +102,7 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
         ItemStack itemBySlot = player.getItemBySlot(EquipmentSlot.CHEST);
         if (itemBySlot.is(TCItems.TECHNETIUM_CHESTPLATE.get())) {
             IECFHandler iECFHandler = itemBySlot.getCapability(TCCapabilities.ECF);
-            if (iECFHandler == null) iECFHandler = DummyECFHandler.instance;
+            if (iECFHandler == null) iECFHandler = SentinelHelper.EMPTY_ECF_HANDLER;
             if (iECFHandler.takeECF(1, true) > 0) {
                 Level level = player.level();
                 BlockPos pPos = player.blockPosition();
@@ -174,7 +173,7 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
         if (!persistentData.contains(height)) {
             if (destroyPos != null) {
                 level.destroyBlock(destroyPos, true);
-                TCPayloads.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SBoardSync(destroyPos, false));
+                PacketDistributor.sendToServer(new C2SBoardSyncPayload(destroyPos, false, 0, false));
                 persistentData.remove(last);
             }
             return;
@@ -190,7 +189,7 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
 
         if (destroyPos != null && (allowBoardPlace || !posOnHeight.equals(destroyPos))) {
             level.destroyBlock(destroyPos, true);
-            TCPayloads.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SBoardSync(destroyPos, false));
+            PacketDistributor.sendToServer(new C2SBoardSyncPayload(destroyPos, false, 0, false));
             persistentData.remove(last);
         }
 
@@ -232,7 +231,7 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
         ItemStack itemBySlot = localPlayer.getItemBySlot(EquipmentSlot.FEET);
         if (!itemBySlot.is(TCItems.TECHNETIUM_BOOTS.get())) return;
 
-        IECFHandler IECFHandler = itemBySlot.getCapability(TCCapabilities.ECF).orElse(DummyECFHandler.instance);
+        IECFHandler IECFHandler = itemBySlot.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER);
         if (!(IECFHandler.takeECF(1, false) > 0)) return;
 
         CompoundTag persistentData = localPlayer.getPersistentData();
@@ -244,32 +243,15 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
 
     }
 
-    @Override
-    public void inventoryTick(ItemStack pStack, Level pLevel, Entity entity, int pSlotId, boolean pIsSelected) {
-        super.inventoryTick(pStack, pLevel, entity, pSlotId, pIsSelected);
-        IECFHandler IECFHandler = pStack.getCapability(TCCapabilities.ECF).orElse(DummyECFHandler.instance);
-        switch (type) {
-            case HELMET -> this.helmetInventoryTick(pStack, pLevel, entity, IECFHandler);
-            case CHESTPLATE -> {
-                // made via onLivingHurt
-            }
-            case LEGGINGS -> this.leggingsInventoryTick(pStack, pLevel, entity, IECFHandler);
-            case BOOTS -> {
-                // made via onBlockChanged and onLivingJump
-            }
-
-            default -> {
-            }
-
-        }
-    }
-
     private static void takeECFAndSetBoard(IECFHandler IECFHandler, Level level, BlockPos posOnHeight, BlockState boardState) {
         if (IECFHandler.takeECF(1, false) > 0 && level.isClientSide()) {
             level.destroyBlock(posOnHeight,true);
             level.setBlock(posOnHeight, boardState, 1);
-            TCPayloads.CHANNEL.send(PacketDistributor.SERVER.noArg(),
-                    new C2SBoardSync(posOnHeight, true, 1, boardState.getValue(WATERLOGGED))
+            PacketDistributor.sendToServer(new C2SBoardSyncPayload(
+                    posOnHeight,
+                    false,
+                    1,
+                    boardState.getValue(WATERLOGGED))
             );
         }
     }
@@ -292,7 +274,7 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
         );
         BlockState blockStateOn = level.getBlockState(onPos);
 
-        IECFHandler IECFHandler = stack.getCapability(TCCapabilities.ECF).orElse(DummyECFHandler.instance);
+        IECFHandler IECFHandler = stack.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER);
         if (IECFHandler.getECF() < 1) return;
 
         if (!blockStateOn.is(TCBlocks.ECF_BOARD.get())) {
@@ -301,6 +283,26 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
             changeHeightByView(livingEntity, persistentData, level);
         }
         persistentData.putInt(cd, livingEntity.tickCount);
+    }
+
+    @Override
+    public void inventoryTick(ItemStack pStack, Level pLevel, Entity entity, int pSlotId, boolean pIsSelected) {
+        super.inventoryTick(pStack, pLevel, entity, pSlotId, pIsSelected);
+        IECFHandler IECFHandler = pStack.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER);
+        switch (type) {
+            case HELMET -> this.helmetInventoryTick(pStack, pLevel, entity, IECFHandler);
+            case CHESTPLATE -> {
+                // made via onLivingHurt
+            }
+            case LEGGINGS -> this.leggingsInventoryTick(pStack, pLevel, entity, IECFHandler);
+            case BOOTS -> {
+                // made via onBlockChanged and onLivingJump
+            }
+
+            default -> {
+            }
+
+        }
     }
 
     @Override
@@ -319,7 +321,7 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
 
     private void helmetInventoryTick(ItemStack ignoredPStack, Level ignoredPLevel, Entity pEntity, IECFHandler ignoredIECFHandler) {
         if (pEntity.tickCount % 20 != 0) return;
-        IECFHandler playerHandler = pEntity.getCapability(TCCapabilities.ECF).orElse(DummyECFHandler.instance);
+        IECFHandler playerHandler = pEntity.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER);
 
         if (playerHandler.getFreeSpace() > 0) {
             TerraCompositioAPI.instance().getECFNetworkInstance().fireECFNetworkEvent((ECFNetworkMember) pEntity, NetworkAction.UPDATE);
@@ -329,13 +331,13 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
     private void leggingsInventoryTick(ItemStack itemStack, Level ignoredPLevel, Entity entity, IECFHandler thisHandler) {
         for (ItemStack stack : entity.getArmorSlots()) {
             if (stack.equals(itemStack)) {
-                IECFHandler playerHandler = entity.getCapability(TCCapabilities.ECF).orElse(DummyECFHandler.instance).getMainHandler();
+                IECFHandler playerHandler = entity.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER).getMainHandler();
                 int taken = thisHandler.addECF(TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get(), true);
                 int added = playerHandler.takeECF(taken, false);
                 thisHandler.addECF(added, false);
                 continue;
             }
-            IECFHandler IECFHandler = stack.getCapability(TCCapabilities.ECF).orElse(DummyECFHandler.instance);
+            IECFHandler IECFHandler = stack.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER);
             int taken = thisHandler.takeECF(TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get(), true);
             int added = IECFHandler.addECF(taken, false);
             thisHandler.takeECF(added, false);
@@ -393,7 +395,7 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
         return switch (slot) {
             case HEAD -> TerraCompositio.MOD_ID + ":textures/models/armor/technetium_crown.png";
             case CHEST -> {
-                if (stack.getCapability(TCCapabilities.ECF).orElse(DummyECFHandler.instance).getECF() <= 0)
+                if (stack.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER).getECF() <= 0)
                     yield TerraCompositio.MOD_ID + ":textures/models/armor/technetium_chestplate/armor_layer_no_shield.png";
                 int textureIndex = (int) (Util.getMillis() / 300) % 16;
                 yield TerraCompositio.MOD_ID + ":textures/models/armor/technetium_chestplate/armor_layer_"
@@ -426,7 +428,7 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
                 && TCClientConfigs.APPLE_ITEM_TOOLTIP.get()) {
             pTooltipComponents.add(
                     TooltipHelper.keyWithArg(TooltipHelper.Keys.ECF,
-                            pStack.getCapability(TCCapabilities.ECF).orElse(DummyECFHandler.instance).getECF())
+                            pStack.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER).getECF())
             );
             IECFStorageExtensionItem currentExtension = this.getCurrentExtension(pStack);
             if (currentExtension.maxStorage() > 0) {
@@ -438,7 +440,7 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
             if (TCCommonConfigs.DEBUG.get()) {
                 pTooltipComponents.add(
                         TooltipHelper.keyWithArg(TooltipHelper.Keys.MAX_ECF,
-                                pStack.getCapability(TCCapabilities.ECF).orElse(DummyECFHandler.instance).getMaxECF())
+                                pStack.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER).getMaxECF())
                 );
             }
         }
@@ -452,7 +454,7 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
 
     @Override
     public IECFStorageExtensionItem getCurrentExtension(ItemStack stack) {
-        if (stack.getCapability(TCCapabilities.ECF).orElse(DummyECFHandler.instance).getMaxECF() == 8)
+        if (stack.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER).getMaxECF() == 8)
             return () -> 0;
         Item item = ItemStack.of(stack.getOrCreateTag().getCompound("StorageExtension")).getItem();
         return item instanceof IECFStorageExtensionItem iecfse ? iecfse : () -> 0;
@@ -462,7 +464,7 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
     public void setExtension(ItemStack stack, IECFStorageExtensionItem extensionItem) {
         if (extensionItem.maxStorage() <= 0) return;
         stack.getOrCreateTag().put("StorageExtension", ((Item) extensionItem).getDefaultInstance().serializeNBT());
-        stack.getCapability(TCCapabilities.ECF).orElse(DummyECFHandler.instance).setMaxECF(extensionItem.maxStorage());
+        stack.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER).setMaxECF(extensionItem.maxStorage());
     }
 
     @Override

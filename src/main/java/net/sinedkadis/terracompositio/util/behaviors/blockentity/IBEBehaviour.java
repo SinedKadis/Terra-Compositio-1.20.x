@@ -1,21 +1,25 @@
 package net.sinedkadis.terracompositio.util.behaviors.blockentity;
 
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.BlockHitResult;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.wrapper.EmptyItemHandler;
+import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
+import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public interface IBEBehaviour {
     void tick();
     void onChunkLoad();
-
-    //@Nullable LazyOptional<?> getCapability(@NotNull Capability<?> cap, @Nullable Direction side);
     void onRemoved();
 
-    //void onInvalidateCaps();
+
     //Serialisation
     void onSave(CompoundTag compoundTag, HolderLookup.Provider registries);
 
@@ -26,4 +30,16 @@ public interface IBEBehaviour {
         return InteractionResult.PASS;
     }
 
+    //New 1.21.1 caps
+    default IItemHandler getItemCapability(@Nullable Direction direction) {
+        return EmptyItemHandler.INSTANCE;
+    }
+
+    default IECFHandler getECFCapability(@Nullable Direction direction) {
+        return SentinelHelper.EMPTY_ECF_HANDLER;
+    }
+
+    default IItemHandler getStateHolderCapability(@Nullable Direction direction) {
+        return EmptyItemHandler.INSTANCE;
+    }
 }

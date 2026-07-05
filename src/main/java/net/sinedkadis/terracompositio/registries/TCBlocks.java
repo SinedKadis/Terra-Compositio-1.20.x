@@ -11,6 +11,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -101,9 +102,9 @@ public class TCBlocks {
 
     //Cauldron related
     public static final DeferredBlock<Block> FLOW_CAULDRON = registerBlock("flow_cauldron",
-            () -> new FlowCauldronBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CAULDRON), null, CauldronInteraction.EMPTY.map()));
+            () -> new FlowCauldronBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CAULDRON), Biome.Precipitation.NONE, CauldronInteraction.EMPTY));
     public static final DeferredBlock<Block> BIRCH_JUICE_CAULDRON = registerBlock("birch_juice_cauldron",
-            () -> new BirchJuiceCauldronBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CAULDRON), null, CauldronInteraction.EMPTY.map()));
+            () -> new BirchJuiceCauldronBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CAULDRON), Biome.Precipitation.NONE, CauldronInteraction.EMPTY));
     public static final DeferredBlock<Block> WEDGE = registerBlock("wedge",
             () -> new WedgeBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.TRIPWIRE_HOOK)));
 

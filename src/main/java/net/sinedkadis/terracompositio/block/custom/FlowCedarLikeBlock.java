@@ -1,5 +1,6 @@
 package net.sinedkadis.terracompositio.block.custom;
 
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -8,7 +9,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.ItemStack;
@@ -23,7 +24,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.ItemAbility;
+import net.sinedkadis.terracompositio.api.helpers.ItemHelper;
 import net.sinedkadis.terracompositio.api.helpers.WorldHelper;
 import net.sinedkadis.terracompositio.api.registries.TCBlockStateProperties;
 import net.sinedkadis.terracompositio.block.IFluidApplicable;
@@ -31,15 +34,15 @@ import net.sinedkadis.terracompositio.item.custom.WrenchAxeItem;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
 import net.sinedkadis.terracompositio.registries.TCItems;
 import net.sinedkadis.terracompositio.registries.TCTags;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.function.Supplier;
 
 import static net.sinedkadis.terracompositio.api.helpers.WorldHelper.handleInWorldBlockCraft;
 
-
-@SuppressWarnings("deprecation")
+@MethodsReturnNonnullByDefault
+@ParametersAreNonnullByDefault
 public class FlowCedarLikeBlock extends RotatedPillarBlock implements IFluidApplicable {
     public static final BooleanProperty INFUSED;
     @Nullable
@@ -75,45 +78,47 @@ public class FlowCedarLikeBlock extends RotatedPillarBlock implements IFluidAppl
         return state.getValue(INFUSED) ? 0 : 5;
     }
 
+
     @Override
-    public @Nullable BlockState getToolModifiedState(BlockState state, UseOnContext context, ToolAction toolAction, boolean simulate) {
-        if(context.getItemInHand().getItem() instanceof AxeItem && stripPair != null){
+    public @Nullable BlockState getToolModifiedState(BlockState state, UseOnContext context, ItemAbility itemAbility, boolean simulate) {
+
+        if (ItemAbilities.AXE_STRIP == itemAbility && stripPair != null) {
             return stripPair.get().defaultBlockState()
                     .setValue(AXIS, state.getValue(AXIS))
                     .setValue(INFUSED,state.getValue(INFUSED));
         }
-        return super.getToolModifiedState(state, context,toolAction,simulate);
+        return super.getToolModifiedState(state, context, itemAbility, simulate);
     }
 
     @Override
-    public @NotNull InteractionResult use(@NotNull BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, Player pPlayer, @NotNull InteractionHand pHand, @NotNull BlockHitResult pHit) {
-        ItemStack item = pPlayer.getItemInHand(InteractionHand.MAIN_HAND);
-        ItemStack item2 = pPlayer.getItemInHand(InteractionHand.OFF_HAND);
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        ItemStack item = player.getItemInHand(InteractionHand.MAIN_HAND);
+        ItemStack item2 = player.getItemInHand(InteractionHand.OFF_HAND);
         if (this.getClass() == FlowCedarLikeBlock.class) {
             if (item.is(TCItems.GOLD_ROD.get())
                     && item.getCount() >= 4
                     && (item2.is(TCTags.Items.WRENCHES) || item2.is(TCItems.WRENCH_AXE.get()))) {
                 if (!item2.is(TCItems.WRENCH_AXE.get()) || WrenchAxeItem.getWrenchMode(item2).equals(WrenchAxeItem.WrenchMode.WRENCH)) {
-                    return handleInWorldBlockCraft(pState, TCBlocks.FLOW_CEDAR_CASING.get().defaultBlockState(), pLevel, pPos, item, 4);
+                    return handleInWorldBlockCraft(state, TCBlocks.FLOW_CEDAR_CASING.get().defaultBlockState(), level, pos, item, 4);
                 }
-                return super.use(pState, pLevel, pPos, pPlayer, pHand, pHit);
+                return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
             } else if (item.is(TCItems.FLOW_INFUSER_KIT.get())
                     && item2.is(ItemTags.AXES)) {
-                return handleInWorldBlockCraft(pState, TCBlocks.FLOW_INFUSER.get().defaultBlockState(), pLevel, pPos, item, 1);
+                return handleInWorldBlockCraft(state, TCBlocks.FLOW_INFUSER.get().defaultBlockState(), level, pos, item, 1);
             }
         }
-        if (item.is(Items.HONEYCOMB) && !pState.getValue(WAXED)){
-            return handleInWorldBlockCraft(pState, pState.setValue(WAXED, true), pLevel, pPos, item, 1, ParticleTypes.WAX_ON, SoundEvents.HONEYCOMB_WAX_ON);
+        if (item.is(Items.HONEYCOMB) && !state.getValue(WAXED)) {
+            return handleInWorldBlockCraft(state, state.setValue(WAXED, true), level, pos, item, 1, ParticleTypes.WAX_ON, SoundEvents.HONEYCOMB_WAX_ON);
         }
-        if (item.getItem() instanceof AxeItem && pState.getValue(WAXED)){
-            item.hurtAndBreak(1,pPlayer,player1 -> player1.broadcastBreakEvent(InteractionHand.MAIN_HAND));
-            return handleInWorldBlockCraft(pState, pState.setValue(WAXED, false), pLevel, pPos, item, 0, ParticleTypes.WAX_OFF,SoundEvents.AXE_WAX_OFF);
+        if (item.getItem() instanceof AxeItem && state.getValue(WAXED)) {
+            ItemHelper.hurtAndBreakItem((ServerLevel) level, player, item);
+            return handleInWorldBlockCraft(state, state.setValue(WAXED, false), level, pos, item, 0, ParticleTypes.WAX_OFF, SoundEvents.AXE_WAX_OFF);
         }
-        return super.use(pState, pLevel, pPos, pPlayer, pHand, pHit);
+        return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
     }
 
     @Override
-    public void onRemove(@NotNull BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pNewState, boolean pIsMoving) {
+    public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
         super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
         if (pState.getBlock() != pNewState.getBlock() && WorldHelper.onRemoveHandlerBlacklist(pNewState,
                 Blocks.STRUCTURE_VOID,
@@ -124,7 +129,7 @@ public class FlowCedarLikeBlock extends RotatedPillarBlock implements IFluidAppl
 
 
     @Override
-    public void tick(BlockState pState, @NotNull ServerLevel pLevel, @NotNull BlockPos pPos, @NotNull RandomSource pRandom) {
+    public void tick(BlockState pState, ServerLevel pLevel, BlockPos pPos, RandomSource pRandom) {
         if (pState.getValue(INFUSED)) {
             for (BlockPos blockPos : BlockPos.betweenClosed(pPos.offset(-1, -1, -1), pPos.offset(1, 1, 1))) {
                 if (blockPos.getX() != pPos.getX()
@@ -140,7 +145,7 @@ public class FlowCedarLikeBlock extends RotatedPillarBlock implements IFluidAppl
     }
 
     @Override
-    public boolean isRandomlyTicking(@NotNull BlockState pState) {
+    public boolean isRandomlyTicking(BlockState pState) {
         return true;
     }
 

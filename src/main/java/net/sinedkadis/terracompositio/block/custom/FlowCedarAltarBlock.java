@@ -32,7 +32,6 @@ public class FlowCedarAltarBlock extends TCBaseEntityBlock {
         this.registerDefaultState(this.defaultBlockState().setValue(INFUSED,false));
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
         return Shapes.join(

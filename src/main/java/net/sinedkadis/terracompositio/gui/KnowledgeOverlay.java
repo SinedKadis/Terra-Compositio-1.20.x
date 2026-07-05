@@ -39,7 +39,6 @@ import net.sinedkadis.terracompositio.api.components.HeaderComponent;
 import net.sinedkadis.terracompositio.api.components.ItemComponent;
 import net.sinedkadis.terracompositio.api.helpers.PlayerHelper;
 import net.sinedkadis.terracompositio.config.TCClientConfigs;
-import net.sinedkadis.terracompositio.network.ClientPayloadHandlers;
 import net.sinedkadis.terracompositio.network.payloads.C2SKnowledgeBlockRequestPayload;
 import net.sinedkadis.terracompositio.network.payloads.C2SKnowledgeEntityRequestPayload;
 import net.sinedkadis.terracompositio.registries.TCItems;
@@ -47,6 +46,9 @@ import net.sinedkadis.terracompositio.util.accessors.PlayerKnowledgeAccessor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class KnowledgeOverlay {
 
@@ -119,7 +121,7 @@ public class KnowledgeOverlay {
                     PacketDistributor.sendToServer(new C2SKnowledgeEntityRequestPayload(entity.getUUID()));
                 }
 
-                CompoundTag data = ClientPayloadHandlers.ClientCache.get(entity.getUUID());
+                CompoundTag data = ClientCache.get(entity.getUUID());
                 if (data != null) {
                     ihk.addTooltipLines(data, entityTooltip, isShifting, level.registryAccess());
                 }
@@ -143,7 +145,7 @@ public class KnowledgeOverlay {
             }
 
 
-            CompoundTag data = ClientPayloadHandlers.ClientCache.get(pos);
+            CompoundTag data = ClientCache.get(pos);
             if (data == null) {
                 return;
             }
@@ -385,4 +387,28 @@ public class KnowledgeOverlay {
         poseStack.popPose();
     }
 
+    // ─── Клиентский кэш ──────────────────────────────────────────
+    public static final class ClientCache {
+
+        private static final Map<Object, CompoundTag> cache = new ConcurrentHashMap<>();
+
+
+        public static void put(BlockPos pos, CompoundTag data) {
+            cache.put(pos, data);
+        }
+
+        public static void put(UUID entityUUID, CompoundTag data) {
+            cache.put(entityUUID, data);
+        }
+
+
+        public static CompoundTag get(Object posOrUUID) {
+            return cache.get(posOrUUID);
+        }
+
+
+        public static void clear() {
+            cache.clear();
+        }
+    }
 }

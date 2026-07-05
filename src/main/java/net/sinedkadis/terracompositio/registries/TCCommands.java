@@ -14,14 +14,10 @@ import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
-import net.sinedkadis.terracompositio.api.registries.TCCapabilities;
-import net.sinedkadis.terracompositio.network.TCPayloads;
-import net.sinedkadis.terracompositio.network.packets.S2CPlayerEcfContainerSync;
 
 import java.util.Arrays;
 
@@ -92,10 +88,6 @@ public class TCCommands {
         }
         IECFHandler mainHandler = memberEntity.getMainHandler();
         mainHandler.clear();
-        if (memberEntity instanceof ServerPlayer serverPlayer) {
-            TCPayloads.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer),
-                    new S2CPlayerEcfContainerSync(mainHandler.getECF()));
-        }
 
         NonNullSupplier<Exception> exception = Exception::new;
         ((LivingEntity) memberEntity.getEntityInstance()).getArmorSlots().forEach(itemStack -> {

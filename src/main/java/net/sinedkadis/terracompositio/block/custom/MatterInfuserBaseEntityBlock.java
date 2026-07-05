@@ -4,8 +4,9 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -26,7 +27,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.AXIS;
 
-@SuppressWarnings("deprecation")
 public abstract class MatterInfuserBaseEntityBlock extends TCBaseEntityBlock {
     protected final static DirectionProperty FACING;
     protected static final VoxelShape NORTH_AABB;
@@ -59,24 +59,25 @@ public abstract class MatterInfuserBaseEntityBlock extends TCBaseEntityBlock {
     @ParametersAreNonnullByDefault
     @MethodsReturnNonnullByDefault
     @Override
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
-        InteractionResult use = super.use(pState, pLevel, pPos, pPlayer, pHand, pHit);
-        if (!use.equals(InteractionResult.SUCCESS)) {
-            Direction direction = pState.getValue(FACING);
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        ItemInteractionResult use = super.useItemOn(stack, state, level, pos, player, hand, hitResult);
+        ;
+        if (!use.equals(ItemInteractionResult.SUCCESS)) {
+            Direction direction = state.getValue(FACING);
 
-            BlockPos behindPos = pPos.relative(direction.getOpposite());
-            BlockState behindState = pLevel.getBlockState(behindPos);
-            InteractionResult behindUse = behindState.use(pLevel, pPlayer, pHand, pHit.withPosition(behindPos));
-            if (behindUse.equals(InteractionResult.SUCCESS))
-                return InteractionResult.SUCCESS;
+            BlockPos behindPos = pos.relative(direction.getOpposite());
+            BlockState behindState = level.getBlockState(behindPos);
+            ItemInteractionResult behindUse = behindState.useItemOn(stack, level, player, hand, hitResult.withPosition(behindPos));
+            if (behindUse.equals(ItemInteractionResult.SUCCESS))
+                return ItemInteractionResult.SUCCESS;
 
-            BlockPos rightPos = pPos.relative(direction.getCounterClockWise());
-            BlockState rightState = pLevel.getBlockState(rightPos);
-            InteractionResult rightUse = InteractionResult.PASS;
+            BlockPos rightPos = pos.relative(direction.getCounterClockWise());
+            BlockState rightState = level.getBlockState(rightPos);
+            ItemInteractionResult rightUse = ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
             if (rightState.getBlock() instanceof MatterInfuserBaseEntityBlock)
-                rightUse = rightState.use(pLevel, pPlayer, pHand, pHit.withPosition(rightPos));
-            if (rightUse.equals(InteractionResult.SUCCESS))
-                return InteractionResult.SUCCESS;
+                rightUse = rightState.useItemOn(stack, level, player, hand, hitResult.withPosition(rightPos));
+            if (rightUse.equals(ItemInteractionResult.SUCCESS))
+                return ItemInteractionResult.SUCCESS;
         }
         return use;
     }
@@ -116,7 +117,6 @@ public abstract class MatterInfuserBaseEntityBlock extends TCBaseEntityBlock {
         return null;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public @NotNull BlockState rotate(BlockState pState, Rotation pRotation) {
         return pState.setValue(FACING,pRotation.rotate(pState.getValue(FACING)));

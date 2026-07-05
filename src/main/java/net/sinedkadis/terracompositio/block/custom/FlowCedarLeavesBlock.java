@@ -1,12 +1,16 @@
 package net.sinedkadis.terracompositio.block.custom;
 
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelAccessor;
@@ -18,6 +22,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -25,6 +30,8 @@ import java.util.OptionalInt;
 
 import static net.sinedkadis.terracompositio.api.registries.TCBlockStateProperties.INFUSED;
 
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public class FlowCedarLeavesBlock extends LeavesBlock {
     public FlowCedarLeavesBlock(Properties pProperties) {
         super(pProperties);
@@ -44,37 +51,18 @@ public class FlowCedarLeavesBlock extends LeavesBlock {
         return 30;
     }
 
-    @Override
-    public void tick(@NotNull BlockState pState, ServerLevel pLevel, @NotNull BlockPos pPos, @NotNull RandomSource pRandom) {
-        pLevel.setBlock(pPos, updateDistance(pState, pLevel, pPos), 3);
+    public static OptionalInt getOptionalDistanceAt(BlockState pState) {
+        if (pState.hasProperty(INFUSED)
+                && pState.getValue(INFUSED)) {
+            return OptionalInt.of(0);
+        } else {
+            return pState.hasProperty(DISTANCE) ? OptionalInt.of(pState.getValue(DISTANCE)) : OptionalInt.empty();
+        }
     }
 
-    @SuppressWarnings("deprecation")
     @Override
-    public @NotNull List<ItemStack> getDrops(@NotNull BlockState pState, LootParams.@NotNull Builder pParams) {
-        LootParams lootContext = pParams.withParameter(LootContextParams.BLOCK_STATE, pState).create(LootContextParamSets.BLOCK);
-
-
-        if (lootContext.getParamOrNull(LootContextParams.TOOL) != null) {
-            ItemStack tool = lootContext.getParameter(LootContextParams.TOOL);
-            if (tool.is(Items.SHEARS) || EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, tool) > 0) {
-                return Collections.singletonList(new ItemStack(this));
-            }
-        }
-
-        RandomSource random = pParams.getLevel().getRandom();
-        List<ItemStack> drops = new ArrayList<>();
-
-        if (random.nextFloat() < 0.05F) {
-            drops.add(new ItemStack(TCBlocks.FLOW_CEDAR_SAPLING.get()));
-        }
-
-        if (random.nextFloat() < 0.025F) {
-            drops.add(new ItemStack(Items.STICK, random.nextIntBetweenInclusive(1, 2)));
-        }
-
-        return drops;
-
+    public void tick(BlockState pState, ServerLevel pLevel, BlockPos pPos, RandomSource pRandom) {
+        pLevel.setBlock(pPos, updateDistance(pState, pLevel, pPos), 3);
     }
 
     private static BlockState updateDistance(BlockState pState, LevelAccessor pLevel, BlockPos pPos) {
@@ -94,12 +82,34 @@ public class FlowCedarLeavesBlock extends LeavesBlock {
     private static int getDistanceAt(BlockState pNeighbor) {
         return getOptionalDistanceAt(pNeighbor).orElse(7);
     }
-    public static @NotNull OptionalInt getOptionalDistanceAt(BlockState pState) {
-        if (pState.hasProperty(INFUSED)
-                && pState.getValue(INFUSED)) {
-            return OptionalInt.of(0);
-        } else {
-            return pState.hasProperty(DISTANCE) ? OptionalInt.of(pState.getValue(DISTANCE)) : OptionalInt.empty();
+
+    @Override
+    public List<ItemStack> getDrops(BlockState pState, LootParams.@NotNull Builder pParams) {
+        LootParams lootContext = pParams.withParameter(LootContextParams.BLOCK_STATE, pState).create(LootContextParamSets.BLOCK);
+
+
+        if (lootContext.getParamOrNull(LootContextParams.TOOL) != null) {
+            ItemStack tool = lootContext.getParameter(LootContextParams.TOOL);
+            ServerLevel level = pParams.getLevel();
+            RegistryAccess registryAccess = level.registryAccess();
+            Registry<Enchantment> enchantments = registryAccess.registryOrThrow(Registries.ENCHANTMENT);
+            if (tool.is(Items.SHEARS) || tool.getEnchantmentLevel(enchantments.getHolderOrThrow(Enchantments.SILK_TOUCH)) > 0) {
+                return Collections.singletonList(new ItemStack(this));
+            }
         }
+
+        RandomSource random = pParams.getLevel().getRandom();
+        List<ItemStack> drops = new ArrayList<>();
+
+        if (random.nextFloat() < 0.05F) {
+            drops.add(new ItemStack(TCBlocks.FLOW_CEDAR_SAPLING.get()));
+        }
+
+        if (random.nextFloat() < 0.025F) {
+            drops.add(new ItemStack(Items.STICK, random.nextIntBetweenInclusive(1, 2)));
+        }
+
+        return drops;
+
     }
 }

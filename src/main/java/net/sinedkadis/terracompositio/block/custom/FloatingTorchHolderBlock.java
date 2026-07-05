@@ -12,7 +12,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -40,7 +40,6 @@ import java.util.Map;
 
 import static net.sinedkadis.terracompositio.api.registries.TCBlockStateProperties.HOLD_TORCH;
 
-@SuppressWarnings("deprecation")
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class FloatingTorchHolderBlock extends RedstoneTorchBlock {
@@ -112,11 +111,11 @@ public class FloatingTorchHolderBlock extends RedstoneTorchBlock {
         return pLevel.hasSignal(pPos.relative(direction), direction);
     }
 
-    @SuppressWarnings("deprecation")
+
     @Override
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
-        ItemStack itemInHand = pPlayer.getItemInHand(pHand);
-        HoldTorch torch = pState.getValue(HOLD_TORCH);
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        ItemStack itemInHand = player.getItemInHand(hand);
+        HoldTorch torch = state.getValue(HOLD_TORCH);
         Map<HoldTorch,Item> map = Map.of(
                 HoldTorch.REDSTONE,Items.REDSTONE_TORCH,
                 HoldTorch.NORMAL,Items.TORCH,
@@ -125,26 +124,25 @@ public class FloatingTorchHolderBlock extends RedstoneTorchBlock {
         if (torch.isEmpty()){
             for (Map.Entry<HoldTorch,Item> entry : map.entrySet()){
                 if (itemInHand.is(entry.getValue())) {
-                    pLevel.setBlockAndUpdate(pPos,pState.setValue(HOLD_TORCH,entry.getKey()));
-                    if (!pPlayer.isCreative())
+                    level.setBlockAndUpdate(pos, state.setValue(HOLD_TORCH, entry.getKey()));
+                    if (!player.isCreative())
                         itemInHand.shrink(1);
-                    pLevel.playSound(null,pPos, SoundEvents.WOOD_PLACE, SoundSource.BLOCKS);
-                    return InteractionResult.SUCCESS;
+                    level.playSound(null, pos, SoundEvents.WOOD_PLACE, SoundSource.BLOCKS);
+                    return ItemInteractionResult.SUCCESS;
                 }
             }
         }
         for (Map.Entry<HoldTorch,Item> entry : map.entrySet()){
             if (itemInHand.isEmpty() || itemInHand.is(entry.getValue())) {
                 if (torch.equals(entry.getKey())){
-                    PlayerHelper.addOrDropToPlayer(pPlayer, entry.getValue().getDefaultInstance());
-                    pLevel.setBlockAndUpdate(pPos, pState.setValue(HOLD_TORCH, HoldTorch.NONE));
-                    pLevel.playSound(null, pPos, SoundEvents.WOOD_BREAK, SoundSource.BLOCKS);
-                    return InteractionResult.SUCCESS;
+                    PlayerHelper.addOrDropToPlayer(player, entry.getValue().getDefaultInstance());
+                    level.setBlockAndUpdate(pos, state.setValue(HOLD_TORCH, HoldTorch.NONE));
+                    level.playSound(null, pos, SoundEvents.WOOD_BREAK, SoundSource.BLOCKS);
+                    return ItemInteractionResult.SUCCESS;
                 }
             }
         }
-
-        return super.use(pState, pLevel, pPos, pPlayer, pHand, pHit);
+        return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
     }
 
     @Override
@@ -271,10 +269,10 @@ public class FloatingTorchHolderBlock extends RedstoneTorchBlock {
     }
 
     public BlockState rotate(BlockState pState, Rotation pRotation) {
-        return Blocks.WALL_TORCH.rotate(pState, pRotation);
+        return pState.setValue(FACING, pRotation.rotate(pState.getValue(FACING)));
     }
 
     public BlockState mirror(BlockState pState, Mirror pMirror) {
-        return Blocks.WALL_TORCH.mirror(pState, pMirror);
+        return pState.mirror(pMirror);
     }
 }

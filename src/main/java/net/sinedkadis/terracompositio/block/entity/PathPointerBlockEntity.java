@@ -24,19 +24,18 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
-import net.sinedkadis.terracompositio.api.dummies.DummyECFHandler;
 import net.sinedkadis.terracompositio.api.helpers.BlockPosHelper;
 import net.sinedkadis.terracompositio.api.helpers.PlayerHelper;
+import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.networks.NetworkAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetwork;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.block.custom.PathPointerBlock;
 import net.sinedkadis.terracompositio.config.TCClientConfigs;
-import net.sinedkadis.terracompositio.network.TCPayloads;
-import net.sinedkadis.terracompositio.network.packets.S2CHighLightNodesSync;
+import net.sinedkadis.terracompositio.network.payloads.S2CHighLightNodesPayload;
 import net.sinedkadis.terracompositio.registries.TCBlockEntities;
 import net.sinedkadis.terracompositio.util.BindException;
 import net.sinedkadis.terracompositio.util.IEntityInstance;
@@ -444,7 +443,7 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
 
     private static void updateClientHighLight(@Nullable Player pPlayer, PathPointerBlockEntity pathPointerBlockEntity) {
         if (pPlayer instanceof ServerPlayer serverPlayer) {
-            TCPayloads.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new S2CHighLightNodesSync(pathPointerBlockEntity));
+            PacketDistributor.sendToPlayer(serverPlayer, new S2CHighLightNodesPayload(pathPointerBlockEntity));
         }
     }
 
@@ -731,7 +730,7 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
 
     @Override
     public IECFHandler getMainHandler() {
-        return DummyECFHandler.instance;
+        return SentinelHelper.EMPTY_ECF_HANDLER;
     }
 
 

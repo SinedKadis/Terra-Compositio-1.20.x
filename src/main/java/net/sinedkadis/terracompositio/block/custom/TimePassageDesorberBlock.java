@@ -1,5 +1,6 @@
 package net.sinedkadis.terracompositio.block.custom;
 
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
@@ -12,11 +13,13 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.sinedkadis.terracompositio.block.entity.TCBlockEntity;
 import net.sinedkadis.terracompositio.registries.TCBlockEntities;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.stream.Stream;
 
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public class TimePassageDesorberBlock extends AbstractDesorberBlock{
 
     public TimePassageDesorberBlock(Properties pProperties) {
@@ -27,9 +30,8 @@ public class TimePassageDesorberBlock extends AbstractDesorberBlock{
     public boolean canConnectRedstone(BlockState state, BlockGetter level, BlockPos pos, @Nullable Direction direction) {
         return true;
     }
-    @SuppressWarnings("deprecation")
     @Override
-    public @NotNull VoxelShape getShape(@NotNull BlockState pState, @NotNull BlockGetter pLevel, @NotNull BlockPos pPos, @NotNull CollisionContext pContext) {
+    public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
         return Stream.of(
                 Block.box(0, 0, 0, 16, 2, 16),
                 Block.box(0, 6, 0, 16, 8, 2),
@@ -52,7 +54,6 @@ public class TimePassageDesorberBlock extends AbstractDesorberBlock{
     }
 
     @Override
-    @NotNull
     public BlockEntityType<? extends TCBlockEntity> getBlockEntityType() {
         return TCBlockEntities.TIME_PASSAGE_DESORBER_BE.get();
     }

@@ -3,6 +3,7 @@ package net.sinedkadis.terracompositio.block.entity;
 import lombok.Getter;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -14,23 +15,25 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.wrapper.EmptyItemHandler;
 import net.sinedkadis.terracompositio.api.IHaveKnowledge;
+import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
+import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.block.custom.TCBaseEntityBlock;
+import net.sinedkadis.terracompositio.util.ITCCapabilityProviderInstance;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEECFBehaviour;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEItemBehaviour;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public abstract class TCBlockEntity extends BlockEntity implements IHaveKnowledge {
+public abstract class TCBlockEntity extends BlockEntity implements IHaveKnowledge, ITCCapabilityProviderInstance {
     @Getter
     protected List<IBEBehaviour> behaviours = new ArrayList<>();
 
@@ -100,7 +103,7 @@ public abstract class TCBlockEntity extends BlockEntity implements IHaveKnowledg
     public void addTooltipLines(CompoundTag data, List<Component> tooltip, boolean isShifting, HolderLookup.Provider provider) {
         for (IBEBehaviour behaviour : getBehaviours()) {
             if (behaviour instanceof IHaveKnowledge iHaveKnowledge) {
-                iHaveKnowledge.addTooltipLines(data, tooltip, isShifting, );
+                iHaveKnowledge.addTooltipLines(data, tooltip, isShifting, provider);
             }
         }
     }
@@ -109,8 +112,35 @@ public abstract class TCBlockEntity extends BlockEntity implements IHaveKnowledg
     public void collectKnowledgeData(CompoundTag data, HolderLookup.Provider provider) {
         for (IBEBehaviour behaviour : getBehaviours()) {
             if (behaviour instanceof IHaveKnowledge iHaveKnowledge) {
-                iHaveKnowledge.collectKnowledgeData(data, );
+                iHaveKnowledge.collectKnowledgeData(data, provider);
             }
         }
+    }
+
+    @Override
+    public IItemHandler getItemCapability(@Nullable Direction direction) {
+        Optional<IItemHandler> behaviourCap = behaviours.stream()
+                .map(iBehaviour -> iBehaviour.getItemCapability(direction))
+                .filter(Objects::nonNull)
+                .findAny();
+        return behaviourCap.orElse(EmptyItemHandler.INSTANCE);
+    }
+
+    @Override
+    public IECFHandler getECFCapability(@Nullable Direction direction) {
+        Optional<IECFHandler> behaviourCap = behaviours.stream()
+                .map(iBehaviour -> iBehaviour.getECFCapability(direction))
+                .filter(Objects::nonNull)
+                .findAny();
+        return behaviourCap.orElse(SentinelHelper.EMPTY_ECF_HANDLER);
+    }
+
+    @Override
+    public IItemHandler getStateHolderCapability(@Nullable Direction direction) {
+        Optional<IItemHandler> behaviourCap = behaviours.stream()
+                .map(iBehaviour -> iBehaviour.getStateHolderCapability(direction))
+                .filter(Objects::nonNull)
+                .findAny();
+        return behaviourCap.orElse(EmptyItemHandler.INSTANCE);
     }
 }

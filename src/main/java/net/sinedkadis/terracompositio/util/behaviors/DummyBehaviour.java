@@ -8,7 +8,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
-import net.sinedkadis.terracompositio.api.dummies.DummyECFHandler;
+import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.util.IEntityInstance;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
@@ -76,7 +76,7 @@ public class DummyBehaviour implements IBEBehaviour, IBEItemWordlyContainerBehav
 
     @Override
     public IECFHandler getMainHandler() {
-        return DummyECFHandler.instance;
+        return SentinelHelper.EMPTY_ECF_HANDLER;
     }
 
     @Override

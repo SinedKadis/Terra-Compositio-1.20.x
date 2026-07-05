@@ -3,9 +3,14 @@ package net.sinedkadis.terracompositio.block.custom;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -55,13 +60,15 @@ public class ECFBoardBlock extends Block implements SimpleWaterloggedBlock {
         return defaultBlockState().setValue(TCBlockStateProperties.PERMANENT, true);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public List<ItemStack> getDrops(BlockState pState, LootParams.Builder pParams) {
         ItemStack tool = pParams.getOptionalParameter(LootContextParams.TOOL);
         List<ItemStack> drops = new ArrayList<>(super.getDrops(pState, pParams));
         if (tool != null && pState.getValue(TCBlockStateProperties.PERMANENT)) {
-            if (tool.getEnchantmentLevel(Enchantments.SILK_TOUCH) > 0
+            ServerLevel level = pParams.getLevel();
+            RegistryAccess registryAccess = level.registryAccess();
+            Registry<Enchantment> enchantments = registryAccess.registryOrThrow(Registries.ENCHANTMENT);
+            if (tool.getEnchantmentLevel(enchantments.getHolderOrThrow(Enchantments.SILK_TOUCH)) > 0
                     || tool.is(TCTags.Items.WRENCHES)
                     || tool.is(TCItems.WRENCH_AXE.get())) {
                 drops.add(TCBlocks.ECF_BOARD.get().asItem().getDefaultInstance());
@@ -70,7 +77,6 @@ public class ECFBoardBlock extends Block implements SimpleWaterloggedBlock {
         return drops;
     }
 
-    @SuppressWarnings("deprecation")
     public BlockState updateShape(BlockState pState, Direction pFacing, BlockState pFacingState, LevelAccessor pLevel, BlockPos pCurrentPos, BlockPos pFacingPos) {
         if (pState.getValue(WATERLOGGED)) {
             pLevel.scheduleTick(pCurrentPos, Fluids.WATER, Fluids.WATER.getTickDelay(pLevel));
@@ -79,11 +85,9 @@ public class ECFBoardBlock extends Block implements SimpleWaterloggedBlock {
         return super.updateShape(pState,pFacing,pFacingState,pLevel,pCurrentPos,pFacingPos);
     }
 
-    @SuppressWarnings("deprecation")
     public FluidState getFluidState(BlockState pState) {
         return pState.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(pState);
     }
-    @SuppressWarnings("deprecation")
     @Override
     public VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         Entity entity = null;
@@ -97,7 +101,6 @@ public class ECFBoardBlock extends Block implements SimpleWaterloggedBlock {
         return Shapes.empty();
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return SHAPE;

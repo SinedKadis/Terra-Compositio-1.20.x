@@ -21,7 +21,6 @@ import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.block.entity.PathPointerBlockEntity;
 import net.sinedkadis.terracompositio.ecf.burst.ECFBurstProjectileEntity;
 import net.sinedkadis.terracompositio.network.TCPayloads;
-import net.sinedkadis.terracompositio.network.packets.S2CPlayerEcfContainerSync;
 import net.sinedkadis.terracompositio.util.IEntityInstance;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -140,10 +139,6 @@ public class DefaultECFHandler implements IECFHandler, INBTSerializable<Compound
         }
         if (getAttachedEntity().tc$isEntity() && getAttachedEntity() instanceof ECFNetworkMember member) {
             TerraCompositioAPI.INSTANCE.getECFNetworkInstance().fireECFNetworkEvent(member, NetworkAction.UPDATE);
-            if (getAttachedEntity() instanceof ServerPlayer serverPlayer) {
-                TCPayloads.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer),
-                        new S2CPlayerEcfContainerSync(this.getECF()));
-            }
         }
     }
 
