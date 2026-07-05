@@ -3,6 +3,7 @@ package net.sinedkadis.terracompositio.entity.custom;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -299,7 +300,7 @@ public class ECFCloudEntity extends Entity implements ECFNetworkMember, IHaveKno
     }
 
     @Override
-    public void collectKnowledgeData(CompoundTag data) {
+    public void collectKnowledgeData(CompoundTag data, HolderLookup.Provider provider) {
 
         lazyECFOptional.ifPresent(cfeHandler -> {
             data.putInt(TooltipHelper.Keys.ECF.toData(), cfeHandler.getECF());
@@ -318,7 +319,7 @@ public class ECFCloudEntity extends Entity implements ECFNetworkMember, IHaveKno
     }
 
     @Override
-    public void addTooltipLines(CompoundTag data, List<Component> tooltip, boolean isShifting) {
+    public void addTooltipLines(CompoundTag data, List<Component> tooltip, boolean isShifting, HolderLookup.Provider provider) {
 
         if (isShifting) {
             TooltipHelper.addWithHeader(TooltipHelper.Headers.ENTITY, tooltip, t -> {

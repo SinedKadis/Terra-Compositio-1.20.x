@@ -23,7 +23,7 @@ public class EmptyComponent implements Component {
 
     @Override
     public ComponentContents getContents() {
-        return ComponentContents.EMPTY;
+        throw new RuntimeException("Content of empty component read unexpected");
     }
 
     @Override

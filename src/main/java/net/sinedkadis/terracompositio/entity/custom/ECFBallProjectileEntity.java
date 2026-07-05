@@ -42,9 +42,9 @@ public class ECFBallProjectileEntity extends ThrowableItemProjectile {
 
     public ECFBallProjectileEntity(Level pLevel, LivingEntity livingEntity) {
         super(TCEntities.ECF_BALL_PROJECTILE.get(), livingEntity, pLevel);
-//        Entity owner = this.getOwner();
-//        if (owner != null) {
-//            setTargetHeight((int) (owner.position().y-1));
+//        Entity entityUUID = this.getOwner();
+//        if (entityUUID != null) {
+//            setTargetHeight((int) (entityUUID.position().y-1));
 //        }
         setNoGravity(true);
 

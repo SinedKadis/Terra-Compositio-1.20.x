@@ -1,12 +1,10 @@
 package net.sinedkadis.terracompositio.api.registries;
 
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.CapabilityToken;
-import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.items.IItemHandlerModifiable;
+
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 
@@ -14,7 +12,7 @@ import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 /**
  * The Forge Caps, used in my mod.
  */
-@Mod.EventBusSubscriber(modid = TerraCompositioAPI.MOD_ID,bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = TerraCompositioAPI.MOD_ID)
 public class TCCapabilities {
     public static final Capability<IECFHandler> ECF = CapabilityManager.get(new CapabilityToken<>() {});
     public static final Capability<IItemHandlerModifiable> ITEM_STATE_HOLDER = CapabilityManager.get(new CapabilityToken<>() {

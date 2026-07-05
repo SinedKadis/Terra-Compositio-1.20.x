@@ -1,6 +1,6 @@
 package net.sinedkadis.terracompositio.worldgen.tree.custom;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.function.BiConsumer;
 
 public class FlowCedarTrunkPlacer extends TrunkPlacer {
-    public static final Codec<FlowCedarTrunkPlacer> CODEC = RecordCodecBuilder.create(
+    public static final MapCodec<FlowCedarTrunkPlacer> CODEC = RecordCodecBuilder.mapCodec(
             instance -> trunkPlacerParts(instance)
                     .apply(instance, FlowCedarTrunkPlacer::new)
     );

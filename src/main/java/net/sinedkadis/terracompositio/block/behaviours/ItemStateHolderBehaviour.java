@@ -4,6 +4,7 @@ import lombok.Getter;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -139,12 +140,12 @@ public class ItemStateHolderBehaviour implements IBEItemBehaviour {
     }
 
     @Override
-    public void onSave(CompoundTag compoundTag) {
+    public void onSave(CompoundTag compoundTag, HolderLookup.Provider registries) {
         compoundTag.put("item_state_holder", itemHandler.serializeNBT());
     }
 
     @Override
-    public void onLoad(CompoundTag compoundTag) {
+    public void onLoad(CompoundTag compoundTag, HolderLookup.Provider registries) {
         itemHandler.deserializeNBT(compoundTag.getCompound("item_state_holder"));
     }
 }

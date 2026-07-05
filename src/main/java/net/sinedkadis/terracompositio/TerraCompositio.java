@@ -5,8 +5,12 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Items;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
 import net.sinedkadis.terracompositio.compat.patchouli.TCPatchouliCompat;
 import net.sinedkadis.terracompositio.compat.soft_compat.ISoftCompat;
@@ -17,13 +21,13 @@ import net.sinedkadis.terracompositio.ecf.ECFNetworkHandler;
 import net.sinedkadis.terracompositio.events.ECFNetworkEvent;
 import net.sinedkadis.terracompositio.events.FluidNetworkEvent;
 import net.sinedkadis.terracompositio.fluid.FluidNetworkHandler;
-import net.sinedkadis.terracompositio.network.TCPackets;
+import net.sinedkadis.terracompositio.network.TCPayloads;
 import net.sinedkadis.terracompositio.registries.*;
 import net.sinedkadis.terracompositio.worldgen.biome.TCTerrablender;
 import net.sinedkadis.terracompositio.worldgen.tree.TCFoliagePlacers;
 import net.sinedkadis.terracompositio.worldgen.tree.TCTrunkPlacers;
 
-//6011371823902440939 - cool seed
+//6011371823902440939 - cool seed(for 1.20.1)
 @Mod(TerraCompositio.MOD_ID)
 public class TerraCompositio
 {
@@ -57,6 +61,8 @@ public class TerraCompositio
         TCFoliagePlacers.register(modEventBus);
         TCTerrablender.registerBiomes();
 
+        TCDataComponents.register(modEventBus);
+
         TCGameRules.init();
 
         if (ModList.get().isLoaded("create")) {
@@ -70,9 +76,9 @@ public class TerraCompositio
             }
         }
 
-        context.registerConfig(ModConfig.Type.CLIENT, TCClientConfigs.SPEC, "terracompositio-client.toml");
-        context.registerConfig(ModConfig.Type.COMMON, TCCommonConfigs.SPEC, "terracompositio-common.toml");
-        context.registerConfig(ModConfig.Type.SERVER, TCServerConfigs.SPEC, "terracompositio-server.toml");
+        modContainer.registerConfig(ModConfig.Type.CLIENT, TCClientConfigs.SPEC, "terracompositio-client.toml");
+        modContainer.registerConfig(ModConfig.Type.COMMON, TCCommonConfigs.SPEC, "terracompositio-common.toml");
+        modContainer.registerConfig(ModConfig.Type.SERVER, TCServerConfigs.SPEC, "terracompositio-server.toml");
 
 
 
@@ -80,10 +86,10 @@ public class TerraCompositio
 
 
     private void commonSetup(final FMLCommonSetupEvent event) {
-        IEventBus bus = MinecraftForge.EVENT_BUS;
+        IEventBus bus = NeoForge.EVENT_BUS;
         bus.addListener((ECFNetworkEvent e) -> ECFNetworkHandler.INSTANCE.onNetworkEvent(e.getSource(),e.getAction()));
         bus.addListener((FluidNetworkEvent e) -> FluidNetworkHandler.INSTANCE.onNetworkEvent(e.getSource(),e.getAction()));
-        TCPackets.register();
+        TCPayloads.register();
         if (ModList.get().isLoaded("patchouli"))
             TCPatchouliCompat.registerMultiblocks();
 

@@ -4,6 +4,7 @@ import lombok.Data;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
@@ -17,12 +18,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import net.sinedkadis.terracompositio.api.IHaveKnowledge;
 import net.sinedkadis.terracompositio.api.components.ItemComponent;
 import net.sinedkadis.terracompositio.api.helpers.ItemHelper;
@@ -72,7 +69,6 @@ public class ItemHandlerBehaviour implements IBEItemBehaviour, WorldlyContainer,
             return itemStack;
         }
     };
-    protected LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
 
     //One slot
     public ItemHandlerBehaviour(TCBlockEntity blockEntity) {
@@ -105,30 +101,19 @@ public class ItemHandlerBehaviour implements IBEItemBehaviour, WorldlyContainer,
 
     @Override
     public void onChunkLoad() {
-        lazyItemHandler = LazyOptional.of(this::getItemHandler);
+
     }
 
-    @Override
-    public @Nullable LazyOptional<?> getCapability(Capability<?> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ITEM_HANDLER) {
-            return lazyItemHandler.cast();
-        }
-        return null;
-    }
 
     @Override
     public void onRemoved() {
 
     }
 
-    @Override
-    public void onInvalidateCaps() {
-        lazyItemHandler.invalidate();
-    }
 
     @Override
-    public void onSave(CompoundTag tag) {
-        CompoundTag pValue = getItemHandler().serializeNBT();
+    public void onSave(CompoundTag tag, HolderLookup.Provider registries) {
+        CompoundTag pValue = getItemHandler().serializeNBT(registries);
         tag.put("itemHandler", pValue);
     }
 
@@ -137,9 +122,9 @@ public class ItemHandlerBehaviour implements IBEItemBehaviour, WorldlyContainer,
     }
 
     @Override
-    public void onLoad(CompoundTag tag) {
+    public void onLoad(CompoundTag tag, HolderLookup.Provider registries) {
         CompoundTag itemHandler1 = tag.getCompound("itemHandler");
-        getItemHandler().deserializeNBT(itemHandler1);
+        getItemHandler().deserializeNBT(registries, itemHandler1);
     }
 
     @Override
@@ -266,18 +251,18 @@ public class ItemHandlerBehaviour implements IBEItemBehaviour, WorldlyContainer,
     }
 
     @Override
-    public void collectKnowledgeData(CompoundTag data) {
+    public void collectKnowledgeData(CompoundTag data, HolderLookup.Provider provider) {
         List<ItemStack> list = new ArrayList<>();
         for (int i = 0; i < itemHandler.getSlots(); i++) {
             list.add(itemHandler.getStackInSlot(i));
         }
-        data.put("inventory", ItemHelper.writeItemList(list));
+        data.put("inventory", ItemHelper.writeItemList(list, provider));
     }
 
     @Override
-    public void addTooltipLines(CompoundTag data, List<Component> tooltip, boolean isShifting) {
+    public void addTooltipLines(CompoundTag data, List<Component> tooltip, boolean isShifting, HolderLookup.Provider provider) {
         TooltipHelper.addWithHeader(TooltipHelper.Headers.ITEMS, tooltip, t -> {
-            List<ItemStack> entries = ItemHelper.readItemList(data.getList("inventory", Tag.TAG_COMPOUND));
+            List<ItemStack> entries = ItemHelper.readItemList(data.getList("inventory", Tag.TAG_COMPOUND), provider);
             for (ItemStack stack : entries) {
                 if (stack.isEmpty()) continue;
                 t.add(ItemComponent.of(stack));

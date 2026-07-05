@@ -2,7 +2,7 @@ package net.sinedkadis.terracompositio.api.networks.fluid;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.sinedkadis.terracompositio.api.networks.NetworkAction;
 
 import java.util.Set;

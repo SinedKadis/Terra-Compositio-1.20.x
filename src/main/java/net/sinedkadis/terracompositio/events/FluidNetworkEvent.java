@@ -1,7 +1,8 @@
 package net.sinedkadis.terracompositio.events;
 
 import lombok.Getter;
-import net.minecraftforge.eventbus.api.Event;
+
+import net.neoforged.bus.api.Event;
 import net.sinedkadis.terracompositio.api.networks.NetworkAction;
 import net.sinedkadis.terracompositio.api.networks.fluid.FluidNetworkMember;
 

@@ -1,15 +1,16 @@
 package net.sinedkadis.terracompositio.config;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class TCCommonConfigs {
-    public static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
-    public static final ForgeConfigSpec SPEC;
+    public static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
+    public static final ModConfigSpec SPEC;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> ECF_PER_BURST_TRANSFER_LIMIT;
-    public static final ForgeConfigSpec.ConfigValue<Integer> TICKS_BETWEEN_BURSTS;
-    public static final ForgeConfigSpec.ConfigValue<Integer> PLATFORM_ALIVE_PER_PLAYER;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> DEBUG;
+    public static final ModConfigSpec.ConfigValue<Integer> ECF_PER_BURST_TRANSFER_LIMIT;
+    public static final ModConfigSpec.ConfigValue<Integer> TICKS_BETWEEN_BURSTS;
+    public static final ModConfigSpec.ConfigValue<Integer> PLATFORM_ALIVE_PER_PLAYER;
+    public static final ModConfigSpec.ConfigValue<Boolean> DEBUG;
 
     static {
         BUILDER.push("Balance");

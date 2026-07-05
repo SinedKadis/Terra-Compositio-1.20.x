@@ -1,16 +1,17 @@
 package net.sinedkadis.terracompositio.api.helpers;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.Containers;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,44 +27,49 @@ public class ItemHelper {
      * @param containerStack the container stack
      * @return the container contents
      */
-    public static List<ItemStack> getContainerContents(ItemStack containerStack) {
+    public static Iterable<ItemStack> getContainerContents(ItemStack containerStack) {
         if (containerStack.isEmpty()) {
             return List.of();
         }
 
-        CompoundTag stackTag = containerStack.getTag();
-        if (stackTag == null) {
-            return List.of();
-        }
+        ItemContainerContents itemContainerContents = containerStack.get(DataComponents.CONTAINER);
+        if (itemContainerContents == null) return List.of();
+        return itemContainerContents.nonEmptyItemsCopy();
 
-        CompoundTag blockEntityTag = stackTag.getCompound("BlockEntityTag");
-        if (blockEntityTag.contains("Items", CompoundTag.TAG_LIST)) {
-            return readItemList(blockEntityTag.getList("Items", CompoundTag.TAG_COMPOUND));
-        }
-
-        if (stackTag.contains("Items", CompoundTag.TAG_LIST)) {
-            return readItemList(stackTag.getList("Items", CompoundTag.TAG_COMPOUND));
-        }
-
-        if (stackTag.contains("Inventory", CompoundTag.TAG_LIST)) {
-            return readItemList(stackTag.getList("Inventory", CompoundTag.TAG_COMPOUND));
-        }
-
-        return List.of();
+//        CompoundTag stackTag = containerStack.getTag();
+//        if (stackTag == null) {
+//            return List.of();
+//        }
+//
+//        CompoundTag blockEntityTag = stackTag.getCompound("BlockEntityTag");
+//        if (blockEntityTag.contains("Items", CompoundTag.TAG_LIST)) {
+//            return readItemList(blockEntityTag.getList("Items", CompoundTag.TAG_COMPOUND));
+//        }
+//
+//        if (stackTag.contains("Items", CompoundTag.TAG_LIST)) {
+//            return readItemList(stackTag.getList("Items", CompoundTag.TAG_COMPOUND));
+//        }
+//
+//        if (stackTag.contains("Inventory", CompoundTag.TAG_LIST)) {
+//            return readItemList(stackTag.getList("Inventory", CompoundTag.TAG_COMPOUND));
+//        }
+//
+//        return List.of();
     }
 
     /**
      * Reads items from {@link ListTag}.
      *
      * @param itemsTag the items tag
+     * @param provider
      * @return the list
      */
-    public static List<ItemStack> readItemList(ListTag itemsTag) {
+    public static List<ItemStack> readItemList(ListTag itemsTag, HolderLookup.Provider provider) {
         List<ItemStack> items = new ArrayList<>(itemsTag.size());
 
         for (int i = 0; i < itemsTag.size(); i++) {
             CompoundTag itemTag = itemsTag.getCompound(i);
-            ItemStack itemStack = ItemStack.of(itemTag);
+            ItemStack itemStack = ItemStack.parseOptional(provider, itemTag);
             items.add(itemStack);
         }
 
@@ -73,15 +79,12 @@ public class ItemHelper {
     /**
      * Writes items to {@link ListTag}.
      *
-     * @param stacks the items
+     * @param stacks   the items
+     * @param provider
      * @return the list tag
      */
-    public static ListTag writeItemList(Iterable<ItemStack> stacks) {
-        return writeCompoundList(stacks, itemStack -> {
-            CompoundTag tag = new CompoundTag();
-            itemStack.save(tag);
-            return tag;
-        });
+    public static ListTag writeItemList(Iterable<ItemStack> stacks, HolderLookup.Provider provider) {
+        return writeCompoundList(stacks, itemStack -> (CompoundTag) itemStack.saveOptional(provider));
     }
 
     /**

@@ -2,12 +2,10 @@ package net.sinedkadis.terracompositio.block.behaviours;
 
 import lombok.Data;
 import net.minecraft.MethodsReturnNonnullByDefault;
-import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
 import net.sinedkadis.terracompositio.api.IHaveKnowledge;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
 import net.sinedkadis.terracompositio.api.helpers.ECFHelper;
@@ -16,7 +14,6 @@ import net.sinedkadis.terracompositio.api.networks.NetworkAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetwork;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
-import net.sinedkadis.terracompositio.api.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.block.entity.PathPointerBlockEntity;
 import net.sinedkadis.terracompositio.block.entity.TCBlockEntity;
 import net.sinedkadis.terracompositio.config.TCCommonConfigs;
@@ -25,7 +22,6 @@ import net.sinedkadis.terracompositio.ecf.PPECFMemberProxy;
 import net.sinedkadis.terracompositio.util.IEntityInstance;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEECFBehaviour;
 import net.sinedkadis.terracompositio.util.helpers.ECFHelperInternal;
-import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashSet;
@@ -43,7 +39,6 @@ public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
     protected int range;
     protected int priority;
     protected IECFHandler ecfHandler;
-    protected LazyOptional<IECFHandler> lazyCFEOptional = LazyOptional.empty();
 
     protected boolean scheduledUpdate = false;
     protected int scheduledMembersUpdate = -1;
@@ -89,7 +84,6 @@ public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
 
     @Override
     public void onChunkLoad() {
-        lazyCFEOptional = LazyOptional.of(() -> ecfHandler);
         scheduleMemberUpdate();
     }
 
@@ -112,8 +106,10 @@ public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
     public void onECFNetworkMemberUpdate(ECFNetworkMember updated) {
         if (getMainHandler().getECF() > 0 && isValidMember(updated)) {
             if (updated.getMainHandler().getFreeSpace() > TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get()) {
-                if (updated instanceof PPECFMemberProxy proxy && proxy.target().getEntityInstance().tc$isEntity()) {
-                    if (updated.getEntityInstance().tc$getBlockPos().closerThan(proxy.proxy().getOutputPos(), getRange()))
+                if (updated instanceof PPECFMemberProxy(
+                        ECFNetworkMember target, PathPointerBlockEntity proxy1
+                ) && target.getEntityInstance().tc$isEntity()) {
+                    if (updated.getEntityInstance().tc$getBlockPos().closerThan(proxy1.getOutputPos(), getRange()))
                         scheduleMemberUpdate(updated);
                 } else scheduleMemberUpdate(updated);
             }
@@ -128,30 +124,17 @@ public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
     }
 
     @Override
-    public @Nullable LazyOptional<?> getCapability(Capability<?> cap, @Nullable Direction side) {
-        if (cap == TCCapabilities.ECF){
-            return lazyCFEOptional.cast();
-        }
-        return null;
-    }
-
-    @Override
     public void onRemoved() {
         TerraCompositioAPI.INSTANCE.getECFNetworkInstance().fireECFNetworkEvent(this, NetworkAction.REMOVE);
     }
 
     @Override
-    public void onInvalidateCaps() {
-        lazyCFEOptional.invalidate();
-    }
-
-    @Override
-    public void onSave(CompoundTag tag) {
+    public void onSave(CompoundTag tag, HolderLookup.Provider registries) {
         ecfHandler.writeToNBT(tag);
     }
 
     @Override
-    public void onLoad(CompoundTag tag) {
+    public void onLoad(CompoundTag tag, HolderLookup.Provider registries) {
         ecfHandler.readFromNBT(tag);
     }
 
@@ -201,7 +184,7 @@ public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
     }
 
     @Override
-    public void collectKnowledgeData(CompoundTag data) {
+    public void collectKnowledgeData(CompoundTag data, HolderLookup.Provider provider) {
 
         data.putInt(TooltipHelper.Keys.ECF.toData(), ecfHandler.getECF());
 
@@ -214,7 +197,7 @@ public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
     }
 
     @Override
-    public void addTooltipLines(CompoundTag data, List<Component> tooltip, boolean isShifting) {
+    public void addTooltipLines(CompoundTag data, List<Component> tooltip, boolean isShifting, HolderLookup.Provider provider) {
 
         TooltipHelper.addWithHeader(TooltipHelper.Headers.BLOCK, tooltip, t -> {
             if (TCCommonConfigs.DEBUG.get()) {

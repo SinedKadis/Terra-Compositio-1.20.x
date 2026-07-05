@@ -20,7 +20,7 @@ import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.block.entity.PathPointerBlockEntity;
 import net.sinedkadis.terracompositio.ecf.burst.ECFBurstProjectileEntity;
-import net.sinedkadis.terracompositio.network.TCPackets;
+import net.sinedkadis.terracompositio.network.TCPayloads;
 import net.sinedkadis.terracompositio.network.packets.S2CPlayerEcfContainerSync;
 import net.sinedkadis.terracompositio.util.IEntityInstance;
 
@@ -102,12 +102,12 @@ public class DefaultECFHandler implements IECFHandler, INBTSerializable<Compound
             return 0;
         Level level = target.getEntityInstance().tc$getLevel();
 
-        if (target instanceof PPECFMemberProxy proxy && proxy.target().getEntityInstance().tc$isEntity()) {
-            BlockPos pos = proxy.proxy().getOutputPos();
+        if (target instanceof PPECFMemberProxy(ECFNetworkMember target1, PathPointerBlockEntity proxy1) && target1.getEntityInstance().tc$isEntity()) {
+            BlockPos pos = proxy1.getOutputPos();
             PathPointerBlockEntity ppBE = (PathPointerBlockEntity) (level.getBlockEntity(pos));
             if (ppBE != null) {
                 if (ppBE.parts.contains(PathPointerBlockEntity.PPPart.INFUSER)) {
-                    setYawAndPitchFromRot(pos.getCenter().vectorTo(proxy.target().getEntityInstance().tc$getPosition()), ppBE);
+                    setYawAndPitchFromRot(pos.getCenter().vectorTo(target1.getEntityInstance().tc$getPosition()), ppBE);
                 }
             }
         }
@@ -141,7 +141,7 @@ public class DefaultECFHandler implements IECFHandler, INBTSerializable<Compound
         if (getAttachedEntity().tc$isEntity() && getAttachedEntity() instanceof ECFNetworkMember member) {
             TerraCompositioAPI.INSTANCE.getECFNetworkInstance().fireECFNetworkEvent(member, NetworkAction.UPDATE);
             if (getAttachedEntity() instanceof ServerPlayer serverPlayer) {
-                TCPackets.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer),
+                TCPayloads.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer),
                         new S2CPlayerEcfContainerSync(this.getECF()));
             }
         }

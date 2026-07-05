@@ -2,6 +2,7 @@ package net.sinedkadis.terracompositio.compat.create.block.entity;
 
 import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
@@ -160,7 +161,7 @@ public class CedarGearboxBlockEntity extends GeneratingKineticBlockEntity implem
     }
 
     @Override
-    public void collectKnowledgeData(CompoundTag data) {
+    public void collectKnowledgeData(CompoundTag data, HolderLookup.Provider provider) {
         data.putInt(TooltipHelper.Keys.ECF.toData(), ecfHandler.getECF());
 
         if (TCCommonConfigs.DEBUG.get()) {
@@ -172,7 +173,7 @@ public class CedarGearboxBlockEntity extends GeneratingKineticBlockEntity implem
     }
 
     @Override
-    public void addTooltipLines(CompoundTag data, List<Component> tooltip, boolean isShifting) {
+    public void addTooltipLines(CompoundTag data, List<Component> tooltip, boolean isShifting, HolderLookup.Provider provider) {
 
         TooltipHelper.addWithHeader(TooltipHelper.Headers.BLOCK, tooltip, t -> {
             if (TCCommonConfigs.DEBUG.get()) {

@@ -3,6 +3,7 @@ package net.sinedkadis.terracompositio.block.entity;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.WorldlyContainer;
@@ -196,8 +197,8 @@ public abstract class TCCraftingBlockEntity extends TCBlockEntity implements Wor
     }
 
     @Override
-    public void collectKnowledgeData(CompoundTag data) {
-        super.collectKnowledgeData(data);
+    public void collectKnowledgeData(CompoundTag data, HolderLookup.Provider provider) {
+        super.collectKnowledgeData(data, provider);
         if (!craftException.equals(CraftException.EMPTY))
             data.putString(TooltipHelper.Keys.CRAFT_EXCEPTION.toData(), craftException.name());
         if (maxProgress == 0) return;
@@ -216,7 +217,7 @@ public abstract class TCCraftingBlockEntity extends TCBlockEntity implements Wor
     }
 
     @Override
-    public void addTooltipLines(CompoundTag data, List<Component> tooltip, boolean isShifting) {
+    public void addTooltipLines(CompoundTag data, List<Component> tooltip, boolean isShifting, HolderLookup.Provider provider) {
 
         TooltipHelper.addWithHeader(TooltipHelper.Headers.CRAFTING, tooltip, t -> {
             TooltipHelper.addIfExist(TooltipHelper.Keys.TIME_REMAINING, TooltipHelper.Units.SECONDS, t, data);
@@ -233,7 +234,7 @@ public abstract class TCCraftingBlockEntity extends TCBlockEntity implements Wor
         });
 
 
-        super.addTooltipLines(data, tooltip, isShifting);
+        super.addTooltipLines(data, tooltip, isShifting, provider);
     }
 
     public enum CraftException implements TooltipHelper.ICustomUnit {

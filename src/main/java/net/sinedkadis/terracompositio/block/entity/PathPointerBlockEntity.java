@@ -35,7 +35,7 @@ import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.block.custom.PathPointerBlock;
 import net.sinedkadis.terracompositio.config.TCClientConfigs;
-import net.sinedkadis.terracompositio.network.TCPackets;
+import net.sinedkadis.terracompositio.network.TCPayloads;
 import net.sinedkadis.terracompositio.network.packets.S2CHighLightNodesSync;
 import net.sinedkadis.terracompositio.registries.TCBlockEntities;
 import net.sinedkadis.terracompositio.util.BindException;
@@ -444,7 +444,7 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
 
     private static void updateClientHighLight(@Nullable Player pPlayer, PathPointerBlockEntity pathPointerBlockEntity) {
         if (pPlayer instanceof ServerPlayer serverPlayer) {
-            TCPackets.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new S2CHighLightNodesSync(pathPointerBlockEntity));
+            TCPayloads.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new S2CHighLightNodesSync(pathPointerBlockEntity));
         }
     }
 

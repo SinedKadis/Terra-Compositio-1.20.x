@@ -17,7 +17,7 @@ import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.api.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.block.custom.ECFBoardBlock;
 import net.sinedkadis.terracompositio.config.TCInnerConfig;
-import net.sinedkadis.terracompositio.network.TCPackets;
+import net.sinedkadis.terracompositio.network.TCPayloads;
 import net.sinedkadis.terracompositio.network.packets.S2CAddPlayerKnowledge;
 import net.sinedkadis.terracompositio.network.packets.S2CPlayerEcfContainerSync;
 import net.sinedkadis.terracompositio.util.IEntityInstance;
@@ -137,9 +137,9 @@ public abstract class PlayerMixin extends LivingEntity implements ECFNetworkMemb
             if (((Player) (Object) this) instanceof ServerPlayer serverPlayer) {
                 wasSent = true;
                 if (((PlayerKnowledgeAccessor) serverPlayer).isCreationAcknowledged())
-                    TCPackets.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer),
+                    TCPayloads.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer),
                         new S2CAddPlayerKnowledge());
-                TCPackets.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer),
+                TCPayloads.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer),
                         new S2CPlayerEcfContainerSync(((ECFNetworkMember) serverPlayer).getMainHandler().getECF()));
             }
     }

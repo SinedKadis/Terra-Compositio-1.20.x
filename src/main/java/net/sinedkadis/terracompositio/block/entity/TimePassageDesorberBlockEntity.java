@@ -3,6 +3,7 @@ package net.sinedkadis.terracompositio.block.entity;
 import lombok.Getter;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
@@ -100,19 +101,19 @@ public class TimePassageDesorberBlockEntity extends AbstractDesorberBlockEntity 
     }
 
     @Override
-    public void collectKnowledgeData(CompoundTag data) {
+    public void collectKnowledgeData(CompoundTag data, HolderLookup.Provider provider) {
         data.putInt(TooltipHelper.Keys.TIME_COLLECTED.toData(), timeBuffer);
         data.putDouble(TooltipHelper.Keys.TIME_COLLECTION_CHANCE.toData(), function.apply(timeCounter) * 100);
-        super.collectKnowledgeData(data);
+        super.collectKnowledgeData(data, provider);
     }
 
     @Override
-    public void addTooltipLines(CompoundTag data, List<Component> tooltip, boolean isShifting) {
+    public void addTooltipLines(CompoundTag data, List<Component> tooltip, boolean isShifting, HolderLookup.Provider provider) {
         TooltipHelper.addWithHeader(TooltipHelper.Headers.BLOCK, tooltip, t -> {
             TooltipHelper.addIfExist(TooltipHelper.Keys.TIME_COLLECTED, TooltipHelper.Units.SECONDS, t, data);
             TooltipHelper.addIfExist(TooltipHelper.Keys.TIME_COLLECTION_CHANCE, TooltipHelper.Units.NO_UNITS, t, data);
         });
 
-        super.addTooltipLines(data, tooltip, isShifting);
+        super.addTooltipLines(data, tooltip, isShifting, provider);
     }
 }

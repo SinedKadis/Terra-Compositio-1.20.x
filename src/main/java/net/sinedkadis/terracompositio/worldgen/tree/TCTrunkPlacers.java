@@ -2,9 +2,9 @@ package net.sinedkadis.terracompositio.worldgen.tree;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.feature.trunkplacers.TrunkPlacerType;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.worldgen.tree.custom.FlowCedarTrunkPlacer;
 
@@ -12,7 +12,7 @@ public class TCTrunkPlacers {
     public static final DeferredRegister<TrunkPlacerType<?>> TRUNK_PLACER =
             DeferredRegister.create(Registries.TRUNK_PLACER_TYPE, TerraCompositio.MOD_ID);
 
-    public static final RegistryObject<TrunkPlacerType<FlowCedarTrunkPlacer>> FLOW_CEDAR_TRUNK_PLACER =
+    public static final DeferredHolder<TrunkPlacerType<?>, TrunkPlacerType<FlowCedarTrunkPlacer>> FLOW_CEDAR_TRUNK_PLACER =
             TRUNK_PLACER.register("big_flow_cedar_trunk_placer", () -> new TrunkPlacerType<>(FlowCedarTrunkPlacer.CODEC));
 
     public static void register(IEventBus eventBus) {

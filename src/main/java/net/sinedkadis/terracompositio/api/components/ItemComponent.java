@@ -34,7 +34,7 @@ public record ItemComponent(ItemStack itemStack) implements Component {
 
     @Override
     public ComponentContents getContents() {
-        return ComponentContents.EMPTY;
+        throw new RuntimeException("Content of Item component read unexpected");
     }
 
     @Override

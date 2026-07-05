@@ -2,6 +2,7 @@ package net.sinedkadis.terracompositio.util.behaviors;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -48,12 +49,12 @@ public class DummyBehaviour implements IBEBehaviour, IBEItemWordlyContainerBehav
     }
 
     @Override
-    public void onSave(CompoundTag compoundTag) {
+    public void onSave(CompoundTag compoundTag, HolderLookup.Provider registries) {
 
     }
 
     @Override
-    public void onLoad(CompoundTag compoundTag) {
+    public void onLoad(CompoundTag compoundTag, HolderLookup.Provider registries) {
 
     }
 

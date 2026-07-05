@@ -30,8 +30,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.client.gui.overlay.ForgeGui;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.sinedkadis.terracompositio.api.IHaveKnowledge;
 import net.sinedkadis.terracompositio.api.components.EmptyComponent;
 import net.sinedkadis.terracompositio.api.components.FluidComponent;
@@ -39,10 +39,9 @@ import net.sinedkadis.terracompositio.api.components.HeaderComponent;
 import net.sinedkadis.terracompositio.api.components.ItemComponent;
 import net.sinedkadis.terracompositio.api.helpers.PlayerHelper;
 import net.sinedkadis.terracompositio.config.TCClientConfigs;
-import net.sinedkadis.terracompositio.network.TCPackets;
-import net.sinedkadis.terracompositio.network.packets.C2SRequestBlockKnowledgePacket;
-import net.sinedkadis.terracompositio.network.packets.C2SRequestEntityKnowledgePacket;
-import net.sinedkadis.terracompositio.network.packets.S2CKnowledgeDataPacket;
+import net.sinedkadis.terracompositio.network.ClientPayloadHandlers;
+import net.sinedkadis.terracompositio.network.payloads.C2SKnowledgeBlockRequestPayload;
+import net.sinedkadis.terracompositio.network.payloads.C2SKnowledgeEntityRequestPayload;
 import net.sinedkadis.terracompositio.registries.TCItems;
 import net.sinedkadis.terracompositio.util.accessors.PlayerKnowledgeAccessor;
 
@@ -61,10 +60,10 @@ public class KnowledgeOverlay {
     // ─────────────────────────────────────────────────────────────
 
     private static int lineWidth(Font font, FormattedText line) {
-        if (line instanceof ItemComponent ic) {
-            return 16 + 4 + 45 + font.width(ic.itemStack().getHoverName());
-        } else if (line instanceof FluidComponent fc) {
-            return 16 + 4 + 25 + font.width(fc.fluidStack().getFluid().getBucket().getDefaultInstance().getHoverName());
+        if (line instanceof ItemComponent(ItemStack itemStack)) {
+            return 16 + 4 + 45 + font.width(itemStack.getHoverName());
+        } else if (line instanceof FluidComponent(FluidStack fluidStack)) {
+            return 16 + 4 + 25 + font.width(fluidStack.getFluid().getBucket().getDefaultInstance().getHoverName());
         } else if (line instanceof EmptyComponent) {
             return 0;
         }
@@ -82,7 +81,7 @@ public class KnowledgeOverlay {
     //  Вход из EventBus
     // ─────────────────────────────────────────────────────────────
 
-    public static void render(ForgeGui ignoredGui, GuiGraphics graphics,
+    public static void render(GuiGraphics graphics,
                               float partialTicks, int width, int height) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.options.hideGui || mc.gameMode == null) return;
@@ -117,13 +116,12 @@ public class KnowledgeOverlay {
                 hoverTicks++;
 
                 if (hoverTicks == 1 || hoverTicks % REQUEST_INTERVAL == 0) {
-
-                    TCPackets.CHANNEL.sendToServer(new C2SRequestEntityKnowledgePacket(entity.getUUID()));
+                    PacketDistributor.sendToServer(new C2SKnowledgeEntityRequestPayload(entity.getUUID()));
                 }
 
-                CompoundTag data = S2CKnowledgeDataPacket.ClientCache.get(entity.getUUID());
+                CompoundTag data = ClientPayloadHandlers.ClientCache.get(entity.getUUID());
                 if (data != null) {
-                    ihk.addTooltipLines(data, entityTooltip, isShifting);
+                    ihk.addTooltipLines(data, entityTooltip, isShifting, level.registryAccess());
                 }
 
             }
@@ -141,16 +139,16 @@ public class KnowledgeOverlay {
                 hoverTicks++;
 
             if (hoverTicks == 1 || hoverTicks % REQUEST_INTERVAL == 0) {
-                TCPackets.CHANNEL.sendToServer(new C2SRequestBlockKnowledgePacket(pos));
+                PacketDistributor.sendToServer(new C2SKnowledgeBlockRequestPayload(pos));
             }
 
 
-            CompoundTag data = S2CKnowledgeDataPacket.ClientCache.get(pos);
+            CompoundTag data = ClientPayloadHandlers.ClientCache.get(pos);
             if (data == null) {
                 return;
             }
 
-            ihk.addTooltipLines(data, tooltip, isShifting);
+            ihk.addTooltipLines(data, tooltip, isShifting, level.registryAccess());
         } else {
             tooltip.addAll(entityTooltip);
         }
@@ -257,10 +255,10 @@ public class KnowledgeOverlay {
 
         int cursorY = anchorY + 2;
         for (FormattedText line : lines) {
-            if (line instanceof ItemComponent ic) {
-                drawItemLine(poseStack, graphics, font, ic.itemStack(), anchorX + 2, cursorY);
-            } else if (line instanceof FluidComponent fc) {
-                drawFluidLine(poseStack, graphics, font, fc.fluidStack(), anchorX + 2, cursorY);
+            if (line instanceof ItemComponent(ItemStack itemStack)) {
+                drawItemLine(poseStack, graphics, font, itemStack, anchorX + 2, cursorY);
+            } else if (line instanceof FluidComponent(FluidStack fluidStack)) {
+                drawFluidLine(poseStack, graphics, font, fluidStack, anchorX + 2, cursorY);
             } else {
                 FormattedCharSequence seq = line instanceof FormattedCharSequence fcs
                         ? fcs
@@ -360,7 +358,7 @@ public class KnowledgeOverlay {
         ItemRenderer renderer = mc.getItemRenderer();
         BakedModel model = renderer.getModel(stack, null, null, 0);
 
-        renderer.textureManager.getTexture(InventoryMenu.BLOCK_ATLAS).setFilter(false, false);
+        //renderer.textureManager.getTexture(InventoryMenu.BLOCK_ATLAS).setFilter(false, false);
         RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
         RenderSystem.enableBlend();
         RenderSystem.enableCull();

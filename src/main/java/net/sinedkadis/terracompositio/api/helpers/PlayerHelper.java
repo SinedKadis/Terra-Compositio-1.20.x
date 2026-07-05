@@ -74,7 +74,7 @@ public class PlayerHelper {
         Camera camera = mc.gameRenderer.getMainCamera();
         Vec3 cameraPosition = camera.getPosition();
         Vec3 traceEnd;
-        float playerReach = (float) player.getEntityReach();
+        float playerReach = (float) player.entityInteractionRange();
         if (mc.hitResult == null) {
             Vec3 lookVector = new Vec3(camera.getLookVector().mul(playerReach));
             traceEnd = cameraPosition.add(lookVector);

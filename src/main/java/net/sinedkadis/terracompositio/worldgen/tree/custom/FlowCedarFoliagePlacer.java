@@ -1,6 +1,7 @@
 package net.sinedkadis.terracompositio.worldgen.tree.custom;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -14,7 +15,7 @@ import net.sinedkadis.terracompositio.worldgen.tree.TCFoliagePlacers;
 import org.jetbrains.annotations.NotNull;
 
 public class FlowCedarFoliagePlacer extends FoliagePlacer {
-    public static final Codec<FlowCedarFoliagePlacer> CODEC = RecordCodecBuilder.create(
+    public static final MapCodec<FlowCedarFoliagePlacer> CODEC = RecordCodecBuilder.mapCodec(
             instance -> foliagePlacerParts(instance)
                     .and(Codec.intRange(0, 16).fieldOf("height").forGetter(fp -> fp.height))
                     .apply(instance, FlowCedarFoliagePlacer::new)

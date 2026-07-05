@@ -1,23 +1,24 @@
 package net.sinedkadis.terracompositio.config;
 
 import net.minecraft.core.Direction;
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.fml.config.IConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class TCClientConfigs {
-    public static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
-    public static final ForgeConfigSpec SPEC;
+    public static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
+    public static final IConfigSpec SPEC;
 
-    public static final ForgeConfigSpec.ConfigValue<Double> ECF_RENDER_MULTIPLIER;
+    public static final ModConfigSpec.ConfigValue<Double> ECF_RENDER_MULTIPLIER;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> OVERLAY_X_OFFSET;
-    public static final ForgeConfigSpec.ConfigValue<Integer> OVERLAY_Y_OFFSET;
-    public static final ForgeConfigSpec.EnumValue<Direction> OVERLAY_FADE_DIR;
-    public static final ForgeConfigSpec.EnumValue<Corner> OVERLAY_ANCHOR_CORNER;
+    public static final ModConfigSpec.ConfigValue<Integer> OVERLAY_X_OFFSET;
+    public static final ModConfigSpec.ConfigValue<Integer> OVERLAY_Y_OFFSET;
+    public static final ModConfigSpec.EnumValue<Direction> OVERLAY_FADE_DIR;
+    public static final ModConfigSpec.EnumValue<Corner> OVERLAY_ANCHOR_CORNER;
 
-    public static final ForgeConfigSpec.ConfigValue<Boolean> APPLE_PP_ENDPOINTS;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> APPLE_RANGE_CIRCLE;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> APPLE_ITEM_TOOLTIP;
-    public static final ForgeConfigSpec.EnumValue<AppleMode> APPLE_SHOW_MODE;
+    public static final ModConfigSpec.ConfigValue<Boolean> APPLE_PP_ENDPOINTS;
+    public static final ModConfigSpec.ConfigValue<Boolean> APPLE_RANGE_CIRCLE;
+    public static final ModConfigSpec.ConfigValue<Boolean> APPLE_ITEM_TOOLTIP;
+    public static final ModConfigSpec.EnumValue<AppleMode> APPLE_SHOW_MODE;
 
 
 

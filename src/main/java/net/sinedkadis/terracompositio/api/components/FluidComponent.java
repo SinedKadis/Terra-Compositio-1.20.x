@@ -5,7 +5,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
@@ -34,7 +34,7 @@ public record FluidComponent(FluidStack fluidStack) implements Component {
 
     @Override
     public ComponentContents getContents() {
-        return ComponentContents.EMPTY;
+        throw new RuntimeException("Content of fluid component read unexpected");
     }
 
     @Override

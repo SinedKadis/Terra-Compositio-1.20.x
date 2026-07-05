@@ -1,7 +1,7 @@
 package net.sinedkadis.terracompositio.api.networks.fluid;
 
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.sinedkadis.terracompositio.api.networks.AnyNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 

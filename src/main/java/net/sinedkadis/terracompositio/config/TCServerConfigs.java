@@ -1,17 +1,17 @@
 package net.sinedkadis.terracompositio.config;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class TCServerConfigs {
-    public static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
-    public static final ForgeConfigSpec SPEC;
+    public static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
+    public static final ModConfigSpec SPEC;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> IF_DURATION;
-    public static final ForgeConfigSpec.ConfigValue<Double> IF_RANDOM_TICK_PER_TICK;
+    public static final ModConfigSpec.ConfigValue<Integer> IF_DURATION;
+    public static final ModConfigSpec.ConfigValue<Double> IF_RANDOM_TICK_PER_TICK;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> LAZY_UPDATE_RATE;
+    public static final ModConfigSpec.ConfigValue<Integer> LAZY_UPDATE_RATE;
 
-    public static final ForgeConfigSpec.ConfigValue<Integer> STRESS_UNIT_GEN;
+    public static final ModConfigSpec.ConfigValue<Integer> STRESS_UNIT_GEN;
 
     static {
         BUILDER.push("Infused Fertiliser");

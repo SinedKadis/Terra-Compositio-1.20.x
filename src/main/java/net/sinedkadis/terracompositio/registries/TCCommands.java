@@ -20,7 +20,7 @@ import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.api.registries.TCCapabilities;
-import net.sinedkadis.terracompositio.network.TCPackets;
+import net.sinedkadis.terracompositio.network.TCPayloads;
 import net.sinedkadis.terracompositio.network.packets.S2CPlayerEcfContainerSync;
 
 import java.util.Arrays;
@@ -93,7 +93,7 @@ public class TCCommands {
         IECFHandler mainHandler = memberEntity.getMainHandler();
         mainHandler.clear();
         if (memberEntity instanceof ServerPlayer serverPlayer) {
-            TCPackets.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer),
+            TCPayloads.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer),
                     new S2CPlayerEcfContainerSync(mainHandler.getECF()));
         }
 

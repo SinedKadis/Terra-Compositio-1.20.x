@@ -53,7 +53,7 @@ import net.sinedkadis.terracompositio.ecf.ECFItemWrapper;
 import net.sinedkadis.terracompositio.item.models.TechnetiumBootsModel;
 import net.sinedkadis.terracompositio.item.models.TechnetiumChestplateModel;
 import net.sinedkadis.terracompositio.item.models.TechnetiumCrownModel;
-import net.sinedkadis.terracompositio.network.TCPackets;
+import net.sinedkadis.terracompositio.network.TCPayloads;
 import net.sinedkadis.terracompositio.network.packets.C2SBoardSync;
 import net.sinedkadis.terracompositio.registries.TCArmorMaterials;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
@@ -174,7 +174,7 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
         if (!persistentData.contains(height)) {
             if (destroyPos != null) {
                 level.destroyBlock(destroyPos, true);
-                TCPackets.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SBoardSync(destroyPos, false));
+                TCPayloads.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SBoardSync(destroyPos, false));
                 persistentData.remove(last);
             }
             return;
@@ -190,7 +190,7 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
 
         if (destroyPos != null && (allowBoardPlace || !posOnHeight.equals(destroyPos))) {
             level.destroyBlock(destroyPos, true);
-            TCPackets.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SBoardSync(destroyPos, false));
+            TCPayloads.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SBoardSync(destroyPos, false));
             persistentData.remove(last);
         }
 
@@ -268,7 +268,7 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
         if (IECFHandler.takeECF(1, false) > 0 && level.isClientSide()) {
             level.destroyBlock(posOnHeight,true);
             level.setBlock(posOnHeight, boardState, 1);
-            TCPackets.CHANNEL.send(PacketDistributor.SERVER.noArg(),
+            TCPayloads.CHANNEL.send(PacketDistributor.SERVER.noArg(),
                     new C2SBoardSync(posOnHeight, true, 1, boardState.getValue(WATERLOGGED))
             );
         }
