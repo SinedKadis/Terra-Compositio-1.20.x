@@ -11,16 +11,15 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.wrapper.EmptyHandler;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
 import net.sinedkadis.terracompositio.block.entity.FlowCedarAltarBlockEntity;
 import org.jetbrains.annotations.NotNull;
 
 import static net.sinedkadis.terracompositio.api.helpers.WorldHelper.getLightLevel;
 
 public class FlowCedarAltarBlockEntityRenderer implements BlockEntityRenderer<FlowCedarAltarBlockEntity> {
-    public FlowCedarAltarBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
+    public FlowCedarAltarBlockEntityRenderer(BlockEntityRendererProvider.Context ignoredContext) {
 
     }
 
@@ -33,18 +32,19 @@ public class FlowCedarAltarBlockEntityRenderer implements BlockEntityRenderer<Fl
                        int pPackedLight,
                        int pPackedOverlay) {
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-        IItemHandler iItemHandler = pBlockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(EmptyHandler.INSTANCE);
-        ItemStack stack1 = iItemHandler.getStackInSlot(0);
-        ItemStack stack2 = iItemHandler.getStackInSlot(1);
-        ItemStack stack3 = iItemHandler.getStackInSlot(2);
+        Level level = pBlockEntity.getLevel();
+        if (level == null) return;
+
+        IItemHandler handler = level.getCapability(Capabilities.ItemHandler.BLOCK, pBlockEntity.getBlockPos(), null);
+        if (handler == null) return;
+        ItemStack stack1 = handler.getStackInSlot(0);
+        ItemStack stack2 = handler.getStackInSlot(1);
+        ItemStack stack3 = handler.getStackInSlot(2);
         int renderCount = 0;
         if (!stack1.isEmpty()) renderCount++;
         if (!stack2.isEmpty()) renderCount++;
         if (!stack3.isEmpty()) renderCount++;
 
-
-        Level level = pBlockEntity.getLevel();
-        if (level == null) return;
 
         if (!stack1.isEmpty()) {
             pPoseStack.pushPose();

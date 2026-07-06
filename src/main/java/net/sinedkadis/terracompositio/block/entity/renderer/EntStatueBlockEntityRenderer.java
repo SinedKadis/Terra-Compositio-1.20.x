@@ -10,7 +10,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.block.entity.EntStatueBlockEntity;
 import net.sinedkadis.terracompositio.registries.TCModelLayers;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -26,8 +25,8 @@ public class EntStatueBlockEntityRenderer implements BlockEntityRenderer<EntStat
     }
 
     @Override
-    public void render(@NotNull EntStatueBlockEntity blockEntity, float partialTicks, PoseStack poseStack,
-                       @NotNull MultiBufferSource buffer, int packedLight, int packedOverlay) {
+    public void render(EntStatueBlockEntity blockEntity, float partialTicks, PoseStack poseStack,
+                       MultiBufferSource buffer, int packedLight, int packedOverlay) {
 
         poseStack.pushPose();
 
@@ -45,7 +44,7 @@ public class EntStatueBlockEntityRenderer implements BlockEntityRenderer<EntStat
                 buffer.getBuffer(RenderType.entityCutout(RESOURCE_LOCATION)),
                 packedLight,
                 packedOverlay,
-                1.0F, 1.0F, 1.0F, 1.0f
+                0xFFFFFFFF
         );
 
         poseStack.popPose();

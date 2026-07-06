@@ -16,9 +16,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import net.sinedkadis.terracompositio.api.helpers.WorldHelper;
 import net.sinedkadis.terracompositio.block.entity.FlowCedarCasingBlockEntity;
 import net.sinedkadis.terracompositio.block.entity.MatterInfuserPortBlockEntity;
@@ -41,11 +41,12 @@ public class MatterInfuserPortBlockEntityRenderer implements BlockEntityRenderer
         BlockState blockState = pBlockEntity.getBlockState();
 
         Level level = pBlockEntity.getLevel();
-
-        @SuppressWarnings("DataFlowIssue")
-        IItemHandler iItemHandler = pBlockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null);
-        if (!(iItemHandler instanceof ItemStackHandler itemStackHandler)) return;
         if (level == null) return;
+
+        IItemHandler handler = level.getCapability(Capabilities.ItemHandler.BLOCK, pBlockEntity.getBlockPos(), null);
+        if (handler == null) return;
+        if (!(handler instanceof ItemStackHandler itemStackHandler)) return;
+
 
         renderUpConnection(pBlockEntity, pPoseStack, pBuffer, level, blockState, itemRenderer, itemStackHandler);
 
@@ -61,9 +62,11 @@ public class MatterInfuserPortBlockEntityRenderer implements BlockEntityRenderer
                                     ItemStackHandler ignoredItemStackHandler) {
         FlowCedarCasingBlockEntity casingBE = pBlockEntity.getCasingBE();
         if (casingBE == null) return;
-        @SuppressWarnings("DataFlowIssue")
-        IItemHandler iitemHandler = casingBE.getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null);
-        if (!(iitemHandler instanceof ItemStackHandler itemHandler)) return;
+
+
+        IItemHandler handler = level.getCapability(Capabilities.ItemHandler.BLOCK, casingBE.getBlockPos(), null);
+        if (handler == null) return;
+        if (!(handler instanceof ItemStackHandler itemHandler)) return;
 
         ItemStack stackInSlot = itemHandler.getStackInSlot(FlowCedarCasingBlockEntity.UP_CONNECTION_SLOT);
         if (!stackInSlot.isEmpty()) {

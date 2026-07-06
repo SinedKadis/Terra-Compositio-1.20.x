@@ -9,9 +9,9 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.minecraftforge.fluids.FluidStack;
-import org.joml.Matrix4f;
+
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public class FluidRenderer {
     private static final float PIXEL = 1f / 16f;
@@ -25,7 +25,7 @@ public class FluidRenderer {
         int color = getFluidColor(fluid);
 
         VertexConsumer builder = buffer.getBuffer(RenderType.translucent());
-        Matrix4f matrix = poseStack.last().pose();
+        PoseStack.Pose last = poseStack.last();
 
         float width = xMax - xMin;
         float height = yMax - yMin;
@@ -43,17 +43,17 @@ public class FluidRenderer {
         float topVMax = vMin + (vMax - vMin) * (depth / PIXEL) / 16f;
 
         // Top face (верхняя грань)
-        builder.vertex(matrix, xMin, yMax, zMin).color(color).uv(uMin, vMin).uv2(light).normal(0, 1, 0).endVertex();
-        builder.vertex(matrix, xMin, yMax, zMax).color(color).uv(uMin, topVMax).uv2(light).normal(0, 1, 0).endVertex();
-        builder.vertex(matrix, xMax, yMax, zMax).color(color).uv(topUMax, topVMax).uv2(light).normal(0, 1, 0).endVertex();
-        builder.vertex(matrix, xMax, yMax, zMin).color(color).uv(topUMax, vMin).uv2(light).normal(0, 1, 0).endVertex();
+        builder.addVertex(last, xMin, yMax, zMin).setColor(color).setUv(uMin, vMin).setLight(light).setNormal(0, 1, 0);
+        builder.addVertex(last, xMin, yMax, zMax).setColor(color).setUv(uMin, topVMax).setLight(light).setNormal(0, 1, 0);
+        builder.addVertex(last, xMax, yMax, zMax).setColor(color).setUv(topUMax, topVMax).setLight(light).setNormal(0, 1, 0);
+        builder.addVertex(last, xMax, yMax, zMin).setColor(color).setUv(topUMax, vMin).setLight(light).setNormal(0, 1, 0);
 
         // Bottom face (нижняя грань)
         if (renderBottom) {
-            builder.vertex(matrix, xMax, yMin, zMin).color(color).uv(topUMax, vMin).uv2(light).normal(0, -1, 0).endVertex();
-            builder.vertex(matrix, xMax, yMin, zMax).color(color).uv(topUMax, topVMax).uv2(light).normal(0, -1, 0).endVertex();
-            builder.vertex(matrix, xMin, yMin, zMax).color(color).uv(uMin, topVMax).uv2(light).normal(0, -1, 0).endVertex();
-            builder.vertex(matrix, xMin, yMin, zMin).color(color).uv(uMin, vMin).uv2(light).normal(0, -1, 0).endVertex();
+            builder.addVertex(last, xMax, yMin, zMin).setColor(color).setUv(topUMax, vMin).setLight(light).setNormal(0, -1, 0);
+            builder.addVertex(last, xMax, yMin, zMax).setColor(color).setUv(topUMax, topVMax).setLight(light).setNormal(0, -1, 0);
+            builder.addVertex(last, xMin, yMin, zMax).setColor(color).setUv(uMin, topVMax).setLight(light).setNormal(0, -1, 0);
+            builder.addVertex(last, xMin, yMin, zMin).setColor(color).setUv(uMin, vMin).setLight(light).setNormal(0, -1, 0);
         }
 
         // UV для боковых граней
@@ -61,28 +61,28 @@ public class FluidRenderer {
         float sideVMax = vMin + (vMax - vMin) * (height / PIXEL) / 16f;
 
         // North face (Z-) - отзеркалено, но с нормалью наружу
-        builder.vertex(matrix, xMax, yMin, zMin).color(color).uv(uMin, sideVMax).uv2(light).normal(0, 0, -1).endVertex();
-        builder.vertex(matrix, xMin, yMin, zMin).color(color).uv(sideUMax, sideVMax).uv2(light).normal(0, 0, -1).endVertex();
-        builder.vertex(matrix, xMin, yMax, zMin).color(color).uv(sideUMax, vMin).uv2(light).normal(0, 0, -1).endVertex();
-        builder.vertex(matrix, xMax, yMax, zMin).color(color).uv(uMin, vMin).uv2(light).normal(0, 0, -1).endVertex();
+        builder.addVertex(last, xMax, yMin, zMin).setColor(color).setUv(uMin, sideVMax).setLight(light).setNormal(0, 0, -1);
+        builder.addVertex(last, xMin, yMin, zMin).setColor(color).setUv(sideUMax, sideVMax).setLight(light).setNormal(0, 0, -1);
+        builder.addVertex(last, xMin, yMax, zMin).setColor(color).setUv(sideUMax, vMin).setLight(light).setNormal(0, 0, -1);
+        builder.addVertex(last, xMax, yMax, zMin).setColor(color).setUv(uMin, vMin).setLight(light).setNormal(0, 0, -1);
 
         // South face (Z+)
-        builder.vertex(matrix, xMin, yMin, zMax).color(color).uv(uMin, sideVMax).uv2(light).normal(0, 0, 1).endVertex();
-        builder.vertex(matrix, xMax, yMin, zMax).color(color).uv(sideUMax, sideVMax).uv2(light).normal(0, 0, 1).endVertex();
-        builder.vertex(matrix, xMax, yMax, zMax).color(color).uv(sideUMax, vMin).uv2(light).normal(0, 0, 1).endVertex();
-        builder.vertex(matrix, xMin, yMax, zMax).color(color).uv(uMin, vMin).uv2(light).normal(0, 0, 1).endVertex();
+        builder.addVertex(last, xMin, yMin, zMax).setColor(color).setUv(uMin, sideVMax).setLight(light).setNormal(0, 0, 1);
+        builder.addVertex(last, xMax, yMin, zMax).setColor(color).setUv(sideUMax, sideVMax).setLight(light).setNormal(0, 0, 1);
+        builder.addVertex(last, xMax, yMax, zMax).setColor(color).setUv(sideUMax, vMin).setLight(light).setNormal(0, 0, 1);
+        builder.addVertex(last, xMin, yMax, zMax).setColor(color).setUv(uMin, vMin).setLight(light).setNormal(0, 0, 1);
 
         // West face (X-)
-        builder.vertex(matrix, xMin, yMin, zMin).color(color).uv(sideUMax, sideVMax).uv2(light).normal(-1, 0, 0).endVertex();
-        builder.vertex(matrix, xMin, yMin, zMax).color(color).uv(uMin, sideVMax).uv2(light).normal(-1, 0, 0).endVertex();
-        builder.vertex(matrix, xMin, yMax, zMax).color(color).uv(uMin, vMin).uv2(light).normal(-1, 0, 0).endVertex();
-        builder.vertex(matrix, xMin, yMax, zMin).color(color).uv(sideUMax, vMin).uv2(light).normal(-1, 0, 0).endVertex();
+        builder.addVertex(last, xMin, yMin, zMin).setColor(color).setUv(sideUMax, sideVMax).setLight(light).setNormal(-1, 0, 0);
+        builder.addVertex(last, xMin, yMin, zMax).setColor(color).setUv(uMin, sideVMax).setLight(light).setNormal(-1, 0, 0);
+        builder.addVertex(last, xMin, yMax, zMax).setColor(color).setUv(uMin, vMin).setLight(light).setNormal(-1, 0, 0);
+        builder.addVertex(last, xMin, yMax, zMin).setColor(color).setUv(sideUMax, vMin).setLight(light).setNormal(-1, 0, 0);
 
         // East face (X+)
-        builder.vertex(matrix, xMax, yMin, zMax).color(color).uv(sideUMax, sideVMax).uv2(light).normal(1, 0, 0).endVertex();
-        builder.vertex(matrix, xMax, yMin, zMin).color(color).uv(uMin, sideVMax).uv2(light).normal(1, 0, 0).endVertex();
-        builder.vertex(matrix, xMax, yMax, zMin).color(color).uv(uMin, vMin).uv2(light).normal(1, 0, 0).endVertex();
-        builder.vertex(matrix, xMax, yMax, zMax).color(color).uv(sideUMax, vMin).uv2(light).normal(1, 0, 0).endVertex();
+        builder.addVertex(last, xMax, yMin, zMax).setColor(color).setUv(sideUMax, sideVMax).setLight(light).setNormal(1, 0, 0);
+        builder.addVertex(last, xMax, yMin, zMin).setColor(color).setUv(uMin, sideVMax).setLight(light).setNormal(1, 0, 0);
+        builder.addVertex(last, xMax, yMax, zMin).setColor(color).setUv(uMin, vMin).setLight(light).setNormal(1, 0, 0);
+        builder.addVertex(last, xMax, yMax, zMax).setColor(color).setUv(sideUMax, vMin).setLight(light).setNormal(1, 0, 0);
     }
 
     public static TextureAtlasSprite getFluidTexture(FluidStack fluid) {

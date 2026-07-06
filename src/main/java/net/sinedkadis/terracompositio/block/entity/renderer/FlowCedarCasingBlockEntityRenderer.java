@@ -16,10 +16,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
+
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import net.sinedkadis.terracompositio.api.helpers.WorldHelper;
-import net.sinedkadis.terracompositio.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.block.custom.FlowCedarCasingBlock;
 import net.sinedkadis.terracompositio.block.entity.FlowCedarCasingBlockEntity;
 import net.sinedkadis.terracompositio.registries.TCItems;
@@ -42,12 +43,15 @@ public class FlowCedarCasingBlockEntityRenderer implements BlockEntityRenderer<F
         ItemStack renderStack = pBlockEntity.getRenderStack();
         BlockState blockState = pBlockEntity.getBlockState();
 
-        Level level = pBlockEntity.getLevel();
 
-        @SuppressWarnings("DataFlowIssue")
-        IItemHandler iItemHandler = pBlockEntity.getCapability(TCCapabilities.ITEM_STATE_HOLDER).orElse(null);
-        if (!(iItemHandler instanceof ItemStackHandler itemStackHandler)) return;
+        Level level = pBlockEntity.getLevel();
         if (level == null) return;
+
+        IItemHandler handler = level.getCapability(Capabilities.ItemHandler.BLOCK, pBlockEntity.getBlockPos(), null);
+        if (handler == null) return;
+
+        if (!(handler instanceof ItemStackHandler itemStackHandler)) return;
+
         renderItemInPort(pBlockEntity, pPoseStack, pBuffer, level, blockState, itemRenderer, renderStack);
         boolean renderedInputBus = renderInputBus(pBlockEntity, pPoseStack, pBuffer, level, blockState, itemRenderer, itemStackHandler);
         boolean renderedOutputBus = renderOutputBus(pBlockEntity, pPoseStack, pBuffer, level, blockState, itemRenderer, itemStackHandler);

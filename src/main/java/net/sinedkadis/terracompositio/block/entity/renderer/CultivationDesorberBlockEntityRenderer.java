@@ -10,20 +10,20 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import net.sinedkadis.terracompositio.block.entity.CultivationDesorberBlockEntity;
 import net.sinedkadis.terracompositio.fluid.FluidRenderer;
 import org.jetbrains.annotations.NotNull;
 
 public class CultivationDesorberBlockEntityRenderer implements BlockEntityRenderer<CultivationDesorberBlockEntity> {
-    public CultivationDesorberBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
+    public CultivationDesorberBlockEntityRenderer(BlockEntityRendererProvider.Context ignoredContext) {
 
     }
 
@@ -36,20 +36,24 @@ public class CultivationDesorberBlockEntityRenderer implements BlockEntityRender
 
     @Override
     public void render(CultivationDesorberBlockEntity pBlockEntity, float pPartialTick, @NotNull PoseStack pPoseStack, @NotNull MultiBufferSource pBuffer, int pPackedLight, int pPackedOverlay) {
-        if (!pBlockEntity.hasLevel()) return;
-        pBlockEntity.getCapability(ForgeCapabilities.FLUID_HANDLER, Direction.DOWN).ifPresent(handler -> {
-            FluidTank tank = (FluidTank) handler;
-            if (tank.isEmpty()) return;
+        Level level = pBlockEntity.getLevel();
+        if (level == null) return;
 
-            FluidStack fluidStack = tank.getFluid();
-            float fillRatio = (float) tank.getFluidAmount() / tank.getCapacity();
-            float renderHeight = TANK_BOTTOM + (TANK_HEIGHT * fillRatio);
+        IFluidHandler handler = level.getCapability(Capabilities.FluidHandler.BLOCK, pBlockEntity.getBlockPos(), null);
+        if (handler == null) return;
 
-            FluidRenderer.renderFluidBox(pPoseStack, fluidStack,
-                    TANK_OFFSET, TANK_BOTTOM, TANK_OFFSET,
-                    TANK_OFFSET + TANK_WIDTH, renderHeight, TANK_OFFSET + TANK_DEPTH,
-                    pBuffer, pPackedLight, true);
-        });
+        FluidTank tank = (FluidTank) handler;
+        if (tank.isEmpty()) return;
+
+        FluidStack fluidStack = tank.getFluid();
+        float fillRatio = (float) tank.getFluidAmount() / tank.getCapacity();
+        float renderHeight = TANK_BOTTOM + (TANK_HEIGHT * fillRatio);
+
+        FluidRenderer.renderFluidBox(pPoseStack, fluidStack,
+                TANK_OFFSET, TANK_BOTTOM, TANK_OFFSET,
+                TANK_OFFSET + TANK_WIDTH, renderHeight, TANK_OFFSET + TANK_DEPTH,
+                pBuffer, pPackedLight, true);
+
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
         ItemStack itemStack = pBlockEntity.getRenderStack();
 
@@ -57,14 +61,12 @@ public class CultivationDesorberBlockEntityRenderer implements BlockEntityRender
         pPoseStack.translate(0.5f, 0.8f, 0.5f);
         pPoseStack.scale(0.6f, 0.6f, 0.6f);
 
-        Level level = pBlockEntity.getLevel();
-        if (level != null) {
-            float rotation = (level.getGameTime() + pPartialTick) * ROTATION_SPEED;
-            pPoseStack.mulPose(Axis.YP.rotationDegrees(rotation));
-            pPoseStack.mulPose(Axis.XP.rotationDegrees(rotation * 0.5f));
-            itemRenderer.renderStatic(itemStack, ItemDisplayContext.FIXED, getLightLevel(level, pBlockEntity.getBlockPos()),
-                    OverlayTexture.NO_OVERLAY, pPoseStack, pBuffer, level, 1);
-        }
+
+        float rotation = (level.getGameTime() + pPartialTick) * ROTATION_SPEED;
+        pPoseStack.mulPose(Axis.YP.rotationDegrees(rotation));
+        pPoseStack.mulPose(Axis.XP.rotationDegrees(rotation * 0.5f));
+        itemRenderer.renderStatic(itemStack, ItemDisplayContext.FIXED, getLightLevel(level, pBlockEntity.getBlockPos()),
+                OverlayTexture.NO_OVERLAY, pPoseStack, pBuffer, level, 1);
         pPoseStack.popPose();
 
     }

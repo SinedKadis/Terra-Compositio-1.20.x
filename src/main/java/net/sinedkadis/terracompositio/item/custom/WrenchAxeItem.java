@@ -3,15 +3,19 @@ package net.sinedkadis.terracompositio.item.custom;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -23,7 +27,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
@@ -43,14 +46,13 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.event.RenderHandEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.client.event.RenderHandEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.util.FakePlayer;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.sinedkadis.terracompositio.api.helpers.ItemHelper;
 import net.sinedkadis.terracompositio.api.helpers.PlayerHelper;
 import net.sinedkadis.terracompositio.api.helpers.WorldHelper;
 import net.sinedkadis.terracompositio.block.custom.PathPointerBlock;
@@ -58,11 +60,12 @@ import net.sinedkadis.terracompositio.block.entity.FlowCedarCasingBlockEntity;
 import net.sinedkadis.terracompositio.block.entity.MatterInfuserBaseBlockEntity;
 import net.sinedkadis.terracompositio.block.entity.PathPointerBlockEntity;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
+import net.sinedkadis.terracompositio.registries.TCDataComponents;
 import net.sinedkadis.terracompositio.registries.TCItems;
 import net.sinedkadis.terracompositio.registries.TCTags;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -72,92 +75,50 @@ import static net.sinedkadis.terracompositio.api.helpers.BlockPosHelper.getNearB
 import static net.sinedkadis.terracompositio.api.helpers.BlockPosHelper.getTouchingBlocks;
 import static net.sinedkadis.terracompositio.api.registries.TCBlockStateProperties.INFUSED;
 
+
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public class WrenchAxeItem extends AxeItem {
     private static final TagKey<Block> LOGS_TAG = BlockTags.LOGS;
     public static final List<Property<?>> SURVIVAL_SAFE_PROPERTIES;
 
 
-    public WrenchAxeItem(Tier pTier, float pAttackDamageModifier, float pAttackSpeedModifier, Properties pProperties) {
-        super(pTier, pAttackDamageModifier, pAttackSpeedModifier, pProperties);
+    public WrenchAxeItem(Tier pTier, Properties pProperties) {
+        super(pTier, pProperties);
     }
 
     @Override
-    public boolean isValidRepairItem(@NotNull ItemStack pToRepair, ItemStack pRepair) {
+    public boolean isValidRepairItem(ItemStack pToRepair, ItemStack pRepair) {
         return pRepair.is(TCItems.INFUSED_IRON_INGOT.get()) || pRepair.is(TCItems.WRENCH_AXE.get());
     }
 
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level pLevel, Player pPlayer, @NotNull InteractionHand pUsedHand) {
+    public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
         ItemStack stack = pPlayer.getItemInHand(pUsedHand);
         if (pPlayer.isCrouching() && !isPlayerLookingAtBlock(pPlayer,pLevel)) {
             setWrenchMode(stack,getWrenchMode(stack).next());
-            if (!stack.hasTag()) {
-                stack.setTag(new CompoundTag());
-            }
-            if (stack.getTag() != null) {
-                stack.getTag().putInt("WrenchMode", getWrenchMode(stack).ordinal());
-            }
             pPlayer.displayClientMessage(Component.translatable("message.terracompositio.wrench_mode", getWrenchMode(stack).getDisplayName()), true);
         }
         return super.use(pLevel, pPlayer, pUsedHand);
     }
     @Override
-    public void onCraftedBy(@NotNull ItemStack stack, @NotNull Level level, @NotNull Player player) {
+    public void onCraftedBy(ItemStack stack, Level level, Player player) {
         super.onCraftedBy(stack, level, player);
-        if (!stack.hasTag()) {
-            stack.setTag(new CompoundTag());
-        }
-        if (stack.getTag() != null) {
-            stack.getTag().putInt("WrenchMode", getWrenchMode(stack).ordinal());
-        }
-    }
-
-    @Override
-    public void verifyTagAfterLoad(@NotNull CompoundTag tag) {
-        super.verifyTagAfterLoad(tag);
-        if (!tag.contains("WrenchMode")) {
-            tag.putInt("WrenchMode", WrenchMode.AXE.ordinal());
-        }
-
-        int modeOrdinal = tag.getInt("WrenchMode");
-        if (modeOrdinal < 0 || modeOrdinal >= WrenchMode.values().length) {
-            tag.putInt("WrenchMode", WrenchMode.AXE.ordinal());
-        }
-    }
-
-    private WrenchMode loadWrenchMode(ItemStack stack) {
-        CompoundTag tag = stack.getOrCreateTag();
-        if (tag.contains("WrenchMode")) {
-            return WrenchMode.fromOrdinal(tag.getInt("WrenchMode"));
-        }
-        return WrenchMode.AXE;
+        setWrenchMode(stack,WrenchMode.AXE);
     }
 
     public static WrenchMode getWrenchMode(ItemStack stack) {
-        if (stack.getItem() instanceof WrenchAxeItem) {
-            CompoundTag tag = stack.getOrCreateTag();
-            if (tag.contains("WrenchMode")) {
-                return WrenchMode.fromOrdinal(tag.getInt("WrenchMode"));
-            }
-        }
-        return WrenchMode.AXE;
+        WrenchMode wrenchMode = stack.get(TCDataComponents.WRENCH_MODE);
+        if (wrenchMode == null) wrenchMode = WrenchMode.AXE;
+        return wrenchMode;
     }
 
     public static void setWrenchMode(ItemStack stack, WrenchMode mode) {
-        CompoundTag tag = stack.getOrCreateTag();
-        tag.putInt("WrenchMode", mode.ordinal());
+        stack.set(TCDataComponents.WRENCH_MODE,mode);
     }
 
     @Override
-    public void inventoryTick(@NotNull ItemStack pStack, @NotNull Level pLevel, @NotNull Entity pEntity, int pSlotId, boolean pIsSelected) {
-        super.inventoryTick(pStack, pLevel, pEntity, pSlotId, pIsSelected);
-        if (!pLevel.isClientSide && pEntity instanceof Player) {
-            setWrenchMode(pStack,loadWrenchMode(pStack));
-        }
-    }
-
-    @Override
-    public boolean canAttackBlock(@NotNull BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, Player pPlayer) {
+    public boolean canAttackBlock(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer) {
         if (getWrenchMode(pPlayer.getItemInHand(InteractionHand.MAIN_HAND)) == WrenchMode.WRENCH) {
             this.wrenchInteraction(pPlayer, pState, pLevel, pPos, false, pPlayer.getItemInHand(InteractionHand.MAIN_HAND));
             return false;
@@ -171,22 +132,22 @@ public class WrenchAxeItem extends AxeItem {
     }
 
     @Override
-    public float getDestroySpeed(@NotNull ItemStack pStack, @NotNull BlockState pState) {
+    public float getDestroySpeed(ItemStack pStack, BlockState pState) {
         if (WrenchAxeItem.getWrenchMode(pStack).equals(WrenchMode.WRENCH)) return 255;
         if (WrenchAxeItem.getWrenchMode(pStack).equals(WrenchMode.CROWBAR)) return 255;
         return super.getDestroySpeed(pStack, pState);
     }
 
     @Override
-    public int getUseDuration(@NotNull ItemStack pStack) {
-        return switch (getWrenchMode(pStack)){
+    public int getUseDuration(ItemStack stack, LivingEntity entity) {
+        return switch (getWrenchMode(stack)){
             case WRENCH_AXE,AXE -> 72000;
-            default -> super.getUseDuration(pStack);
+            default -> super.getUseDuration(stack,entity);
         };
     }
 
     @Override
-    public @NotNull UseAnim getUseAnimation(@NotNull ItemStack pStack) {
+    public UseAnim getUseAnimation(ItemStack pStack) {
         return switch (getWrenchMode(pStack)){
             case WRENCH_AXE -> UseAnim.BOW;
             case AXE -> UseAnim.CROSSBOW;
@@ -196,7 +157,7 @@ public class WrenchAxeItem extends AxeItem {
 
 
     @Override
-    public void releaseUsing(@NotNull ItemStack pStack, @NotNull Level pLevel, @NotNull LivingEntity pLivingEntity, int pTimeCharged) {
+    public void releaseUsing(ItemStack pStack, Level pLevel, LivingEntity pLivingEntity, int pTimeCharged) {
         super.releaseUsing(pStack, pLevel, pLivingEntity, pTimeCharged);
         if (pLivingEntity instanceof Player player) {
             if (player instanceof FakePlayer) return;
@@ -213,7 +174,7 @@ public class WrenchAxeItem extends AxeItem {
     }
 
     @Override
-    public @NotNull InteractionResult useOn(@NotNull UseOnContext context) {
+    public InteractionResult useOn(UseOnContext context) {
         Level level = context.getLevel();
         BlockPos pos = context.getClickedPos();
         Player player = context.getPlayer();
@@ -265,81 +226,81 @@ public class WrenchAxeItem extends AxeItem {
         }
     }
 
-    private void crowbarLMBInteraction(Player pPlayer, @NotNull BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, ItemStack itemInHand) {
+    private void crowbarLMBInteraction(Player pPlayer, BlockState pState, Level pLevel, BlockPos pPos, ItemStack itemInHand) {
         ItemStack wasInHand = itemInHand.copy();
         pPlayer.setItemInHand(InteractionHand.MAIN_HAND,TCItems.WRENCH_TAG_HOLDER.get().getDefaultInstance());
         BlockHitResult blockHitResult = new BlockHitResult(pPlayer.getEyePosition(), Direction.orderedByNearest(pPlayer)[0], pPos, false);
 
-        boolean canceled = MinecraftForge.EVENT_BUS.post(new PlayerInteractEvent
-                .RightClickBlock(pPlayer, InteractionHand.MAIN_HAND, pPos, blockHitResult));
+        boolean canceled = NeoForge.EVENT_BUS.post(new PlayerInteractEvent
+                .RightClickBlock(pPlayer, InteractionHand.MAIN_HAND, pPos, blockHitResult)).isCanceled();
         pPlayer.setItemInHand(InteractionHand.MAIN_HAND,wasInHand);
+        ItemStack itemInHandNow = pPlayer.getItemInHand(InteractionHand.MAIN_HAND);
         if (canceled) {
-            pPlayer.getItemInHand(InteractionHand.MAIN_HAND).hurtAndBreak(1, pPlayer, player1 -> player1.broadcastBreakEvent(InteractionHand.MAIN_HAND));
+            if (!pLevel.isClientSide())
+                ItemHelper.hurtAndBreakItem((ServerLevel) pLevel,pPlayer,itemInHandNow);
             return;
         }
         if ((pState.hasBlockEntity()
                         || pState.is(TCTags.Blocks.CREATE_WRENCH_PICKUP))
                 && pPlayer.isCrouching()){
 
-            BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
-            if (blockEntity != null) {
-                IItemHandler itemHandler = blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).resolve().orElse(null);
-                if (itemHandler != null) {
-                    for (int i = 0; i < itemHandler.getSlots(); i++) {
-                        if (!pPlayer.addItem(itemHandler.getStackInSlot(i))) {
-                            pPlayer.drop(itemHandler.getStackInSlot(i), true);
-                        }
+            IItemHandler handler = pLevel.getCapability(Capabilities.ItemHandler.BLOCK, pPos, null);
+
+            if (handler != null) {
+                for (int i = 0; i < handler.getSlots(); i++) {
+                    if (!pPlayer.addItem(handler.getStackInSlot(i))) {
+                        pPlayer.drop(handler.getStackInSlot(i), true);
                     }
                 }
             }
+
             if (!pLevel.isClientSide()) {
                 LootParams.Builder lootparams$builder = (new LootParams.Builder((ServerLevel) pLevel))
                         .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pPos))
-                        .withParameter(LootContextParams.TOOL, itemInHand)
-                        .withOptionalParameter(LootContextParams.BLOCK_ENTITY, blockEntity);
+                        .withParameter(LootContextParams.TOOL, itemInHand);
                 pState.getDrops(lootparams$builder).forEach(itemStack -> {
                     if (!pPlayer.addItem(itemStack)) {
                         pPlayer.drop(itemStack, true);
                     }
                 });
+                ItemHelper.hurtAndBreakItem((ServerLevel) pLevel,pPlayer,itemInHandNow);
             }
             pLevel.destroyBlock(pPos,false,pPlayer);
-            pPlayer.getItemInHand(InteractionHand.MAIN_HAND).hurtAndBreak(1, pPlayer, player1 -> player1.broadcastBreakEvent(InteractionHand.MAIN_HAND));
         }
     }
 
     private boolean crowbarRMBInteraction(Player player, Level level, BlockPos pos, BlockState ignoredBlockState, Direction ignoredClickedFace) {
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity != null) {
-            Optional<IItemHandler> optional = blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).resolve();
-            if (optional.isPresent()) {
-                boolean flag = false;
-                IItemHandler iItemHandler = optional.get();
-                boolean isCasing = blockEntity instanceof FlowCedarCasingBlockEntity;
-                boolean isMI = blockEntity instanceof MatterInfuserBaseBlockEntity;
-                for (int slot = 0; slot < iItemHandler.getSlots(); slot++) {
-                    if (isCasing) continue;
-                    if (isMI) continue;
+            IItemHandler handler = level.getCapability(Capabilities.ItemHandler.BLOCK, pos, null);
+            if (handler == null) return false;
 
-                    ItemStack itemStack = iItemHandler.extractItem(slot, 511, false); //511 - hardcoded
-                    if (itemStack.isEmpty()) continue;
-                    if (!player.addItem(itemStack)) {
-                        player.drop(itemStack, true);
-                    }
-                    flag = true;
+            boolean flag = false;
+
+            boolean isCasing = blockEntity instanceof FlowCedarCasingBlockEntity;
+            boolean isMI = blockEntity instanceof MatterInfuserBaseBlockEntity;
+            for (int slot = 0; slot < handler.getSlots(); slot++) {
+                if (isCasing) continue;
+                if (isMI) continue;
+
+                ItemStack itemStack = handler.extractItem(slot, 511, false); //511 - hardcoded
+                if (itemStack.isEmpty()) continue;
+                if (!player.addItem(itemStack)) {
+                    player.drop(itemStack, true);
                 }
-                if (flag) {
-                    level.playSound(null, pos, SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS);
-                    player.getItemInHand(InteractionHand.OFF_HAND)
-                            .hurtAndBreak(1, player, player1 -> player1.broadcastBreakEvent(InteractionHand.OFF_HAND));
-                    return true;
-                }
+                flag = true;
             }
+            if (flag) {
+                level.playSound(null, pos, SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS);
+                ItemHelper.hurtAndBreakItem((ServerLevel) level,player,player.getOffhandItem());
+                return true;
+            }
+
         }
         return false;
     }
 
-    private void doubleAxeInteraction(Level level, BlockPos pos, Direction face, Player player, ItemStack stack, int usedTicks) {
+    private void doubleAxeInteraction(Level level, BlockPos pos, Direction face, Player player, ItemStack ignoredStack, int usedTicks) {
         BlockPos anchor = getAnchor(level, pos, face);
         List<BlockPos> tree = new ArrayList<>(getNearBlocks(level, anchor, LOGS_TAG, 32).stream().filter(blockPos -> blockPos.getY() >= anchor.getY()).toList());
         Collections.reverse(tree);
@@ -366,18 +327,16 @@ public class WrenchAxeItem extends AxeItem {
                     level.sendBlockUpdated(blockPos, state, state, Block.UPDATE_CLIENTS);
                     blocksToRemove--;
                     foodTakeCount--;
-                    if (player != null) {
-                        stack.hurtAndBreak(1, player, player1 -> player1.broadcastBreakEvent(InteractionHand.MAIN_HAND));
-                        player.getItemInHand(InteractionHand.OFF_HAND)
-                                .hurtAndBreak(1, player, player1 -> player1.broadcastBreakEvent(InteractionHand.OFF_HAND));
-                        if (foodTakeCount == 0) {
-                            foodTakeCount = 6;
-                            if (!(player.getFoodData().getFoodLevel() == 0 && player.getFoodData().getSaturationLevel() == 0)) {
-                                player.causeFoodExhaustion(5);
-                            } else {
-                                DamageSource treeChopDamageSource = level.damageSources().playerAttack(player);
-                                player.hurt(treeChopDamageSource, 5.0F);
-                            }
+                    ItemHelper.hurtAndBreakItem((ServerLevel) level,player,player.getMainHandItem());
+                    ItemHelper.hurtAndBreakItem((ServerLevel) level,player,player.getOffhandItem());
+
+                    if (foodTakeCount == 0) {
+                        foodTakeCount = 6;
+                        if (!(player.getFoodData().getFoodLevel() == 0 && player.getFoodData().getSaturationLevel() == 0)) {
+                            player.causeFoodExhaustion(5);
+                        } else {
+                            DamageSource treeChopDamageSource = level.damageSources().playerAttack(player);
+                            player.hurt(treeChopDamageSource, 5.0F);
                         }
                     }
                 }
@@ -387,7 +346,7 @@ public class WrenchAxeItem extends AxeItem {
         }
     }
 
-    private void wrenchAxeInteraction(Level level, BlockPos pos, Direction face, Player player, ItemStack stack, int usedTicks) {
+    private void wrenchAxeInteraction(Level level, BlockPos pos, Direction face, Player player, ItemStack ignoredStack, int usedTicks) {
         if (usedTicks > 20){
             BlockPos anchor = getAnchor(level, pos, face);
             List<BlockPos> tree = getNearBlocks(level, anchor, LOGS_TAG, 64).stream().filter(blockPos -> blockPos.getY() >= anchor.getY()).toList();
@@ -416,16 +375,14 @@ public class WrenchAxeItem extends AxeItem {
                 level.sendBlockUpdated(oldPos, oldState, oldState, Block.UPDATE_CLIENTS);
                 foodTakeCount++;
                 tryToPlace(level, newPos, newState, oldPos.getY(),face, maxPos);
-                if (player != null) {
-                    stack.hurtAndBreak(1, player, player1 -> player1.broadcastBreakEvent(InteractionHand.MAIN_HAND));
-                    if (foodTakeCount == 0) {
-                        foodTakeCount = 6;
-                        if (!(player.getFoodData().getFoodLevel() == 0 && player.getFoodData().getSaturationLevel() == 0)) {
-                            player.causeFoodExhaustion(5);
-                        } else {
-                            DamageSource treeChopDamageSource = level.damageSources().playerAttack(player);
-                            player.hurt(treeChopDamageSource, 5.0F);
-                        }
+                ItemHelper.hurtAndBreakItem((ServerLevel) level, player, player.getMainHandItem());
+                if (foodTakeCount == 0) {
+                    foodTakeCount = 6;
+                    if (!(player.getFoodData().getFoodLevel() == 0 && player.getFoodData().getSaturationLevel() == 0)) {
+                        player.causeFoodExhaustion(5);
+                    } else {
+                        DamageSource treeChopDamageSource = level.damageSources().playerAttack(player);
+                        player.hurt(treeChopDamageSource, 5.0F);
                     }
                 }
             }
@@ -534,7 +491,7 @@ public class WrenchAxeItem extends AxeItem {
     }
 
     public static boolean isPlayerLookingAtBlock(Player player, Level level) {
-        double reachDistance = player.getBlockReach();
+        double reachDistance = player.blockInteractionRange();
 
         Vec3 eyePosition = player.getEyePosition(1.0F);
         Vec3 lookVector = player.getLookAngle();
@@ -553,7 +510,7 @@ public class WrenchAxeItem extends AxeItem {
         Vec3 lookVector;
         Vec3 endPosition;
         if (entity instanceof Player player) {
-            reachDistance = player.getBlockReach();
+            reachDistance = player.blockInteractionRange();
         } else {
             reachDistance = 3.0D;
         }
@@ -575,18 +532,14 @@ public class WrenchAxeItem extends AxeItem {
         }
         return mutablePos.immutable();
     }
-    @Override
-    public void appendHoverText(@NotNull ItemStack pStack, @Nullable Level pLevel, @NotNull List<Component> pTooltipComponents, @NotNull TooltipFlag pIsAdvanced) {
-        super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
-        WrenchMode mode = WrenchMode.fromOrdinal(pStack.getOrCreateTag().getInt("WrenchMode"));
-        pTooltipComponents.add(Component.translatable("item.terracompositio.flow_rotating_axe.mode", mode.getDisplayName()).withStyle(ChatFormatting.GRAY));
-    }
 
-    public static WrenchMode getMode(ItemStack stack) {
-        if (stack.getTag() != null && stack.hasTag() && stack.getTag().contains("WrenchMode")) {
-            return WrenchMode.values()[stack.getTag().getInt("WrenchMode")];
-        }
-        return WrenchMode.AXE; // Default mode
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+
+        tooltipComponents.add(Component.translatable("item.terracompositio.flow_rotating_axe.mode",
+                getWrenchMode(stack).getDisplayName()).withStyle(ChatFormatting.GRAY));
+
     }
 
     private boolean wrenchInteraction(@Nullable Player pPlayer, BlockState pStateClicked, LevelAccessor level, BlockPos pos, boolean rightClicked, ItemStack wrenchStack) {
@@ -594,10 +547,9 @@ public class WrenchAxeItem extends AxeItem {
         if (rightClicked) {
             if (block instanceof PathPointerBlock)
                 return PathPointerBlockEntity.ppWrenchInteraction(pPlayer, level, pos, wrenchStack);
-            CompoundTag tag = wrenchStack.getOrCreateTag();
-            if (tag.contains("BindPos")) {
+            if (wrenchStack.get(TCDataComponents.BIND_CORDS) != null) {
                 PathPointerBlockEntity.sendBindMessage(pPlayer, "item.terracompositio.flow_rotating_axe.bind_fail_cleared");
-                PathPointerBlockEntity.clearBindTags(tag);
+                PathPointerBlockEntity.clearBindTags(wrenchStack);
                 return false;
             }
             if (pPlayer != null && !pPlayer.isCrouching()) {
@@ -605,8 +557,8 @@ public class WrenchAxeItem extends AxeItem {
                 pPlayer.setItemInHand(InteractionHand.MAIN_HAND, TCItems.WRENCH_TAG_HOLDER.get().getDefaultInstance());
                 BlockHitResult blockHitResult = new BlockHitResult(pPlayer.getEyePosition(), Direction.orderedByNearest(pPlayer)[0], pos, false);
 
-                boolean canceled = MinecraftForge.EVENT_BUS.post(new PlayerInteractEvent
-                        .RightClickBlock(pPlayer, InteractionHand.MAIN_HAND, pos, blockHitResult));
+                boolean canceled = NeoForge.EVENT_BUS.post(new PlayerInteractEvent
+                        .RightClickBlock(pPlayer, InteractionHand.MAIN_HAND, pos, blockHitResult)).isCanceled();
                 pPlayer.setItemInHand(InteractionHand.MAIN_HAND, wasInHand);
                 if (canceled) {
                     return false;
@@ -616,14 +568,13 @@ public class WrenchAxeItem extends AxeItem {
 
         StateDefinition<Block, BlockState> blockStateDefinition = block.getStateDefinition();
         Collection<Property<?>> properties = blockStateDefinition.getProperties().stream().filter(SURVIVAL_SAFE_PROPERTIES::contains).toList();
-        String name = Objects.requireNonNull(ForgeRegistries.BLOCKS.getKey(block)).toString();
         if (properties.isEmpty()) {
             if (pPlayer != null)
                 PlayerHelper.message(pPlayer, Component.translatable("item.terracompositio.flow_rotating_axe.no_change").withStyle(ChatFormatting.BOLD));
             return false;
         } else {
-            CompoundTag debugProperty = wrenchStack.getOrCreateTagElement("DebugProperty");
-            String debugPropertyName = debugProperty.getString(name);
+            String debugPropertyName = wrenchStack.get(TCDataComponents.CHANGE_PROPERTY);
+            if (debugPropertyName == null) debugPropertyName = "";
             Property<?> blockStateDefinitionProperty = blockStateDefinition.getProperty(debugPropertyName);
             if (rightClicked) {
                 if (blockStateDefinitionProperty == null) {
@@ -632,16 +583,13 @@ public class WrenchAxeItem extends AxeItem {
                 BlockState newState;
                 if (pPlayer != null) {
                     newState = cycleState(pStateClicked, blockStateDefinitionProperty, pPlayer.isSecondaryUseActive());
-                    wrenchStack.hurtAndBreak(1,pPlayer,player1 -> {
-                        assert player1 != null;
-                        player1.broadcastBreakEvent(InteractionHand.MAIN_HAND);
-                    });
+                    ItemHelper.hurtAndBreakItem((ServerLevel) level,pPlayer,wrenchStack);
                 } else {
                     newState = cycleState(pStateClicked, blockStateDefinitionProperty, false);
-                    if (wrenchStack.hurt(1,level.getRandom(),null)){
+                    wrenchStack.getItem().damageItem(wrenchStack,1,null,(item) -> {
                         wrenchStack.shrink(1);
                         wrenchStack.setDamageValue(0);
-                    }
+                    });
                 }
                 level.getChunkSource().getLightEngine().checkBlock(pos);
                 ((Level) level).getChunkAt(pos).setBlockState(pos, newState, false);
@@ -652,10 +600,10 @@ public class WrenchAxeItem extends AxeItem {
                 } else {
                     blockStateDefinitionProperty = getRelative(properties, blockStateDefinitionProperty, false);
                 }
-                String $$14 = blockStateDefinitionProperty.getName();
-                debugProperty.putString(name, $$14);
+                String newProperty = blockStateDefinitionProperty.getName();
+                wrenchStack.set(TCDataComponents.CHANGE_PROPERTY, newProperty);
                 if (pPlayer != null)
-                    PlayerHelper.message(pPlayer, Component.translatable(Items.DEBUG_STICK.getDescriptionId() + ".select", $$14, getNameHelper(pStateClicked, blockStateDefinitionProperty)).withStyle(ChatFormatting.BOLD));
+                    PlayerHelper.message(pPlayer, Component.translatable(Items.DEBUG_STICK.getDescriptionId() + ".select", newProperty, getNameHelper(pStateClicked, blockStateDefinitionProperty)).withStyle(ChatFormatting.BOLD));
             }
             return true;
         }
@@ -735,32 +683,6 @@ public class WrenchAxeItem extends AxeItem {
         }
     }
 
-    public enum WrenchMode {
-        AXE("axe"),
-        WRENCH_AXE("wrench_axe"),
-        WRENCH("wrench"),
-        CROWBAR("crowbar");
-
-        private final String name;
-
-        WrenchMode(String name) {
-            this.name = name;
-        }
-
-        public WrenchMode next() {
-            // Переход к следующему режиму по кругу
-            return values()[(this.ordinal() + 1) % values().length];
-        }
-
-        public Component getDisplayName() {
-            return Component.translatable("item.terracompositio.flow_rotating_axe." + name);
-        }
-
-        public static WrenchMode fromOrdinal(int ordinal) {
-            return values()[ordinal % values().length];
-        }
-    }
-
     static {
         SURVIVAL_SAFE_PROPERTIES = List.of(
                 AXIS,
@@ -789,6 +711,45 @@ public class WrenchAxeItem extends AxeItem {
                 SOUTH_REDSTONE,
                 SOUTH_WALL
         );
+    }
+
+    public enum WrenchMode {
+        AXE,
+        WRENCH_AXE,
+        WRENCH,
+        CROWBAR;
+
+        public WrenchMode next() {
+            // Переход к следующему режиму по кругу
+            return values()[(this.ordinal() + 1) % values().length];
+        }
+
+        public Component getDisplayName() {
+            return Component.translatable("item.terracompositio.flow_rotating_axe." + name().toLowerCase());
+        }
+
+        public static WrenchMode fromOrdinal(int ordinal) {
+            return values()[ordinal % values().length];
+        }
+
+
+        public static final Codec<WrenchMode> CODEC = RecordCodecBuilder.create(instance ->
+                instance.group(
+                        Codec.INT.fieldOf("wrench_mode")
+                                .forGetter(Enum::ordinal)
+                ).apply(instance,WrenchMode::fromOrdinal));
+
+        public static final StreamCodec<RegistryFriendlyByteBuf, WrenchMode> STREAM_CODEC = new StreamCodec<>() {
+            @Override
+            public WrenchMode decode(RegistryFriendlyByteBuf buffer) {
+                return WrenchAxeItem.WrenchMode.fromOrdinal(buffer.readVarInt());
+            }
+
+            @Override
+            public void encode(RegistryFriendlyByteBuf buffer, WrenchMode value) {
+                buffer.writeVarInt(value.ordinal());
+            }
+        };
     }
 }
 

@@ -1,28 +1,32 @@
 package net.sinedkadis.terracompositio.recipe;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import lombok.Getter;
+import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 import net.sinedkadis.terracompositio.TerraCompositio;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public class MatterInfusionRecipe implements Recipe<SimpleContainer> {
+import javax.annotation.ParametersAreNonnullByDefault;
 
-    private final Item catalyst;
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
+@Getter
+public class MatterInfusionRecipe implements Recipe<RecipeWrapper> {
+
+    @Getter
+    private final ItemStack catalyst;
     private final ItemStack input;
     private final ItemStack output;
-    private final ResourceLocation id;
     @Getter
     private final int catalystDecayRate;
     @Getter
@@ -30,18 +34,17 @@ public class MatterInfusionRecipe implements Recipe<SimpleContainer> {
     @Getter
     private final int ticks;
 
-    public MatterInfusionRecipe(Item catalyst, ItemStack input, ItemStack output, int catalystDecayRate, ResourceLocation pRecipeId, int ecf, int ticks) {
+    public MatterInfusionRecipe(ItemStack output, ItemStack catalyst, ItemStack input,  int catalystDecayRate, int ecf, int ticks) {
         this.catalyst = catalyst;
         this.input = input;
         this.output = output;
         this.catalystDecayRate = catalystDecayRate;
         this.ecf = ecf;
         this.ticks = ticks;
-        this.id = pRecipeId;
     }
 
     @Override
-    public boolean matches(@NotNull SimpleContainer pContainer, Level pLevel) {
+    public boolean matches(RecipeWrapper pContainer, Level pLevel) {
         if(pLevel.isClientSide()){
             return false;
         }
@@ -49,19 +52,19 @@ public class MatterInfusionRecipe implements Recipe<SimpleContainer> {
         ItemStack catalystSlot = pContainer.getItem(0);
         ItemStack inputSlot = pContainer.getItem(1);
 
-        return catalystSlot.is(catalyst)
+        return catalystSlot.is(catalyst.getItem())
                 && inputSlot.is(input.getItem())
                 && inputSlot.getCount() >= input.getCount();
     }
 
     @Override
-    public @NotNull NonNullList<Ingredient> getIngredients() {
-        return NonNullList.of(Ingredient.of(),Ingredient.of(catalyst),Ingredient.of(input));
+    public ItemStack assemble(RecipeWrapper input, HolderLookup.Provider registries) {
+        return output.copy();
     }
 
     @Override
-    public @NotNull ItemStack assemble(@NotNull SimpleContainer pContainer, @NotNull RegistryAccess pRegistryAccess) {
-        return output.copy();
+    public NonNullList<Ingredient> getIngredients() {
+        return NonNullList.of(Ingredient.of(),Ingredient.of(catalyst),Ingredient.of(input));
     }
 
     @Override
@@ -70,25 +73,22 @@ public class MatterInfusionRecipe implements Recipe<SimpleContainer> {
     }
 
     @Override
-    public @NotNull ItemStack getResultItem(@Nullable RegistryAccess pRegistryAccess) {
+    public ItemStack getResultItem(HolderLookup.Provider registries) {
         return output.copy();
     }
 
     public float getECFTick() {
         return (float) ecf / ticks;
     }
-    @Override
-    public @NotNull ResourceLocation getId() {
-        return id;
-    }
+
 
     @Override
-    public @NotNull RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<?> getSerializer() {
         return Serializer.INSTANCE;
     }
 
     @Override
-    public @NotNull RecipeType<?> getType() {
+    public RecipeType<?> getType() {
         return Type.INSTANCE;
     }
     public static class Type implements RecipeType<MatterInfusionRecipe>{
@@ -98,40 +98,51 @@ public class MatterInfusionRecipe implements Recipe<SimpleContainer> {
     public static class Serializer implements RecipeSerializer<MatterInfusionRecipe>{
         public static final Serializer INSTANCE = new Serializer();
         public static final ResourceLocation ID = ResourceLocation.tryBuild(TerraCompositio.MOD_ID,"matter_infusion");
+
         @Override
-        public @NotNull MatterInfusionRecipe fromJson(@NotNull ResourceLocation pRecipeId, @NotNull JsonObject pSerializedRecipe) {
-            ItemStack output = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "output"));
-
-            String catalystStr = GsonHelper.getAsString(pSerializedRecipe, "catalyst");
-            Item catalyst = ForgeRegistries.ITEMS.getDelegateOrThrow(ResourceLocation.tryParse(catalystStr)).get();
-            ItemStack input = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "input"));
-            int cfe = GsonHelper.getAsInt(pSerializedRecipe, "ecf");
-            int ticks = GsonHelper.getAsInt(pSerializedRecipe,"time");
-            int catalystDecayRate = GsonHelper.getAsInt(pSerializedRecipe,"rate");
-
-            return new MatterInfusionRecipe(catalyst,input,output,catalystDecayRate,pRecipeId,cfe,ticks);
+        public MapCodec<MatterInfusionRecipe> codec() {
+            return RecordCodecBuilder.mapCodec(instance ->
+                    instance.group(
+                            ItemStack.CODEC.fieldOf("result")
+                                    .forGetter(MatterInfusionRecipe::getOutput),
+                            ItemStack.CODEC.fieldOf("catalyst")
+                                    .forGetter(MatterInfusionRecipe::getCatalyst),
+                            ItemStack.CODEC.fieldOf("input")
+                                    .forGetter(MatterInfusionRecipe::getInput),
+                            Codec.INT.fieldOf("ecf")
+                                    .forGetter(MatterInfusionRecipe::getEcf),
+                            Codec.INT.fieldOf("ticks")
+                                    .forGetter(MatterInfusionRecipe::getTicks),
+                            Codec.INT.fieldOf("catalyst_decay")
+                                    .forGetter(MatterInfusionRecipe::getCatalystDecayRate)
+                    ).apply(instance,MatterInfusionRecipe::new));
         }
 
         @Override
-        public @Nullable MatterInfusionRecipe fromNetwork(@NotNull ResourceLocation pRecipeId, FriendlyByteBuf pBuffer) {
-            ItemStack output = pBuffer.readItem();
-            ItemStack catalyst = pBuffer.readItem();
-            ItemStack input = pBuffer.readItem();
-            int cfe = pBuffer.readInt();
-            int ticks = pBuffer.readInt();
-            int catalystDecayRate = pBuffer.readInt();
+        public StreamCodec<RegistryFriendlyByteBuf, MatterInfusionRecipe> streamCodec() {
+            return new StreamCodec<>() {
+                @Override
+                public MatterInfusionRecipe decode(RegistryFriendlyByteBuf buffer) {
+                    ItemStack output = ItemStack.STREAM_CODEC.decode(buffer);
+                    ItemStack catalyst = ItemStack.STREAM_CODEC.decode(buffer);
+                    ItemStack input = ItemStack.STREAM_CODEC.decode(buffer);
+                    int cfe = buffer.readVarInt();
+                    int ticks = buffer.readVarInt();
+                    int catalystDecayRate = buffer.readVarInt();
 
-            return new MatterInfusionRecipe(catalyst.getItem(),input,output,catalystDecayRate,pRecipeId,cfe,ticks);
-        }
+                    return new MatterInfusionRecipe(output, catalyst, input, catalystDecayRate, cfe, ticks);
+                }
 
-        @Override
-        public void toNetwork(FriendlyByteBuf pBuffer, MatterInfusionRecipe pRecipe) {
-            pBuffer.writeItemStack(pRecipe.output,false);
-            pBuffer.writeItemStack(new ItemStack(pRecipe.catalyst),true);
-            pBuffer.writeItemStack(pRecipe.input,false);
-            pBuffer.writeInt(pRecipe.ecf);
-            pBuffer.writeInt(pRecipe.ticks);
-            pBuffer.writeInt(pRecipe.catalystDecayRate);
+                @Override
+                public void encode(RegistryFriendlyByteBuf buffer, MatterInfusionRecipe value) {
+                    ItemStack.STREAM_CODEC.encode(buffer, value.output);
+                    ItemStack.STREAM_CODEC.encode(buffer, value.catalyst);
+                    ItemStack.STREAM_CODEC.encode(buffer, value.input);
+                    buffer.writeVarInt(value.ecf);
+                    buffer.writeVarInt(value.ticks);
+                    buffer.writeVarInt(value.catalystDecayRate);
+                }
+            };
         }
     }
 }

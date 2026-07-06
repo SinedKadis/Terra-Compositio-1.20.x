@@ -8,7 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
 import net.sinedkadis.terracompositio.registries.TCBlockEntities;
 import net.sinedkadis.terracompositio.util.helpers.ParticleHelperInternal;
@@ -86,18 +86,20 @@ public class TimePassageDesorberBlockEntity extends AbstractDesorberBlockEntity 
         return !this.fluidHandler.isEmpty() && this.fluidHandler.getFluidAmount() >= 10;
     }
 
+
+
     @Override
-    protected void saveAdditional(CompoundTag pTag) {
-        pTag.putInt("buffer", timeBuffer);
-        pTag.putInt("counter", timeCounter);
-        super.saveAdditional(pTag);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        tag.putInt("buffer", timeBuffer);
+        tag.putInt("counter", timeCounter);
+        super.saveAdditional(tag, registries);
     }
 
     @Override
-    public void load(CompoundTag pTag) {
-        super.load(pTag);
-        timeBuffer = pTag.getInt("buffer");
-        timeCounter = pTag.getInt("counter");
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        timeBuffer = tag.getInt("buffer");
+        timeCounter = tag.getInt("counter");
     }
 
     @Override

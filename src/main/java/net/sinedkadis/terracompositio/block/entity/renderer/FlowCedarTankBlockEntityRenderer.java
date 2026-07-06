@@ -4,15 +4,17 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.items.IItemHandler;
 import net.sinedkadis.terracompositio.block.entity.FlowCedarTankBlockEntity;
 import net.sinedkadis.terracompositio.fluid.FluidRenderer;
 import org.jetbrains.annotations.NotNull;
 
 public class FlowCedarTankBlockEntityRenderer implements BlockEntityRenderer<FlowCedarTankBlockEntity> {
-    public FlowCedarTankBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
+    public FlowCedarTankBlockEntityRenderer(BlockEntityRendererProvider.Context ignoredContext) {
 
     }
 
@@ -24,19 +26,23 @@ public class FlowCedarTankBlockEntityRenderer implements BlockEntityRenderer<Flo
 
     @Override
     public void render(FlowCedarTankBlockEntity pBlockEntity, float pPartialTick, @NotNull PoseStack pPoseStack, @NotNull MultiBufferSource pBuffer, int pPackedLight, int pPackedOverlay) {
-        if (!pBlockEntity.hasLevel()) return;
-        pBlockEntity.getCapability(ForgeCapabilities.FLUID_HANDLER).ifPresent(handler -> {
-            FluidTank tank = (FluidTank) handler;
-            if (tank.isEmpty()) return;
+        Level level = pBlockEntity.getLevel();
+        if (level == null) return;
 
-            FluidStack fluidStack = tank.getFluid();
-            float fillRatio = (float) tank.getFluidAmount() / tank.getCapacity();
-            float renderHeight = TANK_BOTTOM + (TANK_HEIGHT * fillRatio);
+        IItemHandler handler = level.getCapability(Capabilities.ItemHandler.BLOCK, pBlockEntity.getBlockPos(), null);
+        if (handler == null) return;
 
-            FluidRenderer.renderFluidBox(pPoseStack, fluidStack,
-                    TANK_OFFSET, TANK_BOTTOM, TANK_OFFSET,
-                    TANK_OFFSET + TANK_WIDTH, renderHeight, TANK_OFFSET + TANK_DEPTH,
-                    pBuffer, pPackedLight, true);
-        });
+        FluidTank tank = (FluidTank) handler;
+        if (tank.isEmpty()) return;
+
+        FluidStack fluidStack = tank.getFluid();
+        float fillRatio = (float) tank.getFluidAmount() / tank.getCapacity();
+        float renderHeight = TANK_BOTTOM + (TANK_HEIGHT * fillRatio);
+
+        FluidRenderer.renderFluidBox(pPoseStack, fluidStack,
+                TANK_OFFSET, TANK_BOTTOM, TANK_OFFSET,
+                TANK_OFFSET + TANK_WIDTH, renderHeight, TANK_OFFSET + TANK_DEPTH,
+                pBuffer, pPackedLight, true);
+
     }
 }

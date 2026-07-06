@@ -13,7 +13,9 @@ import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.wrapper.EmptyItemHandler;
 import net.sinedkadis.terracompositio.block.entity.EntStatueBlockEntity;
 import net.sinedkadis.terracompositio.registries.TCItems;
 
@@ -98,32 +100,25 @@ public class FlowCedarEntStatueModel extends Model implements HeadedModel {
 
 
 
+		Level level = entity.getLevel();
+		if (level == null) return;
+
+		IItemHandler handler = entity.getItemCapability(null);
+		if (handler == EmptyItemHandler.INSTANCE) return;
 
 
-		entity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iItemHandler -> {
-			boolean flag = false;
-			ItemStack stack = iItemHandler.getStackInSlot(0);
-			if (stack.is(TCItems.TECHNETIUM_CROWN.get())){
-				flag = true;
-			}
-			this.mini_crown.visible = flag;
-		});
-
-//		this.animateWalk(FlowCedarEntAnimations.WALK, limbSwing, limbSwingAmount, 2f, 2f);
-//		this.animate(entity1.idleAnimationState, FlowCedarEntAnimations.IDLE, ageInTicks, 1f);
-//		this.animate(entity1.cfeHoldState, FlowCedarEntAnimations.CFE_HOLD, ageInTicks, 1f);
-//		this.animate(entity1.extractionAnimationState, FlowCedarEntAnimations.TREE_EXTRACT,ageInTicks,1f);
-//		this.animate(entity1.extractionCompleteAnimationState, FlowCedarEntAnimations.EXTRACTION_COMPLETE,ageInTicks,1f);
+		boolean flag = false;
+		ItemStack stack = handler.getStackInSlot(0);
+		if (stack.is(TCItems.TECHNETIUM_CROWN.get())){
+			flag = true;
+		}
+		this.mini_crown.visible = flag;
 
 	}
 
 
 
-	@Override
-	public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-		ent.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
 
-	}
 	public ModelPart root() {
 		return ent;
 	}
@@ -131,5 +126,10 @@ public class FlowCedarEntStatueModel extends Model implements HeadedModel {
 	@Override
 	public ModelPart getHead() {
 		return head;
+	}
+
+	@Override
+	public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
+		ent.render(poseStack, buffer, packedLight, packedOverlay, color);
 	}
 }

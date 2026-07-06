@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
@@ -15,7 +16,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.Nameable;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -27,6 +27,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
 import net.sinedkadis.terracompositio.api.helpers.BlockPosHelper;
+import net.sinedkadis.terracompositio.api.helpers.ItemHelper;
 import net.sinedkadis.terracompositio.api.helpers.PlayerHelper;
 import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.networks.NetworkAction;
@@ -37,12 +38,14 @@ import net.sinedkadis.terracompositio.block.custom.PathPointerBlock;
 import net.sinedkadis.terracompositio.config.TCClientConfigs;
 import net.sinedkadis.terracompositio.network.payloads.S2CHighLightNodesPayload;
 import net.sinedkadis.terracompositio.registries.TCBlockEntities;
+import net.sinedkadis.terracompositio.registries.TCDataComponents;
 import net.sinedkadis.terracompositio.util.BindException;
 import net.sinedkadis.terracompositio.util.IEntityInstance;
 import net.sinedkadis.terracompositio.util.accessors.PlayerKnowledgeAccessor;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
@@ -162,10 +165,7 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
             wrenchInteraction(pPlayer, level, clickedPos, wrenchStack);
             if (pPlayer != null) {
                 PlayerHelper.message(pPlayer, Component.translatable("item.terracompositio.flow_rotating_axe.bind_success").withStyle(ChatFormatting.BOLD));
-                wrenchStack.hurtAndBreak(1, pPlayer, player1 -> {
-                    assert player1 != null;
-                    player1.broadcastBreakEvent(InteractionHand.MAIN_HAND);
-                });
+                ItemHelper.hurtAndBreakItem((ServerLevel) level,pPlayer,wrenchStack);
             }
             return true;
         } catch (BindException e) {
@@ -184,14 +184,12 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
 
         tryRotate(pPlayer, clickedPPBE);
 
-        CompoundTag tag = wrenchStack.getOrCreateTag();
+        tryStorePos(pPlayer, clickedPos, wrenchStack);
 
-        tryStorePosToTag(pPlayer, clickedPos, tag);
-
-        BlockPos storedPos = BlockPosHelper.loadBlockPos(tag.getCompound(RECEIVER_POS_TAG));
+        BlockPos storedPos = wrenchStack.get(TCDataComponents.BIND_CORDS);
         assert storedPos != null;
 
-        clearBindTags(tag);
+        clearBindTags(wrenchStack);
 
         tryClearBindings(pPlayer, level, clickedPos, storedPos);
 
@@ -210,7 +208,7 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
         boolean backwardBind = isClickedSender && isStoredReceiver;
 
         if (!(forwardBind || backwardBind)) {
-            clearBindTags(tag);
+            clearBindTags(wrenchStack);
             throw new BindException("item.terracompositio.flow_rotating_axe.bind_fail_incompatible");
         }
 
@@ -273,9 +271,9 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
         }
     }
 
-    private static void tryStorePosToTag(@Nullable Player pPlayer, BlockPos clickedPos, CompoundTag tag) throws BindException {
-        if (!tag.contains(RECEIVER_POS_TAG)) {
-            storeToTag(pPlayer, clickedPos, tag);
+    private static void tryStorePos(@Nullable Player pPlayer, BlockPos clickedPos, @UnknownNullability ItemStack stack) throws BindException {
+        if (stack.get(TCDataComponents.BIND_CORDS) == null) {
+            storeBindPos(pPlayer, clickedPos, stack);
             throw new BindException();
         }
     }
@@ -447,8 +445,8 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
         }
     }
 
-    private static void storeToTag(@Nullable Player pPlayer, BlockPos pos, CompoundTag tag) {
-        tag.put(RECEIVER_POS_TAG, BlockPosHelper.saveBlockPos(pos));
+    private static void storeBindPos(@Nullable Player pPlayer, BlockPos pos, @UnknownNullability ItemStack stack) {
+        stack.set(TCDataComponents.BIND_CORDS,pos);
 
         if (pPlayer != null) {
             PlayerHelper.message(pPlayer, Component.translatable("item.terracompositio.flow_rotating_axe.bind_begin").withStyle(ChatFormatting.BOLD));
@@ -475,8 +473,8 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
         }
     }
 
-    public static void clearBindTags(CompoundTag tag) {
-        tag.remove(RECEIVER_POS_TAG);
+    public static void clearBindTags(ItemStack stack) {
+        stack.set(TCDataComponents.BIND_CORDS,null);
     }
 
     @Nullable
@@ -617,7 +615,7 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
     }
 
     @Override
-    protected void saveAdditional(CompoundTag pTag) {
+    protected void saveAdditional(CompoundTag pTag, HolderLookup.Provider provider) {
         pTag.putFloat("rot_y", rotationYaw);
         pTag.putFloat("rot_x", rotationPitch);
         pTag.putFloat("rot_z", rotationRoll);
@@ -631,12 +629,12 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
             pTag.put(OUTPUT_POS_TAG, BlockPosHelper.saveBlockPos(outputPos));
         saveFromSetToTag(pTag, SENDER_POSES_TAG, senderPoses);
         saveFromSetToTag(pTag, INPUT_POSES_TAG, inputPoses);
-        super.saveAdditional(pTag);
+        super.saveAdditional(pTag,provider);
     }
 
     @Override
-    public void load(CompoundTag pTag) {
-        super.load(pTag);
+    public void loadAdditional(CompoundTag pTag, HolderLookup.Provider provider) {
+        super.loadAdditional(pTag,provider);
         rotationYaw = pTag.getFloat("rot_y");
         rotationPitch = pTag.getFloat("rot_x");
         rotationRoll = pTag.getFloat("rot_z");
@@ -695,8 +693,8 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
     }
 
     @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        super.handleUpdateTag(tag);
+    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        super.handleUpdateTag(tag, lookupProvider);
         rotationYaw = tag.getFloat("rot_y");
         rotationPitch = tag.getFloat("rot_x");
         rotationRoll = tag.getFloat("rot_z");
@@ -736,8 +734,7 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
 
     @Override
     public void updateIfScheduled() {
-//        CFENetwork cfeNetworkInstance = TerraCompositioAPI.instance().getCFENetworkInstance();
-//        inputPoses.forEach(pos -> cfeNetworkInstance.updateInRange(level, pos, 5));
+
     }
 
     public void scheduleMemberUpdate() {

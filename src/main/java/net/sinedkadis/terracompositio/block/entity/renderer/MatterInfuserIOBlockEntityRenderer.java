@@ -16,10 +16,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import net.sinedkadis.terracompositio.api.helpers.WorldHelper;
-import net.sinedkadis.terracompositio.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.block.entity.MatterInfuserUnitBlockEntity;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,11 +39,12 @@ public class MatterInfuserIOBlockEntityRenderer implements BlockEntityRenderer<M
         BlockState blockState = pBlockEntity.getBlockState();
 
         Level level = pBlockEntity.getLevel();
-
-        @SuppressWarnings("DataFlowIssue")
-        IItemHandler iItemHandler = pBlockEntity.getCapability(TCCapabilities.ITEM_STATE_HOLDER).orElse(null);
-        if (!(iItemHandler instanceof ItemStackHandler itemStackHandler)) return;
         if (level == null) return;
+
+        net.neoforged.neoforge.items.IItemHandler handler = level.getCapability(Capabilities.ItemHandler.BLOCK, pBlockEntity.getBlockPos(), null);
+        if (handler == null) return;
+        if (!(handler instanceof ItemStackHandler itemStackHandler)) return;
+
         renderLeftConnection(pBlockEntity, pPoseStack, pBuffer, level, blockState, itemRenderer, itemStackHandler);
 
     }

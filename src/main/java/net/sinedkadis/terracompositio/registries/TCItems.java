@@ -87,7 +87,7 @@ public class TCItems {
 
     //Wrench Axe
     public static final DeferredItem<Item> WRENCH_AXE = ITEMS.register("flow_rotating_axe",
-            () -> new WrenchAxeItem(Tiers.IRON, 6.0F, -3.1F, new Item.Properties().durability(330)));
+            () -> new WrenchAxeItem(Tiers.IRON, new Item.Properties().durability(330)));
     public static final DeferredItem<Item> WRENCH_TAG_HOLDER = ITEMS.register("wrench_tag_holder",
             () -> new Item(new Item.Properties()));
 

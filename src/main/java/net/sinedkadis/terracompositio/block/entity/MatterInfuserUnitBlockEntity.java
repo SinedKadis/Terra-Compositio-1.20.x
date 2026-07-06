@@ -3,12 +3,14 @@ package net.sinedkadis.terracompositio.block.entity;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -16,6 +18,8 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.block.behaviours.ECFHandlerBehaviour;
 import net.sinedkadis.terracompositio.block.behaviours.ItemStateHolderBehaviour;
@@ -107,9 +111,7 @@ public class MatterInfuserUnitBlockEntity extends MatterInfuserBaseBlockEntity{
             increaseCraftingProgress();
             consumeECF();
             setChanged(pLevel, pPos, pState);
-//            if (!pLevel.isClientSide){
-//                ((ServerLevel) pLevel).sendParticles(ModParticles.FLOW_STILL_PARTICLE.get(),pPos.getX()+0.5D,pPos.getY()+0.5D,pPos.getZ()+0.5D,3,0,-0.1D,0,0.1D);
-//            }
+
             if(hasProgressFinished()){
                 craftItem();
                 resetProgress();
@@ -148,15 +150,15 @@ public class MatterInfuserUnitBlockEntity extends MatterInfuserBaseBlockEntity{
     }
 
     protected void craftItem() {
-        Optional<MatterInfusionRecipe> recipe = getCurrentRecipe();
+        Optional<RecipeHolder<MatterInfusionRecipe>> recipe = getCurrentRecipe();
         MatterInfuserPortBlockEntity portBE = this.getPortBE();
         FlowCedarCasingBlockEntity casingBE = this.getCasingBE();
         if (recipe.isPresent()
                 && this.level != null
                 && portBE != null
                 && casingBE != null) {
-            ItemStack result = recipe.get().getResultItem(null);
-            int takeCount = recipe.get().getIngredients().get(1).getItems()[0].getCount();
+            ItemStack result = recipe.get().value().getResultItem(RegistryAccess.EMPTY);
+            int takeCount = recipe.get().value().getIngredients().get(1).getItems()[0].getCount();
 
             IItemHandlerModifiable itemHandler = casingBE.getItemHandler();
 
@@ -177,12 +179,12 @@ public class MatterInfuserUnitBlockEntity extends MatterInfuserBaseBlockEntity{
     }
 
     protected boolean hasRecipe() {
-        Optional<MatterInfusionRecipe> recipe = getCurrentRecipe();
+        Optional<RecipeHolder<MatterInfusionRecipe>> recipe = getCurrentRecipe();
         if (recipe.isEmpty()){
             return false;
         }
-        MatterInfusionRecipe matterInfusionRecipe = recipe.get();
-        ItemStack result = matterInfusionRecipe.getResultItem(null);
+        MatterInfusionRecipe matterInfusionRecipe = recipe.get().value();
+        ItemStack result = matterInfusionRecipe.getResultItem(RegistryAccess.EMPTY);
         boolean outputTest = enoughSpaceInOutput(result.getCount()) && sameItemInOutput(result.getItem());
         FlowCedarCasingBlockEntity casingBE = this.getCasingBE();
         boolean infusedTest = false;
@@ -213,15 +215,15 @@ public class MatterInfuserUnitBlockEntity extends MatterInfuserBaseBlockEntity{
         throw new RuntimeException("CFE handler not present: " + this);
     }
 
-    public Optional<MatterInfusionRecipe> getCurrentRecipe() {
+    public Optional<RecipeHolder<MatterInfusionRecipe>> getCurrentRecipe() {
         ItemStack catalyst = this.getCatalyst();
         ItemStack inputSlot = this.getInputSlot();
         if (catalyst.isEmpty() || inputSlot.isEmpty())
             return Optional.empty();
-        SimpleContainer inventory;inventory = new SimpleContainer(catalyst, inputSlot);
+        IItemHandler inventory = new InvWrapper(new SimpleContainer(catalyst, inputSlot));
 
         if (this.level != null) {
-            return this.level.getRecipeManager().getRecipeFor(MatterInfusionRecipe.Type.INSTANCE, inventory, level);
+            return this.level.getRecipeManager().getRecipeFor(MatterInfusionRecipe.Type.INSTANCE, new RecipeWrapper(inventory), level);
         }
         return Optional.empty();
     }
