@@ -1,13 +1,18 @@
 package net.sinedkadis.terracompositio.util;
 
-import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.fluids.capability.templates.EmptyFluidHandler;
+import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
-import org.jetbrains.annotations.Nullable;
 
 public interface ITCCapabilityProviderItem {
 
-    IECFHandler addECFCapability(ItemStack itemStack);
+    default IECFHandler addECFCapability(ItemStack itemStack) {
+        return SentinelHelper.EMPTY_ECF_HANDLER;
+    }
+    default IFluidHandlerItem addFluidCapability(ItemStack itemStack) {
+        return (IFluidHandlerItem) EmptyFluidHandler.INSTANCE;
+    }
 
 }

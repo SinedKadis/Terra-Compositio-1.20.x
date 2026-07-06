@@ -1,5 +1,6 @@
 package net.sinedkadis.terracompositio.api.helpers;
 
+import com.google.common.collect.FluentIterable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
@@ -22,6 +23,7 @@ import net.neoforged.neoforge.items.IItemHandler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
  * The Class with cool methods, that my mod use, related to {@link ItemStack}.
@@ -33,14 +35,13 @@ public class ItemHelper {
      * @param containerStack the container stack
      * @return the container contents
      */
-    public static Iterable<ItemStack> getContainerContents(ItemStack containerStack) {
+    public static Stream<ItemStack> getContainerContents(ItemStack containerStack) {
         if (containerStack.isEmpty()) {
-            return List.of();
+            return Stream.of();
         }
-
         ItemContainerContents itemContainerContents = containerStack.get(DataComponents.CONTAINER);
-        if (itemContainerContents == null) return List.of();
-        return itemContainerContents.nonEmptyItemsCopy();
+        if (itemContainerContents == null) return Stream.of();
+        return ((FluentIterable<ItemStack>) itemContainerContents.nonEmptyItemsCopy()).stream();
 
     }
 

@@ -102,12 +102,10 @@ public class TechnetiumChestplateModel extends HumanoidModel<LivingEntity> {
     }
 
     @Override
-    public void renderToBuffer(PoseStack ms, VertexConsumer buffer, int light, int overlay, float r, float g, float b, float a) {
-//        collar.render(ms, buffer, light, overlay, r, g, b, a);
-//        sideL.render(ms, buffer, light, overlay, r, g, b, a);
-//        sideR.render(ms, buffer, light, overlay, r, g, b, a);
+    public void renderToBuffer(PoseStack ms, VertexConsumer buffer, int light, int overlay, int color) {
+
         setPartVisibility();
-        super.renderToBuffer(ms, buffer, light, overlay, r, g, b, a);
+        super.renderToBuffer(ms, buffer, light, overlay, color);
 
     }
 

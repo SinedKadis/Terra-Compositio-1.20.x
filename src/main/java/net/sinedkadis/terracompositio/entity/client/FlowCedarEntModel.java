@@ -125,8 +125,8 @@ public class FlowCedarEntModel<T extends Entity> extends HierarchicalModel<T> im
 	}
 
 	@Override
-	public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-		ent.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+	public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
+		ent.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
 
 	}
 

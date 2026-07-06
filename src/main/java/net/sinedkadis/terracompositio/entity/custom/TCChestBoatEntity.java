@@ -41,9 +41,10 @@ public class TCChestBoatEntity extends ChestBoat {
         this.entityData.set(DATA_ID_TYPE, pVariant.ordinal());
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_ID_TYPE, TCBoatEntity.Type.FLOW_CEDAR.ordinal());
+    @Override
+    protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_ID_TYPE, TCBoatEntity.Type.FLOW_CEDAR.ordinal());
     }
 
     protected void addAdditionalSaveData(CompoundTag pCompound) {

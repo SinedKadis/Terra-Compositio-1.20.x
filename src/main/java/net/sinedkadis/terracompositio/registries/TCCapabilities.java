@@ -84,6 +84,8 @@ public class TCCapabilities {
             if (item instanceof ITCCapabilityProviderItem providerInstance) {
                 event.registerItem(TCCapabilities.ECF_HANDLER_ITEM,
                         (itemStack, cxt) -> providerInstance.addECFCapability(itemStack));
+                event.registerItem(Capabilities.FluidHandler.ITEM,
+                        (itemstack,cxt) -> providerInstance.addFluidCapability(itemstack));
             }
         }
         event.registerEntity(TCCapabilities.ECF_HANDLER_ENTITY, EntityType.PLAYER, new PlayerECFProvider());

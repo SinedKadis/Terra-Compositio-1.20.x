@@ -18,7 +18,6 @@ import net.sinedkadis.terracompositio.item.models.TechnetiumCrownModel;
 import net.sinedkadis.terracompositio.registries.TCModelLayers;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Optional;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
@@ -54,13 +53,13 @@ public class FlowCedarEntRenderer extends MobRenderer<FlowCedarEntEntity,FlowCed
 
 
         int energy = entity.getSyncedECF();
-        Optional<IECFHandler> icfeHandler = entity.getCapability(TCCapabilities.ECF).resolve();
-        if (energy > 0 && icfeHandler.isPresent()) {
+        IECFHandler icfeHandler = entity.getCapability(TCCapabilities.ECF_HANDLER_ENTITY);
+        if (energy > 0 && icfeHandler != null) {
             float alpha = 0.8f;
             alpha += Mth.map(energy,1000,10000,0,0.2f);
 
 
-            float scale = (0.1f + (energy / (float) icfeHandler.get().getMaxECF())) * 10;
+            float scale = (0.1f + (energy / (float) icfeHandler.getMaxECF())) * 10;
             poseStack.pushPose();
 
             float yOffset = entity.getBbHeight() + scale * 0.2f;
@@ -74,7 +73,7 @@ public class FlowCedarEntRenderer extends MobRenderer<FlowCedarEntEntity,FlowCed
                     buffer.getBuffer(RenderType.entityTranslucent(CUBE_TEXTURE)),
                     packedLight,
                     getOverlayCoords(entity, 0.0F),
-                    1.0F, 1.0F, 1.0F, alpha
+                    0x00FFFFFF + (int)(alpha*256) << 6
             );
 
             poseStack.popPose();

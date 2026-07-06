@@ -5,7 +5,6 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -13,10 +12,9 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.sinedkadis.terracompositio.api.helpers.PlayerHelper;
 import net.sinedkadis.terracompositio.api.networks.AnyNetworkMember;
-import net.sinedkadis.terracompositio.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.block.entity.TCBlockEntity;
 import net.sinedkadis.terracompositio.config.TCClientConfigs;
 import net.sinedkadis.terracompositio.util.accessors.PlayerKnowledgeAccessor;
@@ -30,16 +28,7 @@ public class KnowledgeAppleItem extends Item {
 
     public static void onPlayerClonedEvent(PlayerEvent.Clone event) {
         Player original = event.getOriginal();
-        original.reviveCaps();
         Player newPlayer = event.getEntity();
-        original.getCapability(TCCapabilities.ECF).ifPresent(oldStore ->
-                newPlayer.getCapability(TCCapabilities.ECF).ifPresent(newStore -> {
-                    CompoundTag tag = new CompoundTag();
-                    oldStore.writeToNBT(tag);
-                    newStore.readFromNBT(tag);
-                })
-        );
-        original.invalidateCaps();
         ((PlayerKnowledgeAccessor) newPlayer).setCreationKnowledge(((PlayerKnowledgeAccessor) original).isCreationAcknowledged());
     }
 

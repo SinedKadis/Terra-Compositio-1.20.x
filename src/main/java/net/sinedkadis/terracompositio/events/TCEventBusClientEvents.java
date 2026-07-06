@@ -1,7 +1,9 @@
 package net.sinedkadis.terracompositio.events;
 
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.model.BoatModel;
 import net.minecraft.client.model.ChestBoatModel;
+import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Sheets;
@@ -12,7 +14,10 @@ import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.RedStoneWireBlock;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.api.distmarker.Dist;
@@ -22,6 +27,9 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
@@ -45,6 +53,7 @@ import net.sinedkadis.terracompositio.item.models.TechnetiumCrownModel;
 import net.sinedkadis.terracompositio.particle.custom.*;
 import net.sinedkadis.terracompositio.registries.*;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Map;
 import java.util.Optional;
 
@@ -71,12 +80,13 @@ public class TCEventBusClientEvents {
         ItemBlockRenderTypes.setRenderLayer(TCFluids.FLOW_FLUID.source.get(), RenderType.translucent());
         ItemBlockRenderTypes.setRenderLayer(TCFluids.FLOW_FLUID.flowing.get(), RenderType.translucent());
 
+        //noinspection deprecation
         ItemBlockRenderTypes.setRenderLayer(TCBlocks.FLOATING_TORCH_HOLDER.get(),RenderType.cutout());
 
         ItemProperties.register(
                 TCItems.WRENCH_AXE.get(),
                 ResourceLocation.parse("wrench_mode"),
-                (stack, level, entity, seed) -> WrenchAxeItem.getMode(stack).ordinal()
+                (stack, level, entity, seed) -> WrenchAxeItem.getWrenchMode(stack).ordinal()
         );
         ItemProperties.register(
                 TCItems.SHIELDED_BUNDLE.get(),
@@ -92,7 +102,7 @@ public class TCEventBusClientEvents {
         ItemProperties.register(
                 TCItems.CREATION_FLOW_JOURNAL.get(),
                 ResourceLocation.parse("day"),
-                (stack, level, entity, seed) -> CreationFlowJournalItem.getDay(stack)
+                (stack, level, entity, seed) -> CreationFlowJournalItem.getBookmarks(stack)
         );
         ItemProperties.register(
                 TCItems.CREATION_FLOW_JOURNAL.get(),
@@ -153,9 +163,9 @@ public class TCEventBusClientEvents {
     }
 
     @SubscribeEvent
-    public static void onRegisterGuiOverlays(RegisterGuiOverlaysEvent event) {
-        event.registerAbove(VanillaGuiOverlay.HOTBAR.id(), "ecf_hud", ECFHud::render);
-        event.registerAbove(VanillaGuiOverlay.HOTBAR.id(), "knowledge_hud", KnowledgeOverlay::render);
+    public static void onRegisterGuiOverlays(RegisterGuiLayersEvent event) {
+        event.registerAbove(VanillaGuiLayers.HOTBAR, TerraCompositio.modLoc("ecf_hud"), ECFHud::render);
+        event.registerAbove(VanillaGuiLayers.HOTBAR, TerraCompositio.modLoc("knowledge_hud"), KnowledgeOverlay::render);
     }
 
     @SubscribeEvent
@@ -214,6 +224,22 @@ public class TCEventBusClientEvents {
             }
         }
     }
+
+    @ParametersAreNonnullByDefault
+    @MethodsReturnNonnullByDefault
+    @SubscribeEvent
+    public static void onRegisterClientExtensions(RegisterClientExtensionsEvent event) {
+        event.registerItem(new IClientItemExtensions() {
+            @Override
+            public HumanoidModel<?> getHumanoidArmorModel(LivingEntity living, ItemStack stack, EquipmentSlot slot, HumanoidModel<?> defaultModel) {
+                if (stack.is(TCItems.TECHNETIUM_CROWN.get())) return TechnetiumCrownModel.bakedInstance;
+                if (stack.is(TCItems.TECHNETIUM_CHESTPLATE.get())) return TechnetiumChestplateModel.bakedInstance;
+                if (stack.is(TCItems.TECHNETIUM_BOOTS.get())) return TechnetiumBootsModel.Humanoid.bakedInstance;
+                return defaultModel;
+            }
+        },TCItems.TECHNETIUM_CROWN,TCItems.TECHNETIUM_CHESTPLATE,TCItems.TECHNETIUM_BOOTS);
+    }
+
 
 }
 

@@ -49,9 +49,10 @@ public class TCBoatEntity extends Boat {
         return Type.byId(this.entityData.get(DATA_ID_TYPE));
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_ID_TYPE, Type.FLOW_CEDAR.ordinal());
+    @Override
+    protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_ID_TYPE, Type.FLOW_CEDAR.ordinal());
     }
 
     protected void addAdditionalSaveData(CompoundTag pCompound) {

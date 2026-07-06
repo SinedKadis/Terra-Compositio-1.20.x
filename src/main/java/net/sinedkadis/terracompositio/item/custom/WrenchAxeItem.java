@@ -27,6 +27,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
@@ -51,6 +52,7 @@ import net.neoforged.neoforge.client.event.RenderHandEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.sinedkadis.terracompositio.api.helpers.ItemHelper;
 import net.sinedkadis.terracompositio.api.helpers.PlayerHelper;
@@ -350,10 +352,6 @@ public class WrenchAxeItem extends AxeItem {
         if (usedTicks > 20){
             BlockPos anchor = getAnchor(level, pos, face);
             List<BlockPos> tree = getNearBlocks(level, anchor, LOGS_TAG, 64).stream().filter(blockPos -> blockPos.getY() >= anchor.getY()).toList();
-//            if (tree.size() > 32 && player != null) {
-//                player.displayClientMessage(Component.translatable("item.terracompositio.flow_rotating_axe.too_massive_tree").withStyle(ChatFormatting.BOLD), true);
-//                return;
-//            }
             List<BlockPos> peaks = tree.stream().filter(blockPos -> !level.getBlockState(blockPos.above()).is(BlockTags.LOGS)).toList();
             Set<BlockPos> allLeaves = new HashSet<>();
             peaks.forEach(blockPos -> allLeaves.addAll(getTouchingBlocks(level, blockPos, BlockTags.LEAVES, 6)));
@@ -665,8 +663,10 @@ public class WrenchAxeItem extends AxeItem {
         }
     }
 
-    public static void onClientLevelTickEndEvent(TickEvent.PlayerTickEvent event) {
-        Player player = event.player;
+    public static void onClientLevelTickEndEvent(EntityTickEvent.Post event) {
+        Entity entity = event.getEntity();
+        if (!(entity instanceof Player player)) return;
+
         Level level = player.level();
 
         if (!player.getMainHandItem().is(TCItems.WRENCH_AXE.get())) return;

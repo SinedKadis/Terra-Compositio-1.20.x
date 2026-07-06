@@ -2,7 +2,7 @@ package net.sinedkadis.terracompositio.entity.custom;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.BlockSource;
+import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -42,10 +42,6 @@ public class ECFBallProjectileEntity extends ThrowableItemProjectile {
 
     public ECFBallProjectileEntity(Level pLevel, LivingEntity livingEntity) {
         super(TCEntities.ECF_BALL_PROJECTILE.get(), livingEntity, pLevel);
-//        Entity entityUUID = this.getOwner();
-//        if (entityUUID != null) {
-//            setTargetHeight((int) (entityUUID.position().y-1));
-//        }
         setNoGravity(true);
 
         Entity owner = getOwner();
@@ -63,7 +59,7 @@ public class ECFBallProjectileEntity extends ThrowableItemProjectile {
     }
 
     public ECFBallProjectileEntity(BlockSource pSource) {
-        this(pSource.x(),pSource.y(),pSource.z(),pSource.getLevel());
+        this(pSource.center().x(),pSource.center().y(),pSource.center().z(),pSource.level());
     }
 
 
@@ -93,11 +89,12 @@ public class ECFBallProjectileEntity extends ThrowableItemProjectile {
         }
     }
 
+
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.getEntityData().define(DATA_LAST_VISITED, 0L);
-        this.getEntityData().define(DATA_VISITED_BLOCKS, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(DATA_LAST_VISITED, 0L);
+        builder.define(DATA_VISITED_BLOCKS, 0);
+        super.defineSynchedData(builder);
     }
 
     public void setLastVisited(long packed) {

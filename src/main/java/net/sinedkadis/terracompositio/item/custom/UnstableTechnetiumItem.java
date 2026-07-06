@@ -10,9 +10,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.api.IECFStorageExtensionItem;
 import net.sinedkadis.terracompositio.api.helpers.ItemHelper;
@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.stream.Stream;
 
-@Mod.EventBusSubscriber(modid = TerraCompositio.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = TerraCompositio.MOD_ID)
 public class UnstableTechnetiumItem extends Item implements IECFStorageExtensionItem {
     private final int radiation;
     private final IECFStorageExtensionItem storageExt;
@@ -45,8 +45,9 @@ public class UnstableTechnetiumItem extends Item implements IECFStorageExtension
 
 
     @SubscribeEvent
-    public static void onPlayerTickEvent(TickEvent.PlayerTickEvent event) {
-        Player player = event.player;
+    public static void onPlayerTickEvent(EntityTickEvent.Post event) {
+        Entity entity = event.getEntity();
+        if (!(entity instanceof Player player)) return;
         Level level = player.level();
         Inventory inventory= player.getInventory();
         List<ItemStack> containers = inventory.items.stream().filter(itemStack -> itemStack.is(Items.BUNDLE) || itemStack.is(Items.SHULKER_BOX)).toList();
@@ -55,7 +56,7 @@ public class UnstableTechnetiumItem extends Item implements IECFStorageExtension
             if (container.is(Items.BUNDLE)) {
                 stream = ShieldedBundleItem.getContents(container);
             } else {
-                stream = ItemHelper.getContainerContents(container).stream();
+                stream = ItemHelper.getContainerContents(container);
             }
             stream.filter(itemStack -> itemStack.is(TCTags.Items.UNSTABLE_TECHNETIUM))
                     .forEach(itemStack -> itemStack.inventoryTick(level,player,-1,true));

@@ -1,6 +1,7 @@
 package net.sinedkadis.terracompositio.item.custom;
 
 import com.google.common.collect.ImmutableMap;
+import net.minecraft.core.Holder;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -18,7 +19,7 @@ public class TCArmorItem extends ArmorItem {
                    // .put(ModArmorMaterials.NONFLOW_WOOD, new MobEffectInstance(ModEffects.NONFLOW_FULL_SET.get(), 20, 0, false,false))
             .build();
 
-    public TCArmorItem(ArmorMaterial pMaterial, Type pType, Properties pProperties) {
+    public TCArmorItem(Holder<ArmorMaterial> pMaterial, Type pType, Properties pProperties) {
         super(pMaterial, pType, pProperties);
     }
 
@@ -75,7 +76,7 @@ public class TCArmorItem extends ArmorItem {
         ArmorItem breastplate = ((ArmorItem)player.getInventory().getArmor(2).getItem());
         ArmorItem helmet = ((ArmorItem)player.getInventory().getArmor(3).getItem());
 
-        return helmet.getMaterial() == material && breastplate.getMaterial() == material &&
-                leggings.getMaterial() == material && boots.getMaterial() == material;
+        return helmet.getMaterial().value() == material && breastplate.getMaterial().value() == material &&
+                leggings.getMaterial().value() == material && boots.getMaterial().value() == material;
     }
 }

@@ -26,16 +26,16 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class ECFBallItem extends Item {
 
     public static DispenseItemBehavior ECF_BALL_DISPENSER_BEHAVIOUR = (pSource, pStack) -> {
-        ServerLevel level = pSource.getLevel();
-        level.playSound(null, pSource.x(), pSource.y(), pSource.z(),
+        ServerLevel level = pSource.level();
+        level.playSound(null, pSource.pos(),
                 SoundEvents.SNOWBALL_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
 
         ECFBallProjectileEntity cfeBall = new ECFBallProjectileEntity(pSource);
         cfeBall.setItem(pStack);
-        Direction direction = pSource.getBlockState().getValue(BlockStateProperties.FACING);
+        Direction direction = pSource.state().getValue(BlockStateProperties.FACING);
 
         if (direction.getAxis().isVertical()) {
-            DispenserBlock.popResource(pSource.getLevel(),pSource.getPos(),pStack.copyWithCount(1));
+            DispenserBlock.popResource(pSource.level(),pSource.pos(),pStack.copyWithCount(1));
         } else {
             BlockPos target = BlockPos.ZERO.relative(direction);
             cfeBall.shoot(target.getX(), target.getY(), target.getZ(), 1, 0.01f);

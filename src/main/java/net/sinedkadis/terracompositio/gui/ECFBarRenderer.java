@@ -6,14 +6,12 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.IItemDecorator;
+import net.neoforged.neoforge.client.IItemDecorator;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.mixin.accessors.GuiGraphicsAccessor;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
-
-import java.util.Optional;
 
 import static net.minecraft.util.FastColor.ARGB32.*;
 
@@ -93,17 +91,17 @@ public final class ECFBarRenderer implements IItemDecorator {
         int a2 = alpha(colorTo), r2 = red(colorTo), g2 = green(colorTo), b2 = blue(colorTo);
 
         Matrix4f pose = graphics.pose().last().pose();
-        consumer.vertex(pose, x1, y1, z).color(r1, g1, b1, a1).endVertex();
-        consumer.vertex(pose, x1, y2, z).color(r1, g1, b1, a1).endVertex();
-        consumer.vertex(pose, x2, y2, z).color(r2, g2, b2, a2).endVertex();
-        consumer.vertex(pose, x2, y1, z).color(r2, g2, b2, a2).endVertex();
+        consumer.addVertex(pose, x1, y1, z).setColor(r1, g1, b1, a1);
+        consumer.addVertex(pose, x1, y2, z).setColor(r1, g1, b1, a1);
+        consumer.addVertex(pose, x2, y2, z).setColor(r2, g2, b2, a2);
+        consumer.addVertex(pose, x2, y1, z).setColor(r2, g2, b2, a2);
     }
 
     @Override
     public boolean render(@NotNull GuiGraphics guiGraphics, @NotNull Font font, ItemStack stack, int x, int y) {
-        Optional<IECFHandler> handler = stack.getCapability(TCCapabilities.ECF).resolve();
-        if (handler.isPresent()) {
-            ECFBarRenderer.renderBarsTool(guiGraphics, handler.get(), stack, x, y);
+        IECFHandler handler = stack.getCapability(TCCapabilities.ECF_HANDLER_ITEM);
+        if (handler != null) {
+            ECFBarRenderer.renderBarsTool(guiGraphics, handler, stack, x, y);
             return true;
         }
         return true;

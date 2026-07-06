@@ -1,8 +1,6 @@
 package net.sinedkadis.terracompositio.item.custom;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.player.Inventory;
@@ -11,9 +9,10 @@ import net.minecraft.world.inventory.ClickAction;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.BundleItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.minecraft.world.item.component.BundleContents;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.mixin.accessors.BundleItemAccessor;
 import net.sinedkadis.terracompositio.registries.TCItems;
@@ -21,10 +20,9 @@ import net.sinedkadis.terracompositio.registries.TCTags;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Stream;
 
-@Mod.EventBusSubscriber(modid = TerraCompositio.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = TerraCompositio.MOD_ID)
 public class ShieldedBundleItem extends BundleItem {
 
     private static final int BAR_COLOR = Mth.color(49/255F, 111/255F, 125/255F);
@@ -34,7 +32,7 @@ public class ShieldedBundleItem extends BundleItem {
     }
 
     @Override
-    public int getMaxStackSize(ItemStack stack) {
+    public int getMaxStackSize(@NotNull ItemStack stack) {
         if (getContents(stack).findAny().isPresent()){
             return 1;
         }
@@ -42,15 +40,8 @@ public class ShieldedBundleItem extends BundleItem {
     }
 
     public static Stream<ItemStack> getContents(ItemStack pStack) {
-        CompoundTag compoundtag = pStack.getTag();
-        if (compoundtag == null) {
-            return Stream.empty();
-        } else {
-            ListTag listtag = compoundtag.getList("Items", 10);
-            Stream<Tag> var10000 = listtag.stream();
-            Objects.requireNonNull(CompoundTag.class);
-            return var10000.map(CompoundTag.class::cast).map(ItemStack::of);
-        }
+        BundleContents bundleContents = pStack.get(DataComponents.BUNDLE_CONTENTS);
+        return bundleContents == null ? Stream.of() : bundleContents.itemCopyStream();
     }
 
     @Override
@@ -74,10 +65,10 @@ public class ShieldedBundleItem extends BundleItem {
     }
 
     @SubscribeEvent
-    public static void onItemPickUpEvent(PlayerEvent.ItemPickupEvent event) {
-        ItemStack stack = event.getStack();
+    public static void onItemPickUpEvent(ItemEntityPickupEvent.Post event) {
+        ItemStack stack = event.getOriginalStack();
         if (stack.is(TCTags.Items.UNSTABLE_TECHNETIUM)){
-            Player player = event.getEntity();
+            Player player = event.getPlayer();
             Inventory inventory = player.getInventory();
             ItemStack newBundle = TCItems.SHIELDED_BUNDLE.get().getDefaultInstance();
             List<ItemStack> bundles = inventory.items.stream().filter(itemStack -> itemStack.is(TCItems.SHIELDED_BUNDLE.get())).toList();

@@ -1,7 +1,8 @@
 package net.sinedkadis.terracompositio.compat.soft_compat;
 
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+
 
 public interface ISoftCompat {
     void init();

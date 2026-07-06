@@ -21,7 +21,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.registries.TCCapabilities;
@@ -34,6 +33,7 @@ import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Objects;
 
 @Slf4j
 @MethodsReturnNonnullByDefault
@@ -161,7 +161,7 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
         this.setDeltaMovement(vec3.scale(f));
         if (!this.isNoGravity()) {
             Vec3 vec31 = this.getDeltaMovement();
-            this.setDeltaMovement(vec31.x, vec31.y - (double) this.getGravity(), vec31.z);
+            this.setDeltaMovement(vec31.x, vec31.y - this.getGravity(), vec31.z);
         }
 
         this.setPos(d2, d0, d1);
@@ -174,8 +174,9 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
             int cfe = oCfe - tryConsumeCFEHandler(member.getMainHandler(), oCfe);
 
             if (cfe > 0) {
-                for (ItemStack stack : owner.getArmorSlots()) {
-                    IECFHandler IECFHandler = stack.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER);
+                for (ItemStack stack : ((LivingEntity) owner).getArmorSlots()) {
+                    IECFHandler IECFHandler = stack.getCapability(TCCapabilities.ECF_HANDLER_ITEM);
+                    assert IECFHandler != null;
                     cfe -= IECFHandler.addECF(cfe, false);
                     if (cfe <= 0) break;
                 }
@@ -206,7 +207,7 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
             }
             BlockPos target = getTarget();
             if (blockPos.equals(target) && blockEntity != null) {
-                tryConsumeCFEHandler(blockEntity.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER), this.getECF());
+                tryConsumeCFEHandler(Objects.requireNonNull(level().getCapability(TCCapabilities.ECF_HANDLER_BLOCK, target, null)), this.getECF());
             }
         }
         lastBP.set(blockPos);
@@ -282,8 +283,8 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
         int cfe = getECF();
         if (blockEntity instanceof ECFNetworkMember memberBE) {
             memberBE.getMainHandler().subFromQueue(cfe);
-        } else if (blockEntity instanceof TCBlockEntity tcBlockEntity) {
-            tcBlockEntity.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER)
+        } else if (blockEntity instanceof TCBlockEntity) {
+            Objects.requireNonNull(level().getCapability(TCCapabilities.ECF_HANDLER_BLOCK, getTarget(), null))
                     .subFromQueue(cfe);
         } else {
             Entity target;
@@ -301,9 +302,9 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
     }
 
     @Override
-    protected void defineSynchedData() {
-        entityData.define(ECF, 0);
-        entityData.define(TARGET,BlockPos.ZERO);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(ECF, 0);
+        builder.define(TARGET,BlockPos.ZERO);
     }
 
     public int getECF() {

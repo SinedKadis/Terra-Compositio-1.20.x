@@ -6,6 +6,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -48,6 +49,11 @@ public class ECFDropProjectileEntity extends ThrowableProjectile implements Item
     }
 
     @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+
+    }
+
+    @Override
     public void tick() {
         super.tick();
         BlockPos blockPos = BlockPos.containing(position());
@@ -84,11 +90,6 @@ public class ECFDropProjectileEntity extends ThrowableProjectile implements Item
             }
         }
         this.discard();
-    }
-
-    @Override
-    protected void defineSynchedData() {
-
     }
 
     @Override

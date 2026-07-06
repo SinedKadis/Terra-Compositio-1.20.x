@@ -19,21 +19,21 @@ public class TCItems {
 
     //Cedar armor
     public static final DeferredItem<Item> FLOW_CEDAR_HELMET = ITEMS.register("flow_cedar_helmet",
-            () -> new TCArmorItem(TCArmorMaterials.FLOW_CEDAR.value(), ArmorItem.Type.HELMET, new Item.Properties()));
+            () -> new TCArmorItem(TCArmorMaterials.FLOW_CEDAR, ArmorItem.Type.HELMET, new Item.Properties()));
     public static final DeferredItem<Item> FLOW_CEDAR_CHESTPLATE = ITEMS.register("flow_cedar_chestplate",
-            () -> new TCArmorItem(TCArmorMaterials.FLOW_CEDAR.value(), ArmorItem.Type.CHESTPLATE, new Item.Properties()));
+            () -> new TCArmorItem(TCArmorMaterials.FLOW_CEDAR, ArmorItem.Type.CHESTPLATE, new Item.Properties()));
     public static final DeferredItem<Item> FLOW_CEDAR_LEGGINGS = ITEMS.register("flow_cedar_leggings",
-            () -> new TCArmorItem(TCArmorMaterials.FLOW_CEDAR.value(), ArmorItem.Type.LEGGINGS, new Item.Properties()));
+            () -> new TCArmorItem(TCArmorMaterials.FLOW_CEDAR, ArmorItem.Type.LEGGINGS, new Item.Properties()));
     public static final DeferredItem<Item> FLOW_CEDAR_BOOTS = ITEMS.register("flow_cedar_boots",
-            () -> new TCArmorItem(TCArmorMaterials.FLOW_CEDAR.value(), ArmorItem.Type.BOOTS, new Item.Properties()));
+            () -> new TCArmorItem(TCArmorMaterials.FLOW_CEDAR, ArmorItem.Type.BOOTS, new Item.Properties()));
     public static final DeferredItem<Item> FLOWING_FLOW_CEDAR_HELMET = ITEMS.register("flowing_flow_cedar_helmet",
-            () -> new CedarArmorItem(TCArmorMaterials.FLOWING_FLOW_CEDAR.value(), ArmorItem.Type.HELMET, new Item.Properties()));
+            () -> new CedarArmorItem(TCArmorMaterials.FLOWING_FLOW_CEDAR, ArmorItem.Type.HELMET, new Item.Properties()));
     public static final DeferredItem<Item> FLOWING_FLOW_CEDAR_CHESTPLATE = ITEMS.register("flowing_flow_cedar_chestplate",
-            () -> new CedarArmorItem(TCArmorMaterials.FLOWING_FLOW_CEDAR.value(), ArmorItem.Type.CHESTPLATE, new Item.Properties()));
+            () -> new CedarArmorItem(TCArmorMaterials.FLOWING_FLOW_CEDAR, ArmorItem.Type.CHESTPLATE, new Item.Properties()));
     public static final DeferredItem<Item> FLOWING_FLOW_CEDAR_LEGGINGS = ITEMS.register("flowing_flow_cedar_leggings",
-            () -> new CedarArmorItem(TCArmorMaterials.FLOWING_FLOW_CEDAR.value(), ArmorItem.Type.LEGGINGS, new Item.Properties()));
+            () -> new CedarArmorItem(TCArmorMaterials.FLOWING_FLOW_CEDAR, ArmorItem.Type.LEGGINGS, new Item.Properties()));
     public static final DeferredItem<Item> FLOWING_FLOW_CEDAR_BOOTS = ITEMS.register("flowing_flow_cedar_boots",
-            () -> new CedarArmorItem(TCArmorMaterials.FLOWING_FLOW_CEDAR.value(), ArmorItem.Type.BOOTS, new Item.Properties()));
+            () -> new CedarArmorItem(TCArmorMaterials.FLOWING_FLOW_CEDAR, ArmorItem.Type.BOOTS, new Item.Properties()));
 
 
     //Flow infused iron materials

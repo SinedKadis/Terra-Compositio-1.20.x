@@ -77,8 +77,8 @@ public class TechnetiumBootsModel extends HierarchicalModel<LivingEntity> {
 	}
 
 	@Override
-	public void renderToBuffer(PoseStack ms, VertexConsumer buffer, int light, int overlay, float r, float g, float b, float a) {
-		super.renderToBuffer(ms, buffer, light, overlay, r, g, b, a);
+	public void renderToBuffer(PoseStack ms, VertexConsumer buffer, int light, int overlay, int color) {
+		super.renderToBuffer(ms, buffer, light, overlay, color);
 
 	}
 
@@ -110,9 +110,9 @@ public class TechnetiumBootsModel extends HierarchicalModel<LivingEntity> {
 		}
 
 		@Override
-		public void renderToBuffer(PoseStack pPoseStack, VertexConsumer pBuffer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha) {
+		public void renderToBuffer(PoseStack pPoseStack, VertexConsumer pBuffer, int pPackedLight, int pPackedOverlay, int color) {
 			setPartVisibility();
-			model.renderToBuffer(pPoseStack, pBuffer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
+			model.renderToBuffer(pPoseStack, pBuffer, pPackedLight, pPackedOverlay, color);
 		}
 		private void setPartVisibility() {
 			setAllVisible(false);

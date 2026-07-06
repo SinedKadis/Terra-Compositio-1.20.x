@@ -23,7 +23,7 @@ public class TCPatchouliCompat {
 
         if (book instanceof ItemStack itemStack) {
             book = ItemStackUtil.getBookFromStack(itemStack);
-            CreationFlowJournalItem.setFlags(CreationFlowJournalItem.getDay(itemStack));
+            CreationFlowJournalItem.setFlags(CreationFlowJournalItem.getBookmarks(itemStack));
         }
         if (book instanceof Book book1) {
             book1.reloadContents(level, true);

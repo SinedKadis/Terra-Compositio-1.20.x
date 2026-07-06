@@ -16,10 +16,10 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.fml.ModList;
 import net.sinedkadis.terracompositio.api.helpers.PlayerHelper;
 import net.sinedkadis.terracompositio.compat.patchouli.TCPatchouliCompat;
+import net.sinedkadis.terracompositio.registries.TCDataComponents;
 import net.sinedkadis.terracompositio.registries.TCItems;
 import vazkii.patchouli.api.PatchouliAPI;
 
@@ -41,12 +41,10 @@ public class CreationFlowJournalItem extends Item {
         super(properties);
     }
 
-    public static int getDay(ItemStack stack){
-        CompoundTag tag = stack.getTag();
-        if (tag != null && stack.hasTag() && tag.contains("day")) {
-            return tag.getInt("day");
-        }
-        return 1;
+    public static int getBookmarks(ItemStack stack){
+        Integer bookmark = stack.get(TCDataComponents.BOOKMARKS);
+        if (bookmark == null) bookmark = 1;
+        return bookmark;
     }
     public static boolean isInHand(ItemStack stack,@Nullable Entity entity) {
         if (entity instanceof LivingEntity livingEntity) {
@@ -65,18 +63,15 @@ public class CreationFlowJournalItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack,
-                                @org.jetbrains.annotations.Nullable Level pLevel,
-                                List<Component> pTooltipComponents,
-                                TooltipFlag pIsAdvanced) {
-        super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
-        pTooltipComponents
-                .add(Component.translatable("item.terracompositio.creation_flow_journal.tooltip", pStack.getOrCreateTag().getInt("day"))
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+        tooltipComponents
+                .add(Component.translatable("item.terracompositio.creation_flow_journal.tooltip", stack.get(TCDataComponents.BOOKMARKS))
                         .withStyle(ChatFormatting.GRAY));
     }
 
     public static boolean isOpen() {
-        return ModList.get().isLoaded("patchouli") && Objects.equals(ForgeRegistries.ITEMS.getKey(TCItems.CREATION_FLOW_JOURNAL.get()), PatchouliAPI.get().getOpenBookGui());
+        return ModList.get().isLoaded("patchouli") && Objects.equals(TCItems.CREATION_FLOW_JOURNAL.getId(), PatchouliAPI.get().getOpenBookGui());
     }
 
     @Override
@@ -86,7 +81,7 @@ public class CreationFlowJournalItem extends Item {
         boolean hasPatchouli = patchouliLoaded.get();
         if (playerIn instanceof ServerPlayer player && hasPatchouli) {
             //UseItemSuccessTrigger.INSTANCE.trigger(player, stack, player.serverLevel(), player.getX(), player.getY(), player.getZ());
-            PatchouliAPI.get().openBookGUI(player, ForgeRegistries.ITEMS.getKey(TCItems.CREATION_FLOW_JOURNAL.get()));
+            PatchouliAPI.get().openBookGUI(player, TCItems.CREATION_FLOW_JOURNAL.getId());
             playerIn.playSound(SoundEvents.BOOK_PAGE_TURN, 1F, (float) (0.7 + Math.random() * 0.4));
 
         } else if (!hasPatchouli) {
@@ -100,7 +95,7 @@ public class CreationFlowJournalItem extends Item {
     public void inventoryTick(ItemStack pStack, Level pLevel, Entity pEntity, int pSlotId, boolean pIsSelected) {
         super.inventoryTick(pStack, pLevel, pEntity, pSlotId, pIsSelected);
         CompoundTag tag = pEntity.getPersistentData();
-        int day = getDay(pStack);
+        int day = getBookmarks(pStack);
         if (!(tag.getInt("last_hold_days") == day) && pIsSelected) {
             tag.putInt("last_hold_days", day);
             TCPatchouliCompat.reloadBookContents(pStack, pLevel);
