@@ -10,7 +10,6 @@ import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategor
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
-import net.minecraftforge.registries.ForgeRegistries;
 import net.sinedkadis.terracompositio.api.IECFStorageExtensionItem;
 import net.sinedkadis.terracompositio.api.IHaveExtensibleECFStorageItem;
 import net.sinedkadis.terracompositio.recipe.ECFStorageUpgradeRecipe;

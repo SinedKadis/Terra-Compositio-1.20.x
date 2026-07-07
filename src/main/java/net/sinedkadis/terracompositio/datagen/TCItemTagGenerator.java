@@ -6,9 +6,9 @@ import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.fml.ModList;
+import net.neoforged.fml.ModList;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
 import net.sinedkadis.terracompositio.registries.TCItems;
@@ -104,13 +104,23 @@ public class TCItemTagGenerator extends ItemTagsProvider {
         this.tag(TCTags.Items.CHAIN_RIDEABLE)
                 .add(TCItems.WRENCH_AXE.get());
 
-        this.tag(Tags.Items.ARMORS_HELMETS)
+        this.tag(Tags.Items.ARMORS)
+                .add(FLOW_CEDAR_HELMET.get(),
+                        TECHNETIUM_CROWN.get(),
+                        FLOW_CEDAR_CHESTPLATE.get(),
+                        TECHNETIUM_CHESTPLATE.get(),
+                        FLOW_CEDAR_LEGGINGS.get(),
+                        TECHNETIUM_LEGGINGS.get(),
+                        FLOW_CEDAR_BOOTS.get(),
+                        TECHNETIUM_BOOTS.get());
+
+        this.tag(ItemTags.HEAD_ARMOR)
                 .add(FLOW_CEDAR_HELMET.get(), TECHNETIUM_CROWN.get());
-        this.tag(Tags.Items.ARMORS_CHESTPLATES)
+        this.tag(ItemTags.CHEST_ARMOR)
                 .add(FLOW_CEDAR_CHESTPLATE.get(), TECHNETIUM_CHESTPLATE.get());
-        this.tag(Tags.Items.ARMORS_LEGGINGS)
+        this.tag(ItemTags.LEG_ARMOR)
                 .add(FLOW_CEDAR_LEGGINGS.get(), TECHNETIUM_LEGGINGS.get());
-        this.tag(Tags.Items.ARMORS_BOOTS)
+        this.tag(ItemTags.FOOT_ARMOR)
                 .add(FLOW_CEDAR_BOOTS.get(), TECHNETIUM_BOOTS.get());
 
         if (ModList.get().isLoaded("create")) {

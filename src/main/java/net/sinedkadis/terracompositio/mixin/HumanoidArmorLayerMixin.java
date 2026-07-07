@@ -6,18 +6,24 @@ import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.armortrim.ArmorTrim;
 import net.sinedkadis.terracompositio.item.custom.TechnetiumArmorItem;
 import net.sinedkadis.terracompositio.item.models.TechnetiumBootsModel;
+import net.sinedkadis.terracompositio.registries.TCArmorMaterials;
 import net.sinedkadis.terracompositio.registries.TCItems;
 import net.sinedkadis.terracompositio.util.OffsetVConsumer;
 import org.spongepowered.asm.mixin.Final;
@@ -26,6 +32,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.Optional;
 
 
 @Mixin(HumanoidArmorLayer.class)
@@ -48,8 +56,7 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
         if (armorModel1 instanceof TechnetiumBootsModel.Humanoid) return;
 
         ItemStack itemstack = pLivingEntity.getItemBySlot(EquipmentSlot.FEET);
-        @SuppressWarnings("UnstableApiUsage")
-        net.minecraft.client.model.Model model = net.minecraftforge.client.ForgeHooksClient.getArmorModel(pLivingEntity, itemstack, EquipmentSlot.FEET, armorModel1);
+        net.minecraft.client.model.Model model = getArmorModelHook(pLivingEntity, itemstack, EquipmentSlot.FEET, armorModel1);
         if (model instanceof TechnetiumBootsModel.Humanoid armorModel) {
             armorModel.setupAnim(pLivingEntity,pLimbSwing,pLimbSwingAmount,pAgeInTicks,pNetHeadYaw,pHeadPitch);
             this.renderArmorPiece(pPoseStack, pBuffer, pLivingEntity, EquipmentSlot.CHEST, pPackedLight, this.getArmorModel(EquipmentSlot.CHEST));
@@ -65,6 +72,9 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
     @Shadow
     protected abstract void setPartVisibility(A pModel, EquipmentSlot pSlot);
 
+
+    @Shadow
+    protected abstract Model getArmorModelHook(T entity, ItemStack itemStack, EquipmentSlot slot, A model);
 
     @Inject(
             method = "renderArmorPiece(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/entity/EquipmentSlot;ILnet/minecraft/client/model/HumanoidModel;)V",
@@ -86,38 +96,37 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
             if (armorItem.getEquipmentSlot() == pSlot) {
                 this.getParentModel().copyPropertiesTo(pModel);
                 this.setPartVisibility(pModel, pSlot);
-                @SuppressWarnings("UnstableApiUsage")
-                Model model = net.minecraftforge.client.ForgeHooksClient.getArmorModel(pLivingEntity, itemstack, pSlot, pModel);
+                Model model = getArmorModelHook(pLivingEntity, itemstack, pSlot, pModel);
 
-                String armorTexture = armorItem.getArmorTexture(itemstack, pLivingEntity, pSlot, "");
+                ResourceLocation armorTexture = armorItem.getArmorTexture(itemstack,
+                        pLivingEntity,
+                        pSlot,
+                        new ArmorMaterial.Layer(ResourceLocation.parse("")),
+                        false);
                 if (armorTexture == null) return;
 
                 VertexConsumer vertexconsumer = new OffsetVConsumer(pBuffer.getBuffer(RenderType.armorCutoutNoCull(
-                        ResourceLocation.parse(armorTexture))), 32f
+                        armorTexture)), 32f
                 );
-                model.renderToBuffer(pPoseStack, vertexconsumer, pPackedLight, OverlayTexture.NO_OVERLAY, 1, 1, 1, 1.0F);
+                model.renderToBuffer(pPoseStack, vertexconsumer, pPackedLight, OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
 
-                VertexConsumer normal = TechnetiumArmorItem.getTrimVertexConsumer(armorTrimAtlas, pBuffer, pLivingEntity, itemstack, true);
-                if (normal == null) return;
+                Optional<ArmorTrim> trim = Optional.ofNullable(itemstack.get(DataComponents.TRIM));
+
+                if (trim.isEmpty()) return;
+
+                TextureAtlasSprite sprite = armorTrimAtlas.getSprite(trim.get().outerTexture(TCArmorMaterials.TECHNETIUM));
+
+                VertexConsumer normal = sprite.wrap(pBuffer.getBuffer(Sheets.armorTrimsSheet(false)));
 
                 pModel.renderToBuffer(
                         pPoseStack, normal,
                         pPackedLight, OverlayTexture.NO_OVERLAY,
-                        1.0F, 1.0F, 1.0F, 1.0F
+                        0xFFFFFFFF
                 );
-
-//                VertexConsumer shifted = TechnetiumArmorItem.getTrimVertexConsumer(armorTrimAtlas,pBuffer, pLivingEntity, itemstack, false);
-//                if (shifted == null) return;
-//
-//                model.renderToBuffer(
-//                        pPoseStack, shifted,
-//                        pPackedLight, OverlayTexture.NO_OVERLAY,
-//                        1.0F, 1.0F, 1.0F, 1.0F
-//                );
 
                 // I have some skill issue with this fucking vertex consumers, so no trims on energy shield
                 if (itemstack.hasFoil()) {
-                    model.renderToBuffer(pPoseStack, pBuffer.getBuffer(RenderType.armorEntityGlint()), pPackedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+                    model.renderToBuffer(pPoseStack, pBuffer.getBuffer(RenderType.armorEntityGlint()), pPackedLight, OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
                 }
                 ci.cancel();
             }

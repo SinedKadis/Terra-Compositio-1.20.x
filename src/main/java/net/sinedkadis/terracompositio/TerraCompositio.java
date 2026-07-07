@@ -21,7 +21,6 @@ import net.sinedkadis.terracompositio.ecf.ECFNetworkHandler;
 import net.sinedkadis.terracompositio.events.ECFNetworkEvent;
 import net.sinedkadis.terracompositio.events.FluidNetworkEvent;
 import net.sinedkadis.terracompositio.fluid.FluidNetworkHandler;
-import net.sinedkadis.terracompositio.network.TCPayloads;
 import net.sinedkadis.terracompositio.registries.*;
 import net.sinedkadis.terracompositio.worldgen.biome.TCTerrablender;
 import net.sinedkadis.terracompositio.worldgen.tree.TCFoliagePlacers;
@@ -62,6 +61,7 @@ public class TerraCompositio
         TCTerrablender.registerBiomes();
 
         TCDataComponents.register(modEventBus);
+        TCIngredientTypes.register(modEventBus);
 
         TCGameRules.init();
 
@@ -89,7 +89,6 @@ public class TerraCompositio
         IEventBus bus = NeoForge.EVENT_BUS;
         bus.addListener((ECFNetworkEvent e) -> ECFNetworkHandler.INSTANCE.onNetworkEvent(e.getSource(),e.getAction()));
         bus.addListener((FluidNetworkEvent e) -> FluidNetworkHandler.INSTANCE.onNetworkEvent(e.getSource(),e.getAction()));
-        TCPayloads.register();
         if (ModList.get().isLoaded("patchouli"))
             TCPatchouliCompat.registerMultiblocks();
 

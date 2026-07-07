@@ -1,6 +1,9 @@
 package net.sinedkadis.terracompositio.datagen.loot;
 
 
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.loot.BlockLootSubProvider;
 
 import net.minecraft.world.flag.FeatureFlags;
@@ -15,8 +18,7 @@ import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.functions.ApplyBonusCount;
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.fml.ModList;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
 import net.sinedkadis.terracompositio.registries.TCItems;
@@ -27,8 +29,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class TCBlockLootTables extends BlockLootSubProvider {
-    public TCBlockLootTables() {
-        super(Set.of(), FeatureFlags.REGISTRY.allFlags());
+    private final HolderLookup.Provider provider;
+
+    public TCBlockLootTables(HolderLookup.Provider provider) {
+        super(Set.of(), FeatureFlags.REGISTRY.allFlags(),provider);
+        this.provider = provider;
     }
 
     @Override
@@ -126,11 +131,13 @@ public class TCBlockLootTables extends BlockLootSubProvider {
                 this.applyExplosionDecay(pBlock,
                         LootItem.lootTableItem(item)
                                 .apply(SetItemCountFunction.setCount(UniformGenerator.between(2.0F, 5.0F)))
-                                .apply(ApplyBonusCount.addOreBonusCount(Enchantments.BLOCK_FORTUNE))));
+                                .apply(ApplyBonusCount.addOreBonusCount(provider
+                                        .lookupOrThrow(Registries.ENCHANTMENT)
+                                        .getOrThrow(Enchantments.FORTUNE)))));
     }
 
     @Override
     protected @NotNull Iterable<Block> getKnownBlocks() {
-        return TCBlocks.BLOCKS.getEntries().stream().map(RegistryObject::get)::iterator;
+        return TCBlocks.BLOCKS.getEntries().stream().map(Holder::value)::iterator;
     }
 }

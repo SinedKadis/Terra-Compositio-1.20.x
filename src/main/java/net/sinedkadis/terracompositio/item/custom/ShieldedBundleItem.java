@@ -14,7 +14,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.sinedkadis.terracompositio.TerraCompositio;
-import net.sinedkadis.terracompositio.mixin.accessors.BundleItemAccessor;
 import net.sinedkadis.terracompositio.registries.TCItems;
 import net.sinedkadis.terracompositio.registries.TCTags;
 import org.jetbrains.annotations.NotNull;
@@ -76,12 +75,18 @@ public class ShieldedBundleItem extends BundleItem {
                 int added;
                 if (bundle.getCount() > 1){
                     bundle.shrink(1);
-                    added = BundleItemAccessor.invokeAdd(newBundle, stack);
+                    BundleContents bundlecontents = new BundleContents(List.of(stack));
+                    newBundle.set(DataComponents.BUNDLE_CONTENTS,bundlecontents);
+                    added = stack.getCount();
                     if (!player.addItem(newBundle)){
                         player.drop(newBundle,false);
                     }
                 } else {
-                    added = BundleItemAccessor.invokeAdd(bundle,stack);
+                    BundleContents bundlecontents = bundle.get(DataComponents.BUNDLE_CONTENTS);
+                    if (bundlecontents == null) continue;
+                    BundleContents.Mutable mutable = new BundleContents.Mutable(bundlecontents);
+                    added = mutable.tryInsert(stack);
+                    bundle.set(DataComponents.BUNDLE_CONTENTS,mutable.toImmutable());
                 }
                 if (added != 0){
                     int itemSlot = inventory.findSlotMatchingItem(stack);

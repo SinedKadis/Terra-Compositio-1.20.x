@@ -1,79 +1,41 @@
 package net.sinedkadis.terracompositio.recipe;
 
-import com.google.gson.JsonObject;
 import net.minecraft.MethodsReturnNonnullByDefault;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.world.item.crafting.Recipe;
+import net.neoforged.neoforge.common.conditions.ICondition;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Objects;
-import java.util.function.Consumer;
+import java.util.function.Function;
 
 
 //Thanks to Botania mod for that cool class
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class WrapperResult implements FinishedRecipe {
-    private final FinishedRecipe delegate;
-    @Nullable
-    private final RecipeSerializer<?> type;
-    @Nullable
-    private final Consumer<JsonObject> transform;
+public class WrapperResult implements RecipeOutput {
+    private final RecipeOutput delegate;
+    private final Function<Recipe<?>,Recipe<?>> wrapper;
 
-    private WrapperResult(FinishedRecipe delegate, @Nullable RecipeSerializer<?> type, @Nullable Consumer<JsonObject> transform) {
+    private WrapperResult(RecipeOutput delegate, Function<Recipe<?>,Recipe<?>> wrapper) {
         this.delegate = delegate;
-        this.type = type;
-        this.transform = transform;
+        this.wrapper = wrapper;
     }
 
-    /**
-     * Wraps recipe consumer with one that swaps the recipe type to a different one.
-     */
-    public static Consumer<FinishedRecipe> ofType(RecipeSerializer<?> type, Consumer<FinishedRecipe> parent) {
-        return recipe -> parent.accept(new WrapperResult(recipe, type, null));
+    public static WrapperResult of(RecipeOutput delegate, Function<Recipe<?>,Recipe<?>> wrapper) {
+        return new WrapperResult(delegate, wrapper);
     }
 
     @Override
-    public void serializeRecipeData(JsonObject json) {
-        delegate.serializeRecipeData(json);
-        if (transform != null) {
-            transform.accept(json);
-        }
+    public Advancement.Builder advancement() {
+        return Advancement.Builder.recipeAdvancement();
     }
 
     @Override
-    public JsonObject serializeRecipe() {
-        if (type == null) {
-            return FinishedRecipe.super.serializeRecipe();
-        }
-        JsonObject jsonobject = new JsonObject();
-        jsonobject.addProperty("type", Objects.requireNonNull(ForgeRegistries.RECIPE_SERIALIZERS.getKey(this.type)).toString());
-        this.serializeRecipeData(jsonobject);
-        return jsonobject;
-    }
-
-    @Override
-    public ResourceLocation getId() {
-        return delegate.getId();
-    }
-
-    @Override
-    public RecipeSerializer<?> getType() {
-        return type != null ? type : delegate.getType();
-    }
-
-    @Nullable
-    @Override
-    public JsonObject serializeAdvancement() {
-        return delegate.serializeAdvancement();
-    }
-
-    @Nullable
-    @Override
-    public ResourceLocation getAdvancementId() {
-        return delegate.getAdvancementId();
+    public void accept(ResourceLocation id, Recipe<?> recipe, @Nullable AdvancementHolder advancement, ICondition... conditions) {
+        delegate.accept(id,wrapper.apply(recipe),advancement,conditions);
     }
 }

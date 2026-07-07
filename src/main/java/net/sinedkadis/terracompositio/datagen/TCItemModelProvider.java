@@ -10,12 +10,12 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.armortrim.TrimMaterial;
 import net.minecraft.world.item.armortrim.TrimMaterials;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.client.model.generators.ItemModelProvider;
-import net.minecraftforge.client.model.generators.ModelFile;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.fml.ModList;
+import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
+import net.neoforged.neoforge.client.model.generators.ModelFile;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
 import net.sinedkadis.terracompositio.registries.TCFluids;
@@ -113,8 +113,7 @@ public class TCItemModelProvider extends ItemModelProvider {
     }
 
     // Shoutout to El_Redstoniano for making this
-    private void trimmedArmorItem(RegistryObject<Item> itemRegistryObject) {
-        final String MOD_ID = TerraCompositio.MOD_ID; // Change this to your mod id
+    private void trimmedArmorItem(DeferredItem<Item> itemRegistryObject) {
 
         if(itemRegistryObject.get() instanceof ArmorItem armorItem) {
             trimMaterials.forEach((trimMaterial, value) -> {
@@ -132,9 +131,9 @@ public class TCItemModelProvider extends ItemModelProvider {
                 String armorItemPath = "item/" + armorItem;
                 String trimPath = "trims/items/" + armorType + "_trim_" + trimMaterial.location().getPath();
                 String currentTrimName = armorItemPath + "_" + trimMaterial.location().getPath() + "_trim";
-                ResourceLocation armorItemResLoc = ResourceLocation.tryBuild(MOD_ID, armorItemPath);
+                ResourceLocation armorItemResLoc = TerraCompositio.modLoc(armorItemPath);
                 ResourceLocation trimResLoc = ResourceLocation.tryParse(trimPath); // minecraft namespace
-                ResourceLocation trimNameResLoc = ResourceLocation.tryBuild(MOD_ID, currentTrimName);
+                ResourceLocation trimNameResLoc = TerraCompositio.modLoc(currentTrimName);
 
                 // This is used for making the ExistingFileHelper acknowledge that this texture exist, so this will
                 // avoid an IllegalArgumentException
@@ -154,75 +153,61 @@ public class TCItemModelProvider extends ItemModelProvider {
                         .model(new ModelFile.UncheckedModelFile(trimNameResLoc))
                         .predicate(mcLoc("trim_type"), trimValue).end()
                         .texture("layer0",
-                                ResourceLocation.tryBuild(MOD_ID,
+                                TerraCompositio.modLoc(
                                         "item/" + itemRegistryObject.getId().getPath()));
             });
         }
     }
 
 
-    private void simpleItem(RegistryObject<Item> item) {
+    private void simpleItem(DeferredItem<Item> item) {
         withExistingParent(Objects.requireNonNull(item.getId()).getPath(),
-                ResourceLocation.tryParse("item/generated")).texture("layer0",
-                ResourceLocation.tryBuild(TerraCompositio.MOD_ID, "item/" + item.getId().getPath()));
+                Objects.requireNonNull(ResourceLocation.tryParse("item/generated"))).texture("layer0",
+                TerraCompositio.modLoc( "item/" + item.getId().getPath()));
     }
 
-    private void saplingItem(RegistryObject<Block> item) {
+    private void saplingItem(DeferredBlock<Block> item) {
         withExistingParent(Objects.requireNonNull(item.getId()).getPath(),
-                ResourceLocation.tryParse("item/generated")).texture("layer0",
-                ResourceLocation.tryBuild(TerraCompositio.MOD_ID, "block/" + item.getId().getPath()));
+                Objects.requireNonNull(ResourceLocation.tryParse("item/generated"))).texture("layer0",
+                TerraCompositio.modLoc("block/" + item.getId().getPath()));
     }
 
-    public void evenSimplerBlockItem(RegistryObject<Block> block) {
-        ResourceLocation key = ForgeRegistries.BLOCKS.getKey(block.get());
-        if (key != null) {
-            this.withExistingParent(TerraCompositio.MOD_ID + ":" + key.getPath(),
-                    modLoc("block/" + key.getPath()));
-        }
+    public void evenSimplerBlockItem(DeferredBlock<Block> block) {
+        ResourceLocation key = block.getId();
+        this.withExistingParent(TerraCompositio.MOD_ID + ":" + key.getPath(),
+                modLoc("block/" + key.getPath()));
     }
 
-    public void trapdoorItem(RegistryObject<Block> block) {
-        ResourceLocation key = ForgeRegistries.BLOCKS.getKey(block.get());
-        if (key != null) {
-            this.withExistingParent(key.getPath(),
-                    modLoc("block/" + key.getPath() + "_bottom"));
-        }
+    public void trapdoorItem(DeferredBlock<Block> block) {
+        ResourceLocation key = block.getId();
+        this.withExistingParent(key.getPath(),
+                modLoc("block/" + key.getPath() + "_bottom"));
     }
 
-    public void fenceItem(RegistryObject<Block> block, RegistryObject<Block> baseBlock) {
-        ResourceLocation key = ForgeRegistries.BLOCKS.getKey(block.get());
-        if (key != null) {
-            this.withExistingParent(key.getPath(), mcLoc("block/fence_inventory"))
-                    .texture("texture",  ResourceLocation.tryBuild(TerraCompositio.MOD_ID, "block/" + Objects.requireNonNull(ForgeRegistries.BLOCKS.getKey(baseBlock.get())).getPath()));
-        }
+    public void fenceItem(DeferredBlock<Block> block, DeferredBlock<Block> baseBlock) {
+        ResourceLocation key = block.getId();
+        this.withExistingParent(key.getPath(), mcLoc("block/fence_inventory"))
+                .texture("texture", TerraCompositio.modLoc( "block/" + baseBlock.getId().getPath()));
     }
 
-    public void buttonItem(RegistryObject<Block> block, RegistryObject<Block> baseBlock) {
-        ResourceLocation key = ForgeRegistries.BLOCKS.getKey(block.get());
-        if (key != null) {
-            ResourceLocation key1 = ForgeRegistries.BLOCKS.getKey(baseBlock.get());
-            if (key1 != null) {
-                this.withExistingParent(key.getPath(), mcLoc("block/button_inventory"))
-                        .texture("texture",  ResourceLocation.tryBuild(TerraCompositio.MOD_ID, "block/" + key1.getPath()));
-            }
-        }
+    public void buttonItem(DeferredBlock<Block> block, DeferredBlock<Block> baseBlock) {
+        ResourceLocation key = block.getId();
+        ResourceLocation key1 = baseBlock.getId();
+        this.withExistingParent(key.getPath(), mcLoc("block/button_inventory"))
+                .texture("texture", TerraCompositio.modLoc("block/" + key1.getPath()));
     }
 
-    public void wallItem(RegistryObject<Block> block, RegistryObject<Block> baseBlock) {
-        ResourceLocation key = ForgeRegistries.BLOCKS.getKey(block.get());
-        if (key != null) {
-            ResourceLocation key1 = ForgeRegistries.BLOCKS.getKey(baseBlock.get());
-            if (key1 != null) {
-                this.withExistingParent(key.getPath(), mcLoc("block/wall_inventory"))
-                        .texture("wall",  ResourceLocation.tryBuild(TerraCompositio.MOD_ID, "block/" + key1.getPath()));
-            }
-        }
+    public void wallItem(DeferredBlock<Block> block, DeferredBlock<Block> baseBlock) {
+        ResourceLocation key = block.getId();
+        ResourceLocation key1 = baseBlock.getId();
+        this.withExistingParent(key.getPath(), mcLoc("block/wall_inventory"))
+                .texture("wall", TerraCompositio.modLoc("block/" + key1.getPath()));
     }
 
-    private void simpleBlockItem(RegistryObject<Block> item) {
+    private void simpleBlockItem(DeferredBlock<Block> item) {
         withExistingParent(Objects.requireNonNull(item.getId()).getPath(),
-                ResourceLocation.tryParse("item/generated")).texture("layer0",
-                ResourceLocation.tryBuild(TerraCompositio.MOD_ID, "item/" + item.getId().getPath()));
+                Objects.requireNonNull(ResourceLocation.tryParse("item/generated"))).texture("layer0",
+                TerraCompositio.modLoc("item/" + item.getId().getPath()));
     }
 
 }

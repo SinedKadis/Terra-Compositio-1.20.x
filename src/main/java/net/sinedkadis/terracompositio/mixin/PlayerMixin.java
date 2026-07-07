@@ -28,6 +28,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Optional;
 
 @SuppressWarnings("AddedMixinMembersNamePattern")
 @Mixin(Player.class)
@@ -74,7 +75,7 @@ public abstract class PlayerMixin extends LivingEntity implements ECFNetworkMemb
 
     @Override
     public IECFHandler getMainHandler() {
-        return this.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER);
+        return Optional.ofNullable(this.getCapability(TCCapabilities.ECF_HANDLER_ENTITY)).orElse(SentinelHelper.EMPTY_ECF_HANDLER);
     }
 
     @Unique

@@ -4,8 +4,8 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
-import net.minecraftforge.common.data.DatapackBuiltinEntriesProvider;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.worldgen.biome.TCBiomes;
 import net.sinedkadis.terracompositio.worldgen.TCBiomeModifiers;
@@ -20,7 +20,7 @@ public class TCWorldGenProvider extends DatapackBuiltinEntriesProvider {
             //.add(Registries.DIMENSION_TYPE, ModDimensions::bootstrapType)
             .add(Registries.CONFIGURED_FEATURE, TCConfiguredFeatures::bootstrap)
             .add(Registries.PLACED_FEATURE, TCPlacedFeatures::bootstrap)
-            .add(ForgeRegistries.Keys.BIOME_MODIFIERS, TCBiomeModifiers::bootstrap)
+            .add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, TCBiomeModifiers::bootstrap)
             .add(Registries.BIOME, TCBiomes::boostrap);
 
             //.add(Registries.BIOME, ModBiomes::boostrap)

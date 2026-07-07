@@ -2,8 +2,8 @@ package net.sinedkadis.terracompositio.fluid;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.sinedkadis.terracompositio.api.helpers.ECFHelper;
 import net.sinedkadis.terracompositio.api.networks.NetworkAction;
 import net.sinedkadis.terracompositio.api.networks.fluid.FluidNetwork;
@@ -99,7 +99,7 @@ public class FluidNetworkHandler implements FluidNetwork {
 
     @Override
     public void fireFluidNetworkEvent(FluidNetworkMember source, NetworkAction action) {
-        MinecraftForge.EVENT_BUS.post(new FluidNetworkEvent(source,action));
+        NeoForge.EVENT_BUS.post(new FluidNetworkEvent(source,action));
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -83,8 +84,7 @@ public class KnowledgeOverlay {
     //  Вход из EventBus
     // ─────────────────────────────────────────────────────────────
 
-    public static void render(GuiGraphics graphics,
-                              float partialTicks, int width, int height) {
+    public static void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.options.hideGui || mc.gameMode == null) return;
 
@@ -158,7 +158,7 @@ public class KnowledgeOverlay {
         resolveHeaders(tooltip);
         if (tooltip.isEmpty()) return;
 
-        renderOverlay(mc, graphics, partialTicks, width, height, tooltip);
+        renderOverlay(mc, graphics, deltaTracker.getGameTimeDeltaTicks(), graphics.guiWidth(), graphics.guiHeight(), tooltip);
 
     }
 

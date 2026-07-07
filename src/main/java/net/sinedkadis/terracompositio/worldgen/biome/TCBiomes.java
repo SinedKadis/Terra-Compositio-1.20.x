@@ -2,7 +2,7 @@ package net.sinedkadis.terracompositio.worldgen.biome;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BiomeDefaultFeatures;
-import net.minecraft.data.worldgen.BootstapContext;
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.data.worldgen.biome.OverworldBiomes;
 import net.minecraft.data.worldgen.placement.VegetationPlacements;
 import net.minecraft.resources.ResourceKey;
@@ -20,7 +20,7 @@ public class TCBiomes extends OverworldBiomes{
     public static final ResourceKey<Biome> FLOW_CEDAR_BIOME = ResourceKey.create(Registries.BIOME,
             TerraCompositio.modLoc("flow_cedar_biome"));
 
-    public static void boostrap(BootstapContext<Biome> context) {
+    public static void boostrap(BootstrapContext<Biome> context) {
         context.register(FLOW_CEDAR_BIOME, flowCedarBiome(context));
     }
 
@@ -33,7 +33,7 @@ public class TCBiomes extends OverworldBiomes{
         BiomeDefaultFeatures.addSurfaceFreezing(builder);
     }
 
-    public static Biome flowCedarBiome(BootstapContext<Biome> context) {
+    public static Biome flowCedarBiome(BootstrapContext<Biome> context) {
         MobSpawnSettings.Builder spawnBuilder = new MobSpawnSettings.Builder();
         spawnBuilder.addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(EntityType.WOLF, 6, 4, 6));
         spawnBuilder.addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(EntityType.FOX, 4, 2, 3));

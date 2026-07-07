@@ -1,13 +1,9 @@
 package net.sinedkadis.terracompositio.recipe;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
-import net.minecraft.world.item.crafting.CustomRecipe;
-import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import net.sinedkadis.terracompositio.api.IECFStorageExtensionItem;
 import net.sinedkadis.terracompositio.api.IHaveExtensibleECFStorageItem;
@@ -17,22 +13,24 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class ECFStorageUpgradeRecipe extends CustomRecipe {
-    public static final NoOpRecipeSerializer<ECFStorageUpgradeRecipe> SERIALIZER = new NoOpRecipeSerializer<>(ECFStorageUpgradeRecipe::new);
 
+    public static SimpleCraftingRecipeSerializer<ECFStorageUpgradeRecipe> SERIALIZER = new SimpleCraftingRecipeSerializer<>(ECFStorageUpgradeRecipe::new);
 
-    public ECFStorageUpgradeRecipe(ResourceLocation id) {
-        super(id, CraftingBookCategory.MISC);
+    public ECFStorageUpgradeRecipe(CraftingBookCategory category) {
+        super(category);
     }
 
+
+
     @Override
-    public boolean matches(CraftingContainer inv, Level world) {
+    public boolean matches(CraftingInput input, Level level) {
         boolean foundWill = false;
         boolean foundItem = false;
 
         IECFStorageExtensionItem currentExtension = null;
 
-        for (int i = 0; i < inv.getContainerSize(); i++) {
-            ItemStack stack = inv.getItem(i);
+        for (int i = 0; i < input.size(); i++) {
+            ItemStack stack = input.getItem(i);
             if (!stack.isEmpty()) {
                 if (stack.getItem() instanceof IHaveExtensibleECFStorageItem cont) {
                     currentExtension = cont.getCurrentExtension(stack);
@@ -45,8 +43,8 @@ public class ECFStorageUpgradeRecipe extends CustomRecipe {
         }
         if (currentExtension == null) return false;
 
-        for (int i = 0; i < inv.getContainerSize(); i++) {
-            ItemStack stack = inv.getItem(i);
+        for (int i = 0; i < input.size(); i++) {
+            ItemStack stack = input.getItem(i);
             if (stack.getItem() instanceof IECFStorageExtensionItem extension
                     && extension.maxStorage() > 0) {
                 if (currentExtension.self().equals(extension.self())) {
@@ -62,14 +60,13 @@ public class ECFStorageUpgradeRecipe extends CustomRecipe {
         return foundItem;
     }
 
-
     @Override
-    public ItemStack assemble(CraftingContainer inv, RegistryAccess registries) {
+    public ItemStack assemble(CraftingInput input, HolderLookup.Provider registries) {
         ItemStack item = ItemStack.EMPTY;
         IECFStorageExtensionItem extension = () -> 0;
         int emptySlot = -1;
-        for (int i = 0; i < inv.getContainerSize(); i++) {
-            ItemStack stack = inv.getItem(i);
+        for (int i = 0; i < input.size(); i++) {
+            ItemStack stack = input.getItem(i);
             if (!stack.isEmpty()) {
                 if (stack.getItem() instanceof IHaveExtensibleECFStorageItem && item.isEmpty()) {
                     item = stack;

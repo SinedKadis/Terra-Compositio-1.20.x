@@ -1,45 +1,49 @@
 package net.sinedkadis.terracompositio.recipe;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import lombok.Getter;
 import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.world.item.crafting.*;
+import net.sinedkadis.terracompositio.components.ingredients.ExcludeItemIngredient;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Arrays;
-import java.util.Objects;
 
 //Thanks to Botania mod for that cool class
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class TagTransferShapedRecipe extends ShapedRecipe {
     public static final RecipeSerializer<TagTransferShapedRecipe> SERIALIZER = new Serializer();
+    @Getter
+    private final ShapedRecipe shapedRecipe;
 
-    public TagTransferShapedRecipe(ShapedRecipe compose) {
-        super(compose.getId(), compose.getGroup(), compose.category(), compose.getWidth(), compose.getHeight(),
-                compose.getIngredients(),
+    public TagTransferShapedRecipe(ShapedRecipe shapedRecipe) {
+        super(shapedRecipe.getGroup(), shapedRecipe.category(), shapedRecipe.pattern,
                 // XXX: Hacky, but compose should always be a vanilla shaped recipe which doesn't do anything with the
                 // RegistryAccess
-                compose.getResultItem(RegistryAccess.EMPTY));
+                shapedRecipe.getResultItem(RegistryAccess.EMPTY), shapedRecipe.showNotification());
+        this.shapedRecipe = shapedRecipe;
+    }
+
+    public TagTransferShapedRecipe(Recipe<?> compose) {
+        this(((ShapedRecipe) compose));
     }
 
     @Override
-    public ItemStack assemble(CraftingContainer inv, RegistryAccess registries) {
-        ItemStack out = super.assemble(inv, registries);
-        for (int i = 0; i < inv.getContainerSize(); i++) {
-            ItemStack stack = inv.getItem(i);
+    public ItemStack assemble(CraftingInput input, HolderLookup.Provider registries) {
+        ItemStack out = super.assemble(input, registries);
+        for (int i = 0; i < input.size(); i++) {
+            ItemStack stack = input.getItem(i);
             if (stack.is(getResultItem(RegistryAccess.EMPTY).getItem())) return ItemStack.EMPTY;
-            if (stack.hasTag() && stack.getItem() instanceof ArmorItem) {
-                out.setTag(stack.getTag());
+            if (stack.getItem() instanceof ArmorItem) {
+                out.applyComponents(stack.getComponents());
                 break;
             }
         }
@@ -53,7 +57,7 @@ public class TagTransferShapedRecipe extends ShapedRecipe {
 
         NonNullList<Ingredient> out = NonNullList.withSize(original.size(), Ingredient.EMPTY);
         for (int i = 0; i < original.size(); i++) {
-            out.set(i, ExcludeItemIngredient.of(original.get(i), result));
+            out.set(i, new Ingredient(new ExcludeItemIngredient(original.get(i), result.getItemHolder())));
         }
         return out;
     }
@@ -63,35 +67,26 @@ public class TagTransferShapedRecipe extends ShapedRecipe {
         return SERIALIZER;
     }
 
+
+
     private static class Serializer implements RecipeSerializer<TagTransferShapedRecipe> {
+
+
         @Override
-        public TagTransferShapedRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
-            return new TagTransferShapedRecipe(SHAPED_RECIPE.fromJson(recipeId, json));
+        public MapCodec<TagTransferShapedRecipe> codec() {
+            return RecordCodecBuilder.mapCodec(instance ->
+                    instance.group(
+                            ShapedRecipe.CODEC.fieldOf("shaped_recipe")
+                                    .forGetter(TagTransferShapedRecipe::getShapedRecipe)
+                    ).apply(instance,TagTransferShapedRecipe::new));
         }
 
         @Override
-        public TagTransferShapedRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
-            return new TagTransferShapedRecipe(Objects.requireNonNull(SHAPED_RECIPE.fromNetwork(recipeId, buffer)));
-        }
-
-        @Override
-        public void toNetwork(FriendlyByteBuf buffer, TagTransferShapedRecipe recipe) {
-            SHAPED_RECIPE.toNetwork(buffer, recipe);
+        public StreamCodec<RegistryFriendlyByteBuf, TagTransferShapedRecipe> streamCodec() {
+            return StreamCodec.composite(ShapedRecipe.STREAM_CODEC,
+                    TagTransferShapedRecipe::getShapedRecipe,
+                    TagTransferShapedRecipe::new);
         }
     }
 
-    public static class ExcludeItemIngredient extends Ingredient {
-
-        private ExcludeItemIngredient(Ingredient wrapped, Item excluded) {
-            super(Arrays.stream(wrapped.getItems())
-                    .filter(s -> !s.is(excluded))
-                    .map(Ingredient.ItemValue::new)
-            );
-        }
-
-        public static Ingredient of(Ingredient original, ItemStack exclude) {
-            if (!original.test(exclude)) return original;
-            return new ExcludeItemIngredient(original, exclude.getItem());
-        }
-    }
 }

@@ -13,9 +13,7 @@
     "EntityMixin",
     "ItemEntityMixin",
     "PlayerMixin",
-    "RedStoneWireBlockMixin",
-    "accessors.BundleItemAccessor",
-    "accessors.LivingEntityAccessor"
+    "RedStoneWireBlockMixin"
   ],
   "client": [
     "HumanoidArmorLayerMixin",

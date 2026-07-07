@@ -6,8 +6,6 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
 import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.util.IEntityInstance;
@@ -33,20 +31,13 @@ public class DummyBehaviour implements IBEBehaviour, IBEItemWordlyContainerBehav
 
     }
 
-    @Override
-    public @Nullable LazyOptional<?> getCapability(Capability<?> cap, @Nullable Direction side) {
-        return null;
-    }
 
     @Override
     public void onRemoved() {
 
     }
 
-    @Override
-    public void onInvalidateCaps() {
 
-    }
 
     @Override
     public void onSave(CompoundTag compoundTag, HolderLookup.Provider registries) {

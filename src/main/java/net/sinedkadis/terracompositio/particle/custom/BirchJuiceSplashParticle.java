@@ -7,8 +7,10 @@ import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.particle.WaterDropParticle;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
+
 
 @OnlyIn(Dist.CLIENT)
 public class BirchJuiceSplashParticle extends WaterDropParticle {
@@ -32,7 +34,7 @@ public class BirchJuiceSplashParticle extends WaterDropParticle {
             this.sprite = pSprites;
         }
 
-        public Particle createParticle(SimpleParticleType pType, ClientLevel pLevel, double pX, double pY, double pZ, double pXSpeed, double pYSpeed, double pZSpeed) {
+        public Particle createParticle(@NotNull SimpleParticleType pType, @NotNull ClientLevel pLevel, double pX, double pY, double pZ, double pXSpeed, double pYSpeed, double pZSpeed) {
             BirchJuiceSplashParticle $$8 = new BirchJuiceSplashParticle(pLevel, pX, pY, pZ, pXSpeed, pYSpeed, pZSpeed);
             $$8.pickSprite(this.sprite);
             return $$8;

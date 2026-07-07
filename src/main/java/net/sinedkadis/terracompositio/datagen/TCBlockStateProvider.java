@@ -5,13 +5,12 @@ import net.minecraft.core.Direction;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.*;
-import net.minecraftforge.client.model.generators.BlockStateProvider;
-import net.minecraftforge.client.model.generators.ModelFile;
-import net.minecraftforge.client.model.generators.VariantBlockStateBuilder;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.fml.ModList;
+import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
+import net.neoforged.neoforge.client.model.generators.ModelFile;
+import net.neoforged.neoforge.client.model.generators.VariantBlockStateBuilder;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.registries.DeferredBlock;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.block.custom.FlowCedarLikeBlock;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
@@ -64,12 +63,10 @@ public class TCBlockStateProvider extends BlockStateProvider {
         }
     }
 
-    private void saplingBlock(RegistryObject<Block> blockRegistryObject) {
-        ResourceLocation key = ForgeRegistries.BLOCKS.getKey(blockRegistryObject.get());
-        if (key != null) {
-            simpleBlock(blockRegistryObject.get(),
-                    models().cross(key.getPath(), blockTexture(blockRegistryObject.get())).renderType("cutout"));
-        }
+    private void saplingBlock(DeferredBlock<Block> blockRegistryObject) {
+        ResourceLocation key = blockRegistryObject.getId();
+        simpleBlock(blockRegistryObject.get(),
+                models().cross(key.getPath(), blockTexture(blockRegistryObject.get())).renderType("cutout"));
     }
 
     public void hangingSignBlock(Block signBlock, Block wallSignBlock, ResourceLocation texture) {
@@ -87,24 +84,22 @@ public class TCBlockStateProvider extends BlockStateProvider {
     }
 
     private ResourceLocation key(Block block) {
-        return ForgeRegistries.BLOCKS.getKey(block);
+        return TCBlocks.BLOCKS.getRegistry().get().getKey(block);
     }
 
-    private void blockWithItem(RegistryObject<Block> blockRegistryObject) {
+    private void blockWithItem(DeferredBlock<Block> blockRegistryObject) {
         simpleBlockWithItem(blockRegistryObject.get(), cubeAll(blockRegistryObject.get()));
     }
 
-    private void flowWoodBlockWithItem(RegistryObject<Block> block, RegistryObject<Block> texture){
+    private void flowWoodBlockWithItem(DeferredBlock<Block> block, DeferredBlock<Block> texture){
         flowLogBlock(block.get(), texture.get(), texture.get(), true, false);
-        simpleBlockItem(block.get(), new ModelFile.UncheckedModelFile(TerraCompositio.MOD_ID+":block/"+ Objects.requireNonNull(ForgeRegistries.BLOCKS.getKey(block.get())).getPath()));
+        simpleBlockItem(block.get(), new ModelFile.UncheckedModelFile(TerraCompositio.MOD_ID+":block/"+ Objects.requireNonNull(block.getId()).getPath()));
     }
 
-    private void flowLogBlockWithItem(RegistryObject<Block> block){
+    private void flowLogBlockWithItem(DeferredBlock<Block> block){
         flowLogBlock(block.get(), block.get(), block.get(), true, true);
-        ResourceLocation key = ForgeRegistries.BLOCKS.getKey(block.get());
-        if (key != null) {
-            simpleBlockItem(block.get(), new ModelFile.UncheckedModelFile(TerraCompositio.MOD_ID+":block/"+ key.getPath()));
-        }
+        ResourceLocation key = block.getId();
+        simpleBlockItem(block.get(), new ModelFile.UncheckedModelFile(TerraCompositio.MOD_ID + ":block/" + key.getPath()));
     }
 
     public void flowLogBlock(Block block, Block sideTexture, Block topTexture, boolean infused, boolean addTopSuffix) {

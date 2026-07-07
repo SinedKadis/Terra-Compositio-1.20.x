@@ -2,7 +2,8 @@ package net.sinedkadis.terracompositio.mixin;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.Container;
-import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -34,15 +35,15 @@ public abstract class AbstractFurnaceBlockEntityMixin implements Container {
             AbstractFurnaceBlockEntity pBlockEntity,
             CallbackInfo ci
     ) {
-        Optional<TechnetiumFiringRecipe> firingRecipe = pLevel.getRecipeManager()
+        Optional<RecipeHolder<TechnetiumFiringRecipe>> firingRecipe = pLevel.getRecipeManager()
                 .getRecipeFor(
                         TechnetiumFiringRecipe.Type.INSTANCE,
-                        new SimpleContainer(pBlockEntity.getItem(0)),
+                        new SingleRecipeInput(pBlockEntity.getItem(0)),
                         pLevel
                 );
 
         if (firingRecipe.isPresent()) {
-            int ecf = firingRecipe.get().getEcf();
+            int ecf = firingRecipe.get().value().getEcf();
             placeECFCloud(pLevel, pPos, ecf);
         }
     }
