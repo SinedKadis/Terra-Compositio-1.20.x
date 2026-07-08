@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "cookingtime": 40,
+  "experience": 0.0,
+  "group": "technetium",
+  "ingredient": {
+    "item": "terracompositio:ecf_charge"
+  },
+  "result": {
+    "count": 1,
+    "id": "minecraft:snowball"
+  }
+}

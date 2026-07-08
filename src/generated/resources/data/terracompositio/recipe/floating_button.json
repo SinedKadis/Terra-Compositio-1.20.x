@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "item": "terracompositio:infused_iron_ingot"
+    },
+    {
+      "tag": "minecraft:stone_buttons"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "terracompositio:floating_button"
+  }
+}

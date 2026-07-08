@@ -39,7 +39,7 @@ public class ForgeEventBusEvents {
     }
 
     @SubscribeEvent
-    public static void onTickLevelTick(LevelTickEvent event) {
+    public static void onTickLevelTick(LevelTickEvent.Post event) {
         Level level = event.getLevel();
         if (level.getGameTime() % TCServerConfigs.LAZY_UPDATE_RATE.get() == 0) {
             TerraCompositioAPI.instance().getECFNetworkInstance().updateAll(level);

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "L": {
+      "tag": "terracompositio:flow_cedar_logs_items"
+    }
+  },
+  "pattern": [
+    "LLL"
+  ],
+  "result": {
+    "count": 1,
+    "id": "terracompositio:flow_cedar_altar"
+  }
+}

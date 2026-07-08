@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "R": {
+      "item": "minecraft:gold_ingot"
+    }
+  },
+  "pattern": [
+    "R",
+    "R"
+  ],
+  "result": {
+    "count": 2,
+    "id": "terracompositio:gold_rod"
+  }
+}

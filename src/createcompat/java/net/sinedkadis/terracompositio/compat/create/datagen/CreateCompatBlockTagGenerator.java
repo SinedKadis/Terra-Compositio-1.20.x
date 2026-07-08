@@ -6,6 +6,7 @@ import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.compat.create.TCCreateCompat;
 import net.sinedkadis.terracompositio.compat.create.registries.CreateBlocks;
+import net.sinedkadis.terracompositio.registries.TCBlocks;
 import net.sinedkadis.terracompositio.registries.TCTags;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,7 +23,7 @@ public class CreateCompatBlockTagGenerator {
                 .add(blocks.CEDAR_GEARBOX.get());
 
         instance.tag(TCTags.Blocks.CREATE_WRENCH_PICKUP)
-                .add(blocks.CEDAR_GEARBOX.get());
+                .add(blocks.CEDAR_GEARBOX.get(), TCBlocks.ECF_BOARD.get());
 
     }
 }

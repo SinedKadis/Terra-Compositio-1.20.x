@@ -42,7 +42,7 @@ public class TerraCompositio
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::addCreative);
 
-        NeoForge.EVENT_BUS.register(this);
+        //NeoForge.EVENT_BUS.register(this);
         TCFluids.FLUIDS.register(modEventBus);
         TCFluids.FLUID_TYPES.register(modEventBus);
 

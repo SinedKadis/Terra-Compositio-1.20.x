@@ -2,11 +2,10 @@ package net.sinedkadis.terracompositio.block.custom;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BottleItem;
 import net.minecraft.world.item.ItemStack;
@@ -33,6 +32,8 @@ import net.sinedkadis.terracompositio.registries.TCFluids;
 import net.sinedkadis.terracompositio.registries.TCItems;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 public abstract class AbstractDesorberBlock extends TCBaseEntityBlock implements SimpleWaterloggedBlock {
     protected static final BooleanProperty INFUSED;
     protected static final BooleanProperty WATERLOGGED;
@@ -52,29 +53,22 @@ public abstract class AbstractDesorberBlock extends TCBaseEntityBlock implements
     }
 
     @Override
-    public @NotNull InteractionResult use(
-            @NotNull BlockState pState,
-            @NotNull Level pLevel,
-            @NotNull BlockPos pPos,
-            @NotNull Player pPlayer,
-            @NotNull InteractionHand pHand,
-            @NotNull BlockHitResult pHit
-    ) {
+    @ParametersAreNonnullByDefault
+    protected @NotNull ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        ItemStack heldItem = player.getItemInHand(hand);
 
-        ItemStack heldItem = pPlayer.getItemInHand(pHand);
-
-        BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
+        BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity == null) {
-            return InteractionResult.PASS;
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
-        IFluidHandler fluidHandlerBlock = pLevel.getCapability(Capabilities.FluidHandler.BLOCK, pPos, Direction.DOWN);
+        IFluidHandler fluidHandlerBlock = level.getCapability(Capabilities.FluidHandler.BLOCK, pos, Direction.DOWN);
         if (!(fluidHandlerBlock instanceof FluidTank tank)) {
-            return InteractionResult.PASS;
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
-        if (pPlayer.isShiftKeyDown()) {
-            return InteractionResult.PASS;
+        if (player.isShiftKeyDown()) {
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
         IFluidHandlerItem fluidHandlerItem = heldItem.getCapability(Capabilities.FluidHandler.ITEM);
@@ -85,11 +79,11 @@ public abstract class AbstractDesorberBlock extends TCBaseEntityBlock implements
                 if (filled == 250){
                     tank.fill(fluidStack, IFluidHandler.FluidAction.EXECUTE);
                     heldItem.shrink(1);
-                    pPlayer.getInventory().add(new ItemStack(Items.GLASS_BOTTLE));
-                    if (pLevel instanceof ServerLevel level){
-                        level.playSound(null,pPos,SoundEvents.BOTTLE_EMPTY,SoundSource.BLOCKS);
-                    }
-                    return InteractionResult.SUCCESS;
+                    player.getInventory().add(new ItemStack(Items.GLASS_BOTTLE));
+
+                    level.playSound(null,pos,SoundEvents.BOTTLE_EMPTY,SoundSource.BLOCKS);
+
+                    return ItemInteractionResult.SUCCESS;
                 }
             }
             if (heldItem.getItem() instanceof BottleItem) {
@@ -97,54 +91,56 @@ public abstract class AbstractDesorberBlock extends TCBaseEntityBlock implements
                 if (FluidStack.matches(drained, fluidStack)) {
                     tank.drain(fluidStack, IFluidHandler.FluidAction.EXECUTE);
                     heldItem.shrink(1);
-                    pPlayer.getInventory().add(new ItemStack(TCItems.FLOW_BOTTLE.get()));
-                    if (pLevel instanceof ServerLevel level){
-                        level.playSound(null,pPos,SoundEvents.BUCKET_FILL,SoundSource.BLOCKS);
-                    }
-                    return InteractionResult.SUCCESS;
+                    player.getInventory().add(new ItemStack(TCItems.FLOW_BOTTLE.get()));
+
+                    level.playSound(null,pos,SoundEvents.BUCKET_FILL,SoundSource.BLOCKS);
+
+                    return ItemInteractionResult.SUCCESS;
                 }
             }
 
-            return InteractionResult.PASS;
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
-        if (!pLevel.isClientSide()) {
+        if (!level.isClientSide()) {
 
             FluidStack transferred = FluidUtil.tryFluidTransfer(tank, fluidHandlerItem, Integer.MAX_VALUE, true);
 
             if (!transferred.isEmpty()) {
 
-                pPlayer.setItemInHand(pHand, fluidHandlerItem.getContainer());
-                pLevel.playSound(
+                player.setItemInHand(hand, fluidHandlerItem.getContainer());
+                level.playSound(
                         null,
-                        pPos,
+                        pos,
                         SoundEvents.BUCKET_EMPTY,
                         SoundSource.BLOCKS,
                         1.0F,
                         1.0F
                 );
-                return InteractionResult.SUCCESS;
+                return ItemInteractionResult.SUCCESS;
             }
 
 
             transferred = FluidUtil.tryFluidTransfer(fluidHandlerItem, tank, Integer.MAX_VALUE, true);
 
             if (!transferred.isEmpty()) {
-                pPlayer.setItemInHand(pHand, fluidHandlerItem.getContainer());
-                pLevel.playSound(
+                player.setItemInHand(hand, fluidHandlerItem.getContainer());
+                level.playSound(
                         null,
-                        pPos,
+                        pos,
                         SoundEvents.BUCKET_FILL,
                         SoundSource.BLOCKS,
                         1.0F,
                         1.0F
                 );
-                return InteractionResult.SUCCESS;
+                return ItemInteractionResult.SUCCESS;
             }
         }
 
-        return InteractionResult.sidedSuccess(pLevel.isClientSide());
+        return ItemInteractionResult.sidedSuccess(level.isClientSide());
     }
+
+
 
     static {
         INFUSED = TCBlockStateProperties.INFUSED;

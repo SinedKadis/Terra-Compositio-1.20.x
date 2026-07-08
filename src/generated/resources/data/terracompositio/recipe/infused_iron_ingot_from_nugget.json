@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "terracompositio:infused_iron_nugget"
+    },
+    {
+      "item": "terracompositio:infused_iron_nugget"
+    },
+    {
+      "item": "terracompositio:infused_iron_nugget"
+    },
+    {
+      "item": "terracompositio:infused_iron_nugget"
+    },
+    {
+      "item": "terracompositio:infused_iron_nugget"
+    },
+    {
+      "item": "terracompositio:infused_iron_nugget"
+    },
+    {
+      "item": "terracompositio:infused_iron_nugget"
+    },
+    {
+      "item": "terracompositio:infused_iron_nugget"
+    },
+    {
+      "item": "terracompositio:infused_iron_nugget"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "terracompositio:infused_iron_ingot"
+  }
+}

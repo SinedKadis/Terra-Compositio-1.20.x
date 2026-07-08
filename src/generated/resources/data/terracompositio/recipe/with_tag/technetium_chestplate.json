@@ -1,0 +1,24 @@
+{
+  "type": "terracompositio:tag_transfer_shaped",
+  "shaped_recipe": {
+    "type": "minecraft:crafting_shaped",
+    "category": "equipment",
+    "key": {
+      "C": {
+        "tag": "minecraft:chest_armor"
+      },
+      "T": {
+        "item": "terracompositio:technetium_ingot"
+      }
+    },
+    "pattern": [
+      "TCT",
+      "TTT",
+      "TTT"
+    ],
+    "result": {
+      "count": 1,
+      "id": "terracompositio:technetium_chestplate"
+    }
+  }
+}

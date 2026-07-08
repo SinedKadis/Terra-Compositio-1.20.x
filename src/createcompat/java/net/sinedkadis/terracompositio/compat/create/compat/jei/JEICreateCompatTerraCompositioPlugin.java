@@ -103,7 +103,7 @@ public class JEICreateCompatTerraCompositioPlugin implements IModPlugin {
         private final List<Supplier<? extends ItemStack>> catalysts = new ArrayList<>();
 
         public CategoryBuilder() {
-            this.recipeClass = (Class<? extends RecipeHolder<RECIPE>>) RecipeHolder.class;
+            this.recipeClass = (Class<? extends RecipeHolder<RECIPE>>)(Object) RecipeHolder.class;
         }
 
         public CategoryBuilder<RECIPE, HOLDER> addRecipeListConsumer(Consumer<List<HOLDER>> consumer) {

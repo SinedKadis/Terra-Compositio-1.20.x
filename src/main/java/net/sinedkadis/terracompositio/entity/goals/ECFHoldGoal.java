@@ -32,12 +32,11 @@ public class ECFHoldGoal extends Goal {
     }
 
     private boolean isCFEQueueEmpty() {
-        Optional<IECFHandler> held = this.mob.getCapability(TCCapabilities.ECF).resolve();
-        Optional<IECFHandler> inner = this.mob.getInnerECFHandler().resolve();
-        if (held.isPresent() && inner.isPresent()){
+        Optional<IECFHandler> held = Optional.ofNullable(this.mob.getCapability(TCCapabilities.ECF_HANDLER_ENTITY));
+        IECFHandler inner = this.mob.getInnerECFHandler();
+        if (held.isPresent()){
             IECFHandler helded = held.get();
-            IECFHandler innered = inner.get();
-            return helded.getECF() + helded.getQueued() + innered.getQueued() <= 0;
+            return helded.getECF() + helded.getQueued() + inner.getQueued() <= 0;
         }
         return true;
     }

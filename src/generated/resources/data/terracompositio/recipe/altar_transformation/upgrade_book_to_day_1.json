@@ -1,0 +1,15 @@
+{
+  "type": "terracompositio:altar_transformation",
+  "ingredients": [
+    {
+      "item": "minecraft:book"
+    }
+  ],
+  "result": {
+    "components": {
+      "terracompositio:bookmarks": 1
+    },
+    "count": 1,
+    "id": "terracompositio:creation_flow_journal"
+  }
+}

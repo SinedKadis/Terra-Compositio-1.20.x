@@ -1,0 +1,18 @@
+{
+  "type": "terracompositio:matter_infusion",
+  "catalyst": {
+    "count": 1,
+    "id": "minecraft:redstone"
+  },
+  "catalyst_decay": 30,
+  "ecf": 640,
+  "input": {
+    "count": 4,
+    "id": "terracompositio:low_enriched_technetium"
+  },
+  "result": {
+    "count": 1,
+    "id": "terracompositio:medium_enriched_technetium"
+  },
+  "ticks": 1000
+}

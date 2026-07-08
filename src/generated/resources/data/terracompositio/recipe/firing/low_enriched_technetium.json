@@ -1,0 +1,8 @@
+{
+  "type": "terracompositio:technetium_firing",
+  "ecf": 512,
+  "furnace_output": {
+    "count": 1,
+    "id": "terracompositio:low_enriched_technetium"
+  }
+}

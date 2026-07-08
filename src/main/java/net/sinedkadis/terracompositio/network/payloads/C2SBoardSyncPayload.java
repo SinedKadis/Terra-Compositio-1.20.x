@@ -18,6 +18,8 @@ import net.sinedkadis.terracompositio.registries.TCBlocks;
 import net.sinedkadis.terracompositio.util.helpers.ParticleHelperInternal;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
+
 public record C2SBoardSyncPayload(BlockPos pos, boolean place, int ecfToTake,
                                   boolean waterlogged) implements CustomPacketPayload {
     public static final Type<C2SBoardSyncPayload> TYPE =
@@ -46,7 +48,8 @@ public record C2SBoardSyncPayload(BlockPos pos, boolean place, int ecfToTake,
                             .setValue(BlockStateProperties.WATERLOGGED,
                                     payload.waterlogged()),
                     3);
-            player.getItemBySlot(EquipmentSlot.FEET).getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER)
+            Optional.ofNullable(player.getItemBySlot(EquipmentSlot.FEET).getCapability(TCCapabilities.ECF_HANDLER_ITEM))
+                    .orElse(SentinelHelper.EMPTY_ECF_HANDLER)
                     .takeECF(payload.ecfToTake(), false);
             ParticleHelperInternal.spawnParticlesIn(level, pPos);
         }

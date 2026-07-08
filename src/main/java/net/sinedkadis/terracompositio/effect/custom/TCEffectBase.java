@@ -10,7 +10,7 @@ public class TCEffectBase extends MobEffect {
     }
 
     @Override
-    public boolean isDurationEffectTick(int pDuration, int pAmplifier) {
+    public boolean isInstantenous() {
         return true;
     }
 }

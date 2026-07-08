@@ -1,0 +1,18 @@
+{
+  "type": "terracompositio:matter_infusion",
+  "catalyst": {
+    "count": 1,
+    "id": "minecraft:diamond"
+  },
+  "catalyst_decay": 30,
+  "ecf": 3200,
+  "input": {
+    "count": 4,
+    "id": "terracompositio:medium_enriched_technetium"
+  },
+  "result": {
+    "count": 1,
+    "id": "terracompositio:high_enriched_technetium"
+  },
+  "ticks": 2000
+}

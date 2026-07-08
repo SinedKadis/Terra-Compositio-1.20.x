@@ -219,8 +219,11 @@ public class ECFCloudEntity extends Entity implements ECFNetworkMember, IHaveKno
     }
 
     @SubscribeEvent
-    public void onEntitySize(EntityEvent.Size event) {
-        event.setNewSize(EntityDimensions.scalable((float) (getRadius()*2), (float) (getRadius()*2)));
+    public static void onEntitySize(EntityEvent.Size event) {
+        Entity entity = event.getEntity();
+        if (entity instanceof  ECFCloudEntity ecfCloudEntity)
+            event.setNewSize(EntityDimensions.scalable((float)
+                    (ecfCloudEntity.getRadius()*2), (float) (ecfCloudEntity.getRadius()*2)));
     }
 
 

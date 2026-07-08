@@ -1,0 +1,27 @@
+{
+  "type": "terracompositio:tag_transfer_shaped",
+  "shaped_recipe": {
+    "type": "minecraft:crafting_shaped",
+    "category": "equipment",
+    "key": {
+      "C": {
+        "tag": "minecraft:foot_armor"
+      },
+      "F": {
+        "item": "minecraft:feather"
+      },
+      "T": {
+        "item": "terracompositio:technetium_ingot"
+      }
+    },
+    "pattern": [
+      "T T",
+      "TCT",
+      "F F"
+    ],
+    "result": {
+      "count": 1,
+      "id": "terracompositio:technetium_boots"
+    }
+  }
+}

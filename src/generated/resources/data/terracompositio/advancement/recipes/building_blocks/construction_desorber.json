@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_flow_cedar_log": {
+      "conditions": {
+        "items": [
+          {
+            "items": "terracompositio:flow_cedar_log"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "terracompositio:construction_desorber"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_flow_cedar_log"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "terracompositio:construction_desorber"
+    ]
+  }
+}

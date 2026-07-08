@@ -128,7 +128,9 @@ public class TCItemModelProvider extends ItemModelProvider {
                     default -> "";
                 };
 
-                String armorItemPath = "item/" + armorItem;
+                ResourceLocation id = itemRegistryObject.getId();
+                String path = id.getPath();
+                String armorItemPath = "item/" + path;
                 String trimPath = "trims/items/" + armorType + "_trim_" + trimMaterial.location().getPath();
                 String currentTrimName = armorItemPath + "_" + trimMaterial.location().getPath() + "_trim";
                 ResourceLocation armorItemResLoc = TerraCompositio.modLoc(armorItemPath);
@@ -147,14 +149,14 @@ public class TCItemModelProvider extends ItemModelProvider {
                         .texture("layer1", trimResLoc);
 
                 // Non-trimmed armorItem file (normal variant)
-                this.withExistingParent(Objects.requireNonNull(itemRegistryObject.getId()).getPath(),
+                this.withExistingParent(Objects.requireNonNull(id).getPath(),
                                 mcLoc("item/generated"))
                         .override()
                         .model(new ModelFile.UncheckedModelFile(trimNameResLoc))
                         .predicate(mcLoc("trim_type"), trimValue).end()
                         .texture("layer0",
                                 TerraCompositio.modLoc(
-                                        "item/" + itemRegistryObject.getId().getPath()));
+                                        "item/" + id.getPath()));
             });
         }
     }

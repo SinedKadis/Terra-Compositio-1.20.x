@@ -92,7 +92,7 @@ public class TCCommands {
         NonNullSupplier<Exception> exception = Exception::new;
         ((LivingEntity) memberEntity.getEntityInstance()).getArmorSlots().forEach(itemStack -> {
             try {
-                IECFHandler capability = itemStack.getCapability(TCCapabilities.ECF);
+                IECFHandler capability = itemStack.getCapability(TCCapabilities.ECF_HANDLER_ITEM);
                 if (capability == null) throw exception.get();
             } catch (Exception ignored) {
 

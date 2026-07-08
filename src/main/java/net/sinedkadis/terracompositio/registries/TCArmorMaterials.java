@@ -74,6 +74,7 @@ public class TCArmorMaterials {
         EnumMap<ArmorItem.Type, Integer> enummap = new EnumMap<>(ArmorItem.Type.class);
 
         for (ArmorItem.Type armoritem$type : ArmorItem.Type.values()) {
+            if (armoritem$type.ordinal() == 4) continue;
             enummap.put(armoritem$type, defense[armoritem$type.ordinal()]);
         }
 

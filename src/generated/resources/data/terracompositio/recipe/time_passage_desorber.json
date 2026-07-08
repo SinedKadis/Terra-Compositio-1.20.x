@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "I": {
+      "item": "minecraft:gold_ingot"
+    },
+    "L": {
+      "tag": "terracompositio:flow_cedar_logs_items"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "pattern": [
+    " R ",
+    "ILI",
+    "III"
+  ],
+  "result": {
+    "count": 1,
+    "id": "terracompositio:time_passage_desorber"
+  }
+}

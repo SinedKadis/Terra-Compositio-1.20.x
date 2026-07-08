@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "item": "terracompositio:flow_cedar_planks"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "terracompositio:flow_cedar_button"
+  }
+}

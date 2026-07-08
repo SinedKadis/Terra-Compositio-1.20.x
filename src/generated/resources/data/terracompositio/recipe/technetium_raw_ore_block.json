@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "terracompositio:technetium_raw_ore"
+    },
+    {
+      "item": "terracompositio:technetium_raw_ore"
+    },
+    {
+      "item": "terracompositio:technetium_raw_ore"
+    },
+    {
+      "item": "terracompositio:technetium_raw_ore"
+    },
+    {
+      "item": "terracompositio:technetium_raw_ore"
+    },
+    {
+      "item": "terracompositio:technetium_raw_ore"
+    },
+    {
+      "item": "terracompositio:technetium_raw_ore"
+    },
+    {
+      "item": "terracompositio:technetium_raw_ore"
+    },
+    {
+      "item": "terracompositio:technetium_raw_ore"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "terracompositio:technetium_raw_ore_block"
+  }
+}

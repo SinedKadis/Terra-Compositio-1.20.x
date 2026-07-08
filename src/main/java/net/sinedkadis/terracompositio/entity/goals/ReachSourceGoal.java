@@ -48,8 +48,8 @@ public class ReachSourceGoal extends Goal {
         if (searchCooldown-- > 0) return false;
         searchCooldown = SEARCH_INTERVAL;
 
-        Optional<IECFHandler> cfeHandler = mob.getInnerECFHandler().resolve();
-        if (cfeHandler.isEmpty() || cfeHandler.get().getECF() > 6) return false;
+        IECFHandler cfeHandler = mob.getInnerECFHandler();
+        if (cfeHandler.isEmpty() || cfeHandler.getECF() > 6) return false;
         if (mob.isExtracting() || mob.isHolding()) return false;
 
         ECFNetworkMember member = searchMember();
@@ -104,7 +104,7 @@ public class ReachSourceGoal extends Goal {
             if (member.getMainHandler().getECF() <= 0) continue;
 
             if (member instanceof FlowCedarEntEntity ent) {
-                boolean hasEnough = ent.getCapability(TCCapabilities.ECF)
+                boolean hasEnough = Optional.ofNullable(ent.getCapability(TCCapabilities.ECF_HANDLER_ENTITY))
                         .filter(h -> h.getECF() > 1000)
                         .isPresent();
                 if (!hasEnough) continue;

@@ -1,0 +1,14 @@
+{
+  "type": "terracompositio:flow_infusion",
+  "ecf": 100,
+  "ingredients": [
+    {
+      "item": "minecraft:apple"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "terracompositio:apple_of_knowledge"
+  },
+  "ticks": 200
+}

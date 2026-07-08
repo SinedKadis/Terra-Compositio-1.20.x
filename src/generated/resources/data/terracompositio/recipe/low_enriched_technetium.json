@@ -1,0 +1,18 @@
+{
+  "type": "terracompositio:matter_infusion",
+  "catalyst": {
+    "count": 1,
+    "id": "minecraft:coal"
+  },
+  "catalyst_decay": 30,
+  "ecf": 128,
+  "input": {
+    "count": 4,
+    "id": "terracompositio:technetium_raw_ore"
+  },
+  "result": {
+    "count": 1,
+    "id": "terracompositio:low_enriched_technetium"
+  },
+  "ticks": 200
+}

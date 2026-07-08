@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "S": {
+      "item": "terracompositio:flow_cedar_planks"
+    }
+  },
+  "pattern": [
+    "SS"
+  ],
+  "result": {
+    "count": 1,
+    "id": "terracompositio:flow_cedar_pressure_plate"
+  }
+}

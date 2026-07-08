@@ -3,7 +3,7 @@ package net.sinedkadis.terracompositio.block.custom;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -64,8 +64,8 @@ public class EntStatueBlock extends TCBaseEntityBlock implements IFluidApplicabl
     }
 
     @Override
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
-        if (pPlayer.getItemInHand(pHand).is(TCItems.FLUID_APPLIER.get())) return InteractionResult.PASS;
-        return super.use(pState, pLevel, pPos, pPlayer, pHand, pHit);
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        if (player.getItemInHand(hand).is(TCItems.FLUID_APPLIER.get())) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
     }
 }
