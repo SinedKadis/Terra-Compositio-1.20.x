@@ -295,13 +295,13 @@ public class ECFCloudEntity extends Entity implements ECFNetworkMember, IHaveKno
 
     @Override
     public void addAdditionalSaveData(CompoundTag pCompound) {
-        ecfHandler.writeToNBT(pCompound);
+        ecfHandler.writeToNBT(level().registryAccess(), pCompound);
         pCompound.putInt("queuedCFE", queuedECF);
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag pCompound) {
-        ecfHandler.readFromNBT(pCompound);
+        ecfHandler.readFromNBT(level().registryAccess(), pCompound);
         queuedECF = pCompound.getInt("queuedCFE");
     }
 

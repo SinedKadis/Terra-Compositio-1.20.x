@@ -2,6 +2,7 @@ package net.sinedkadis.terracompositio.registries;
 
 
 import net.minecraft.core.registries.Registries;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Blocks;
@@ -9,7 +10,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
-import net.neoforged.neoforge.event.entity.living.LivingEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -38,8 +39,9 @@ public class TCFluids {
             BlockBehaviour.Properties.ofFullCopy(Blocks.WATER),
             new Item.Properties().stacksTo(1), 32);
 
-    public static void applyLiquidFlowEffect(LivingEvent.LivingTickEvent event) {
-        LivingEntity livingEntity = event.getEntity();
+    public static void applyLiquidFlowEffect(EntityTickEvent.Post event) {
+        Entity entity = event.getEntity();
+        if (!(entity instanceof LivingEntity livingEntity)) return;
         FluidState fluidstate = livingEntity.level().getFluidState(livingEntity.blockPosition());
         if (fluidstate.getFluidType() == FLOW_FLUID.type.get() && !livingEntity.canStandOnFluid(fluidstate) || livingEntity.hasEffect(TCEffects.FLOW_SATURATION.getDelegate())) {
             if (fluidstate.getFluidType() == FLOW_FLUID.type.get() && !livingEntity.canStandOnFluid(fluidstate) && livingEntity.hasEffect(TCEffects.FLOW_SATURATION.getDelegate())) {

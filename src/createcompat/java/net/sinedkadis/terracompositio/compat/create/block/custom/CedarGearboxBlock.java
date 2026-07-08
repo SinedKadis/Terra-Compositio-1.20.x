@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.block.IFluidApplicable;
 import net.sinedkadis.terracompositio.compat.create.TCCreateCompat;
@@ -37,7 +37,6 @@ public class CedarGearboxBlock extends RotatedPillarKineticBlock implements IBE<
     }
 
 
-    @SuppressWarnings("deprecation")
     @Override
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
         VoxelShape SHAPE_Z = Shapes.or(
@@ -77,7 +76,7 @@ public class CedarGearboxBlock extends RotatedPillarKineticBlock implements IBE<
 
     @Override
     public BlockEntityType<? extends CedarGearboxBlockEntity> getBlockEntityType() {
-        RegistryObject<BlockEntityType<CedarGearboxBlockEntity>> cedarGearboxBe =
+        DeferredHolder<BlockEntityType<?>,BlockEntityType<CedarGearboxBlockEntity>> cedarGearboxBe =
                 ((TCCreateCompat) TerraCompositio.createCompat).blockEntities.CEDAR_GEARBOX_BE;
         assert cedarGearboxBe != null;
         return cedarGearboxBe.get();

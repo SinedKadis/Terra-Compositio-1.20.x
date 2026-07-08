@@ -5,15 +5,18 @@ import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.registration.*;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.AbstractFurnaceBlock;
-import net.minecraftforge.registries.ForgeRegistries;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.compat.jei.categories.*;
-import net.sinedkadis.terracompositio.compat.jei.extensions.ECFStorageUpdateRecipeWrapper;
+import net.sinedkadis.terracompositio.compat.jei.extensions.ECFStorageUpgradeRecipeExtension;
+import net.sinedkadis.terracompositio.compat.jei.subtypes.FluidSubtype;
+import net.sinedkadis.terracompositio.compat.jei.subtypes.JournalSubtype;
 import net.sinedkadis.terracompositio.recipe.*;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
 import net.sinedkadis.terracompositio.registries.TCItems;
@@ -43,10 +46,22 @@ public class JEITerraCompositioPlugin implements IModPlugin {
         assert Minecraft.getInstance().level != null;
         RecipeManager recipeManager = Minecraft.getInstance().level.getRecipeManager();
 
-        List<AltarTransformationRecipe> altarTransformationRecipes = recipeManager.getAllRecipesFor(AltarTransformationRecipe.Type.INSTANCE);
-        List<FlowInfusionRecipe> flowInfusionRecipes = recipeManager.getAllRecipesFor(FlowInfusionRecipe.Type.INSTANCE);
-        List<MatterInfusionRecipe> matterInfusionRecipes = recipeManager.getAllRecipesFor(MatterInfusionRecipe.Type.INSTANCE);
-        List<TechnetiumFiringRecipe> technetiumFiringRecipes = recipeManager.getAllRecipesFor(TechnetiumFiringRecipe.Type.INSTANCE);
+        List<AltarTransformationRecipe> altarTransformationRecipes = recipeManager.getAllRecipesFor(AltarTransformationRecipe.Type.INSTANCE)
+                .stream()
+                .map(RecipeHolder::value)
+                .toList();
+        List<FlowInfusionRecipe> flowInfusionRecipes = recipeManager.getAllRecipesFor(FlowInfusionRecipe.Type.INSTANCE)
+                .stream()
+                .map(RecipeHolder::value)
+                .toList();
+        List<MatterInfusionRecipe> matterInfusionRecipes = recipeManager.getAllRecipesFor(MatterInfusionRecipe.Type.INSTANCE)
+                .stream()
+                .map(RecipeHolder::value)
+                .toList();
+        List<TechnetiumFiringRecipe> technetiumFiringRecipes = recipeManager.getAllRecipesFor(TechnetiumFiringRecipe.Type.INSTANCE)
+                .stream()
+                .map(RecipeHolder::value)
+                .toList();
 
         registration.addRecipes(FlowCedarAltarCategory.FLOW_CEDAR_ALTAR_RECIPE_RECIPE_TYPE, altarTransformationRecipes);
         registration.addRecipes(FlowInfusionCategory.FLOW_INFUSION_RECIPE_RECIPE_TYPE,flowInfusionRecipes);
@@ -57,7 +72,7 @@ public class JEITerraCompositioPlugin implements IModPlugin {
 
     @Override
     public void registerVanillaCategoryExtensions(IVanillaCategoryExtensionRegistration registration) {
-        registration.getCraftingCategory().addCategoryExtension(ECFStorageUpgradeRecipe.class, ECFStorageUpdateRecipeWrapper::new);
+        registration.getCraftingCategory().addExtension(ECFStorageUpgradeRecipe.class, new ECFStorageUpgradeRecipeExtension());
     }
 
     @Override
@@ -69,7 +84,8 @@ public class JEITerraCompositioPlugin implements IModPlugin {
                 TCBlocks.MATTER_INFUSER_UNIT.get(),
                 TCItems.INPUT_BUS.get(),
                 TCItems.OUTPUT_BUS.get());
-        addCatalysts(registration,TechnetiumFiringCategory.TECHNETIUM_FIRING_RECIPE_RECIPE_TYPE, ForgeRegistries.BLOCKS.getValues().stream()
+        addCatalysts(registration,TechnetiumFiringCategory.TECHNETIUM_FIRING_RECIPE_RECIPE_TYPE, TCBlocks.BLOCKS.getRegistry().get().holders()
+                .map(Holder::value)
                 .filter(block -> block instanceof AbstractFurnaceBlock)
                 .map(block -> ((ItemLike) block.asItem()))
                 .toList());
@@ -90,6 +106,7 @@ public class JEITerraCompositioPlugin implements IModPlugin {
 
     @Override
     public void registerItemSubtypes(ISubtypeRegistration registration) {
-        registration.useNbtForSubtypes(TCItems.CREATION_FLOW_JOURNAL.get(),TCItems.FLUID_APPLIER.get());
+        registration.registerSubtypeInterpreter(TCItems.CREATION_FLOW_JOURNAL.get(), new JournalSubtype());
+        registration.registerSubtypeInterpreter(TCItems.FLUID_APPLIER.get(), new FluidSubtype());
     }
 }

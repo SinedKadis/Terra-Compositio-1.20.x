@@ -3,30 +3,24 @@ package net.sinedkadis.terracompositio.ecf;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.MethodsReturnNonnullByDefault;
-import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.LazyOptional;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
-import net.sinedkadis.terracompositio.registries.TCCapabilities;
+import net.sinedkadis.terracompositio.registries.TCDataComponents;
 import net.sinedkadis.terracompositio.util.IEntityInstance;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 
 @SuppressWarnings("DataFlowIssue")
 @MethodsReturnNonnullByDefault
-public class ECFItemWrapper implements IECFHandler, ICapabilityProvider {
+public class ECFItemWrapper implements IECFHandler {
     @Getter
     @Setter
     protected int queued = 0;
-    private final LazyOptional<IECFHandler> holder = LazyOptional.of(() -> this);
     @NotNull
     @Getter
     protected ItemStack container;
@@ -52,20 +46,12 @@ public class ECFItemWrapper implements IECFHandler, ICapabilityProvider {
     }
 
     @Override
-    public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        return TCCapabilities.ECF.orEmpty(cap, holder);
-    }
-
-    @Override
     public int getECF() {
-        CompoundTag tag = container.getOrCreateTag();
-        return tag.getInt("CFE");
+        return container.get(TCDataComponents.STORED_ECF);
     }
 
     @Override
     public IECFHandler setIndex(int index) {
-        CompoundTag tag = container.getOrCreateTag();
-        tag.putInt("INDEX",index);
         return this;
     }
 
@@ -76,8 +62,7 @@ public class ECFItemWrapper implements IECFHandler, ICapabilityProvider {
 
     @Override
     public void setECF(int ecf) {
-        CompoundTag tag = container.getOrCreateTag();
-        tag.putInt("CFE", ecf);
+        container.set(TCDataComponents.STORED_ECF,ecf);
     }
 
     @Override
@@ -107,26 +92,22 @@ public class ECFItemWrapper implements IECFHandler, ICapabilityProvider {
 
     @Override
     public int getMaxECF() {
-        CompoundTag tag = container.getOrCreateTag();
-        int maxCfe = tag.getInt("MAX_CFE");
-        return maxCfe == 0 ? 8 : maxCfe;
+        return container.get(TCDataComponents.MAX_ECF);
     }
 
     @Override
     public IECFHandler setMaxECF(int max) {
-        CompoundTag tag = container.getOrCreateTag();
-        tag.putInt("MAX_CFE", max);
-        tag.putInt("CFE", Mth.clamp(tag.getInt("CFE"), 0, max));
+        container.set(TCDataComponents.MAX_ECF,Math.max(0,max));
         return this;
     }
 
     @Override
-    public void writeToNBT(CompoundTag pTag) {
+    public void writeToNBT(HolderLookup.Provider provider, CompoundTag pTag) {
 
     }
 
     @Override
-    public void readFromNBT(CompoundTag pTag) {
+    public void readFromNBT(HolderLookup.Provider provider, CompoundTag pTag) {
 
     }
 
@@ -157,7 +138,6 @@ public class ECFItemWrapper implements IECFHandler, ICapabilityProvider {
 
     @Override
     public int getIndex() {
-        CompoundTag tag = container.getOrCreateTag();
-        return tag.getInt("INDEX");
+        return 0;
     }
 }

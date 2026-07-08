@@ -13,6 +13,7 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -74,7 +75,7 @@ public class MatterInfusionCategory implements IRecipeCategory<MatterInfusionRec
     public void setRecipe(IRecipeLayoutBuilder iRecipeLayoutBuilder, MatterInfusionRecipe matterSaturationRecipe, IFocusGroup iFocusGroup) {
         iRecipeLayoutBuilder.addSlot(RecipeIngredientRole.INPUT,20,10).addIngredients(matterSaturationRecipe.getIngredients().get(1));
         iRecipeLayoutBuilder.addSlot(RecipeIngredientRole.CATALYST,55,42).addIngredients(matterSaturationRecipe.getIngredients().get(0));
-        iRecipeLayoutBuilder.addSlot(RecipeIngredientRole.OUTPUT,20,74).addItemStack(matterSaturationRecipe.getResultItem(null));
+        iRecipeLayoutBuilder.addSlot(RecipeIngredientRole.OUTPUT,20,74).addItemStack(matterSaturationRecipe.getResultItem(RegistryAccess.EMPTY));
     }
 
     @Override

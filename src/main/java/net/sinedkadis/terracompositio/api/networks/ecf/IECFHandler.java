@@ -1,6 +1,7 @@
 package net.sinedkadis.terracompositio.api.networks.ecf;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.Vec3;
 import net.sinedkadis.terracompositio.api.helpers.ECFHelper;
@@ -76,16 +77,18 @@ public interface IECFHandler extends ECFNetworkMember {
     /**
      * Write data to nbt.
      *
-     * @param pTag the tag
+     * @param provider registry provider
+     * @param pTag     the tag
      */
-    void writeToNBT(CompoundTag pTag);
+    void writeToNBT(HolderLookup.Provider provider, CompoundTag pTag);
 
     /**
      * Read data from nbt.
      *
-     * @param pTag the tag
+     * @param provider registry provider
+     * @param pTag     the tag
      */
-    void readFromNBT(CompoundTag pTag);
+    void readFromNBT(HolderLookup.Provider provider, CompoundTag pTag);
 
     /**
      * Gets queued. Represents ECF value in bursts, that target that handler

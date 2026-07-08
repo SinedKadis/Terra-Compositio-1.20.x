@@ -6,8 +6,9 @@ import com.simibubi.create.content.kinetics.base.SingleAxisRotatingVisual;
 import dev.engine_room.flywheel.lib.visualization.SimpleBlockEntityVisualizer;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.fml.ModList;
+
+import net.neoforged.fml.ModList;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.sinedkadis.terracompositio.compat.create.datagen.DataGenerators;
 import net.sinedkadis.terracompositio.compat.create.registries.CreateBlockEntities;
 import net.sinedkadis.terracompositio.compat.create.registries.CreateBlocks;

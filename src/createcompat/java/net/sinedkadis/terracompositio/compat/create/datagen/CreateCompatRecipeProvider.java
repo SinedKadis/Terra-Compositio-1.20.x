@@ -2,26 +2,24 @@ package net.sinedkadis.terracompositio.compat.create.datagen;
 
 
 import com.simibubi.create.AllBlocks;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.data.recipes.RecipeCategory;
-import net.minecraft.data.recipes.RecipeProvider;
-import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.*;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.compat.create.TCCreateCompat;
 import net.sinedkadis.terracompositio.compat.create.registries.CreateBlocks;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Consumer;
+import java.util.concurrent.CompletableFuture;
 
 public class CreateCompatRecipeProvider extends RecipeProvider {
 
-    public CreateCompatRecipeProvider(PackOutput pOutput) {
-        super(pOutput);
+    public CreateCompatRecipeProvider(PackOutput pOutput, CompletableFuture<HolderLookup.Provider> registries) {
+        super(pOutput,registries);
     }
 
-    public static void buildRecipes(RecipeProvider ignoredInstance, @NotNull Consumer<FinishedRecipe> pWriter) {
+    public static void buildRecipes(RecipeProvider ignoredInstance, @NotNull RecipeOutput pWriter) {
         CreateBlocks createBlocks = ((TCCreateCompat) TerraCompositio.createCompat).blocks;
         if (createBlocks.CEDAR_GEARBOX == null) return;
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, createBlocks.CEDAR_GEARBOX.get())
@@ -37,7 +35,7 @@ public class CreateCompatRecipeProvider extends RecipeProvider {
     }
 
     @Override
-    protected void buildRecipes(@NotNull Consumer<FinishedRecipe> pWriter) {
+    protected void buildRecipes(@NotNull RecipeOutput pWriter) {
 
     }
 }

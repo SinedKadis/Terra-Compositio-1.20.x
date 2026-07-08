@@ -6,7 +6,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
 import net.sinedkadis.terracompositio.api.helpers.ECFHelper;
 import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
@@ -258,7 +258,7 @@ public class ECFNetworkHandler implements ECFNetwork {
     }
     @Override
     public void fireECFNetworkEvent(ECFNetworkMember source, NetworkAction action) {
-        MinecraftForge.EVENT_BUS.post(new ECFNetworkEvent(source,action));
+        NeoForge.EVENT_BUS.post(new ECFNetworkEvent(source,action));
     }
 
     @Override

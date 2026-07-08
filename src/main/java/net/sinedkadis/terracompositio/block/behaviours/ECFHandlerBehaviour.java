@@ -132,12 +132,12 @@ public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
 
     @Override
     public void onSave(CompoundTag tag, HolderLookup.Provider registries) {
-        ecfHandler.writeToNBT(tag);
+        ecfHandler.writeToNBT(registries, tag);
     }
 
     @Override
     public void onLoad(CompoundTag tag, HolderLookup.Provider registries) {
-        ecfHandler.readFromNBT(tag);
+        ecfHandler.readFromNBT(registries, tag );
     }
 
 

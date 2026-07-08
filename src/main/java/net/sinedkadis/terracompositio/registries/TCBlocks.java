@@ -13,6 +13,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.grower.TreeGrower;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
@@ -26,11 +27,12 @@ import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.block.custom.*;
 import net.sinedkadis.terracompositio.block.entity.PathPointerBlockEntity;
 import net.sinedkadis.terracompositio.item.custom.UnstableTechnetiumBlockItem;
-import net.sinedkadis.terracompositio.worldgen.tree.FlowCedarTreeGrower;
+import net.sinedkadis.terracompositio.worldgen.TCConfiguredFeatures;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 
@@ -95,7 +97,12 @@ public class TCBlocks {
     public static final DeferredBlock<Block> FLOW_INFUSER = registerBlock("flow_infuser",
             () -> new FlowInfuserBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).noOcclusion()));
     public static final DeferredBlock<Block> FLOW_CEDAR_SAPLING = registerBlock("flow_cedar_sapling",
-            () -> new FlowCedarSaplingBlock(new FlowCedarTreeGrower(), BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_SAPLING)));
+            () -> new FlowCedarSaplingBlock(new TreeGrower(
+                    "flow_cedar",
+                    Optional.empty(),
+                    Optional.of(TCConfiguredFeatures.FLOW_CEDAR_KEY),
+                    Optional.empty()
+            ), BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_SAPLING)));
 
 
 

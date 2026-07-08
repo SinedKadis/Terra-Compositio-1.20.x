@@ -13,6 +13,7 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -72,8 +73,8 @@ public class FlowInfusionCategory implements IRecipeCategory<FlowInfusionRecipe>
 
     @Override
     public void setRecipe(IRecipeLayoutBuilder iRecipeLayoutBuilder, FlowInfusionRecipe flowSaturationRecipe, IFocusGroup iFocusGroup) {
-        iRecipeLayoutBuilder.addSlot(RecipeIngredientRole.INPUT,41,16).addIngredients(flowSaturationRecipe.getIngredients().get(0));
-        iRecipeLayoutBuilder.addSlot(RecipeIngredientRole.OUTPUT,121,48).addItemStack(flowSaturationRecipe.getResultItem(null));
+        iRecipeLayoutBuilder.addSlot(RecipeIngredientRole.INPUT,41,16).addIngredients(flowSaturationRecipe.getIngredients().getFirst());
+        iRecipeLayoutBuilder.addSlot(RecipeIngredientRole.OUTPUT,121,48).addItemStack(flowSaturationRecipe.getResultItem(RegistryAccess.EMPTY));
     }
 
     @Override

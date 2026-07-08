@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -43,6 +44,11 @@ public class TCDataComponents {
             builder -> builder
                     .persistent(ItemStack.CODEC)
                     .networkSynchronized(ItemStack.STREAM_CODEC));
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> STORED_ECF = register("stored_ecf",
+            builder -> builder.persistent(Codec.INT).networkSynchronized(ByteBufCodecs.INT));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> MAX_ECF = register("max_ecf",
+            builder -> builder.persistent(Codec.INT).networkSynchronized(ByteBufCodecs.INT));
 
 
     private static <T> DeferredHolder<DataComponentType<?>, DataComponentType<T>> register(String name,

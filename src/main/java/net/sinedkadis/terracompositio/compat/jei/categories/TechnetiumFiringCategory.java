@@ -76,7 +76,7 @@ public class TechnetiumFiringCategory implements IRecipeCategory<TechnetiumFirin
 
     @Override
     public void setRecipe(IRecipeLayoutBuilder iRecipeLayoutBuilder, TechnetiumFiringRecipe flowSaturationRecipe, @NotNull IFocusGroup iFocusGroup) {
-        iRecipeLayoutBuilder.addSlot(RecipeIngredientRole.INPUT,33,13).addIngredients(flowSaturationRecipe.getIngredients().get(0));
+        iRecipeLayoutBuilder.addSlot(RecipeIngredientRole.INPUT,33,13).addIngredients(flowSaturationRecipe.getIngredients().getFirst());
     }
 
     @Override

@@ -357,15 +357,15 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
     @Override
     public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
-        holdECFHandler.writeToNBT(pCompound);
-        innerECFHandler.writeToNBT(pCompound);
+        holdECFHandler.writeToNBT(level().registryAccess(), pCompound);
+        innerECFHandler.writeToNBT(level().registryAccess(), pCompound);
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
-        holdECFHandler.readFromNBT(pCompound);
-        innerECFHandler.readFromNBT(pCompound);
+        holdECFHandler.readFromNBT(level().registryAccess(), pCompound);
+        innerECFHandler.readFromNBT(level().registryAccess(), pCompound);
     }
 
 

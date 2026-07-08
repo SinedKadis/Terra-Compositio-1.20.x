@@ -5,22 +5,20 @@ import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
 import net.sinedkadis.terracompositio.api.networks.NetworkAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.block.entity.PathPointerBlockEntity;
 import net.sinedkadis.terracompositio.ecf.burst.ECFBurstProjectileEntity;
-import net.sinedkadis.terracompositio.network.TCPayloads;
 import net.sinedkadis.terracompositio.util.IEntityInstance;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -159,13 +157,13 @@ public class DefaultECFHandler implements IECFHandler, INBTSerializable<Compound
         return this.getECF() + getQueued();
     }
 
-    public void writeToNBT(CompoundTag pTag) {
-        pTag.put("cfeContainer_" + getIndex(), this.serializeNBT());
+    public void writeToNBT(HolderLookup.Provider provider, CompoundTag pTag) {
+        pTag.put("cfeContainer_" + getIndex(), this.serializeNBT(provider));
     }
 
-    public void readFromNBT(CompoundTag pTag) {
+    public void readFromNBT(HolderLookup.Provider provider, CompoundTag pTag) {
         CompoundTag tag = pTag.getCompound("cfeContainer_" + getIndex());
-        this.deserializeNBT(tag);
+        this.deserializeNBT(provider,tag);
     }
 
     @Override
@@ -183,14 +181,14 @@ public class DefaultECFHandler implements IECFHandler, INBTSerializable<Compound
     }
 
     @Override
-    public CompoundTag serializeNBT() {
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
         CompoundTag nbt = new CompoundTag();
         nbt.putInt("CFE", this.getECF());
         return nbt;
     }
 
     @Override
-    public void deserializeNBT(CompoundTag tag) {
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag tag) {
         this.setECF(tag.getInt("CFE"));
     }
 

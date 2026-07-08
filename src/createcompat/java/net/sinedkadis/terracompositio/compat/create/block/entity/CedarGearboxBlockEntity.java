@@ -2,15 +2,12 @@ package net.sinedkadis.terracompositio.compat.create.block.entity;
 
 import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fml.DistExecutor;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.api.IHaveKnowledge;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
@@ -20,18 +17,18 @@ import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetwork;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.api.registries.TCBlockStateProperties;
-import net.sinedkadis.terracompositio.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.compat.create.TCCreateCompat;
 import net.sinedkadis.terracompositio.config.TCCommonConfigs;
 import net.sinedkadis.terracompositio.config.TCInnerConfig;
 import net.sinedkadis.terracompositio.ecf.DefaultECFHandler;
 import net.sinedkadis.terracompositio.util.IEntityInstance;
-import org.jetbrains.annotations.NotNull;
+import net.sinedkadis.terracompositio.util.ITCCapabilityProviderInstance;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
 
-public class CedarGearboxBlockEntity extends GeneratingKineticBlockEntity implements ECFNetworkMember, IHaveKnowledge {
+public class CedarGearboxBlockEntity extends GeneratingKineticBlockEntity implements ECFNetworkMember, IHaveKnowledge, ITCCapabilityProviderInstance {
 
     protected int range;
     protected int priority;
@@ -43,7 +40,6 @@ public class CedarGearboxBlockEntity extends GeneratingKineticBlockEntity implem
             updateGeneratedRotation();
         }
     };
-    protected LazyOptional<IECFHandler> lazyCFEOptional = LazyOptional.empty();
 
     public CedarGearboxBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(Objects.requireNonNull(((TCCreateCompat) TerraCompositio.createCompat).blockEntities.CEDAR_GEARBOX_BE).get(),pPos, pBlockState);
@@ -81,26 +77,16 @@ public class CedarGearboxBlockEntity extends GeneratingKineticBlockEntity implem
                 updateGeneratedRotation();
         }
         if (level.isClientSide) {
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> this::tickAudio);
+             this.tickAudio();
             return;
         }
         updateIfScheduled();
     }
-
     @Override
     public void onLoad() {
         super.onLoad();
-        lazyCFEOptional = LazyOptional.of(() -> ecfHandler);
         scheduleMemberUpdate();
         updateGeneratedRotation();
-    }
-
-    @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap) {
-        if (cap == TCCapabilities.ECF){
-            return lazyCFEOptional.cast();
-        }
-        return super.getCapability(cap);
     }
 
     @Override
@@ -112,19 +98,18 @@ public class CedarGearboxBlockEntity extends GeneratingKineticBlockEntity implem
     @Override
     public void invalidate() {
         super.invalidate();
-        lazyCFEOptional.invalidate();
     }
 
     @Override
-    protected void write(CompoundTag compound, boolean clientPacket) {
-        super.write(compound, clientPacket);
-        ecfHandler.writeToNBT(compound);
+    protected void write(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
+        super.write(compound, registries, clientPacket);
+        ecfHandler.writeToNBT(registries, compound);
     }
 
     @Override
-    protected void read(CompoundTag compound, boolean clientPacket) {
-        super.read(compound, clientPacket);
-        ecfHandler.readFromNBT(compound);
+    protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
+        super.read(compound, registries, clientPacket);
+        ecfHandler.readFromNBT(registries, compound);
     }
 
     @Override
@@ -197,5 +182,10 @@ public class CedarGearboxBlockEntity extends GeneratingKineticBlockEntity implem
             TooltipHelper.addIfExist(TooltipHelper.Keys.QUEUED, t, data);
         });
 
+    }
+
+    @Override
+    public IECFHandler getECFCapability(@Nullable Direction direction) {
+        return ecfHandler;
     }
 }

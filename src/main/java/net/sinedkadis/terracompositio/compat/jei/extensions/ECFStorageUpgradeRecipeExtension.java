@@ -7,35 +7,25 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Holder;
 import net.minecraft.world.item.ItemStack;
 
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.sinedkadis.terracompositio.api.IECFStorageExtensionItem;
 import net.sinedkadis.terracompositio.api.IHaveExtensibleECFStorageItem;
 import net.sinedkadis.terracompositio.recipe.ECFStorageUpgradeRecipe;
 import net.sinedkadis.terracompositio.registries.TCItems;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ECFStorageUpdateRecipeWrapper implements ICraftingCategoryExtension {
-	private final ResourceLocation name;
+public class ECFStorageUpgradeRecipeExtension implements ICraftingCategoryExtension<ECFStorageUpgradeRecipe> {
 
-	public ECFStorageUpdateRecipeWrapper(ECFStorageUpgradeRecipe recipe) {
-		this.name = recipe.getId();
-	}
-
-	@Nullable
-	@Override
-	public ResourceLocation getRegistryName() {
-		return name;
-	}
 
 	@Override
-	public void setRecipe(@NotNull IRecipeLayoutBuilder builder, @NotNull ICraftingGridHelper helper, @NotNull IFocusGroup focusGroup) {
+	public void setRecipe(@NotNull RecipeHolder<ECFStorageUpgradeRecipe> recipeHolder, @NotNull IRecipeLayoutBuilder builder, @NotNull ICraftingGridHelper helper, @NotNull IFocusGroup focusGroup) {
 		List<ItemStack> items = new ArrayList<>();
 		List<IECFStorageExtensionItem> extensions = new ArrayList<>(focusGroup.getFocuses(VanillaTypes.ITEM_STACK, RecipeIngredientRole.INPUT)
                 .map(focus -> focus.getTypedValue().getIngredient())
@@ -46,7 +36,8 @@ public class ECFStorageUpdateRecipeWrapper implements ICraftingCategoryExtension
                 .toList());
 
 		if (extensions.isEmpty()) {
-			extensions.addAll(ForgeRegistries.ITEMS.getValues().stream()
+			extensions.addAll(TCItems.ITEMS.getRegistry().get().holders()
+					.map(Holder::value)
 					.filter(IECFStorageExtensionItem.class::isInstance)
 					.map(ItemStack::new)
 					.peek(items::add)

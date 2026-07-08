@@ -1,6 +1,7 @@
 package net.sinedkadis.terracompositio.api.dummies;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.Vec3;
 import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
@@ -69,12 +70,12 @@ public class DummyECFHandler implements IECFHandler {
 
 
     @Override
-    public void writeToNBT(CompoundTag pTag) {
+    public void writeToNBT(HolderLookup.Provider provider, CompoundTag pTag) {
 
     }
 
     @Override
-    public void readFromNBT(CompoundTag pTag) {
+    public void readFromNBT(HolderLookup.Provider provider, CompoundTag pTag) {
 
     }
 

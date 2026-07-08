@@ -6,7 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.event.ForgeEventFactory;
+import net.neoforged.neoforge.event.EventHooks;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
 import net.sinedkadis.terracompositio.api.helpers.ECFHelper;
 import net.sinedkadis.terracompositio.api.networks.NetworkAction;
@@ -19,6 +19,7 @@ import net.sinedkadis.terracompositio.registries.TCTags;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static net.sinedkadis.terracompositio.api.registries.TCBlockStateProperties.INFUSED;
 
@@ -51,12 +52,12 @@ public class ECFExtractGoal extends Goal {
         if (searchCooldown-- > 0) return false;
         searchCooldown = SEARCH_INTERVAL;
 
-        if (!ForgeEventFactory.getMobGriefingEvent(this.level, this.mob)) return false;
+        if (!EventHooks.canEntityGrief(this.level, this.mob)) return false;
 
-        cachedHeld = mob.getCapability(TCCapabilities.ECF).resolve().orElse(null);
-        cachedInner = mob.getInnerECFHandler().resolve().orElse(null);
+        cachedHeld = mob.getCapability(TCCapabilities.ECF_HANDLER_ENTITY);
+        cachedInner = mob.getInnerECFHandler();
 
-        if (cachedInner == null || cachedInner.getECF() >= 6) return false;
+        if (cachedInner.getECF() >= 6) return false;
         if (!isECFQueueEmpty()) return false;
 
         targetMember = searchMember();
@@ -95,7 +96,7 @@ public class ECFExtractGoal extends Goal {
             if (member.getMainHandler().getECF() <= 0) continue;
 
             if (member instanceof FlowCedarEntEntity ent) {
-                boolean hasEnough = ent.getCapability(TCCapabilities.ECF)
+                boolean hasEnough = Optional.ofNullable(ent.getCapability(TCCapabilities.ECF_HANDLER_ENTITY))
                         .filter(h -> h.getECF() > 64)
                         .isPresent();
                 if (!hasEnough) continue;
@@ -132,12 +133,12 @@ public class ECFExtractGoal extends Goal {
     private boolean isECFQueueEmpty() {
         IECFHandler held = cachedHeld != null
                 ? cachedHeld
-                : mob.getCapability(TCCapabilities.ECF).resolve().orElse(null);
+                : mob.getCapability(TCCapabilities.ECF_HANDLER_ENTITY);
         IECFHandler inner = cachedInner != null
                 ? cachedInner
-                : mob.getInnerECFHandler().resolve().orElse(null);
+                : mob.getInnerECFHandler();
 
-        if (held == null || inner == null) return true;
+        if (held == null) return true;
         return held.getECF() + held.getQueued() + inner.getQueued() <= 0;
     }
 
