@@ -112,7 +112,15 @@ public abstract class TCBlockEntity extends BlockEntity implements IHaveKnowledg
 
     @Override
     public CompoundTag getUpdateTag() {
-        return saveWithoutMetadata();
+        CompoundTag tag = super.getUpdateTag();
+        saveAdditional(tag);
+        return tag;
+    }
+
+    @Override
+    public void handleUpdateTag(CompoundTag tag) {
+        super.handleUpdateTag(tag);
+        load(tag);
     }
 
     @Override

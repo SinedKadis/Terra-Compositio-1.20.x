@@ -241,8 +241,8 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
 
         persistentData.putInt(cd, localPlayer.tickCount);
         localPlayer.level().playSound(localPlayer, localPlayer.blockPosition(), SoundEvents.CHICKEN_EGG, SoundSource.PLAYERS);
-        localPlayer.move(MoverType.SELF, new Vec3(0, 5, 0));
-        persistentData.putInt(height, localPlayer.getBlockY() - 1);
+        localPlayer.move(MoverType.SELF, new Vec3(0, 6, 0));
+        persistentData.putInt(height, localPlayer.getBlockY() - 2);
 
     }
 

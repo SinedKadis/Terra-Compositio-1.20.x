@@ -92,18 +92,19 @@ public class ECFNetworkHandler implements ECFNetwork {
                 }
             }
             for (ECFNetworkMember member : members) {
-                if (!current.getEntityInstance().tc$getBlockPos()
-                        .closerThan(member.getEntityInstance().tc$getBlockPos(),
+                IEntityInstance currentEntityInstance = current.getEntityInstance();
+                IEntityInstance memberEntityInstance = member.getEntityInstance();
+                if (!currentEntityInstance.tc$getBlockPos()
+                        .closerThan(memberEntityInstance.tc$getBlockPos(),
                                 Math.min(current.getRange(), member.getRange())))
                     continue;
-                Object currentEntity = current.getEntityInstance();
-                if (currentEntity == null || currentEntity.equals(member.getEntityInstance()))
+                if (currentEntityInstance.equals(memberEntityInstance))
                     continue;
                 if (current.getPriority() <= member.getPriority())
                     continue;
 
                 // PathPointer EMITTER — добавляем входы в очередь
-                if (member.getEntityInstance() instanceof PathPointerBlockEntity ppBE
+                if (memberEntityInstance instanceof PathPointerBlockEntity ppBE
                         && (ppBE.parts.contains(PathPointerBlockEntity.PPPart.EMITTER)
                         || (ppBE.parts.contains(PathPointerBlockEntity.PPPart.INFUSER) && updated.getEntityInstance().tc$isEntity()))
                         && updatedEmitters.add(ppBE)) { // add() возвращает false если уже есть
@@ -116,7 +117,8 @@ public class ECFNetworkHandler implements ECFNetwork {
                     }
                 }
 
-                member.scheduleMemberUpdate(current);
+                if (!currentEntityInstance.equals(updated.getEntityInstance()))
+                    member.scheduleMemberUpdate(current);
             }
         }
     }

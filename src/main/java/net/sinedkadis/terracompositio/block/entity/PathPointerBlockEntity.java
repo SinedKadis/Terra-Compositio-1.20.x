@@ -381,6 +381,10 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
 
         be.rotationYaw = (float) Math.toDegrees(yaw);
         be.rotationPitch = (float) Math.toDegrees(pitch);
+
+        if (be.level != null) {
+            be.level.sendBlockUpdated(be.worldPosition, be.getBlockState(), be.getBlockState(), 3);
+        }
     }
 
     public static void clearAnyBindings(@Nullable Player pPlayer, LevelAccessor level, BlockPos blockPos) {
@@ -695,13 +699,13 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
         }
     }
 
-    @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        super.handleUpdateTag(tag);
-        rotationYaw = tag.getFloat("rot_y");
-        rotationPitch = tag.getFloat("rot_x");
-        rotationRoll = tag.getFloat("rot_z");
-    }
+//    @Override
+//    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+//        super.handleUpdateTag(tag, lookupProvider);
+//        rotationYaw = tag.getFloat("rot_y");
+//        rotationPitch = tag.getFloat("rot_x");
+//        rotationRoll = tag.getFloat("rot_z");
+//    }
 
     @Override
     public @NotNull Component getName() {
@@ -737,8 +741,7 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
 
     @Override
     public void updateIfScheduled() {
-//        CFENetwork cfeNetworkInstance = TerraCompositioAPI.instance().getCFENetworkInstance();
-//        inputPoses.forEach(pos -> cfeNetworkInstance.updateInRange(level, pos, 5));
+
     }
 
     public void scheduleMemberUpdate() {

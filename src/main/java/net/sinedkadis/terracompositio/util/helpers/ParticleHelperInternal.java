@@ -146,7 +146,7 @@ public class ParticleHelperInternal {
                 .uv(0, 1)
                 .overlayCoords(OverlayTexture.NO_OVERLAY)
                 .uv2(pPackedLight)
-                .normal(normal, 0, 0, 1)
+                .normal(normal, 0, 0, -1)
                 .endVertex();
 
         buffer.vertex(matrix, size, -size, 0)
@@ -154,7 +154,7 @@ public class ParticleHelperInternal {
                 .uv(1, 1)
                 .overlayCoords(OverlayTexture.NO_OVERLAY)
                 .uv2(pPackedLight)
-                .normal(normal, 0, 0, 1)
+                .normal(normal, 0, 0, -1)
                 .endVertex();
 
         buffer.vertex(matrix, size, size, 0)
@@ -162,7 +162,7 @@ public class ParticleHelperInternal {
                 .uv(1, 0)
                 .overlayCoords(OverlayTexture.NO_OVERLAY)
                 .uv2(pPackedLight)
-                .normal(normal, 0, 0, 1)
+                .normal(normal, 0, 0, -1)
                 .endVertex();
 
         buffer.vertex(matrix, -size, size, 0)
@@ -170,7 +170,7 @@ public class ParticleHelperInternal {
                 .uv(0, 0)
                 .overlayCoords(OverlayTexture.NO_OVERLAY)
                 .uv2(pPackedLight)
-                .normal(normal, 0, 0, 1)
+                .normal(normal, 0, 0, -1)
                 .endVertex();
     }
 }
