@@ -8,9 +8,4 @@ public class TCEffectBase extends MobEffect {
     public TCEffectBase(MobEffectCategory pCategory, int pColor) {
         super(pCategory, pColor);
     }
-
-    @Override
-    public boolean isInstantenous() {
-        return true;
-    }
 }

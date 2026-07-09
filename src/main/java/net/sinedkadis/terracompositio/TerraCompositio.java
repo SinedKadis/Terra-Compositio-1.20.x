@@ -62,6 +62,7 @@ public class TerraCompositio
 
         TCDataComponents.register(modEventBus);
         TCIngredientTypes.register(modEventBus);
+        TCAttachments.register(modEventBus);
 
         TCGameRules.init();
 

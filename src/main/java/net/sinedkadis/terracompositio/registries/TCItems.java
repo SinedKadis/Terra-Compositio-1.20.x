@@ -147,11 +147,9 @@ public class TCItems {
 
     //Apples
     public static final DeferredItem<Item> APPLE_OF_KNOWLEDGE = ITEMS.register("apple_of_knowledge",
-            () -> new KnowledgeAppleItem(new Item.Properties()
-                    .food((TCFoods.CREATION_KNOWLEDGE))));
+            () -> new KnowledgeAppleItem(new Item.Properties()));
     public static final DeferredItem<Item> APPLE_OF_IGNORANCE = ITEMS.register("apple_of_ignorance",
-            () -> new KnowledgeAppleItem(new Item.Properties()
-                    .food((TCFoods.IGNORANCE))));
+            () -> new KnowledgeAppleItem(new Item.Properties()));
 
 
     public static void register(IEventBus eventBus){

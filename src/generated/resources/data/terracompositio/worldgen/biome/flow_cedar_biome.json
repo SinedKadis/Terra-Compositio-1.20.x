@@ -134,7 +134,7 @@
         "weight": 6
       },
       {
-        "type": "terracompositio:flow_cedar_ent_entity",
+        "type": "terracompositio:flow_cedar_ent",
         "maxCount": 3,
         "minCount": 1,
         "weight": 20

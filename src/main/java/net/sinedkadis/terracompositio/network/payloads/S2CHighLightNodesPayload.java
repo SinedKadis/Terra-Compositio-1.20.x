@@ -21,7 +21,7 @@ public record S2CHighLightNodesPayload(
 ) implements CustomPacketPayload {
 
     public static final Type<S2CHighLightNodesPayload> TYPE =
-            new Type<>(TerraCompositio.modLoc("knowledge_info"));
+            new Type<>(TerraCompositio.modLoc("highlight_nodes"));
     public static StreamCodec<RegistryFriendlyByteBuf, Set<BlockPos>> STREAM_BLOCKPOS_SET_CODEC = new StreamCodec<>() {
         @Override
         public @NotNull Set<BlockPos> decode(RegistryFriendlyByteBuf buffer) {

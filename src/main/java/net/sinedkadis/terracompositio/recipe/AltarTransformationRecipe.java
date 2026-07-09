@@ -2,6 +2,7 @@ package net.sinedkadis.terracompositio.recipe;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import lombok.Getter;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
@@ -22,6 +23,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
+@Getter
 public class AltarTransformationRecipe implements Recipe<RecipeWrapper> {
     private final NonNullList<Ingredient> inputs;
     private final ItemStack output;
@@ -82,7 +84,6 @@ public class AltarTransformationRecipe implements Recipe<RecipeWrapper> {
         public static final Type INSTANCE = new Type();
         public static final String ID = "altar_transformation";
     }
-    @SuppressWarnings("DataFlowIssue")
     public static class Serializer implements RecipeSerializer<AltarTransformationRecipe> {
         public static final Serializer INSTANCE = new Serializer();
         public static final ResourceLocation ID = TerraCompositio.modLoc(Type.ID);
@@ -94,8 +95,7 @@ public class AltarTransformationRecipe implements Recipe<RecipeWrapper> {
                     instance.group(
                             NonNullList.codecOf(Ingredient.CODEC).fieldOf("ingredients")
                                     .forGetter(AltarTransformationRecipe::getIngredients),
-                            ItemStack.CODEC.fieldOf("result").forGetter(recipe ->
-                                    recipe.getResultItem(null))
+                            ItemStack.CODEC.fieldOf("result").forGetter(AltarTransformationRecipe::getOutput)
                     ).apply(instance, AltarTransformationRecipe::new)
             );
         }
@@ -106,7 +106,8 @@ public class AltarTransformationRecipe implements Recipe<RecipeWrapper> {
                 @Override
                 public AltarTransformationRecipe decode(RegistryFriendlyByteBuf buffer) {
                     NonNullList<Ingredient> ingredients = NonNullList.create();
-                    for (int i = 0; i < buffer.readVarInt(); i++) {
+                    int i1 = buffer.readVarInt();
+                    for (int i = 0; i < i1; i++) {
                         ingredients.add(Ingredient.CONTENTS_STREAM_CODEC.decode(buffer));
                     }
                     ItemStack output = ItemStack.STREAM_CODEC.decode(buffer);

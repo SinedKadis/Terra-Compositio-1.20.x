@@ -47,7 +47,9 @@ public class ECFItemWrapper implements IECFHandler {
 
     @Override
     public int getECF() {
-        return container.get(TCDataComponents.STORED_ECF);
+        Integer ecf = container.get(TCDataComponents.STORED_ECF);
+        if (ecf == null) return 0;
+        return ecf;
     }
 
     @Override
@@ -92,7 +94,9 @@ public class ECFItemWrapper implements IECFHandler {
 
     @Override
     public int getMaxECF() {
-        return container.get(TCDataComponents.MAX_ECF);
+        Integer i = container.get(TCDataComponents.MAX_ECF);
+        if (i == null) return 0;
+        return i;
     }
 
     @Override

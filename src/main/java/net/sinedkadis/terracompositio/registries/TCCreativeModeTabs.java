@@ -1,14 +1,15 @@
 package net.sinedkadis.terracompositio.registries;
 
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModList;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.sinedkadis.terracompositio.TerraCompositio;
+import net.sinedkadis.terracompositio.components.FluidStackComponent;
 
 public class TCCreativeModeTabs {
     public static final DeferredRegister<CreativeModeTab> Creative_mode_tabs =
@@ -164,16 +165,17 @@ public class TCCreativeModeTabs {
     private static void addFluidAppliers(CreativeModeTab.Output pOutput) {
         pOutput.accept(TCItems.FLUID_APPLIER.get());
         ItemStack itemStack = new ItemStack(TCItems.FLUID_APPLIER.get());
-        CompoundTag tag = (CompoundTag) itemStack.getComponents();
-        tag.putInt("Amount", 8000);
-        tag.putString("FluidName", "terracompositio:flow_source");
+        itemStack.set(TCDataComponents.FLUID,
+                new FluidStackComponent(
+                        new FluidStack(TCFluids.FLOW_FLUID.source.get(),8000)));
+
         pOutput.accept(itemStack);
     }
 
     private static void addBooks(CreativeModeTab.Output pOutput) {
         for (int i = 1; i <= 5; i++) {
             ItemStack itemStack = new ItemStack(TCItems.CREATION_FLOW_JOURNAL.get());
-            ((CompoundTag) itemStack.getComponents()).putInt("day", i);
+            itemStack.set(TCDataComponents.BOOKMARKS,i);
             pOutput.accept(itemStack);
         }
     }

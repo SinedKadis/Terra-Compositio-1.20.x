@@ -42,12 +42,6 @@ public class TCPayloads {
                         C2SBoardSyncPayload.handle(payload, context))
         );
         registrar.playToClient(
-                S2CAddPlayerKnowledgePayload.TYPE,
-                S2CAddPlayerKnowledgePayload.STREAM_CODEC,
-                (payload, context) -> context.enqueueWork(() ->
-                        S2CAddPlayerKnowledgePayload.handle(payload))
-        );
-        registrar.playToClient(
                 S2CHighLightNodesPayload.TYPE,
                 S2CHighLightNodesPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() ->

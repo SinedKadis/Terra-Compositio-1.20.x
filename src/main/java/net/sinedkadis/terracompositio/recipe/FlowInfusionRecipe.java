@@ -7,7 +7,6 @@ import lombok.Getter;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -25,6 +24,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
+@Getter
 public class FlowInfusionRecipe implements Recipe<RecipeWrapper> {
     private final NonNullList<Ingredient> inputItems;
     private final ItemStack output;
@@ -100,7 +100,7 @@ public class FlowInfusionRecipe implements Recipe<RecipeWrapper> {
                                     NonNullList.codecOf(Ingredient.CODEC).fieldOf("ingredients")
                                             .forGetter(FlowInfusionRecipe::getIngredients),
                                     ItemStack.CODEC.fieldOf("result")
-                                            .forGetter(recipe -> recipe.getResultItem(RegistryAccess.EMPTY)),
+                                            .forGetter(FlowInfusionRecipe::getOutput),
                                     Codec.INT.fieldOf("ecf")
                                             .forGetter(FlowInfusionRecipe::getEcf),
                                     Codec.INT.fieldOf("ticks")
@@ -116,10 +116,11 @@ public class FlowInfusionRecipe implements Recipe<RecipeWrapper> {
                 @Override
                 public FlowInfusionRecipe decode(RegistryFriendlyByteBuf buffer) {
                     NonNullList<Ingredient> ingredients = NonNullList.create();
-                    for (int i = 0; i < buffer.readVarInt(); i++) {
+                    int i1 = buffer.readVarInt();
+                    for (int i = 0; i < i1; i++) {
                         ingredients.add(Ingredient.CONTENTS_STREAM_CODEC.decode(buffer));
                     }
-                    ItemStack output = ItemStack.STREAM_CODEC.decode(buffer);
+                    ItemStack output = ItemStack.OPTIONAL_STREAM_CODEC.decode(buffer);
                     int ecf = ByteBufCodecs.VAR_INT.decode(buffer);
                     int tick = ByteBufCodecs.VAR_INT.decode(buffer);
                     return new FlowInfusionRecipe(ingredients, output, ecf, tick);
@@ -131,7 +132,9 @@ public class FlowInfusionRecipe implements Recipe<RecipeWrapper> {
                     for (Ingredient ingredient : value.getIngredients()) {
                         Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, ingredient);
                     }
-                    ItemStack.STREAM_CODEC.encode(buffer, value.getResultItem(RegistryAccess.EMPTY));
+                    ItemStack.OPTIONAL_STREAM_CODEC.encode(buffer, value.getOutput());
+                    ByteBufCodecs.VAR_INT.encode(buffer,value.getEcf());
+                    ByteBufCodecs.VAR_INT.encode(buffer,value.getTicks());
                 }
             };
         }

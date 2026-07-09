@@ -39,6 +39,7 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.fluids.capability.wrappers.FluidBucketWrapper;
 import net.sinedkadis.terracompositio.block.IFluidApplicable;
+import net.sinedkadis.terracompositio.components.FluidStackComponent;
 import net.sinedkadis.terracompositio.registries.TCDataComponents;
 import net.sinedkadis.terracompositio.util.ITCCapabilityProviderItem;
 
@@ -273,13 +274,13 @@ public class FluidApplierItem extends Item implements DispensibleContainerItem, 
 
         @Override
         public FluidStack getFluid() {
-            FluidStack fluidStack = container.get(TCDataComponents.FLUID);
-            return fluidStack == null ? FluidStack.EMPTY : fluidStack;
+            FluidStackComponent fluidStack = container.get(TCDataComponents.FLUID);
+            return fluidStack == null ? FluidStack.EMPTY : fluidStack.fluidStack();
         }
 
         @Override
         protected void setFluid(FluidStack fluidStack) {
-            container.set(TCDataComponents.FLUID,fluidStack);
+            container.set(TCDataComponents.FLUID,new FluidStackComponent(fluidStack));
         }
 
         @Override

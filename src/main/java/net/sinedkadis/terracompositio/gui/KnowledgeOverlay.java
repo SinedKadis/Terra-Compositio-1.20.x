@@ -42,8 +42,8 @@ import net.sinedkadis.terracompositio.api.helpers.PlayerHelper;
 import net.sinedkadis.terracompositio.config.TCClientConfigs;
 import net.sinedkadis.terracompositio.network.payloads.C2SKnowledgeBlockRequestPayload;
 import net.sinedkadis.terracompositio.network.payloads.C2SKnowledgeEntityRequestPayload;
+import net.sinedkadis.terracompositio.registries.TCAttachments;
 import net.sinedkadis.terracompositio.registries.TCItems;
-import net.sinedkadis.terracompositio.util.accessors.PlayerKnowledgeAccessor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,7 +94,7 @@ public class KnowledgeOverlay {
         LocalPlayer player = mc.player;
         if (player == null) return;
 
-        if (!((PlayerKnowledgeAccessor) player).isCreationAcknowledged()) {
+        if (!player.getData(TCAttachments.KNOWLEDGE).isCreationAcknowledged()) {
             resetHover();
             return;
         }

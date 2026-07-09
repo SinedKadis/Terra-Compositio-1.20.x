@@ -49,7 +49,6 @@ import net.sinedkadis.terracompositio.config.TCCommonConfigs;
 import net.sinedkadis.terracompositio.ecf.ECFItemWrapper;
 import net.sinedkadis.terracompositio.network.payloads.C2SBoardSyncPayload;
 import net.sinedkadis.terracompositio.util.ITCCapabilityProviderItem;
-import net.sinedkadis.terracompositio.util.accessors.PlayerKnowledgeAccessor;
 import net.sinedkadis.terracompositio.util.helpers.ParticleHelperInternal;
 import org.jetbrains.annotations.Nullable;
 
@@ -331,9 +330,10 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
                 thisHandler.addECF(added, false);
                 continue;
             }
-            IECFHandler IECFHandler = stack.getCapability(TCCapabilities.ECF_HANDLER_ITEM);
+            IECFHandler iecfHandler = stack.getCapability(TCCapabilities.ECF_HANDLER_ITEM);
+            if (iecfHandler == null) return;
             int taken = thisHandler.takeECF(TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get(), true);
-            int added = Objects.requireNonNull(IECFHandler).addECF(taken, false);
+            int added = iecfHandler.addECF(taken, false);
             thisHandler.takeECF(added, false);
         }
     }
@@ -378,16 +378,16 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
                                                       ArmorMaterial.Layer layer,
                                                       boolean innerModel) {
         return switch (slot) {
-            case HEAD -> TerraCompositio.modLoc(":textures/models/armor/technetium_crown.png");
+            case HEAD -> TerraCompositio.modLoc("textures/models/armor/technetium_crown.png");
             case CHEST -> {
                 if (Objects.requireNonNull(stack.getCapability(TCCapabilities.ECF_HANDLER_ITEM)).getECF() <= 0)
-                    yield TerraCompositio.modLoc(":textures/models/armor/technetium_chestplate/armor_layer_no_shield.png");
+                    yield TerraCompositio.modLoc("textures/models/armor/technetium_chestplate/armor_layer_no_shield.png");
                 int textureIndex = (int) (Util.getMillis() / 300) % 16;
-                yield TerraCompositio.modLoc(":textures/models/armor/technetium_chestplate/armor_layer_"
+                yield TerraCompositio.modLoc("textures/models/armor/technetium_chestplate/armor_layer_"
                         + textureIndex + ".png");
             }
-            case FEET -> TerraCompositio.modLoc(":textures/models/armor/technetium_boots.png");
-            case LEGS -> TerraCompositio.modLoc(":textures/models/armor/technetium_leggings.png");
+            case FEET -> TerraCompositio.modLoc("textures/models/armor/technetium_boots.png");
+            case LEGS -> TerraCompositio.modLoc("textures/models/armor/technetium_leggings.png");
             default -> null;
         };
     }
@@ -396,7 +396,7 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null
-                && ((PlayerKnowledgeAccessor) player).isCreationAcknowledged()
+                && player.getData(TCAttachments.KNOWLEDGE).isCreationAcknowledged()
                 && TCClientConfigs.APPLE_ITEM_TOOLTIP.get()) {
             tooltipComponents.add(
                     TooltipHelper.keyWithArg(TooltipHelper.Keys.ECF,

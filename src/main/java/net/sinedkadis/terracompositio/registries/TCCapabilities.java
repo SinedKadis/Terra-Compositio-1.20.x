@@ -83,9 +83,9 @@ public class TCCapabilities {
             Item item = holder.get();
             if (item instanceof ITCCapabilityProviderItem providerInstance) {
                 event.registerItem(TCCapabilities.ECF_HANDLER_ITEM,
-                        (itemStack, cxt) -> providerInstance.addECFCapability(itemStack));
+                        (itemStack, cxt) -> providerInstance.addECFCapability(itemStack),item);
                 event.registerItem(Capabilities.FluidHandler.ITEM,
-                        (itemstack,cxt) -> providerInstance.addFluidCapability(itemstack));
+                        (itemstack,cxt) -> providerInstance.addFluidCapability(itemstack),item);
             }
         }
         event.registerEntity(TCCapabilities.ECF_HANDLER_ENTITY, EntityType.PLAYER, new PlayerECFProvider());

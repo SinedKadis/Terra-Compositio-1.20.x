@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
@@ -37,11 +38,11 @@ import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.block.custom.PathPointerBlock;
 import net.sinedkadis.terracompositio.config.TCClientConfigs;
 import net.sinedkadis.terracompositio.network.payloads.S2CHighLightNodesPayload;
+import net.sinedkadis.terracompositio.registries.TCAttachments;
 import net.sinedkadis.terracompositio.registries.TCBlockEntities;
 import net.sinedkadis.terracompositio.registries.TCDataComponents;
 import net.sinedkadis.terracompositio.util.BindException;
 import net.sinedkadis.terracompositio.util.IEntityInstance;
-import net.sinedkadis.terracompositio.util.accessors.PlayerKnowledgeAccessor;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -655,8 +656,8 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
     public void highlightNodes() {
         if (level != null && level.isClientSide) {
 
-            PlayerKnowledgeAccessor player = (PlayerKnowledgeAccessor) Minecraft.getInstance().player;
-            if (player == null || !player.isCreationAcknowledged()) return;
+            LocalPlayer player = Minecraft.getInstance().player;
+            if (player == null || !player.getData(TCAttachments.KNOWLEDGE).isCreationAcknowledged()) return;
 
             if (!TCClientConfigs.APPLE_PP_ENDPOINTS.get()) return;
 

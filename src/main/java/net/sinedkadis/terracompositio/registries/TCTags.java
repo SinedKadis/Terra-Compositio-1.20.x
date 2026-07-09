@@ -30,9 +30,9 @@ public class TCTags {
         public static final TagKey<Item> FLOW_CEDAR_LOGS = tag("flow_cedar_logs_items");
         public static final TagKey<Item> UNSTABLE_TECHNETIUM = tag("unstable_technetium");
         public static final TagKey<Item> WRENCHES = ItemTags.create(Objects.requireNonNull(
-                ResourceLocation.tryBuild("forge","tools/wrench")));
+                ResourceLocation.tryBuild("c","tools/wrench")));
         public static final TagKey<Item> GOLD_RODS = ItemTags.create(Objects.requireNonNull(
-                ResourceLocation.tryBuild("forge","items/gold_rod")));
+                ResourceLocation.tryBuild("c","items/gold_rod")));
         public static final TagKey<Item> TORCHES = tag("torches");
         public static final TagKey<Item> CHAIN_RIDEABLE = ItemTags.create(Objects.requireNonNull(
                 ResourceLocation.tryBuild("create", "chain_rideable")));

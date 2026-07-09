@@ -23,8 +23,8 @@ public class TCEntities {
                     .sized(1.375f, 0.5625f).build("tc_chest_boat"));
 
     public static final DeferredHolder<EntityType<?>, EntityType<FlowCedarEntEntity>> FLOW_CEDAR_ENT =
-            ENTITY_TYPES.register("flow_cedar_ent_entity", () -> EntityType.Builder.of(FlowCedarEntEntity::new, MobCategory.CREATURE)
-                    .sized(0.5f, 1.5f).build("flow_cedar_ent_entity"));
+            ENTITY_TYPES.register("flow_cedar_ent", () -> EntityType.Builder.of(FlowCedarEntEntity::new, MobCategory.CREATURE)
+                    .sized(0.5f, 1.5f).build("flow_cedar_ent"));
 
     public static final DeferredHolder<EntityType<?>, EntityType<ECFBallProjectileEntity>> ECF_BALL_PROJECTILE =
             ENTITY_TYPES.register("ecf_ball_projectile", () -> EntityType.Builder.<ECFBallProjectileEntity>of(ECFBallProjectileEntity::new, MobCategory.MISC)

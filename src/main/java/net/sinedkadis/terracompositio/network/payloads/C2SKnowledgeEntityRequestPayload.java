@@ -14,7 +14,7 @@ import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.api.IHaveKnowledge;
 import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.components.KnowledgeComponent;
-import net.sinedkadis.terracompositio.util.accessors.PlayerKnowledgeAccessor;
+import net.sinedkadis.terracompositio.registries.TCAttachments;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
@@ -33,7 +33,7 @@ public record C2SKnowledgeEntityRequestPayload(UUID uuid) implements CustomPacke
         ServerPlayer serverPlayer = (ServerPlayer) context.player();
         UUID uuid = payload.uuid();
 
-        if (!((PlayerKnowledgeAccessor) serverPlayer).isCreationAcknowledged()) return;
+        if (!serverPlayer.getData(TCAttachments.KNOWLEDGE).isCreationAcknowledged()) return;
 
         ServerLevel level = serverPlayer.serverLevel();
 
