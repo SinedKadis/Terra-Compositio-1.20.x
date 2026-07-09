@@ -100,6 +100,18 @@ public abstract class TCBlockEntity extends BlockEntity implements IHaveKnowledg
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        CompoundTag tag = super.getUpdateTag(registries);
+        saveAdditional(tag, registries);
+        return tag;
+    }
+
+    @Override
+    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider registries) {
+        super.handleUpdateTag(tag, registries);
+        loadAdditional(tag, registries);
+    }
 
     @Override
     public void addTooltipLines(CompoundTag data, List<Component> tooltip, boolean isShifting, HolderLookup.Provider provider) {

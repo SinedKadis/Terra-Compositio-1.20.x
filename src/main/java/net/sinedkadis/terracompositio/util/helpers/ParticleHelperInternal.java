@@ -137,33 +137,35 @@ public class ParticleHelperInternal {
 
         float size = 0.1f;
 
+        //pPackedLight = LightTexture.FULL_BRIGHT;
+
         int pAlpha = 200;
         buffer.addVertex(matrix, -size, -size, 0)
                 .setColor(255, 255, 255, pAlpha)
                 .setUv(0, 1)
                 .setOverlay(OverlayTexture.NO_OVERLAY)
                 .setLight(pPackedLight)
-                .setNormal(pose, 0, 0, 1);
+                .setNormal(pose, 0, 0, -1);
 
         buffer.addVertex(matrix, size, -size, 0)
                 .setColor(255, 255, 255, pAlpha)
                 .setUv(1, 1)
                 .setOverlay(OverlayTexture.NO_OVERLAY)
                 .setLight(pPackedLight)
-                .setNormal(pose, 0, 0, 1);
+                .setNormal(pose, 0, 0, -1);
 
         buffer.addVertex(matrix, size, size, 0)
                 .setColor(255, 255, 255, pAlpha)
                 .setUv(1, 0)
                 .setOverlay(OverlayTexture.NO_OVERLAY)
                 .setLight(pPackedLight)
-                .setNormal(pose, 0, 0, 1);
+                .setNormal(pose, 0, 0, -1);
 
         buffer.addVertex(matrix, -size, size, 0)
                 .setColor(255, 255, 255, pAlpha)
                 .setUv(0, 0)
                 .setOverlay(OverlayTexture.NO_OVERLAY)
                 .setLight(pPackedLight)
-                .setNormal(pose, 0, 0, 1);
+                .setNormal(pose, 0, 0, -1);
     }
 }

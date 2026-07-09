@@ -252,9 +252,13 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
                 shootVec = new Vec3(0, 0, 1)
                         .yRot((float) Math.toRadians(pathPointerBlockEntity.getRotationYaw()))
                         .xRot((float) Math.toRadians(pathPointerBlockEntity.getRotationPitch()));
-                if (isInfuser) trackCrown = true;
+                if (isInfuser) {
+                    trackCrown = true;
+                }
         } else shootVec = pathPointerBlockEntity.getBlockPos().getCenter().vectorTo(bindPos.getCenter());
 
+
+        if (isInfuser) PathPointerBlockEntity.setYawAndPitchFromRot(shootVec,pathPointerBlockEntity);
 
         this.shoot(shootVec.x(),shootVec.y(),shootVec.z(),5 / 20f,0);
         Level level = pathPointerBlockEntity.getLevel();
