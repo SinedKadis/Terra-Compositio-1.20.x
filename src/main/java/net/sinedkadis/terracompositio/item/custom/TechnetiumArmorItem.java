@@ -43,11 +43,12 @@ import net.sinedkadis.terracompositio.api.networks.NetworkAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.api.registries.TCBlockStateProperties;
-import net.sinedkadis.terracompositio.registries.*;
+import net.sinedkadis.terracompositio.components.ItemStackComponent;
 import net.sinedkadis.terracompositio.config.TCClientConfigs;
 import net.sinedkadis.terracompositio.config.TCCommonConfigs;
 import net.sinedkadis.terracompositio.ecf.ECFItemWrapper;
 import net.sinedkadis.terracompositio.network.payloads.C2SBoardSyncPayload;
+import net.sinedkadis.terracompositio.registries.*;
 import net.sinedkadis.terracompositio.util.ITCCapabilityProviderItem;
 import net.sinedkadis.terracompositio.util.helpers.ParticleHelperInternal;
 import org.jetbrains.annotations.Nullable;
@@ -430,18 +431,19 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
 
     @Override
     public IECFStorageExtensionItem getCurrentExtension(ItemStack stack) {
-        ItemStack stack1 = stack.get(TCDataComponents.ECF_STORAGE_EXTENSION);
+        ItemStackComponent stack1 = stack.get(TCDataComponents.ECF_STORAGE_EXTENSION);
         if (stack1 == null) return () -> 0;
 
-        Item item = stack1.getItem();
+        Item item = stack1.itemStack().getItem();
         return item instanceof IECFStorageExtensionItem iecfse ? iecfse : () -> 0;
     }
 
     @Override
     public void setExtension(ItemStack stack, IECFStorageExtensionItem extensionItem) {
-        if (extensionItem.maxStorage() <= 0) return;
-        stack.set(TCDataComponents.ECF_STORAGE_EXTENSION,extensionItem.self());
-        Objects.requireNonNull(stack.getCapability(TCCapabilities.ECF_HANDLER_ITEM)).setMaxECF(extensionItem.maxStorage());
+        int max = extensionItem.maxStorage();
+        if (max <= 0) return;
+        stack.set(TCDataComponents.ECF_STORAGE_EXTENSION, new ItemStackComponent(extensionItem.self()));
+        Objects.requireNonNull(stack.getCapability(TCCapabilities.ECF_HANDLER_ITEM)).setMaxECF(max);
     }
 
     @Override

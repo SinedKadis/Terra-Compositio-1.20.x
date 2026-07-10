@@ -5,12 +5,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
 import net.sinedkadis.terracompositio.components.FluidStackComponent;
+import net.sinedkadis.terracompositio.components.ItemStackComponent;
 import net.sinedkadis.terracompositio.item.custom.WrenchAxeItem;
 
 import java.util.function.UnaryOperator;
@@ -46,10 +46,10 @@ public class TCDataComponents {
                     .persistent(FluidStackComponent.CODEC)
                     .networkSynchronized(FluidStackComponent.STREAM_CODEC));
 
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ItemStack>> ECF_STORAGE_EXTENSION = register("ecf_storage_extension",
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ItemStackComponent>> ECF_STORAGE_EXTENSION = register("ecf_storage_extension",
             builder -> builder
-                    .persistent(ItemStack.CODEC)
-                    .networkSynchronized(ItemStack.STREAM_CODEC));
+                    .persistent(ItemStackComponent.CODEC)
+                    .networkSynchronized(ItemStackComponent.STREAM_CODEC));
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> STORED_ECF =
             register("stored_ecf",

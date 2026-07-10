@@ -27,7 +27,6 @@ public class ECFItemWrapper implements IECFHandler {
 
     public ECFItemWrapper(@NotNull ItemStack container) {
         this.container = container;
-        setMaxECF(8);
     }
 
     @Override
@@ -97,7 +96,7 @@ public class ECFItemWrapper implements IECFHandler {
     @Override
     public int getMaxECF() {
         Integer i = container.get(TCDataComponents.MAX_ECF);
-        if (i == null) return 0;
+        if (i == null) return 8;
         return i;
     }
 
