@@ -3,7 +3,6 @@ package net.sinedkadis.terracompositio.block.custom;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -13,7 +12,6 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
@@ -30,9 +28,7 @@ public class FlowCedarPedestalBlock extends Block {
 
     public boolean canSurvive(BlockState pState, LevelReader pLevel, BlockPos pPos) {
         BlockPos blockpos = pPos.below();
-        return pState.getBlock() == this
-                ? pLevel.getBlockState(blockpos).canSustainPlant(pLevel, blockpos, Direction.UP, pState).isTrue()
-                : pState.is(BlockTags.DIRT) || pState.is(Blocks.FARMLAND);
+        return !pLevel.getBlockState(blockpos).canSustainPlant(pLevel, blockpos, Direction.UP, pState).isFalse();
     }
 
 
