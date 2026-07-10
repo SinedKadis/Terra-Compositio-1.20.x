@@ -11,7 +11,10 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 import net.sinedkadis.terracompositio.TerraCompositio;
@@ -109,12 +112,12 @@ public class MatterInfusionRecipe implements Recipe<RecipeWrapper> {
                                     .forGetter(MatterInfusionRecipe::getCatalyst),
                             ItemStack.CODEC.fieldOf("input")
                                     .forGetter(MatterInfusionRecipe::getInput),
+                            Codec.INT.fieldOf("catalyst_decay")
+                                    .forGetter(MatterInfusionRecipe::getCatalystDecayRate),
                             Codec.INT.fieldOf("ecf")
                                     .forGetter(MatterInfusionRecipe::getEcf),
                             Codec.INT.fieldOf("ticks")
-                                    .forGetter(MatterInfusionRecipe::getTicks),
-                            Codec.INT.fieldOf("catalyst_decay")
-                                    .forGetter(MatterInfusionRecipe::getCatalystDecayRate)
+                                    .forGetter(MatterInfusionRecipe::getTicks)
                     ).apply(instance,MatterInfusionRecipe::new));
         }
 
@@ -126,9 +129,9 @@ public class MatterInfusionRecipe implements Recipe<RecipeWrapper> {
                     ItemStack output = ItemStack.STREAM_CODEC.decode(buffer);
                     ItemStack catalyst = ItemStack.STREAM_CODEC.decode(buffer);
                     ItemStack input = ItemStack.STREAM_CODEC.decode(buffer);
+                    int catalystDecayRate = buffer.readVarInt();
                     int cfe = buffer.readVarInt();
                     int ticks = buffer.readVarInt();
-                    int catalystDecayRate = buffer.readVarInt();
 
                     return new MatterInfusionRecipe(output, catalyst, input, catalystDecayRate, cfe, ticks);
                 }
@@ -138,9 +141,10 @@ public class MatterInfusionRecipe implements Recipe<RecipeWrapper> {
                     ItemStack.STREAM_CODEC.encode(buffer, value.output);
                     ItemStack.STREAM_CODEC.encode(buffer, value.catalyst);
                     ItemStack.STREAM_CODEC.encode(buffer, value.input);
+                    buffer.writeVarInt(value.catalystDecayRate);
                     buffer.writeVarInt(value.ecf);
                     buffer.writeVarInt(value.ticks);
-                    buffer.writeVarInt(value.catalystDecayRate);
+
                 }
             };
         }

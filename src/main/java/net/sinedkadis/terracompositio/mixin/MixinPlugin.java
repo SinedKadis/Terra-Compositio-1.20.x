@@ -1,5 +1,6 @@
 package net.sinedkadis.terracompositio.mixin;
 
+import net.neoforged.fml.loading.LoadingModList;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
@@ -15,28 +16,30 @@ public class MixinPlugin implements IMixinConfigPlugin {
 
     static {
         MIXIN_CONDITIONS.put("BookGuiMixin", () -> isModLoaded("patchouli"));
+        MIXIN_CONDITIONS.put("CreateJeiMixin", () -> isModLoaded("create"));
     }
 
     private static boolean isModLoaded(String modId) {
-        try {
-            return switch (modId) {
-                case "patchouli" -> {
-                    Class.forName("vazkii.patchouli.forge.common.ForgeModInitializer");
-                    yield true;
-                }
-                case "create" -> {
-                    Class.forName("com.simibubi.create.Create");
-                    yield true;
-                }
-                case "jei" -> {
-                    Class.forName("mezz.jei.JustEnoughItems");
-                    yield true;
-                }
-                default -> false;
-            };
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
+        return LoadingModList.get().getModFileById(modId) != null;
+//        try {
+//            return switch (modId) {
+//                case "patchouli" -> {
+//                    Class.forName("vazkii.patchouli.forge.common.ForgeModInitializer");
+//                    yield true;
+//                }
+//                case "create" -> {
+//                    Class.forName("com.simibubi.create.Create");
+//                    yield true;
+//                }
+//                case "jei" -> {
+//                    Class.forName("mezz.jei.JustEnoughItems");
+//                    yield true;
+//                }
+//                default -> false;
+//            };
+//        } catch (ClassNotFoundException e) {
+//            return false;
+//        }
     }
 
     @Override
