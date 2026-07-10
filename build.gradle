@@ -314,6 +314,7 @@ tasks.named('jar', Jar).configure {
                 'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
     // NeoGradle's userdev plugin already produces a correctly remapped jar; there is no separate
     // "reobfJar" task to finalize by like there was under ForgeGradle, so nothing further is needed.
