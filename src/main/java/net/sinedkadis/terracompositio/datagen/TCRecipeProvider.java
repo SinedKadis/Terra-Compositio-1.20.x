@@ -500,7 +500,7 @@ public class TCRecipeProvider extends RecipeProvider implements IConditionBuilde
                 .save(pWriter);
         FlowInfusionRecipeBuilder.create(
                 TCItems.ECF_CHARGE.get().getDefaultInstance(),
-                NonNullList.of(Ingredient.EMPTY,Ingredient.of(Items.SNOWBALL)),
+                NonNullList.of(Ingredient.EMPTY, Ingredient.of(Items.WIND_CHARGE)),
                 10,
                 20
         ).save(pWriter, TerraCompositio.modLoc("flow_infusion/ecf_charge"));
