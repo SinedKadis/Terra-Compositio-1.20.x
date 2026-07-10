@@ -313,7 +313,7 @@
 
 
   "book.terracompositio.creation_flow_journal.entry.fluid_applier.name": "Применитель Жидкостей",
-  "book.terracompositio.creation_flow_journal.entry.fluid_applier.page1": "  Крутое устройство. Можно использовать как ведро, вмещает в себя 8 ведер жидкости. Может разливать жидкости одну об другую, вместо того, что б разливать их в один блок",
+  "book.terracompositio.creation_flow_journal.entry.fluid_applier.page1": "  Крутое устройство. Можно использовать как ведро, вмещает в себя 8 ведер жидкости. Может разливать жидкости одну об другую, вместо того, что б разливать их в один блок. Так же способен применять жидкости на расстояние в 5 раз больше обычного",
   "book.terracompositio.creation_flow_journal.entry.fluid_applier.page2": "  Если в нем жидкий поток, способен наполнять им блоки древесины и оживлять засохших Энтов",
   "book.terracompositio.creation_flow_journal.entry.technetium_armor.name": "Броня из Технеция",
   "book.terracompositio.creation_flow_journal.entry.technetium_armor.desc": "  Невероятный материал, из которого можно сделать хорошую броню. Изначально каждый элемент хранит может хранить до 8 ЭПС, но соединив его в верстаке с кусочком обогащенного технеция, его вместимость станет равной стоимости получения: от 128 до 3200 соответственно",
