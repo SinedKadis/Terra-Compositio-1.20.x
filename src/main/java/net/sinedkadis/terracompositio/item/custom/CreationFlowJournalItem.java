@@ -65,8 +65,9 @@ public class CreationFlowJournalItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+        Integer i = stack.get(TCDataComponents.BOOKMARKS);
         tooltipComponents
-                .add(Component.translatable("item.terracompositio.creation_flow_journal.tooltip", stack.get(TCDataComponents.BOOKMARKS))
+                .add(Component.translatable("item.terracompositio.creation_flow_journal.tooltip", i != null ? i : 1)
                         .withStyle(ChatFormatting.GRAY));
     }
 
