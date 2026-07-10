@@ -122,6 +122,8 @@ public class TCItemTagGenerator extends ItemTagsProvider {
                 .add(FLOW_CEDAR_LEGGINGS.get(), TECHNETIUM_LEGGINGS.get());
         this.tag(ItemTags.FOOT_ARMOR)
                 .add(FLOW_CEDAR_BOOTS.get(), TECHNETIUM_BOOTS.get());
+        this.tag(TCTags.Items.COPPER_NUGGETS)
+                .add(COPPER_NUGGET.value());
 
         if (ModList.get().isLoaded("create")) {
             TerraCompositio.createCompat.getDataGen().addItemTags(this, pProvider);

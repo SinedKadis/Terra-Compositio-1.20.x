@@ -33,6 +33,8 @@ public class TCTags {
                 ResourceLocation.tryBuild("c","tools/wrench")));
         public static final TagKey<Item> GOLD_RODS = ItemTags.create(Objects.requireNonNull(
                 ResourceLocation.tryBuild("c","items/gold_rod")));
+        public static final TagKey<Item> COPPER_NUGGETS = ItemTags.create(Objects.requireNonNull(
+                ResourceLocation.tryBuild("c", "items/copper_nugget")));
         public static final TagKey<Item> TORCHES = tag("torches");
         public static final TagKey<Item> CHAIN_RIDEABLE = ItemTags.create(Objects.requireNonNull(
                 ResourceLocation.tryBuild("create", "chain_rideable")));

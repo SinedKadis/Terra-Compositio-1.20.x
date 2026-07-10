@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "L": {
+      "item": "terracompositio:flow_cedar_planks"
+    }
+  },
+  "pattern": [
+    "L L",
+    "LLL"
+  ],
+  "result": {
+    "count": 1,
+    "id": "terracompositio:flow_cedar_boat"
+  }
+}
