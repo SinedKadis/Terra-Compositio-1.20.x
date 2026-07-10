@@ -13,6 +13,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -28,6 +29,7 @@ import net.minecraft.world.entity.animal.AbstractGolem;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -109,6 +111,22 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
     }
 
     private int lastSyncedEnergy = -1;
+
+    public static boolean checkEntSpawnRules(
+            EntityType<FlowCedarEntEntity> bat, LevelAccessor level, MobSpawnType spawnType, BlockPos pos, RandomSource random
+    ) {
+        if (pos.getY() >= 63) {
+            return false;
+        } else {
+            int i = level.getMaxLocalRawBrightness(pos);
+            int j = 4;
+            if (random.nextBoolean()) {
+                return false;
+            }
+
+            return i <= random.nextInt(j) && checkMobSpawnRules(bat, level, spawnType, pos, random);
+        }
+    }
 
     @Override
     public void tick() {
