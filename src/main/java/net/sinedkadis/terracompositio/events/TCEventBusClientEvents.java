@@ -114,10 +114,11 @@ public class TCEventBusClientEvents {
             TerraCompositio.createCompat.clientInit();
     }
     static final Map<String, Integer> HARDCODED_COLORS = Map.of(
-            "create:chocolate", 0x5A3A22,
-            "create:honey", 0xEAAE2F,
-            "terracompositio:flow_source", 0x0B23BA,
-            "terracompositio:birch_juice_source", 0x97872F
+            "create:chocolate", 0xFF5A3A22,
+            "create:honey", 0xFFEAAE2F,
+            "terracompositio:flow_source", 0xFF0B23BA,
+            "terracompositio:birch_juice_source", 0xFF97872F,
+            "minecraft:lava", 0xA0FF7A00
     );
 
     @SubscribeEvent
@@ -136,7 +137,7 @@ public class TCEventBusClientEvents {
                     FluidStack fluid = fluidHandler.get().getFluidInTank(0);
                     if (!fluid.isEmpty()) {
                         if (fluid.getFluid().isSame(Fluids.LAVA)) {
-                            return 0xFF7A00; //0xFF7A00
+                            return 0xFFFF7A00; //0xFF7A00
                         }
                         ResourceLocation id = BuiltInRegistries.FLUID.getKey(fluid.getFluid());
 
@@ -153,7 +154,7 @@ public class TCEventBusClientEvents {
                 return 0x555555;
             }
 
-            return 0xFFFFFF;
+            return 0xFFFFFFFF;
         },TCItems.FLUID_APPLIER.get());
     }
 
