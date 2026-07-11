@@ -111,4 +111,16 @@ public abstract class AbstractDesorberBlockEntity extends TCBlockEntity {
     public IFluidHandler getFluidCapability(@Nullable Direction direction) {
         return fluidHandler;
     }
+
+    @Override
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        fluidHandler.writeToNBT(registries, tag);
+    }
+
+    @Override
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        fluidHandler.readFromNBT(registries, tag);
+    }
 }
