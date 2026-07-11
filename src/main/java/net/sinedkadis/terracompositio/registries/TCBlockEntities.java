@@ -112,6 +112,9 @@ public class TCBlockEntities {
                             FLOW_CEDAR_ENT_STATUE.get()).build(null));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AirSaturatorBlockEntity>> AIR_SATURATOR_BE =
             registerBE("air_saturator_be",AirSaturatorBlockEntity::new, AIR_SATURATOR);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FloatingComparatorBlockEntity>> FLOATING_COMPARATOR_BE =
+            registerBE("floating_comparator", FloatingComparatorBlockEntity::new, FLOATING_COMPARATOR);
+
 
 
     public static void register(IEventBus eventBus){

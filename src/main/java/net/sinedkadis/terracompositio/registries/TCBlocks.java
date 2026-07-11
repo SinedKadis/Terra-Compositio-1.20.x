@@ -187,34 +187,26 @@ public class TCBlocks {
     public static final DeferredBlock<Block> FLOATING_REDSTONE = registerBlock("floating_redstone",
             () -> new RedStoneWireBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.REDSTONE_WIRE)) {
                 @Override
-                public boolean canSurvive(BlockState pState, LevelReader pLevel, BlockPos pPos) {
+                public boolean canSurviveOn(BlockGetter level, BlockPos pos, BlockState state) {
                     return true;
                 }
-
             });
     public static final DeferredBlock<Block> FLOATING_REPEATER = registerBlock("floating_repeater",
             () -> new RepeaterBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.REPEATER)) {
                 @Override
-                public boolean canSurvive(BlockState pState, LevelReader pLevel, BlockPos pPos) {
-                    return true;
-                }
-                @Override
                 public boolean canConnectRedstone(BlockState state, BlockGetter level, BlockPos pos, @Nullable Direction direction) {
+
                     Direction facing = state.getValue(RepeaterBlock.FACING);
                     return facing == direction || facing.getOpposite() == direction;
                 }
+
+                @Override
+                protected boolean canSurviveOn(LevelReader level, BlockPos pos, BlockState state) {
+                    return true;
+                }
             });
     public static final DeferredBlock<Block> FLOATING_COMPARATOR = registerBlock("floating_comparator",
-            () -> new ComparatorBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.COMPARATOR)) {
-                @Override
-                public boolean canSurvive(BlockState pState, LevelReader pLevel, BlockPos pPos) {
-                    return true;
-                }
-                @Override
-                public boolean canConnectRedstone(BlockState state, BlockGetter level, BlockPos pos, @Nullable Direction direction) {
-                    return true;
-                }
-            });
+            () -> new FloatingComparatorBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.COMPARATOR)));
     public static final DeferredBlock<Block> FLOATING_TORCH_HOLDER = registerBlock("floating_torch_holder",
             () -> new FloatingTorchHolderBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.TORCH)));
     public static final DeferredBlock<Block> INFUSED_IRON_PRESSURE_PLATE = registerBlock("infused_iron_pressure_plate",
