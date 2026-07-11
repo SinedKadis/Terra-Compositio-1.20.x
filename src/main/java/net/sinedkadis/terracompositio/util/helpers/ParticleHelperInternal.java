@@ -139,7 +139,7 @@ public class ParticleHelperInternal {
 
         pPackedLight = LightTexture.FULL_BRIGHT;
 
-        float size = 0.1f;
+        float size = 0.2f;
 
         int pAlpha = 255;
         buffer.vertex(matrix, -size, -size, 0)
