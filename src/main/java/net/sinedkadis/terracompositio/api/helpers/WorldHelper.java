@@ -8,13 +8,11 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
-import net.minecraft.world.level.block.BaseFireBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RotatedPillarBlock;
@@ -147,9 +145,6 @@ public class WorldHelper {
         if (blockstate.isAir()) return;
 
         FluidState fluidstate = level.getFluidState(pos);
-        if (!(blockstate.getBlock() instanceof BaseFireBlock)) {
-            level.levelEvent(2001, pos, Block.getId(blockstate));
-        }
 
         BlockEntity blockentity = blockstate.hasBlockEntity() ? level.getBlockEntity(pos) : null;
         dropResources(blockstate, level, pos, blockentity, player, ItemStack.EMPTY);

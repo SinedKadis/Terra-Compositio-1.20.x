@@ -362,6 +362,9 @@ public class WrenchAxeItem extends AxeItem {
                     level.sendBlockUpdated(blockPos, state, state, Block.UPDATE_ALL);
                 }
             });
+            for (BlockPos peak : peaks) {
+                level.playSound(player, peak, SoundEvents.GRASS_BREAK, SoundSource.BLOCKS);
+            }
             int foodTakeCount = 6;
             Map<Integer,Integer> maxPos = new HashMap<>();
             for (BlockPos oldPos : tree) {
