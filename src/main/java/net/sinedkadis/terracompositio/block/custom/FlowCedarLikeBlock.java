@@ -127,9 +127,7 @@ public class FlowCedarLikeBlock extends RotatedPillarBlock implements IFluidAppl
     public void tick(BlockState pState, @NotNull ServerLevel pLevel, @NotNull BlockPos pPos, @NotNull RandomSource pRandom) {
         if (pState.getValue(INFUSED)) {
             for (BlockPos blockPos : BlockPos.betweenClosed(pPos.offset(-1, -1, -1), pPos.offset(1, 1, 1))) {
-                if (blockPos.getX() != pPos.getX()
-                        && blockPos.getY() != pPos.getY()
-                        && blockPos.getZ() != pPos.getZ()) {
+                if (!blockPos.equals(pPos)) {
                     if (pLevel.getBlockState(blockPos).hasProperty(INFUSED)) {
                         if (!pLevel.getBlockState(blockPos).getValue(INFUSED) && pRandom.nextFloat() > 0.99f)
                             pLevel.setBlockAndUpdate(blockPos, pLevel.getBlockState(blockPos).setValue(INFUSED, true));
