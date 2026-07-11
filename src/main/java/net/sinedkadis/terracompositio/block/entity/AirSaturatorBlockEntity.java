@@ -32,7 +32,7 @@ public class AirSaturatorBlockEntity extends TCBlockEntity implements IFluidAppl
     @Override
     public void addBEBehaviours(List<IBEBehaviour> list) {
         list.add(new ECFHandlerBehaviour(this)
-                .maxECF(100)
+                .maxECF(64)
                 .priority(TCInnerConfig.DEFAULT_CONSUMER_PRIORITY)
                 .range(5));
 
