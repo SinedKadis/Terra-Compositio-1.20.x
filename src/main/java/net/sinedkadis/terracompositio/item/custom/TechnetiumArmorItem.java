@@ -227,8 +227,8 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
         CompoundTag persistentData = localPlayer.getPersistentData();
 
         persistentData.putInt(cd, localPlayer.tickCount);
-        localPlayer.level().playSound(localPlayer, localPlayer.blockPosition(), SoundEvents.CHICKEN_EGG, SoundSource.PLAYERS);
         localPlayer.move(MoverType.SELF, new Vec3(0, 6, 0));
+        localPlayer.level().playSound(localPlayer, localPlayer.blockPosition(), SoundEvents.WIND_CHARGE_BURST.value(), SoundSource.PLAYERS);
         persistentData.putInt(height, localPlayer.getBlockY() - 2);
 
     }
