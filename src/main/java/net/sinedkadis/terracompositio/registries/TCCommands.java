@@ -3,7 +3,6 @@ package net.sinedkadis.terracompositio.registries;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
-import com.tterrag.registrate.util.nullness.NonNullSupplier;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -20,6 +19,7 @@ import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 
 import java.util.Arrays;
+import java.util.function.Supplier;
 
 @EventBusSubscriber(modid = TerraCompositio.MOD_ID)
 public class TCCommands {
@@ -89,7 +89,7 @@ public class TCCommands {
         IECFHandler mainHandler = memberEntity.getMainHandler();
         mainHandler.clear();
 
-        NonNullSupplier<Exception> exception = Exception::new;
+        Supplier<Exception> exception = Exception::new;
         ((LivingEntity) memberEntity.getEntityInstance()).getArmorSlots().forEach(itemStack -> {
             try {
                 IECFHandler capability = itemStack.getCapability(TCCapabilities.ECF_HANDLER_ITEM);
