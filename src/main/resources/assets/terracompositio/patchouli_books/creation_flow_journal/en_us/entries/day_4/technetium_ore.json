@@ -8,9 +8,7 @@
     {
       "title": "book.terracompositio.creation_flow_journal.entry.technetium_ore.name",
       "type": "patchouli:spotlight",
-      "item": {
-        "tag": "terracompositio:unstable_technetium"
-      },
+      "item": "tag:terracompositio:unstable_technetium",
       "link_recipe": true
     }
   ]

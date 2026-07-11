@@ -7,7 +7,7 @@
     {
       "type": "patchouli:spotlight",
       "title": "book.terracompositio.creation_flow_journal.entry.cedar_book_port.name",
-      "item": "terracompositio:creation_flow_journal{day:1},terracompositio:creation_flow_journal{day:2},terracompositio:creation_flow_journal{day:3},terracompositio:creation_flow_journal{day:4},terracompositio:creation_flow_journal{day:5},terracompositio:flow_cedar_altar",
+      "item": "terracompositio:creation_flow_journal[terracompositio:bookmarks=1],terracompositio:creation_flow_journal[terracompositio:bookmarks=2],terracompositio:creation_flow_journal[terracompositio:bookmarks=3],terracompositio:creation_flow_journal[terracompositio:bookmarks=4],terracompositio:creation_flow_journal[terracompositio:bookmarks=5],terracompositio:flow_cedar_altar",
       "link_recipe": true,
       "text": "book.terracompositio.creation_flow_journal.entry.cedar_book_port.page1"
     },
