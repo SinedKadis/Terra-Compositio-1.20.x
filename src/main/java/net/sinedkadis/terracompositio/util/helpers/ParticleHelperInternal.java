@@ -135,7 +135,7 @@ public class ParticleHelperInternal {
         PoseStack.Pose pose = pPoseStack.last();
         var matrix = pose.pose();
 
-        float size = 0.1f;
+        float size = 0.2f;
 
         //pPackedLight = LightTexture.FULL_BRIGHT;
 
