@@ -7,8 +7,8 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
-import net.neoforged.neoforge.items.IItemHandler;
 import net.sinedkadis.terracompositio.block.entity.FlowCedarTankBlockEntity;
 import net.sinedkadis.terracompositio.fluid.FluidRenderer;
 import org.jetbrains.annotations.NotNull;
@@ -29,10 +29,10 @@ public class FlowCedarTankBlockEntityRenderer implements BlockEntityRenderer<Flo
         Level level = pBlockEntity.getLevel();
         if (level == null) return;
 
-        IItemHandler handler = level.getCapability(Capabilities.ItemHandler.BLOCK, pBlockEntity.getBlockPos(), null);
+        IFluidHandler handler = level.getCapability(Capabilities.FluidHandler.BLOCK, pBlockEntity.getBlockPos(), null);
         if (handler == null) return;
 
-        FluidTank tank = (FluidTank) handler;
+        if (!(handler instanceof FluidTank tank)) return;
         if (tank.isEmpty()) return;
 
         FluidStack fluidStack = tank.getFluid();

@@ -47,6 +47,8 @@ import net.neoforged.neoforge.common.SoundActions;
 import net.neoforged.neoforge.common.extensions.IBucketPickupExtension;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.fluids.capability.wrappers.FluidBucketWrapper;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -55,6 +57,7 @@ import net.sinedkadis.terracompositio.block.custom.FlowCauldronBlock;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
 import net.sinedkadis.terracompositio.registries.TCFluids;
 import net.sinedkadis.terracompositio.registries.TCItems;
+import net.sinedkadis.terracompositio.util.ITCCapabilityProviderItem;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
@@ -128,87 +131,7 @@ public class TCFluidRegistryContainer implements IBucketPickupExtension {
         });
         this.properties.block(this.block);
 
-        this.bucket = TCItems.ITEMS.register(name + "_bucket", () -> new BucketItem(this.source.get(), itemProperties) {
-            @Override
-            public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
-                BlockPos pPos = context.getClickedPos();
-                Player player = context.getPlayer();
-                if (player != null && context.getItemInHand().getItem() == TCFluids.FLOW_FLUID.bucket.get()){
-                    if (context.getLevel().getBlockState(pPos)== Blocks.CAULDRON.defaultBlockState()){
-                        context.getLevel().setBlock(pPos, TCBlocks.FLOW_CAULDRON.get().defaultBlockState().setValue(FlowCauldronBlock.LEVEL,3),1);
-                        player.setItemInHand(context.getHand(),new ItemStack(Items.BUCKET));
-                        player.playSound(SoundEvents.BUCKET_EMPTY);
-                        return InteractionResult.SUCCESS;
-                    }
-                }
-                if (player != null && context.getItemInHand().getItem() == TCFluids.BIRCH_JUICE_FLUID.bucket.get()){
-                    if (context.getLevel().getBlockState(pPos)== Blocks.CAULDRON.defaultBlockState()){
-                        context.getLevel().setBlock(pPos, TCBlocks.BIRCH_JUICE_CAULDRON.get().defaultBlockState().setValue(FlowCauldronBlock.LEVEL,3),1);
-                        player.setItemInHand(context.getHand(),new ItemStack(Items.BUCKET));
-                        player.playSound(SoundEvents.BUCKET_EMPTY);
-                        return InteractionResult.SUCCESS;
-                    }
-                }
-
-                return super.onItemUseFirst(stack, context);
-            }
-            @Override
-            public UseAnim getUseAnimation(ItemStack pStack) {
-                if (pStack.is(TCFluids.BIRCH_JUICE_FLUID.bucket.get())) {
-                    return UseAnim.DRINK;
-                }
-                return super.getUseAnimation(pStack);
-            }
-
-            @Override
-            @ParametersAreNonnullByDefault
-            public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pHand) {
-                BlockHitResult blockhitresult = getPlayerPOVHitResult(pLevel, pPlayer, super.content == Fluids.EMPTY ?
-                        ClipContext.Fluid.SOURCE_ONLY
-                        : ClipContext.Fluid.NONE);
-                if (blockhitresult.getType() == HitResult.Type.MISS) {
-                    return ItemUtils.startUsingInstantly(pLevel, pPlayer, pHand);
-                }
-                return super.use(pLevel, pPlayer, pHand);
-            }
-
-            @Override
-            public int getUseDuration(ItemStack stack, LivingEntity entity) {
-                //return stack.is(TCFluids.BIRCH_JUICE_FLUID.bucket.get()) ? 32 : 1;
-                return useDuration;
-            }
-
-            @Override
-            @ParametersAreNonnullByDefault
-            public ItemStack finishUsingItem(ItemStack pStack, Level pLevel, LivingEntity pLivingEntity) {
-                super.finishUsingItem(pStack, pLevel, pLivingEntity);
-                if (pStack.is(TCFluids.BIRCH_JUICE_FLUID.bucket.get())) {
-                    Player player = pLivingEntity instanceof Player ? (Player) pLivingEntity : null;
-                    if (player instanceof ServerPlayer) {
-                        CriteriaTriggers.CONSUME_ITEM.trigger((ServerPlayer) player, pStack);
-                    }
-                    if (player != null) {
-                        player.awardStat(Stats.ITEM_USED.get(this));
-                        if (!player.getAbilities().instabuild) {
-                            pStack.shrink(1);
-                        }
-                        player.addEffect(new MobEffectInstance(MobEffects.SATURATION,5,0,false,false));
-                    }
-                    if (player == null || !player.getAbilities().instabuild) {
-                        if (pStack.isEmpty()) {
-                            return new ItemStack(Items.BUCKET);
-                        }
-
-                        if (player != null) {
-                            player.getInventory().add(new ItemStack(Items.BUCKET));
-                        }
-                    }
-
-                    pLivingEntity.gameEvent(GameEvent.DRINK);
-                }
-                return pStack;
-            }
-        });
+        this.bucket = TCItems.ITEMS.register(name + "_bucket", () -> new TCBucketItem(itemProperties, useDuration));
         this.properties.bucket(this.bucket);
     }
 
@@ -362,5 +285,100 @@ public class TCFluidRegistryContainer implements IBucketPickupExtension {
 //            return this;
 //        }
 
+    }
+
+    private class TCBucketItem extends BucketItem implements ITCCapabilityProviderItem {
+        private final int useDuration;
+
+        public TCBucketItem(Properties itemProperties, int useDuration) {
+            super(TCFluidRegistryContainer.this.source.get(), itemProperties);
+            this.useDuration = useDuration;
+        }
+
+        @Override
+        public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
+            BlockPos pPos = context.getClickedPos();
+            Player player = context.getPlayer();
+            if (player != null && context.getItemInHand().getItem() == TCFluids.FLOW_FLUID.bucket.get()) {
+                if (context.getLevel().getBlockState(pPos) == Blocks.CAULDRON.defaultBlockState()) {
+                    context.getLevel().setBlock(pPos, TCBlocks.FLOW_CAULDRON.get().defaultBlockState().setValue(FlowCauldronBlock.LEVEL, 3), 1);
+                    player.setItemInHand(context.getHand(), new ItemStack(Items.BUCKET));
+                    player.playSound(SoundEvents.BUCKET_EMPTY);
+                    return InteractionResult.SUCCESS;
+                }
+            }
+            if (player != null && context.getItemInHand().getItem() == TCFluids.BIRCH_JUICE_FLUID.bucket.get()) {
+                if (context.getLevel().getBlockState(pPos) == Blocks.CAULDRON.defaultBlockState()) {
+                    context.getLevel().setBlock(pPos, TCBlocks.BIRCH_JUICE_CAULDRON.get().defaultBlockState().setValue(FlowCauldronBlock.LEVEL, 3), 1);
+                    player.setItemInHand(context.getHand(), new ItemStack(Items.BUCKET));
+                    player.playSound(SoundEvents.BUCKET_EMPTY);
+                    return InteractionResult.SUCCESS;
+                }
+            }
+
+            return super.onItemUseFirst(stack, context);
+        }
+
+        @Override
+        public UseAnim getUseAnimation(ItemStack pStack) {
+            if (pStack.is(TCFluids.BIRCH_JUICE_FLUID.bucket.get())) {
+                return UseAnim.DRINK;
+            }
+            return super.getUseAnimation(pStack);
+        }
+
+        @Override
+        @ParametersAreNonnullByDefault
+        public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pHand) {
+            BlockHitResult blockhitresult = getPlayerPOVHitResult(pLevel, pPlayer, super.content == Fluids.EMPTY ?
+                    ClipContext.Fluid.SOURCE_ONLY
+                    : ClipContext.Fluid.NONE);
+            if (blockhitresult.getType() == HitResult.Type.MISS) {
+                return ItemUtils.startUsingInstantly(pLevel, pPlayer, pHand);
+            }
+            return super.use(pLevel, pPlayer, pHand);
+        }
+
+        @Override
+        public int getUseDuration(ItemStack stack, LivingEntity entity) {
+            //return stack.is(TCFluids.BIRCH_JUICE_FLUID.bucket.get()) ? 32 : 1;
+            return useDuration;
+        }
+
+        @Override
+        @ParametersAreNonnullByDefault
+        public ItemStack finishUsingItem(ItemStack pStack, Level pLevel, LivingEntity pLivingEntity) {
+            super.finishUsingItem(pStack, pLevel, pLivingEntity);
+            if (pStack.is(TCFluids.BIRCH_JUICE_FLUID.bucket.get())) {
+                Player player = pLivingEntity instanceof Player ? (Player) pLivingEntity : null;
+                if (player instanceof ServerPlayer) {
+                    CriteriaTriggers.CONSUME_ITEM.trigger((ServerPlayer) player, pStack);
+                }
+                if (player != null) {
+                    player.awardStat(Stats.ITEM_USED.get(this));
+                    if (!player.getAbilities().instabuild) {
+                        pStack.shrink(1);
+                    }
+                    player.addEffect(new MobEffectInstance(MobEffects.SATURATION, 5, 0, false, false));
+                }
+                if (player == null || !player.getAbilities().instabuild) {
+                    if (pStack.isEmpty()) {
+                        return new ItemStack(Items.BUCKET);
+                    }
+
+                    if (player != null) {
+                        player.getInventory().add(new ItemStack(Items.BUCKET));
+                    }
+                }
+
+                pLivingEntity.gameEvent(GameEvent.DRINK);
+            }
+            return pStack;
+        }
+
+        @Override
+        public IFluidHandlerItem addFluidCapability(ItemStack itemStack) {
+            return new FluidBucketWrapper(itemStack);
+        }
     }
 }

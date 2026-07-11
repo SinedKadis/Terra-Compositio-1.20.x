@@ -2,6 +2,7 @@ package net.sinedkadis.terracompositio.block.entity;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -25,8 +26,10 @@ import net.sinedkadis.terracompositio.registries.TCBlocks;
 import net.sinedkadis.terracompositio.registries.TCFluids;
 import net.sinedkadis.terracompositio.registries.TCTags;
 import net.sinedkadis.terracompositio.util.IEntityInstance;
+import net.sinedkadis.terracompositio.util.ITCCapabilityProviderInstance;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
 import net.sinedkadis.terracompositio.util.helpers.ParticleHelperInternal;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
@@ -38,7 +41,7 @@ import static net.sinedkadis.terracompositio.api.registries.TCBlockStateProperti
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class FlowCedarTankBlockEntity extends TCBlockEntity implements FluidNetworkMember {
+public class FlowCedarTankBlockEntity extends TCBlockEntity implements FluidNetworkMember, ITCCapabilityProviderInstance {
     protected final TCFluidTank fluidHandler = new TCFluidTank(8000, this);
     private int tickCounter = 20;
     protected boolean scheduledUpdate = false;
@@ -103,6 +106,17 @@ public class FlowCedarTankBlockEntity extends TCBlockEntity implements FluidNetw
         TerraCompositioAPI.INSTANCE.getFluidNetworkInstance().fireFluidNetworkEvent(this, NetworkAction.REMOVE);
     }
 
+    @Override
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        fluidHandler.writeToNBT(registries, tag);
+    }
+
+    @Override
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        fluidHandler.readFromNBT(registries, tag);
+    }
 
     @Override
     public IFluidHandler getMainHandler() {
@@ -208,6 +222,11 @@ public class FlowCedarTankBlockEntity extends TCBlockEntity implements FluidNetw
                                 transferred);
             }
         } else onFluidNetworkMemberUpdate();
+    }
+
+    @Override
+    public IFluidHandler getFluidCapability(@Nullable Direction direction) {
+        return fluidHandler;
     }
 
     @Override
