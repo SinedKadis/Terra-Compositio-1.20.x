@@ -164,10 +164,10 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
                         );
 
                         if (added > 0) {
-                            holdECFHandler.takeECF(taken, true);
+                            holdECFHandler.takeECF(taken, false);
                             innerECFHandler.addECF(
                                     added,
-                                    true
+                                    false
                             );
                         }
                         if (taken > 0) {
