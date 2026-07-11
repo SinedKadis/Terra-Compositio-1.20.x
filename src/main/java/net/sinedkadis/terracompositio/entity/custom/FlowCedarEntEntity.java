@@ -37,15 +37,17 @@ import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.sinedkadis.terracompositio.api.IHaveKnowledge;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
+import net.sinedkadis.terracompositio.api.dummies.DummyECFHandler;
 import net.sinedkadis.terracompositio.api.helpers.ECFHelper;
+import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
 import net.sinedkadis.terracompositio.api.networks.NetworkAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetwork;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
+import net.sinedkadis.terracompositio.block.entity.PathPointerBlockEntity;
 import net.sinedkadis.terracompositio.config.TCClientConfigs;
 import net.sinedkadis.terracompositio.config.TCCommonConfigs;
-import net.sinedkadis.terracompositio.config.TCInnerConfig;
 import net.sinedkadis.terracompositio.ecf.DefaultECFHandler;
 import net.sinedkadis.terracompositio.ecf.ECFNetworkHandler;
 import net.sinedkadis.terracompositio.ecf.PPECFMemberProxy;
@@ -62,6 +64,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 // /kill @e[type=terracompositio:flow_cedar_ent_entity]
@@ -164,7 +167,7 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
                         );
 
                         if (added > 0) {
-                            holdECFHandler.takeECF(taken, false);
+                            holdECFHandler.takeECF(added, false);
                             innerECFHandler.addECF(
                                     added,
                                     false
@@ -364,7 +367,7 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
 
     @Override
     public int getPriority() {
-        return TCInnerConfig.DEFAULT_SOURCE_PRIORITY;
+        return 0;
     }
 
     @Override
@@ -402,7 +405,7 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
             if (current.getMainHandler().getFreeSpace() > TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get())
                 scheduleMemberUpdate(current);
             ECFHelper.newTransfer().targetAndSource(current, this).speed(5 / 20f).build();
-        } else onECFNetworkMemberUpdate();
+        }
     }
 
     @Override
@@ -431,6 +434,35 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
             scheduledMembers1.forEach(this::sendViaPP);
         } else if (scheduledMembersUpdate > 0)
             scheduledMembersUpdate--;
+    }
+
+    @Override
+    public void onECFNetworkMemberUpdate() {
+        if (holdECFHandler.getECF() > 0) {
+            Set<ECFNetworkMember> allECFNetworkMembers = TerraCompositioAPI.instance().getECFNetworkInstance().getAllECFNetworkMembers(level());
+            allECFNetworkMembers.stream()
+                    .filter(PathPointerBlockEntity.class::isInstance)
+                    .filter(member -> member.getEntityInstance().tc$getBlockPos().closerThan(blockPosition(), getRange()))
+                    .map(PathPointerBlockEntity.class::cast)
+                    .filter(member -> member.parts.contains(PathPointerBlockEntity.PPPart.EXTRACTOR))
+                    .map(member -> {
+                        Optional<ECFNetworkMember> availableNetworkTargets = TerraCompositioAPI.instance().getECFNetworkInstance()
+                                .getAvailableNetworkTargets(this).stream().findAny();
+
+                        if (availableNetworkTargets.isPresent()) {
+                            return new PPECFMemberProxy(
+                                    availableNetworkTargets.get(),
+                                    member
+                            );
+                        }
+                        return SentinelHelper.EMPTY_ECF_HANDLER;
+
+                    })
+                    .filter(member -> !(member instanceof DummyECFHandler))
+                    .map(PPECFMemberProxy.class::cast)
+                    .findAny()
+                    .ifPresent(this::sendViaPP);
+        }
     }
 
     @Override
