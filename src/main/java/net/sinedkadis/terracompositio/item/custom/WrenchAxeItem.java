@@ -329,8 +329,10 @@ public class WrenchAxeItem extends AxeItem {
                     level.sendBlockUpdated(blockPos, state, state, Block.UPDATE_CLIENTS);
                     blocksToRemove--;
                     foodTakeCount--;
-                    ItemHelper.hurtAndBreakItem((ServerLevel) level,player,player.getMainHandItem());
-                    ItemHelper.hurtAndBreakItem((ServerLevel) level,player,player.getOffhandItem());
+                    if (!level.isClientSide()) {
+                        ItemHelper.hurtAndBreakItem((ServerLevel) level, player, player.getMainHandItem());
+                        ItemHelper.hurtAndBreakItem((ServerLevel) level, player, player.getOffhandItem());
+                    }
 
                     if (foodTakeCount == 0) {
                         foodTakeCount = 6;
@@ -376,7 +378,8 @@ public class WrenchAxeItem extends AxeItem {
                 level.sendBlockUpdated(oldPos, oldState, oldState, Block.UPDATE_CLIENTS);
                 foodTakeCount++;
                 tryToPlace(level, newPos, newState, oldPos.getY(),face, maxPos);
-                ItemHelper.hurtAndBreakItem((ServerLevel) level, player, player.getMainHandItem());
+                if (!level.isClientSide())
+                    ItemHelper.hurtAndBreakItem((ServerLevel) level, player, player.getMainHandItem());
                 if (foodTakeCount == 0) {
                     foodTakeCount = 6;
                     if (!(player.getFoodData().getFoodLevel() == 0 && player.getFoodData().getSaturationLevel() == 0)) {
