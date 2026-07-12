@@ -2,6 +2,7 @@ package net.sinedkadis.terracompositio.util.helpers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -136,17 +137,17 @@ public class ParticleHelperInternal {
         var matrix = pose.pose();
         var normal = pose.normal();
 
-        //pPackedLight = 0xF000F0;
+        pPackedLight = LightTexture.FULL_BRIGHT;
 
         float size = 0.1f;
 
-        int pAlpha = 200;
+        int pAlpha = 255;
         buffer.vertex(matrix, -size, -size, 0)
                 .color(255, 255, 255, pAlpha)
                 .uv(0, 1)
                 .overlayCoords(OverlayTexture.NO_OVERLAY)
                 .uv2(pPackedLight)
-                .normal(normal, 0, 0, -1)
+                .normal(normal, 0, 0, 1)
                 .endVertex();
 
         buffer.vertex(matrix, size, -size, 0)
@@ -154,7 +155,7 @@ public class ParticleHelperInternal {
                 .uv(1, 1)
                 .overlayCoords(OverlayTexture.NO_OVERLAY)
                 .uv2(pPackedLight)
-                .normal(normal, 0, 0, -1)
+                .normal(normal, 0, 0, 1)
                 .endVertex();
 
         buffer.vertex(matrix, size, size, 0)
@@ -162,7 +163,7 @@ public class ParticleHelperInternal {
                 .uv(1, 0)
                 .overlayCoords(OverlayTexture.NO_OVERLAY)
                 .uv2(pPackedLight)
-                .normal(normal, 0, 0, -1)
+                .normal(normal, 0, 0, 1)
                 .endVertex();
 
         buffer.vertex(matrix, -size, size, 0)
@@ -170,7 +171,7 @@ public class ParticleHelperInternal {
                 .uv(0, 0)
                 .overlayCoords(OverlayTexture.NO_OVERLAY)
                 .uv2(pPackedLight)
-                .normal(normal, 0, 0, -1)
+                .normal(normal, 0, 0, 1)
                 .endVertex();
     }
 }

@@ -33,7 +33,6 @@ public class ECFItemWrapper implements IECFHandler, ICapabilityProvider {
 
     public ECFItemWrapper(@NotNull ItemStack container) {
         this.container = container;
-        setMaxECF(8);
     }
 
     @Override

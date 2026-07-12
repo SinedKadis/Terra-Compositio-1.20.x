@@ -5,7 +5,9 @@
       "conditions": {
         "items": [
           {
-            "items": "terracompositio:flow_cedar_planks"
+            "items": [
+              "terracompositio:flow_cedar_planks"
+            ]
           }
         ]
       },
@@ -13,20 +15,21 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "terracompositio:flow_cedar_chest_boat"
+        "recipe": "terracompositio:flow_cedar_boat"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_the_recipe",
-      "has_flow_cedar_planks"
+      "has_flow_cedar_planks",
+      "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "terracompositio:flow_cedar_chest_boat"
+      "terracompositio:flow_cedar_boat"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

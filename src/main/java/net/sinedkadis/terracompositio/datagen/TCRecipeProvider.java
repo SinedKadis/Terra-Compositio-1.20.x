@@ -686,7 +686,7 @@ public class TCRecipeProvider extends RecipeProvider implements IConditionBuilde
                 .define('R', Items.COPPER_INGOT)
                 .unlockedBy(getHasName(Items.COPPER_INGOT), has(Items.COPPER_INGOT))
                 .save(pWriter);
-        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, Items.COPPER_INGOT, 2)
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, Items.COPPER_INGOT)
                 .pattern("NNN")
                 .pattern("NNN")
                 .pattern("NNN")

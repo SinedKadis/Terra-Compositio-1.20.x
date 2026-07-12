@@ -13,6 +13,7 @@
   ],
   "result": {
     "count": 2,
-    "id": "minecraft:copper_ingot"
-  }
+    "item": "minecraft:copper_ingot"
+  },
+  "show_notification": true
 }

@@ -11,7 +11,7 @@
     "LLL"
   ],
   "result": {
-    "count": 1,
-    "id": "terracompositio:flow_cedar_boat"
-  }
+    "item": "terracompositio:flow_cedar_boat"
+  },
+  "show_notification": true
 }
