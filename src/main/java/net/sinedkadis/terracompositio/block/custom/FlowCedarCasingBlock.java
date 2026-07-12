@@ -45,7 +45,8 @@ public class FlowCedarCasingBlock extends TCBaseEntityBlock implements IFluidApp
         super(pProperties);
         registerDefaultState(defaultBlockState()
                 .setValue(INFUSED, false)
-                .setValue(WAXED, false));
+                .setValue(WAXED, false)
+                .setValue(AXIS, Direction.Axis.Y));
     }
 
     @Override

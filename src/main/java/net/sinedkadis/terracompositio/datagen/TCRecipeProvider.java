@@ -203,6 +203,40 @@ public class TCRecipeProvider extends RecipeProvider implements IConditionBuilde
                 .requires(TCBlocks.FLOW_CEDAR_PLANKS.get())
                 .unlockedBy(getHasName(TCBlocks.FLOW_CEDAR_PLANKS.get()), has(TCBlocks.FLOW_CEDAR_PLANKS.get()))
                 .save(pWriter);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, TCBlocks.FLOW_CEDAR_WOOD.get(), 3)
+                .pattern("SS")
+                .pattern("SS")
+                .define('S', TCBlocks.FLOW_CEDAR_LOG.get())
+                .unlockedBy(getHasName(TCBlocks.FLOW_CEDAR_LOG.get()), has(TCBlocks.FLOW_CEDAR_LOG.get()))
+                .save(pWriter);
+        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, TCBlocks.FLOW_CEDAR_SIGN.get(), 3)
+                .pattern("PPP")
+                .pattern("PPP")
+                .pattern(" S ")
+                .define('P', TCBlocks.FLOW_CEDAR_PLANKS.get())
+                .define('S', Items.STICK)
+                .unlockedBy(getHasName(TCBlocks.FLOW_CEDAR_LOG.get()), has(TCBlocks.FLOW_CEDAR_LOG.get()))
+                .save(pWriter);
+        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, TCBlocks.FLOW_CEDAR_HANGING_SIGN.get(), 6)
+                .pattern("C C")
+                .pattern("LLL")
+                .pattern("LLL")
+                .define('L', TCBlocks.STRIPPED_FLOW_CEDAR_LOG.get())
+                .define('C', Items.CHAIN)
+                .unlockedBy(getHasName(TCBlocks.FLOW_CEDAR_LOG.get()), has(TCBlocks.FLOW_CEDAR_LOG.get()))
+                .save(pWriter);
+        ShapedRecipeBuilder.shaped(RecipeCategory.TRANSPORTATION, TCItems.FLOW_CEDAR_BOAT.get())
+                .pattern("L L")
+                .pattern("LLL")
+                .define('L', TCBlocks.FLOW_CEDAR_PLANKS.get())
+                .unlockedBy(getHasName(TCBlocks.FLOW_CEDAR_PLANKS.get()), has(TCBlocks.FLOW_CEDAR_PLANKS.get()))
+                .save(pWriter);
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.TRANSPORTATION, TCItems.FLOW_CEDAR_CHEST_BOAT.get(), 1)
+                .requires(TCItems.FLOW_CEDAR_BOAT.get())
+                .requires(Items.CHEST)
+                .unlockedBy(getHasName(TCBlocks.FLOW_CEDAR_PLANKS.get()), has(TCBlocks.FLOW_CEDAR_PLANKS.get()))
+                .save(pWriter);
     }
 
     private static void buildTechnetiumOreProcessing(@NotNull Consumer<FinishedRecipe> pWriter) {
@@ -652,6 +686,13 @@ public class TCRecipeProvider extends RecipeProvider implements IConditionBuilde
                 .define('R', Items.COPPER_INGOT)
                 .unlockedBy(getHasName(Items.COPPER_INGOT), has(Items.COPPER_INGOT))
                 .save(pWriter);
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, Items.COPPER_INGOT, 2)
+                .pattern("NNN")
+                .pattern("NNN")
+                .pattern("NNN")
+                .define('N', TCItems.COPPER_NUGGET.get())
+                .unlockedBy(getHasName(Items.COPPER_INGOT), has(Items.COPPER_INGOT))
+                .save(pWriter);
     }
 
     private static void buildSpecial(@NotNull Consumer<FinishedRecipe> pWriter) {
@@ -669,7 +710,7 @@ public class TCRecipeProvider extends RecipeProvider implements IConditionBuilde
                 .pattern("SNS")
                 .pattern(" N ")
                 .define('S', Items.STICK)
-                .define('N', TCItems.COPPER_NUGGET.get())
+                .define('N', TCTags.Items.COPPER_NUGGETS)
                 .unlockedBy(getHasName(Items.STICK), has(TCItems.COPPER_NUGGET.get()))
                 .save(pWriter);
         ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, TCItems.SHIELDED_BUNDLE.get(), 1)
