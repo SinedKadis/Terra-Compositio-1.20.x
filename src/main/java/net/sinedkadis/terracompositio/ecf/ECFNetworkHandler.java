@@ -184,7 +184,7 @@ public class ECFNetworkHandler implements ECFNetwork {
             for (ECFNetworkMember member : members) {
                 if (!member.getEntityInstance().tc$getBlockPos().closerThan(current.getEntityInstance().tc$getBlockPos(), current.getRange()))
                     continue;
-                if (member.getPriority() <= current.getPriority()) continue;
+                if (member.getPriority() <= current.getPriority() || member.getPriority() == 0) continue;
                 if (member.getEntityInstance().equals(current.getEntityInstance())) continue;
 
                 // Если текущий — EMITTER прокси, перенаправляем позицию к collector
