@@ -98,10 +98,9 @@ public class ItemHelper {
      * Drop contents of blockEntity default inventory.
      *
      * @param blockEntity the block entity
-     * @param slots       the last slot index, that will be dropped. If Empty, all slots will be dropped
      */
-    public static void dropContents(BlockEntity blockEntity, int... slots) {
-        dropContents(blockEntity, Capabilities.ItemHandler.BLOCK, slots);
+    public static void dropContents(BlockEntity blockEntity) {
+        dropContents(blockEntity, Capabilities.ItemHandler.BLOCK);
     }
 
     /**
@@ -110,9 +109,8 @@ public class ItemHelper {
      * @param <T>         the type parameter
      * @param blockEntity the block entity
      * @param cap         the capability that extends {@link IItemHandler}
-     * @param slots       the last slot index, that will be dropped. If Empty, all slots will be dropped
      */
-    public static <T extends IItemHandler, C> void dropContents(BlockEntity blockEntity, BlockCapability<T, C> cap, int... slots) {
+    public static <T extends IItemHandler, C> void dropContents(BlockEntity blockEntity, BlockCapability<T, C> cap) {
         Level level = blockEntity.getLevel();
         if (level == null) return;
 
@@ -120,16 +118,11 @@ public class ItemHelper {
         if (itemHandler == null) return;
 
         SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
-        if (slots.length == 0) {
-            for (int i = 0; i < itemHandler.getSlots(); i++) {
-                inventory.setItem(i, itemHandler.getStackInSlot(i));
-            }
-        } else {
-            for (int i = 0; i < slots.length; i++) {
-                int slot = slots[i];
-                inventory.setItem(i, itemHandler.getStackInSlot(slot));
-            }
+
+        for (int i = 0; i < inventory.getContainerSize(); i++) {
+            inventory.setItem(i, itemHandler.getStackInSlot(i));
         }
+
         BlockPos worldPosition = blockEntity.getBlockPos();
         Containers.dropContents(level, worldPosition, inventory);
 

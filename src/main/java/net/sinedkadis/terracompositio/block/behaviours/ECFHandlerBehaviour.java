@@ -22,7 +22,6 @@ import net.sinedkadis.terracompositio.config.TCCommonConfigs;
 import net.sinedkadis.terracompositio.config.TCInnerConfig;
 import net.sinedkadis.terracompositio.ecf.PPECFMemberProxy;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEECFBehaviour;
-import net.sinedkadis.terracompositio.util.helpers.ECFHelperInternal;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -106,10 +105,11 @@ public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
 
     @Override
     public void onECFNetworkMemberUpdate(ECFNetworkMember updated) {
-        if (getMainHandler().getECF() > 0 && isValidMember(updated)) {
+        if (getMainHandler().getECF() > 0 && isValidMember(updated) && !updated.getEntityInstance().tc$isEntity()) {
             if (updated.getMainHandler().getFreeSpace() > TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get()) {
                 if (updated instanceof PPECFMemberProxy(
                         ECFNetworkMember target, PathPointerBlockEntity proxy1
+                        , PathPointerBlockEntity ignoredSource
                 ) && target.getEntityInstance().tc$isEntity()) {
                     if (updated.getEntityInstance().tc$getBlockPos().closerThan(proxy1.getOutputPos(), getRange()))
                         scheduleMemberUpdate(updated);
@@ -122,7 +122,7 @@ public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
     }
 
     public boolean isValidMember(ECFNetworkMember updated) {
-        return ECFHelper.validMember(updated) || ECFHelperInternal.validPPProxy(updated);
+        return TerraCompositioAPI.instance().getECFNetworkInstance().validateRelation(this, updated, Math::min);
     }
 
     @Override

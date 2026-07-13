@@ -17,6 +17,7 @@ import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.sinedkadis.terracompositio.api.IHaveKnowledge;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
+import net.sinedkadis.terracompositio.api.networks.TransferAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.config.TCCommonConfigs;
 import net.sinedkadis.terracompositio.registries.TCCapabilities;
@@ -60,7 +61,7 @@ public abstract class TCCraftingBlockEntity extends TCBlockEntity implements Wor
         if (this.level == null) return;
         IECFHandler capability = level.getCapability(TCCapabilities.ECF_HANDLER_BLOCK, worldPosition, null);
         if (capability == null) return;
-        capability.takeECF(floorECF + floorPart, false);
+        capability.takeECF(floorECF + floorPart, TransferAction.EXECUTE);
     }
 
     @Override

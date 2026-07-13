@@ -4,6 +4,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
+import net.sinedkadis.terracompositio.api.tooltip.HeaderComponent;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -26,8 +27,8 @@ public interface IHaveKnowledge {
     /**
      * Adds tooltip lines on client, taking info from data.
      * Use {@link TooltipHelper#addIfExist(TooltipHelper.ICustomKey, TooltipHelper.Units, List, CompoundTag)} to easily display data.
-     * You can put components from {@link net.sinedkadis.terracompositio.api.tooltip_components} to tooltip,
-     * but for {@link net.sinedkadis.terracompositio.api.tooltip_components.HeaderComponent} use {@link TooltipHelper#addWithHeader(TooltipHelper.ICustomHeader, List, Consumer)}
+     * You can put components from {@link net.sinedkadis.terracompositio.api.tooltip} to tooltip,
+     * but for {@link HeaderComponent} use {@link TooltipHelper#addWithHeader(TooltipHelper.ICustomHeader, List, Consumer)}
      *
      * @param data       the data
      * @param tooltip    the tooltip

@@ -1,12 +1,13 @@
 package net.sinedkadis.terracompositio.api.networks.ecf;
 
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.sinedkadis.terracompositio.api.IEntityInstance;
 import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
+import net.sinedkadis.terracompositio.api.networks.AnyNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.NetworkAction;
 
 import java.util.Set;
+import java.util.function.IntBinaryOperator;
 
 /**
  * The ECF network singleton. Used to manage interactions between different {@link ECFNetworkMember}.
@@ -30,15 +31,28 @@ public interface ECFNetwork {
     boolean isIn(Level pLevel, ECFNetworkMember ecfHandler);
 
     /**
-     * Updates members in given range.
+     * Checks for validating given member.
      *
-     * @param level  the level
-     * @param origin the origin
-     * @param range  the range
+     * @param target the member
+     * @return the true if member is valid
      */
-    void updateInRange(Level level, BlockPos origin, int range);
+    boolean validateMember(AnyNetworkMember target);
 
-    void updateAll(Level level);
+    /**
+     * Checks for validating relation between given members.
+     *
+     * @param source the source member
+     * @param target the target member
+     * @param distanceOp the operation, that returns range between two members, combined from their range property
+     * @return the true if member is valid
+     */
+    boolean validateRelation(ECFNetworkMember source, ECFNetworkMember target, IntBinaryOperator distanceOp);
+
+    void executeECFTransfer(ECFNetworkMember target,
+                            ECFNetworkMember source,
+                            float speed);
+
+    void sendBurst(IECFHandler source, IECFHandler target, int count, float speed);
 
     /**
      * Searches for available to sent ECF members
@@ -55,13 +69,6 @@ public interface ECFNetwork {
      * @return the all ecf network members
      */
     Set<ECFNetworkMember> getAllECFNetworkMembers(Level level);
-
-    /**
-     * Gets ecf transfer limit. Reads config value if Terracompositio exist
-     *
-     * @return the ecf transfer limit
-     */
-    int getECFTransferLimit();
 
     /**
      * Creates default ecf handler if Terracompositio exist. Usable in

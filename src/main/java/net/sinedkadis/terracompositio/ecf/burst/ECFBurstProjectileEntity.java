@@ -21,12 +21,13 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.sinedkadis.terracompositio.api.networks.TransferAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
-import net.sinedkadis.terracompositio.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.block.entity.PathPointerBlockEntity;
 import net.sinedkadis.terracompositio.block.entity.TCBlockEntity;
 import net.sinedkadis.terracompositio.ecf.PPECFMemberProxy;
+import net.sinedkadis.terracompositio.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.registries.TCEntities;
 import net.sinedkadis.terracompositio.registries.TCItems;
 import org.joml.Vector3f;
@@ -44,7 +45,7 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
 
 
     private final BlockPos.MutableBlockPos lastBP = new BlockPos.MutableBlockPos();
-    private int timeToLive = 120;
+    private int timeToLive = 150;
 
     @Getter
     @Setter
@@ -177,7 +178,7 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
                 for (ItemStack stack : ((LivingEntity) owner).getArmorSlots()) {
                     IECFHandler IECFHandler = stack.getCapability(TCCapabilities.ECF_HANDLER_ITEM);
                     assert IECFHandler != null;
-                    cfe -= IECFHandler.addECF(cfe, false);
+                    cfe -= IECFHandler.addECF(cfe, TransferAction.EXECUTE);
                     if (cfe <= 0) break;
                 }
             }
@@ -216,7 +217,8 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
 
 
     private void killIfTimeEnded() {
-        if (tickCount > timeToLive) discard();
+        if (tickCount > timeToLive)
+            discard();
     }
 
     private void recalculateCrownOwnerTarget() {
@@ -271,7 +273,7 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
     }
 
     private int tryConsumeCFEHandler(IECFHandler IECFHandler, int cfe) {
-        int added = IECFHandler.addECF(cfe, false);
+        int added = IECFHandler.addECF(cfe, TransferAction.BOTH);
         discard();
         return added;
     }

@@ -4,6 +4,8 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.sinedkadis.terracompositio.api.IEntityInstance;
 import org.spongepowered.asm.mixin.Mixin;
@@ -37,4 +39,23 @@ public abstract class EntityMixin implements IEntityInstance {
         return true;
     }
 
+    @Override
+    public Level tc$getLevel() {
+        return level();
+    }
+
+    @Override
+    public BlockState tc$getBlockState() {
+        throw new IllegalStateException("Tried to get blockState from entity - " + this);
+    }
+
+    @Override
+    public BlockEntity tc$asBE() {
+        throw new IllegalStateException("Tried to get blockEntity from entity - " + this);
+    }
+
+    @Override
+    public Entity tc$asEntity() {
+        return (Entity) (Object) this;
+    }
 }

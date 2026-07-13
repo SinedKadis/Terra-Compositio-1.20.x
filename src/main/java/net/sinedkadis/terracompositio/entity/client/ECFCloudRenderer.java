@@ -39,6 +39,7 @@ public class ECFCloudRenderer extends EntityRenderer<ECFCloudEntity> {
         int cfe = pEntity.getSyncedECF();
         float k = (float) Math.log10(cfe);
         int count = TCInnerConfig.RENDER_COUNT_FUNCTION.applyAsInt(cfe);
+        if (count < 0) return;
         if (offsets == null || offsets.length < count) genOffsets(pEntity);
         pPoseStack.pushPose();
         var frustum = Minecraft.getInstance().levelRenderer.getFrustum();

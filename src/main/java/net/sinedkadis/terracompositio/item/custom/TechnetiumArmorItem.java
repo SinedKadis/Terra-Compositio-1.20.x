@@ -40,6 +40,7 @@ import net.sinedkadis.terracompositio.api.helpers.BlockPosHelper;
 import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
 import net.sinedkadis.terracompositio.api.networks.NetworkAction;
+import net.sinedkadis.terracompositio.api.networks.TransferAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.api.registries.TCBlockStateProperties;
@@ -93,11 +94,11 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
         if (itemBySlot.is(TCItems.TECHNETIUM_CHESTPLATE.get())) {
             IECFHandler iECFHandler = itemBySlot.getCapability(TCCapabilities.ECF_HANDLER_ITEM);
             if (iECFHandler == null) iECFHandler = SentinelHelper.EMPTY_ECF_HANDLER;
-            if (iECFHandler.takeECF(1, true) > 0) {
+            if (iECFHandler.takeECF(1, TransferAction.SIMULATE) > 0) {
                 Level level = player.level();
                 BlockPos pPos = player.blockPosition();
                 if (player.getRandom().nextFloat() > 0.3f) {
-                    iECFHandler.takeECF(1, false);
+                    iECFHandler.takeECF(1, TransferAction.EXECUTE);
                     if (iECFHandler.getECF() <= 0) {
                         level.playSound(null,
                                 pPos,
@@ -222,7 +223,7 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
         if (!itemBySlot.is(TCItems.TECHNETIUM_BOOTS.get())) return;
 
         IECFHandler iECFHandler = itemBySlot.getCapability(TCCapabilities.ECF_HANDLER_ITEM);
-        if (iECFHandler == null || !(iECFHandler.takeECF(1, false) > 0)) return;
+        if (iECFHandler == null || !(iECFHandler.takeECF(1, TransferAction.SIMULATE) > 0)) return;
 
         CompoundTag persistentData = localPlayer.getPersistentData();
 
@@ -234,7 +235,7 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
     }
 
     private static void takeECFAndSetBoard(IECFHandler IECFHandler, Level level, BlockPos posOnHeight, BlockState boardState) {
-        if (IECFHandler.takeECF(1, false) > 0 && level.isClientSide()) {
+        if (IECFHandler.takeECF(1, TransferAction.SIMULATE) > 0 && level.isClientSide()) {
             level.destroyBlock(posOnHeight,true);
             level.setBlock(posOnHeight, boardState, 1);
             PacketDistributor.sendToServer(new C2SBoardSyncPayload(
@@ -326,16 +327,16 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
             if (stack.equals(itemStack)) {
                 IECFHandler playerHandler = Objects.requireNonNull(entity.getCapability(TCCapabilities.ECF_HANDLER_ENTITY))
                         .getMainHandler();
-                int taken = thisHandler.addECF(TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get(), true);
-                int added = playerHandler.takeECF(taken, false);
-                thisHandler.addECF(added, false);
+                int taken = thisHandler.addECF(TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get(), TransferAction.SIMULATE);
+                int added = playerHandler.takeECF(taken, TransferAction.EXECUTE);
+                thisHandler.addECF(added, TransferAction.EXECUTE);
                 continue;
             }
             IECFHandler iecfHandler = stack.getCapability(TCCapabilities.ECF_HANDLER_ITEM);
             if (iecfHandler == null) return;
-            int taken = thisHandler.takeECF(TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get(), true);
-            int added = iecfHandler.addECF(taken, false);
-            thisHandler.takeECF(added, false);
+            int taken = thisHandler.takeECF(TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get(), TransferAction.SIMULATE);
+            int added = iecfHandler.addECF(taken, TransferAction.EXECUTE);
+            thisHandler.takeECF(added, TransferAction.EXECUTE);
         }
     }
 

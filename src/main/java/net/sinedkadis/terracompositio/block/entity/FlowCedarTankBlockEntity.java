@@ -14,12 +14,11 @@ import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.sinedkadis.terracompositio.api.IEntityInstance;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
-import net.sinedkadis.terracompositio.api.helpers.ECFHelper;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
 import net.sinedkadis.terracompositio.api.networks.NetworkAction;
 import net.sinedkadis.terracompositio.api.networks.fluid.FluidNetwork;
 import net.sinedkadis.terracompositio.api.networks.fluid.FluidNetworkMember;
-import net.sinedkadis.terracompositio.api.tooltip_components.FluidComponent;
+import net.sinedkadis.terracompositio.api.tooltip.FluidComponent;
 import net.sinedkadis.terracompositio.config.TCCommonConfigs;
 import net.sinedkadis.terracompositio.fluid.TCFluidTank;
 import net.sinedkadis.terracompositio.registries.TCBlockEntities;
@@ -206,7 +205,8 @@ public class FlowCedarTankBlockEntity extends TCBlockEntity implements FluidNetw
 
     @Override
     public void onFluidNetworkMemberUpdate(FluidNetworkMember updated) {
-        if (updated.getPriority() > this.getPriority() && getMainHandler().getFluidInTank(0).getAmount() > 0 && ECFHelper.validMember(updated)) {
+        if (updated.getPriority() > this.getPriority() && getMainHandler().getFluidInTank(0).getAmount() > 0
+                && TerraCompositioAPI.instance().getECFNetworkInstance().validateMember(updated)) {
             IFluidHandler mainHandler = updated.getMainHandler();
             if (mainHandler.getTankCapacity(0) - mainHandler.getFluidInTank(0).getAmount() > 0) {
                 scheduleMemberUpdate(updated);

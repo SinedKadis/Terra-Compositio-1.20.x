@@ -25,6 +25,7 @@ import net.neoforged.neoforge.items.ItemStackHandler;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.api.IEntityInstance;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
+import net.sinedkadis.terracompositio.api.networks.TransferAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetwork;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.registries.TCBlockEntities;
@@ -89,7 +90,7 @@ public class CultivationDesorberBlockEntity extends AbstractDesorberBlockEntity 
             FluidTank fluidHandler1 = blockEntity.fluidHandler;
             if (!fluidHandler1.isEmpty() && fluidHandler1.getFluidAmount() >= ECFToAdd) {
                 fluidHandler1.drain(ECFToAdd, IFluidHandler.FluidAction.EXECUTE);
-                int added = blockEntity.ecfContainer().addECF(ECFToAdd, false);
+                int added = blockEntity.ecfContainer().addECF(ECFToAdd, TransferAction.EXECUTE);
                 ECFToAdd -= added;
                 if (!level.isClientSide())
                     level.playSound(null,pos, SoundEvents.AZALEA_LEAVES_STEP, SoundSource.BLOCKS);

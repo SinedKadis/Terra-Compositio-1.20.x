@@ -1,31 +1,20 @@
-package net.sinedkadis.terracompositio.api.tooltip_components;
+package net.sinedkadis.terracompositio.api.tooltip;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
-import net.neoforged.neoforge.fluids.FluidStack;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 /**
- * The implementation of Component that holds {@link FluidStack}. Processed in Knowledge Overlay.
+ * Just an empty implementation of {@link Component}.
  */
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public record FluidComponent(FluidStack fluidStack) implements Component {
-
-    /**
-     * Factory method for {@link FluidComponent}
-     *
-     * @param fluidStack the fluid stack
-     * @return the fluid component
-     */
-    public static FluidComponent of(FluidStack fluidStack) {
-        return new FluidComponent(fluidStack);
-    }
+public class EmptyComponent implements Component {
 
     @Override
     public Style getStyle() {
@@ -34,7 +23,7 @@ public record FluidComponent(FluidStack fluidStack) implements Component {
 
     @Override
     public ComponentContents getContents() {
-        throw new RuntimeException("Content of fluid component read unexpected");
+        throw new RuntimeException("Content of empty component read unexpected");
     }
 
     @Override
