@@ -91,6 +91,9 @@ sourceSets {
     api {
         java.srcDir 'src/api/java'
         resources.srcDir 'src/api/resources'
+
+        compileClasspath += configurations.compileClasspath
+        runtimeClasspath += configurations.runtimeClasspath
     }
 
     main {
@@ -258,6 +261,9 @@ dependencies {
 
     //implementation "com.github.glitchfiend:TerraBlender-neoforge:${minecraft_version}-${terrablender_version}"
     implementation "maven.modrinth:kkmrDlKT:6e8GCrLb"
+
+    apiCompileOnly 'org.projectlombok:lombok:1.18.34'
+    apiAnnotationProcessor 'org.projectlombok:lombok:1.18.34'
 }
 
 // NOTE: there is no `mixin { ... }` configuration block anymore (that came from the
