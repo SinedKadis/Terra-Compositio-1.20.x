@@ -1,30 +1,30 @@
-package net.sinedkadis.terracompositio.api.tooltip_components;
+package net.sinedkadis.terracompositio.api.tooltip;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 /**
- * The implementation of Component that holds {@link ItemStack}. Processed in Knowledge Overlay.
+ * The implementation of Component that holds {@link FluidStack}. Processed in Knowledge Overlay.
  */
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public record ItemComponent(ItemStack itemStack) implements Component {
+public record FluidComponent(FluidStack fluidStack) implements Component {
 
     /**
-     * Factory method for {@link ItemComponent}
+     * Factory method for {@link FluidComponent}
      *
-     * @param itemStack the item stack
-     * @return the item component
+     * @param fluidStack the fluid stack
+     * @return the fluid component
      */
-    public static ItemComponent of(ItemStack itemStack) {
-        return new ItemComponent(itemStack);
+    public static FluidComponent of(FluidStack fluidStack) {
+        return new FluidComponent(fluidStack);
     }
 
     @Override

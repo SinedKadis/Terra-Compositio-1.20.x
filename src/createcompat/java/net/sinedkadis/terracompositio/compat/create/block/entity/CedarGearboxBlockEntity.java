@@ -16,6 +16,7 @@ import net.sinedkadis.terracompositio.api.IHaveKnowledge;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
 import net.sinedkadis.terracompositio.api.networks.NetworkAction;
+import net.sinedkadis.terracompositio.api.networks.TransferAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetwork;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
@@ -73,7 +74,7 @@ public class CedarGearboxBlockEntity extends GeneratingKineticBlockEntity implem
                 ECFNetworkInstance.fireECFNetworkEvent(this, NetworkAction.ADD);
             }
         }
-        if (!isOverStressed() && ecfHandler.takeECF(1, false) > 0) {
+        if (!isOverStressed() && ecfHandler.takeECF(1, TransferAction.EXECUTE) > 0) {
             updateGeneratedRotation();
         } else {
             if (getSpeed() != 0)

@@ -17,6 +17,7 @@ import net.sinedkadis.terracompositio.api.IHaveKnowledge;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
 import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
+import net.sinedkadis.terracompositio.api.networks.TransferAction;
 import net.sinedkadis.terracompositio.api.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.config.TCCommonConfigs;
 import net.sinedkadis.terracompositio.util.behaviors.DummyBehaviour;
@@ -56,7 +57,7 @@ public abstract class TCCraftingBlockEntity extends TCBlockEntity implements Wor
         partialECF += tickECFCost - floorECF;
         int floorPart = (int) Math.floor(partialECF);
         partialECF = partialECF - floorPart;
-        this.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER).takeECF(floorECF + floorPart, false);
+        this.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER).takeECF(floorECF + floorPart, TransferAction.EXECUTE);
     }
 
     @Override

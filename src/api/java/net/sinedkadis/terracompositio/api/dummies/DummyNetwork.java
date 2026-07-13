@@ -4,13 +4,16 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
+import net.sinedkadis.terracompositio.api.networks.AnyNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.NetworkAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetwork;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
+import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.api.networks.fluid.FluidNetwork;
 import net.sinedkadis.terracompositio.api.networks.fluid.FluidNetworkMember;
 
 import java.util.Set;
+import java.util.function.IntBinaryOperator;
 
 /**
  * The placeholder, returned by {@link TerraCompositioAPI#getECFNetworkInstance()} and {@link TerraCompositioAPI#getFluidNetworkInstance()}, if Terracompositio is not present
@@ -30,11 +33,6 @@ public class DummyNetwork implements ECFNetwork, FluidNetwork {
     }
 
     @Override
-    public int getECFTransferLimit() {
-        return 20;
-    }
-
-    @Override
     public void fireECFNetworkEvent(ECFNetworkMember source, NetworkAction action) {
 
     }
@@ -42,6 +40,26 @@ public class DummyNetwork implements ECFNetwork, FluidNetwork {
     @Override
     public boolean isIn(Level pLevel, ECFNetworkMember ecfHandler) {
         return true;
+    }
+
+    @Override
+    public boolean validateMember(AnyNetworkMember target) {
+        return false;
+    }
+
+    @Override
+    public boolean validateRelation(ECFNetworkMember source, ECFNetworkMember target, IntBinaryOperator distanceOp) {
+        return false;
+    }
+
+    @Override
+    public void executeECFTransfer(ECFNetworkMember target, ECFNetworkMember source, float speed) {
+
+    }
+
+    @Override
+    public void sendBurst(IECFHandler source, IECFHandler target, int count, float speed) {
+
     }
 
     @Override
@@ -61,11 +79,6 @@ public class DummyNetwork implements ECFNetwork, FluidNetwork {
 
     @Override
     public void updateInRange(Level level, BlockPos origin, int range) {
-
-    }
-
-    @Override
-    public void updateAll(Level level) {
 
     }
 

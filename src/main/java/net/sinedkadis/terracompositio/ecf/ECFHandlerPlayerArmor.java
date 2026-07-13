@@ -9,7 +9,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.LazyOptional;
 import net.sinedkadis.terracompositio.api.IEntityInstance;
 import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
-import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
+import net.sinedkadis.terracompositio.api.networks.TransferAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.api.registries.TCCapabilities;
 
@@ -82,12 +82,12 @@ public class ECFHandlerPlayerArmor implements IECFHandler {
     }
 
     @Override
-    public int addECF(int cfe, boolean simulate) {
+    public int addECF(int cfe, TransferAction action) {
         int allAdded = 0;
-        int toAdd = cfe - handler.addECF(cfe, false);
+        int toAdd = cfe - handler.addECF(cfe, action);
         for (ItemStack itemStack : handlerList) {
             IECFHandler IECFHandler = itemStack.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER);
-            int added = IECFHandler.addECF(toAdd, simulate);
+            int added = IECFHandler.addECF(toAdd, action);
             allAdded += added;
             toAdd -= added;
         }
@@ -95,21 +95,16 @@ public class ECFHandlerPlayerArmor implements IECFHandler {
     }
 
     @Override
-    public int takeECF(int cfe, boolean simulate) {
+    public int takeECF(int cfe, TransferAction action) {
         int allTaken = 0;
-        int toTake = cfe - handler.takeECF(cfe, false);
+        int toTake = cfe - handler.takeECF(cfe, action);
         for (ItemStack itemStack : handlerList) {
             IECFHandler IECFHandler = itemStack.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER);
-            int taken = IECFHandler.takeECF(toTake, simulate);
+            int taken = IECFHandler.takeECF(toTake, action);
             allTaken += taken;
             toTake -= taken;
         }
         return allTaken;
-    }
-
-    @Override
-    public int sendECF(ECFNetworkMember target, int cfe, float speed) {
-        throw new UnsupportedOperationException();
     }
 
     @Override

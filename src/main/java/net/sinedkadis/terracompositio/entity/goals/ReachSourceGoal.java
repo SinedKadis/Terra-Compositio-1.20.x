@@ -8,7 +8,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
-import net.sinedkadis.terracompositio.api.helpers.ECFHelper;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.api.registries.TCCapabilities;
@@ -95,7 +94,7 @@ public class ReachSourceGoal extends Goal {
                 .getECFNetworkInstance()
                 .getAllECFNetworkMembers(level)) {
 
-            if (!ECFHelper.validMember(member)) continue;
+            if (!TerraCompositioAPI.instance().getECFNetworkInstance().validateMember(member)) continue;
 
             BlockPos memberPos = member.getEntityInstance().tc$getBlockPos();
             if (!memberPos.closerThan(mobPos, searchLimit)) continue;

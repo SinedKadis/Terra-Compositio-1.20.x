@@ -2,6 +2,7 @@ package net.sinedkadis.terracompositio.mixin;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -28,6 +29,28 @@ public abstract class BlockEntityMixin implements IEntityInstance {
     @Override
     public BlockPos tc$getBlockPos() {
         return getBlockPos();
+    }
+
+    @Override
+    public Level tc$getLevel() {
+        Level level = getLevel();
+        if (level == null) throw new IllegalStateException("Tried to get level before it become not null - " + this);
+        return level;
+    }
+
+    @Override
+    public BlockState tc$getBlockState() {
+        return getBlockState();
+    }
+
+    @Override
+    public BlockEntity tc$asBE() {
+        return (BlockEntity) (Object) this;
+    }
+
+    @Override
+    public Entity tc$asEntity() {
+        throw new IllegalStateException("Tried to get entity from blockEntity - " + this);
     }
 
     @Override

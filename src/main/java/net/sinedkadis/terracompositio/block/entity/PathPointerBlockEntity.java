@@ -247,7 +247,7 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
         fullUpdateBE(pPlayer, (ServerLevel) level, outputPPBE);
 
         inputs.forEach(inputPPBE ->
-                TerraCompositioAPI.instance().getECFNetworkInstance().updateInRange((Level) level, inputPPBE.getBlockPos(), 5));
+                TerraCompositioAPI.instance().getECFNetworkInstance().fireECFNetworkEvent(inputPPBE, NetworkAction.UPDATE));
     }
 
     private static void tryBindInputsAndOutput(Set<PathPointerBlockEntity> inputs, @Nullable PathPointerBlockEntity outputPPBE) {

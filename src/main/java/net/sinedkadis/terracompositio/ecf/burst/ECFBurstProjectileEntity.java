@@ -22,6 +22,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
+import net.sinedkadis.terracompositio.api.networks.TransferAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.api.registries.TCCapabilities;
@@ -44,7 +45,7 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
 
 
     private final BlockPos.MutableBlockPos lastBP = new BlockPos.MutableBlockPos();
-    private int timeToLive = 120;
+    private int timeToLive = 150;
 
     @Getter
     @Setter
@@ -116,13 +117,6 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
         return new ECFBurstProjectileEntity(pSource, Vec3.ZERO, target, cfe, cfeTravelSpeed);
     }
 
-    public static @Nullable ECFBurstProjectileEntity sendBurst(IECFHandler pSource, Vec3 offset, ECFNetworkMember target, int cfe, float cfeTravelSpeed) {
-        if (cfe < 1) {
-            return null;
-        }
-        return new ECFBurstProjectileEntity(pSource, offset, target, cfe, cfeTravelSpeed);
-    }
-
     boolean trackCrown = false;
     @Override
     public void tick() {
@@ -176,7 +170,7 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
             if (cfe > 0) {
                 for (ItemStack stack : owner.getArmorSlots()) {
                     IECFHandler IECFHandler = stack.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER);
-                    cfe -= IECFHandler.addECF(cfe, false);
+                    cfe -= IECFHandler.addECF(cfe, TransferAction.EXECUTE);
                     if (cfe <= 0) break;
                 }
             }
@@ -215,7 +209,8 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
 
 
     private void killIfTimeEnded() {
-        if (tickCount > timeToLive) discard();
+        if (tickCount > timeToLive)
+            discard();
     }
 
     private void recalculateCrownOwnerTarget() {
@@ -270,7 +265,7 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
     }
 
     private int tryConsumeCFEHandler(IECFHandler IECFHandler, int cfe) {
-        int added = IECFHandler.addECF(cfe, false);
+        int added = IECFHandler.addECF(cfe, TransferAction.BOTH);
         discard();
         return added;
     }

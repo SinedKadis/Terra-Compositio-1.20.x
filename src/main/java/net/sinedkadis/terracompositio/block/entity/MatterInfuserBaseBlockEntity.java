@@ -6,7 +6,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.sinedkadis.terracompositio.api.helpers.ItemHelper;
 import net.sinedkadis.terracompositio.api.registries.TCCapabilities;
@@ -71,7 +70,6 @@ public abstract class MatterInfuserBaseBlockEntity extends TCCraftingBlockEntity
         BlockPos blockpos = worldPosition.relative(direction.getOpposite());
         BlockState blockState = level.getBlockState(blockpos);
         if (blockState.is(TCBlocks.FLOW_CEDAR_CASING.get())) {
-            level.setBlockAndUpdate(blockpos, blockState.setValue(BlockStateProperties.FACING, Direction.DOWN));
             BlockEntity blockEntity = level.getBlockEntity(blockpos);
             if (blockEntity instanceof FlowCedarCasingBlockEntity) {
                 ItemHelper.dropContents(blockEntity, TCCapabilities.ITEM_STATE_HOLDER,

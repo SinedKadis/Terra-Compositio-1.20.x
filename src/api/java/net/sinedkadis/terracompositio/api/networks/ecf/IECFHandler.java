@@ -4,14 +4,14 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.Vec3;
 import net.sinedkadis.terracompositio.api.IEntityInstance;
-import net.sinedkadis.terracompositio.api.helpers.ECFHelper;
+import net.sinedkadis.terracompositio.api.networks.TransferAction;
 
 import java.util.function.Function;
 
 
 /**
  * The ECF Handler interface for custom implementations. Extends {@link ECFNetworkMember} to be possible to pass as argument to methods like
- * {@link ECFHelper#doECFTransfer(ECFNetworkMember, ECFNetworkMember, int, float)}.
+ * {@link ECFNetwork#executeECFTransfer(ECFNetworkMember, ECFNetworkMember, float)}.
  */
 @MethodsReturnNonnullByDefault
 public interface IECFHandler extends ECFNetworkMember {
@@ -48,30 +48,19 @@ public interface IECFHandler extends ECFNetworkMember {
      * Adding ECF operation.
      *
      * @param cfe      the cfe to add
-     * @param simulate pass true if just want the added value, or false to really add
+     * @param action pass true if just want the added value, or false to really add
      * @return the added value
      */
-    int addECF(int cfe, boolean simulate);
+    int addECF(int cfe, TransferAction action);
 
     /**
      * Taking ECF operation.
      *
      * @param cfe      the cfe to take
-     * @param simulate pass true if just want the taken value, or false to really take
+     * @param action pass true if just want the taken value, or false to really take
      * @return the taken value
      */
-    int takeECF(int cfe, boolean simulate);
-
-    /**
-     * Send ECF operation. Just creates ECF Burst with simulated taken value and sends it towards target. Also adds to targets queue sent value.
-     * Do not take ECF by itself
-     *
-     * @param target the target member
-     * @param cfe    the cfe
-     * @param speed  the speed, default 1/20f - 1 block per second
-     * @return the int
-     */
-    int sendECF(ECFNetworkMember target, int cfe, float speed);
+    int takeECF(int cfe, TransferAction action);
 
     /**
      * Write data to nbt.

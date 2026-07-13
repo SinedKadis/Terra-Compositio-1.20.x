@@ -4,8 +4,14 @@ import net.sinedkadis.terracompositio.api.IEntityInstance;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.block.entity.PathPointerBlockEntity;
+import org.jetbrains.annotations.Nullable;
 
-public record PPECFMemberProxy(ECFNetworkMember target, PathPointerBlockEntity proxy) implements ECFNetworkMember {
+public record PPECFMemberProxy(ECFNetworkMember target, PathPointerBlockEntity proxy,
+                               @Nullable PathPointerBlockEntity source) implements ECFNetworkMember {
+
+    public PPECFMemberProxy(ECFNetworkMember target, PathPointerBlockEntity proxy) {
+        this(target, proxy, null);
+    }
 
     @Override
     public IEntityInstance getEntityInstance() {

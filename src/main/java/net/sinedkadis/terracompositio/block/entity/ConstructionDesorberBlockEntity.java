@@ -18,6 +18,7 @@ import net.minecraftforge.items.ItemStackHandler;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.api.IEntityInstance;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
+import net.sinedkadis.terracompositio.api.networks.TransferAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetwork;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
@@ -72,7 +73,7 @@ public class ConstructionDesorberBlockEntity extends AbstractDesorberBlockEntity
             if (!fluidHandler1.isEmpty() && fluidHandler1.getFluidAmount() >= ECFToAdd) {
                 fluidHandler1.drain(ECFToAdd, IFluidHandler.FluidAction.EXECUTE);
                 IECFHandler iecfHandler = blockEntity.ecfContainer();
-                int added = iecfHandler.addECF(ECFToAdd, true);
+                int added = iecfHandler.addECF(ECFToAdd, TransferAction.SIMULATE);
                 ECFToAdd -= added;
                 blockEntity.setRenderStack(new ItemStack(event.getPlacedBlock().getBlock()));
                 BlockPos blockEntityBlockPos = blockEntity.getBlockPos();

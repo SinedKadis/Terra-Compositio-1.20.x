@@ -5,8 +5,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.Vec3;
 import net.sinedkadis.terracompositio.api.IEntityInstance;
 import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
+import net.sinedkadis.terracompositio.api.networks.TransferAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetwork;
-import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 
 import java.util.function.Function;
@@ -40,17 +40,12 @@ public class DummyECFHandler implements IECFHandler {
     }
 
     @Override
-    public int takeECF(int cfe, boolean simulate) {
+    public int takeECF(int cfe, TransferAction action) {
         return 0;
     }
 
     @Override
-    public int sendECF(ECFNetworkMember target, int cfe, float speed) {
-        return 0;
-    }
-
-    @Override
-    public int addECF(int cfe, boolean simulate) {
+    public int addECF(int cfe, TransferAction action) {
         return 0;
     }
 

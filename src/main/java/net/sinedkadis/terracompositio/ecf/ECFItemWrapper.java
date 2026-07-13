@@ -12,7 +12,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
 import net.sinedkadis.terracompositio.api.IEntityInstance;
-import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
+import net.sinedkadis.terracompositio.api.networks.TransferAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.api.registries.TCCapabilities;
 import org.jetbrains.annotations.NotNull;
@@ -81,27 +81,25 @@ public class ECFItemWrapper implements IECFHandler, ICapabilityProvider {
     }
 
     @Override
-    public int takeECF(int cfe, boolean simulate) {
-        if (cfe == 0) return 0;
-        int cfe1 = this.getECF();
-        int toTake = Math.min(cfe, cfe1);
-        if (!simulate) {
-            this.setECF(cfe1 - toTake);
+    public int takeECF(int cfe, TransferAction action) {
+        int toTake = cfe;
+        if (action.simulate()) {
+            toTake = Math.min(cfe, this.getECF());
+        }
+        if (action.execute()) {
+            this.setECF(this.getECF() - toTake);
         }
         return toTake;
     }
 
     @Override
-    public int sendECF(ECFNetworkMember target, int cfe, float speed) {
-        return 0;
-    }
-
-    @Override
-    public int addECF(int cfe, boolean simulate) {
-        int toAdd = Math.min(this.getFreeSpace(),cfe);
-        if (!simulate) {
-            int cfe1 = this.getECF();
-            this.setECF(cfe1 + toAdd);
+    public int addECF(int cfe, TransferAction action) {
+        int toAdd = cfe;
+        if (action.simulate()) {
+            toAdd = Math.min(this.getFreeSpace(), cfe);
+        }
+        if (action.execute()) {
+            this.setECF(Math.min(this.getECF() + toAdd, this.getMaxECF()));
         }
         return toAdd;
     }
