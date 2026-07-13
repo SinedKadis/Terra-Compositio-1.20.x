@@ -1,4 +1,4 @@
-package net.sinedkadis.terracompositio.api.components;
+package net.sinedkadis.terracompositio.api.tooltip_components;
 
 import lombok.Getter;
 import net.minecraft.MethodsReturnNonnullByDefault;

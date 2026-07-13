@@ -2,9 +2,9 @@ package net.sinedkadis.terracompositio.api.networks.ecf;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import net.sinedkadis.terracompositio.api.IEntityInstance;
 import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.networks.NetworkAction;
-import net.sinedkadis.terracompositio.util.IEntityInstance;
 
 import java.util.Set;
 

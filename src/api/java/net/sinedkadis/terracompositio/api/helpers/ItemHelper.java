@@ -1,8 +1,8 @@
 package net.sinedkadis.terracompositio.api.helpers;
 
-import com.google.common.collect.FluentIterable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -41,7 +41,7 @@ public class ItemHelper {
         }
         ItemContainerContents itemContainerContents = containerStack.get(DataComponents.CONTAINER);
         if (itemContainerContents == null) return Stream.of();
-        return ((FluentIterable<ItemStack>) itemContainerContents.nonEmptyItemsCopy()).stream();
+        return ((NonNullList<ItemStack>) itemContainerContents.nonEmptyItemsCopy()).stream();
 
     }
 

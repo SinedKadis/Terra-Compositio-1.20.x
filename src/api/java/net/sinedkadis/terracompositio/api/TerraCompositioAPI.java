@@ -3,8 +3,7 @@ package net.sinedkadis.terracompositio.api;
 import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetwork;
 import net.sinedkadis.terracompositio.api.networks.fluid.FluidNetwork;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 /**
  * The TerraCompositio API. Implemented like Botania API,
@@ -15,10 +14,7 @@ public interface TerraCompositioAPI {
      * The constant TerraCompositio MOD_ID.
      */
     String MOD_ID = "terracompositio";
-    /**
-     * The constant TerraCompositio LOGGER.
-     */
-    Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+
     /**
      * The constant TerraCompositioAPI Instance.
      */

@@ -37,6 +37,7 @@ import net.sinedkadis.terracompositio.api.helpers.WorldHelper;
 import net.sinedkadis.terracompositio.block.entity.TCBlockEntity;
 import net.sinedkadis.terracompositio.item.custom.WrenchAxeItem;
 import net.sinedkadis.terracompositio.registries.*;
+import net.sinedkadis.terracompositio.util.helpers.WorldHelperInternal;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -91,7 +92,7 @@ public class FlowCedarTankBlock extends TCBaseEntityBlock{
         if (heldItem.is(Items.GLASS) && state.getValue(STAGE).equals(2)
                 && (item2.is(TCTags.Items.WRENCHES) || item2.is(TCItems.WRENCH_AXE.get()))) {
             if (!item2.is(TCItems.WRENCH_AXE.get()) || WrenchAxeItem.getWrenchMode(item2).equals(WrenchAxeItem.WrenchMode.WRENCH)) {
-                WorldHelper.handleInWorldBlockCraft(state, state.setValue(STAGE, 3), level, pos, heldItem, 1);
+                WorldHelperInternal.handleInWorldBlockCraft(state, state.setValue(STAGE, 3), level, pos, heldItem, 1);
                 return ItemInteractionResult.SUCCESS;
             }
         }

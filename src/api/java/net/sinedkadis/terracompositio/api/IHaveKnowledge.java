@@ -19,20 +19,20 @@ public interface IHaveKnowledge {
      * Add all the data that you want to send from server to client
      *
      * @param data     the data to store
-     * @param provider
+     * @param provider the registries
      */
     void collectKnowledgeData(CompoundTag data, HolderLookup.Provider provider);
 
     /**
      * Adds tooltip lines on client, taking info from data.
      * Use {@link TooltipHelper#addIfExist(TooltipHelper.ICustomKey, TooltipHelper.Units, List, CompoundTag)} to easily display data.
-     * You can put components from {@link net.sinedkadis.terracompositio.api.components} to tooltip,
-     * but for {@link net.sinedkadis.terracompositio.api.components.HeaderComponent} use {@link TooltipHelper#addWithHeader(TooltipHelper.ICustomHeader, List, Consumer)}
+     * You can put components from {@link net.sinedkadis.terracompositio.api.tooltip_components} to tooltip,
+     * but for {@link net.sinedkadis.terracompositio.api.tooltip_components.HeaderComponent} use {@link TooltipHelper#addWithHeader(TooltipHelper.ICustomHeader, List, Consumer)}
      *
      * @param data       the data
      * @param tooltip    the tooltip
      * @param isShifting is player shifting
-     * @param provider
+     * @param provider the registries
      */
     void addTooltipLines(CompoundTag data, List<Component> tooltip, boolean isShifting, HolderLookup.Provider provider);
 }

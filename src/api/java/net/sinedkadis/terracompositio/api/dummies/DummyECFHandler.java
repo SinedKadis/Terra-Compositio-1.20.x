@@ -4,16 +4,16 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.Vec3;
+import net.sinedkadis.terracompositio.api.IEntityInstance;
 import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetwork;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
-import net.sinedkadis.terracompositio.util.IEntityInstance;
 
 import java.util.function.Function;
 
 /**
- * The placeholder, returned by {@link ECFNetwork#createDefaultECFHandler(net.sinedkadis.terracompositio.util.IEntityInstance)}, if Terracompositio is not present
+ * The placeholder, returned by {@link ECFNetwork#createDefaultECFHandler(net.sinedkadis.terracompositio.api.IEntityInstance)}, if Terracompositio is not present
  */
 @SuppressWarnings("DataFlowIssue")
 @MethodsReturnNonnullByDefault

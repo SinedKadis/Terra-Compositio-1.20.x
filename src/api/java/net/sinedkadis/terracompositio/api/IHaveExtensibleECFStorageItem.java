@@ -1,11 +1,11 @@
 package net.sinedkadis.terracompositio.api;
 
 import net.minecraft.world.item.ItemStack;
-import net.sinedkadis.terracompositio.item.custom.TechnetiumArmorItem;
+import net.neoforged.neoforge.common.extensions.IItemExtension;
 
 /**
  * Implement that to your item to be able to accept {@link IECFStorageExtensionItem}.
- * Recommended to override {@link TechnetiumArmorItem#getCraftingRemainingItem(ItemStack)} to return last extension
+ * Recommended to override {@link IItemExtension#getCraftingRemainingItem(ItemStack)} to return last extension
  */
 public interface IHaveExtensibleECFStorageItem {
     /**

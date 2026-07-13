@@ -4,8 +4,8 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.Vec3;
+import net.sinedkadis.terracompositio.api.IEntityInstance;
 import net.sinedkadis.terracompositio.api.helpers.ECFHelper;
-import net.sinedkadis.terracompositio.util.IEntityInstance;
 
 import java.util.function.Function;
 
