@@ -18,10 +18,10 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.sinedkadis.terracompositio.api.components.FluidComponent;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.api.registries.TCBlockStateProperties;
+import net.sinedkadis.terracompositio.api.tooltip_components.FluidComponent;
 import net.sinedkadis.terracompositio.block.behaviours.ECFHandlerBehaviour;
 import net.sinedkadis.terracompositio.config.TCInnerConfig;
 import net.sinedkadis.terracompositio.registries.TCFluids;
@@ -101,18 +101,6 @@ public abstract class AbstractDesorberBlockEntity extends TCBlockEntity {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag pTag) {
-        fluidHandler.writeToNBT(pTag);
-        super.saveAdditional(pTag);
-    }
-
-    @Override
-    public void load(CompoundTag pTag) {
-        super.load(pTag);
-        fluidHandler.readFromNBT(pTag);
-    }
-
-    @Override
     public void invalidateCaps() {
         super.invalidateCaps();
         lazyFluidHandler.invalidate();
@@ -143,5 +131,17 @@ public abstract class AbstractDesorberBlockEntity extends TCBlockEntity {
                     t -> t.add(FluidComponent.of(fluidStack)));
         }
 
+    }
+
+    @Override
+    protected void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
+        fluidHandler.writeToNBT(tag);
+    }
+
+    @Override
+    public void load(CompoundTag tag) {
+        super.load(tag);
+        fluidHandler.readFromNBT(tag);
     }
 }

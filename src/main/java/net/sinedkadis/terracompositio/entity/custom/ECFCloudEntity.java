@@ -10,16 +10,22 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.event.entity.EntityEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.sinedkadis.terracompositio.api.IEntityInstance;
 import net.sinedkadis.terracompositio.api.IHaveKnowledge;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
 import net.sinedkadis.terracompositio.api.dummies.DummyECFHandler;
 import net.sinedkadis.terracompositio.api.helpers.ECFHelper;
+import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
 import net.sinedkadis.terracompositio.api.networks.NetworkAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetwork;
@@ -32,7 +38,6 @@ import net.sinedkadis.terracompositio.config.TCInnerConfig;
 import net.sinedkadis.terracompositio.ecf.LimitlessDefaultECFHandler;
 import net.sinedkadis.terracompositio.ecf.burst.ECFBurstProjectileEntity;
 import net.sinedkadis.terracompositio.registries.TCEntities;
-import net.sinedkadis.terracompositio.util.IEntityInstance;
 import net.sinedkadis.terracompositio.util.helpers.ECFHelperInternal;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,6 +49,7 @@ import java.util.function.ToIntFunction;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
+@Mod.EventBusSubscriber(modid = TerraCompositioAPI.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ECFCloudEntity extends Entity implements ECFNetworkMember, IHaveKnowledge {
     private static final EntityDataAccessor<Integer> ECF_DATA =
             SynchedEntityData.defineId(ECFCloudEntity.class, EntityDataSerializers.INT);
@@ -172,8 +178,19 @@ public class ECFCloudEntity extends Entity implements ECFNetworkMember, IHaveKno
         setInvulnerable(true);
     }
 
+
     public ECFCloudEntity(Level pLevel) {
         this(TCEntities.ECF_CLOUD.get(),pLevel);
+        noPhysics = true;
+    }
+
+    @SuppressWarnings("removal")
+    @SubscribeEvent
+    public static void onEntitySize(EntityEvent.Size event) {
+        Entity entity = event.getEntity();
+        if (entity instanceof ECFCloudEntity ecfCloudEntity)
+            event.setNewSize(EntityDimensions.scalable((float)
+                    (ecfCloudEntity.getRadius() * 2), (float) (ecfCloudEntity.getRadius() * 2)));
     }
 
     @Override
@@ -181,6 +198,11 @@ public class ECFCloudEntity extends Entity implements ECFNetworkMember, IHaveKno
         if (capability == TCCapabilities.ECF)
             return lazyECFOptional.cast();
         return super.getCapability(capability, facing);
+    }
+
+    @Override
+    protected void defineSynchedData() {
+        entityData.define(ECF_DATA, 0);
     }
 
     @Override
@@ -204,17 +226,13 @@ public class ECFCloudEntity extends Entity implements ECFNetworkMember, IHaveKno
 
         if (tickCount % 20 == 1) {
             setSyncedECF(getSyncedECF() - 1);
+            refreshDimensions();
         }
     }
 
-    public AABB getBoundingBox() {
-        double radius = getRadius()*2;
-        return AABB.ofSize(position(), radius,radius,radius);
-    }
-
     @Override
-    protected void defineSynchedData() {
-        this.entityData.define(ECF_DATA, 0);
+    protected void doWaterSplashEffect() {
+
     }
 
     public int getSyncedECF() {
@@ -283,7 +301,7 @@ public class ECFCloudEntity extends Entity implements ECFNetworkMember, IHaveKno
 
     @Override
     public IECFHandler getMainHandler() {
-        return lazyECFOptional.orElse(DummyECFHandler.instance);
+        return lazyECFOptional.orElse(SentinelHelper.EMPTY_ECF_HANDLER);
     }
 
     @Override

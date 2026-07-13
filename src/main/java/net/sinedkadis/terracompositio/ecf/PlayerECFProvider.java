@@ -15,17 +15,17 @@ import org.jetbrains.annotations.Nullable;
 public class PlayerECFProvider implements net.minecraftforge.common.capabilities.ICapabilityProvider, INBTSerializable<CompoundTag> {
 
     private ECFHandlerPlayerArmor handler = null;
+    private final Player player;
+    private final LazyOptional<IECFHandler> optional = LazyOptional.of(this::createPlayerECFContainer);
+
 
     public PlayerECFProvider(Player player) {
         this.player = player;
     }
 
-    private final Player player;
-    private final LazyOptional<IECFHandler> optional = LazyOptional.of(this::createPlayerECFContainer);
-
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if(cap == TCCapabilities.ECF) {
+        if (cap == TCCapabilities.ECF) {
             return optional.cast();
         }
 

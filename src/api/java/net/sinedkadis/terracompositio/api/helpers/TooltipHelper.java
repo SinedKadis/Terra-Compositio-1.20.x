@@ -5,7 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
-import net.sinedkadis.terracompositio.api.components.HeaderComponent;
+import net.sinedkadis.terracompositio.api.tooltip_components.HeaderComponent;
 
 import java.util.List;
 import java.util.function.Consumer;

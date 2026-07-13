@@ -1,6 +1,5 @@
 package net.sinedkadis.terracompositio.api;
 
-import javax.annotation.Nullable;
 import java.util.ServiceLoader;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -11,7 +10,7 @@ public class ServiceUtil {
      * @param defaultImpl If nonnull, will be used as a default if no implementations were found.
      *                    Otherwise, if it is null and no implementations were found, this method will throw.
      */
-    public static <T> T findService(Class<T> clazz, @Nullable Supplier<T> defaultImpl) {
+    public static <T> T findService(Class<T> clazz, Supplier<T> defaultImpl) {
         var providers = ServiceLoader.load(clazz, clazz.getClassLoader()).stream().toList();
         if (providers.isEmpty() && defaultImpl != null) {
             return defaultImpl.get();
@@ -22,7 +21,6 @@ public class ServiceUtil {
             throw new IllegalStateException(msg);
         } else {
             var provider = providers.get(0);
-            TerraCompositioAPI.LOGGER.debug("Instantiating {} for service {}", provider.type().getName(), clazz.getName());
             return provider.get();
         }
     }

@@ -1,6 +1,6 @@
 package net.sinedkadis.terracompositio.api.networks;
 
-import net.sinedkadis.terracompositio.util.IEntityInstance;
+import net.sinedkadis.terracompositio.api.IEntityInstance;
 
 /**
  * The Common parts of Each Network Member.

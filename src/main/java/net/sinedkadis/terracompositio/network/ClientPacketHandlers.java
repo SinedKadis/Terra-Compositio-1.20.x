@@ -7,7 +7,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.sinedkadis.terracompositio.api.dummies.DummyECFHandler;
+import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.block.entity.PathPointerBlockEntity;
 import net.sinedkadis.terracompositio.network.packets.S2CHighLightNodesSync;
@@ -22,7 +22,7 @@ public class ClientPacketHandlers {
         Player player = Minecraft.getInstance().player;
         if (player != null) {
             player.getCapability(TCCapabilities.ECF)
-                    .orElse(DummyECFHandler.instance)
+                    .orElse(SentinelHelper.EMPTY_ECF_HANDLER)
                     .setECF(msg.ecf());
         }
     }

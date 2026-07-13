@@ -1,4 +1,4 @@
-package net.sinedkadis.terracompositio.api.components;
+package net.sinedkadis.terracompositio.api.tooltip_components;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.network.chat.Component;

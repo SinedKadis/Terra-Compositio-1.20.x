@@ -8,7 +8,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.network.NetworkEvent;
-import net.sinedkadis.terracompositio.api.dummies.DummyECFHandler;
+import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.helpers.WorldHelper;
 import net.sinedkadis.terracompositio.api.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
@@ -53,7 +53,7 @@ public record C2SBoardSync(int x, short y, int z, boolean place, int ecfToTake, 
                                     .setValue(BlockStateProperties.WATERLOGGED,
                                             msg.waterlogged),
                             3);
-                        player.getItemBySlot(EquipmentSlot.FEET).getCapability(TCCapabilities.ECF).orElse(DummyECFHandler.instance)
+                        player.getItemBySlot(EquipmentSlot.FEET).getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER)
                                 .takeECF(msg.ecfToTake, false);
                         ParticleHelperInternal.spawnParticlesIn(level, pPos);
                     }

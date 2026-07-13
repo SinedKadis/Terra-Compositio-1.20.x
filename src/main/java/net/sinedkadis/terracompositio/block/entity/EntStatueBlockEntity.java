@@ -23,11 +23,12 @@ import net.sinedkadis.terracompositio.registries.TCFluids;
 import net.sinedkadis.terracompositio.registries.TCItems;
 import net.sinedkadis.terracompositio.util.IEntityInstance;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
+@ParametersAreNonnullByDefault
 public class EntStatueBlockEntity extends TCBlockEntity implements FluidNetworkMember {
 
     private final EmptyFluidHandler fluidHandler = new EmptyFluidHandler() {
@@ -52,17 +53,17 @@ public class EntStatueBlockEntity extends TCBlockEntity implements FluidNetworkM
     int cd = 20;
 
     @Override
-    public void addBEBehaviours(@NotNull List<IBEBehaviour> list) {
+    public void addBEBehaviours(List<IBEBehaviour> list) {
         list.add(new ItemHandlerBehaviour(this) {
             @Override
-            public boolean allowInsert(int pSlot, @NotNull ItemStack pStack, @Nullable Direction pDirection, boolean manual) {
+            public boolean allowInsert(int pSlot, ItemStack pStack, @Nullable Direction pDirection, boolean manual) {
                 return pStack.is(TCItems.TECHNETIUM_CROWN.get());
             }
         });
     }
 
     @Override
-    public void tick(@NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState) {
+    public void tick(Level pLevel, BlockPos pPos, BlockState pState) {
         super.tick(pLevel, pPos, pState);
         FluidNetwork fluidNetworkInstance = TerraCompositioAPI.INSTANCE.getFluidNetworkInstance();
         boolean inNetwork = fluidNetworkInstance.isIn(level, this);

@@ -27,7 +27,7 @@ import net.sinedkadis.terracompositio.worldgen.biome.TCTerrablender;
 import net.sinedkadis.terracompositio.worldgen.tree.TCFoliagePlacers;
 import net.sinedkadis.terracompositio.worldgen.tree.TCTrunkPlacers;
 
-//6011371823902440939 - cool seed
+//6011371823902440939 - cool seed(for 1.20.1)
 @Mod(TerraCompositio.MOD_ID)
 public class TerraCompositio
 {

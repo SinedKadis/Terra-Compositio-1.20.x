@@ -1,4 +1,4 @@
-package net.sinedkadis.terracompositio.util;
+package net.sinedkadis.terracompositio.api.helpers;
 
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
@@ -6,7 +6,7 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class GameruleUtilities {
+public final class GameruleHelper {
     /**
      * A map containing the gamerule keys and their IDs.
      */
@@ -102,7 +102,7 @@ public final class GameruleUtilities {
      * @return The boolean value for the gamerule.
      */
     public static boolean getBooleanGamerule(Level level, String id) {
-        return GameruleUtilities.<GameRules.BooleanValue>getGamerule(level, id).get();
+        return GameruleHelper.<GameRules.BooleanValue>getGamerule(level, id).get();
     }
 
     /**
@@ -126,6 +126,6 @@ public final class GameruleUtilities {
      * @return The integer value for the gamerule.
      */
     public static int getIntegerGamerule(Level level, String id) {
-        return GameruleUtilities.<GameRules.IntegerValue>getGamerule(level, id).get();
+        return GameruleHelper.<GameRules.IntegerValue>getGamerule(level, id).get();
     }
 }

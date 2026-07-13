@@ -21,7 +21,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.sinedkadis.terracompositio.api.dummies.DummyECFHandler;
+import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.api.registries.TCCapabilities;
@@ -175,7 +175,7 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
 
             if (cfe > 0) {
                 for (ItemStack stack : owner.getArmorSlots()) {
-                    IECFHandler IECFHandler = stack.getCapability(TCCapabilities.ECF).orElse(DummyECFHandler.instance);
+                    IECFHandler IECFHandler = stack.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER);
                     cfe -= IECFHandler.addECF(cfe, false);
                     if (cfe <= 0) break;
                 }
@@ -206,7 +206,7 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
             }
             BlockPos target = getTarget();
             if (blockPos.equals(target) && blockEntity != null) {
-                tryConsumeCFEHandler(blockEntity.getCapability(TCCapabilities.ECF).orElse(DummyECFHandler.instance), this.getECF());
+                tryConsumeCFEHandler(blockEntity.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER), this.getECF());
             }
         }
         lastBP.set(blockPos);
@@ -287,7 +287,7 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
         if (blockEntity instanceof ECFNetworkMember memberBE) {
             memberBE.getMainHandler().subFromQueue(cfe);
         } else if (blockEntity instanceof TCBlockEntity tcBlockEntity) {
-            tcBlockEntity.getCapability(TCCapabilities.ECF).orElse(DummyECFHandler.instance)
+            tcBlockEntity.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER)
                     .subFromQueue(cfe);
         } else {
             Entity target;

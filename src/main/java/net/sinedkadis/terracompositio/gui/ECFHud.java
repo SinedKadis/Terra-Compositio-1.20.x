@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.sinedkadis.terracompositio.TerraCompositio;
-import net.sinedkadis.terracompositio.api.dummies.DummyECFHandler;
+import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.api.registries.TCCapabilities;
 import org.lwjgl.opengl.GL11;
@@ -25,7 +25,7 @@ public class ECFHud {
                               int screenHeight) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return;
-        IECFHandler playerHandler = player.getCapability(TCCapabilities.ECF).orElse(DummyECFHandler.instance).getMainHandler();
+        IECFHandler playerHandler = player.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER).getMainHandler();
         int cfeTotal = playerHandler.getECF();
         int cfeMaxTotal = playerHandler.getMaxECF();
 

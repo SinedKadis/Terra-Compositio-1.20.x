@@ -36,10 +36,12 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.items.ItemStackHandler;
+import net.sinedkadis.terracompositio.api.IEntityInstance;
 import net.sinedkadis.terracompositio.api.IHaveKnowledge;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
 import net.sinedkadis.terracompositio.api.dummies.DummyECFHandler;
 import net.sinedkadis.terracompositio.api.helpers.ECFHelper;
+import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
 import net.sinedkadis.terracompositio.api.networks.NetworkAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetwork;
@@ -58,7 +60,6 @@ import net.sinedkadis.terracompositio.entity.goals.ECFHoldGoal;
 import net.sinedkadis.terracompositio.entity.goals.ReachSourceGoal;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
 import net.sinedkadis.terracompositio.registries.TCItems;
-import net.sinedkadis.terracompositio.util.IEntityInstance;
 import net.sinedkadis.terracompositio.util.helpers.ParticleHelperInternal;
 import org.jetbrains.annotations.Nullable;
 
@@ -382,7 +383,7 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
 
     @Override
     public IECFHandler getMainHandler() {
-        return lazyCFEOptional.orElse(DummyECFHandler.instance);
+        return lazyCFEOptional.orElse(SentinelHelper.EMPTY_ECF_HANDLER);
     }
 
     @Override
@@ -449,7 +450,7 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
 
     @Override
     public void onECFNetworkMemberUpdate() {
-        IECFHandler holdECFHandler = lazyCFEOptional.orElse(DummyECFHandler.instance);
+        IECFHandler holdECFHandler = lazyCFEOptional.orElse(SentinelHelper.EMPTY_ECF_HANDLER);
         if (holdECFHandler.getECF() > 0) {
             Set<ECFNetworkMember> allECFNetworkMembers = TerraCompositioAPI.instance().getECFNetworkInstance().getAllECFNetworkMembers(level());
             allECFNetworkMembers.stream()
@@ -467,7 +468,7 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
                                     member
                             );
                         }
-                        return DummyECFHandler.instance;
+                        return SentinelHelper.EMPTY_ECF_HANDLER;
 
                     })
                     .filter(member -> !(member instanceof DummyECFHandler))

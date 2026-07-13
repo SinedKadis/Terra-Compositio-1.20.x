@@ -6,7 +6,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -15,15 +14,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.FluidState;
-import net.sinedkadis.terracompositio.api.registries.TCBlockStateProperties;
-import net.sinedkadis.terracompositio.particle.ECFParticleData;
-import net.sinedkadis.terracompositio.registries.TCGameRules;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -54,10 +49,6 @@ public class WorldHelper {
         return InteractionResult.sidedSuccess(pLevel.isClientSide);
     }
 
-    public static @NotNull InteractionResult handleInWorldBlockCraft(BlockState oldState, BlockState newState, Level pLevel, BlockPos pPos, ItemStack item, int count) {
-        float speed = 1 / 20f;
-        return handleInWorldBlockCraft(oldState, newState, pLevel, pPos, item, count, new ECFParticleData(speed), SoundEvents.COPPER_PLACE);
-    }
 
     public static BlockState copyBlockStates(BlockState oldState, BlockState newState) {
         for (Property<?> property : oldState.getProperties()) {
@@ -84,28 +75,6 @@ public class WorldHelper {
                 .map(block -> !state.is(block))
                 .reduce((aBoolean, aBoolean2) -> aBoolean && aBoolean2)
                 .orElse(true);
-    }
-
-    public static void flowLeak(BlockState pState, Level pLevel, BlockPos pPos) {
-        if ((!pState.hasProperty(TCBlockStateProperties.INFUSED) || pState.getValue(TCBlockStateProperties.INFUSED))
-                && !pLevel.getGameRules().getBoolean(TCGameRules.DISABLE_FLOW_LEAKING)
-                && (!pState.hasProperty(TCBlockStateProperties.WAXED) || !pState.getValue(TCBlockStateProperties.WAXED))) {
-
-            BlockPos f_pos;
-            BlockPos b_pos;
-            if (pState.hasProperty(RotatedPillarBlock.AXIS)) {
-                f_pos = pPos.relative(pState.getValue(RotatedPillarBlock.AXIS), 1);
-                b_pos = pPos.relative(pState.getValue(RotatedPillarBlock.AXIS), -1);
-            } else {
-                f_pos = pPos.relative(Direction.Axis.Y, 1);
-                b_pos = pPos.relative(Direction.Axis.Y, -1);
-            }
-
-            BlockPos.betweenClosedStream(b_pos.offset(-1, -1, -1), f_pos.offset(1, 1, 1))
-                    .filter(pos -> pos != pPos)
-                    .filter(pos -> pLevel.getBlockState(pos).hasProperty(TCBlockStateProperties.INFUSED))
-                    .forEach(pos -> pLevel.setBlockAndUpdate(pos, pLevel.getBlockState(pos).setValue(TCBlockStateProperties.INFUSED, false)));
-        }
     }
 
     public static int getLightLevel(Level level, BlockPos pos, @Nullable Direction facing) {
