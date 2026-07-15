@@ -166,9 +166,9 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
 
             if (cfe > 0) {
                 for (ItemStack stack : ((LivingEntity) owner).getArmorSlots()) {
-                    IECFHandler IECFHandler = stack.getCapability(TCCapabilities.ECF_HANDLER_ITEM);
-                    assert IECFHandler != null;
-                    cfe -= IECFHandler.addECF(cfe, TransferAction.EXECUTE);
+                    IECFHandler iecfHandler = stack.getCapability(TCCapabilities.ECF_HANDLER_ITEM);
+                    if (iecfHandler == null) continue;
+                    cfe -= iecfHandler.addECF(cfe, TransferAction.BOTH);
                     if (cfe <= 0) break;
                 }
             }
@@ -241,9 +241,7 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
             bindPos = getTarget();
             shootVec = pathPointerBlockEntity.getBlockPos().getCenter().vectorTo(bindPos.getCenter());
         } else if (bindposNotValid) {
-                shootVec = new Vec3(0, 0, 1)
-                        .yRot((float) Math.toRadians(pathPointerBlockEntity.getRotationYaw()))
-                        .xRot((float) Math.toRadians(pathPointerBlockEntity.getRotationPitch()));
+            shootVec = pathPointerBlockEntity.getBlockPos().getCenter().vectorTo(Objects.requireNonNull(this.getOwner()).position());
                 if (isInfuser) {
                     trackCrown = true;
                 }

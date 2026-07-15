@@ -70,12 +70,13 @@ public class DefaultECFHandler implements IECFHandler, INBTSerializable<Compound
 
     @Override
     public int takeECF(int cfe, @UnknownNullability TransferAction action) {
-        int taken = cfe;
+        int taken;
         if (action.simulate()) {
             taken = Mth.clamp(cfe, 0, this.getECF());
-        }
+        } else
+            taken = cfe;
         if (action.execute()) {
-            this.setECF(this.getECF() - taken);
+            this.setECF(Math.max(this.getECF() - taken, 0));
 
             sendCFEUpdate();
             onContentsChanged();

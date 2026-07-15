@@ -235,7 +235,7 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
     }
 
     private static void takeECFAndSetBoard(IECFHandler IECFHandler, Level level, BlockPos posOnHeight, BlockState boardState) {
-        if (IECFHandler.takeECF(1, TransferAction.SIMULATE) > 0 && level.isClientSide()) {
+        if (IECFHandler.takeECF(1, TransferAction.BOTH) > 0 && level.isClientSide()) {
             level.destroyBlock(posOnHeight,true);
             level.setBlock(posOnHeight, boardState, 1);
             PacketDistributor.sendToServer(new C2SBoardSyncPayload(
@@ -323,20 +323,22 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
     }
 
     private void leggingsInventoryTick(ItemStack itemStack, Level ignoredPLevel, Entity entity, IECFHandler thisHandler) {
-        for (ItemStack stack : ((LivingEntity) entity).getArmorSlots()) {
-            if (stack.equals(itemStack)) {
-                IECFHandler playerHandler = Objects.requireNonNull(entity.getCapability(TCCapabilities.ECF_HANDLER_ENTITY))
-                        .getMainHandler();
-                int taken = thisHandler.addECF(TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get(), TransferAction.SIMULATE);
-                int added = playerHandler.takeECF(taken, TransferAction.EXECUTE);
-                thisHandler.addECF(added, TransferAction.EXECUTE);
-                continue;
+        if (((LivingEntity) entity).getItemBySlot(EquipmentSlot.LEGS).equals(itemStack)) {
+            for (ItemStack stack : ((LivingEntity) entity).getArmorSlots()) {
+                if (stack.equals(itemStack)) {
+                    IECFHandler playerHandler = Objects.requireNonNull(entity.getCapability(TCCapabilities.ECF_HANDLER_ENTITY))
+                            .getMainHandler();
+                    int taken = thisHandler.addECF(TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get(), TransferAction.SIMULATE);
+                    int added = playerHandler.takeECF(taken, TransferAction.BOTH);
+                    thisHandler.addECF(added, TransferAction.EXECUTE);
+                    continue;
+                }
+                IECFHandler iecfHandler = stack.getCapability(TCCapabilities.ECF_HANDLER_ITEM);
+                if (iecfHandler == null) return;
+                int taken = thisHandler.takeECF(TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get(), TransferAction.SIMULATE);
+                int added = iecfHandler.addECF(taken, TransferAction.BOTH);
+                thisHandler.takeECF(added, TransferAction.EXECUTE);
             }
-            IECFHandler iecfHandler = stack.getCapability(TCCapabilities.ECF_HANDLER_ITEM);
-            if (iecfHandler == null) return;
-            int taken = thisHandler.takeECF(TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get(), TransferAction.SIMULATE);
-            int added = iecfHandler.addECF(taken, TransferAction.EXECUTE);
-            thisHandler.takeECF(added, TransferAction.EXECUTE);
         }
     }
 
