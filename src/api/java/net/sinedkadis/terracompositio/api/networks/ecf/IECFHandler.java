@@ -186,8 +186,8 @@ public interface IECFHandler extends ECFNetworkMember {
     }
 
     @Override
-    default int getRange() {
-        return getAttachedMember().getRange();
+    default int getRange(boolean inner) {
+        return getAttachedMember().getRange(inner);
     }
 
     @Override

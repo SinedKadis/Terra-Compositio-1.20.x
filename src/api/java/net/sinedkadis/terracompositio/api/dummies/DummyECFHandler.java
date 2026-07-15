@@ -13,7 +13,7 @@ import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import java.util.function.Function;
 
 /**
- * The placeholder, returned by {@link ECFNetwork#createDefaultECFHandler(net.sinedkadis.terracompositio.api.IEntityInstance)}, if Terracompositio is not present
+ * The placeholder, returned by {@link ECFNetwork#createDefaultECFHandler(net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember)}, if Terracompositio is not present
  */
 @SuppressWarnings("DataFlowIssue")
 @MethodsReturnNonnullByDefault

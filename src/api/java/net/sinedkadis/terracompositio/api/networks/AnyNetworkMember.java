@@ -1,5 +1,7 @@
 package net.sinedkadis.terracompositio.api.networks;
 
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.sinedkadis.terracompositio.api.IEntityInstance;
 
 /**
@@ -7,8 +9,8 @@ import net.sinedkadis.terracompositio.api.IEntityInstance;
  */
 public interface AnyNetworkMember {
     /**
-     * Gets entity. May be {@link net.minecraft.world.level.block.entity.BlockEntity},
-     * or {@link net.minecraft.world.entity.Entity}
+     * Gets entity. May be {@link BlockEntity},
+     * or {@link Entity}
      *
      * @return the entity
      */
@@ -20,7 +22,17 @@ public interface AnyNetworkMember {
      *
      * @return the range
      */
-    int getRange();
+    default int getRange() {
+        return getRange(false);
+    }
+
+    /**
+     * Gets range. Using to filter interactions between network members and other purposes
+     *
+     * @param inner true if member radius requested, used in instant transfer for close positions
+     * @return the range
+     */
+    int getRange(boolean inner);
 
     /**
      * Gets priority. Using to filter interactions between network members and other purposes. Default as -100 for sources, 100 for consumers

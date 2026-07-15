@@ -58,7 +58,7 @@ public class ECFCloudEntity extends Entity implements ECFNetworkMember, IHaveKno
 
 
     @Getter
-    protected IECFHandler ecfHandler = new LimitlessDefaultECFHandler(this.getEntityInstance()) {
+    protected IECFHandler ecfHandler = new LimitlessDefaultECFHandler(this) {
         @Override
         public int getECF() {
             return getSyncedECF();
@@ -133,12 +133,11 @@ public class ECFCloudEntity extends Entity implements ECFNetworkMember, IHaveKno
         return TerraCompositioAPI.instance().getECFNetworkInstance().validateRelation(this, updated, Math::max);
     }
 
-    private Vec3 getBurstOffset(IECFHandler target) {
+    public Vec3 getBurstOffset(Vec3 target) {
         double r = getRadius();
-        BlockPos sourcePos = this.blockPosition();
-        BlockPos targetPos = target.getEntityInstance().tc$getBlockPos();
-        if (sourcePos.closerThan(targetPos,r)) return targetPos.subtract(sourcePos).getCenter();
-        return sourcePos.getCenter().vectorTo(targetPos.getCenter()).normalize().scale(r);
+        Vec3 sourcePos = this.position();
+        if (sourcePos.closerThan(target, r)) return target.subtract(sourcePos);
+        return sourcePos.vectorTo(target).normalize().scale(r);
     }
 
     public static final ToIntFunction<Integer> RENDER_COUNT_FUNCTION = cfe ->
@@ -259,7 +258,8 @@ public class ECFCloudEntity extends Entity implements ECFNetworkMember, IHaveKno
     }
 
     @Override
-    public int getRange() {
+    public int getRange(boolean inner) {
+        if (inner) return (int) getRadius();
         return (int) (getRadius() + 5);
     }
 

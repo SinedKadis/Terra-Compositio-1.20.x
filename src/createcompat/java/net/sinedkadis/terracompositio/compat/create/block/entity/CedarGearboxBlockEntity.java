@@ -34,7 +34,7 @@ public class CedarGearboxBlockEntity extends GeneratingKineticBlockEntity implem
     protected int range;
     protected int priority;
     protected boolean scheduledUpdate = false;
-    protected IECFHandler ecfHandler = new DefaultECFHandler(this.getEntityInstance()) {
+    protected IECFHandler ecfHandler = new DefaultECFHandler(this) {
         @Override
         protected void sendCFEUpdate() {
             super.sendCFEUpdate();
@@ -119,7 +119,8 @@ public class CedarGearboxBlockEntity extends GeneratingKineticBlockEntity implem
     }
 
     @Override
-    public int getRange() {
+    public int getRange(boolean inner) {
+        if (inner) return 1;
         return range;
     }
 

@@ -1,9 +1,9 @@
 package net.sinedkadis.terracompositio.ecf;
 
-import net.sinedkadis.terracompositio.api.IEntityInstance;
+import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 
 public class LimitlessDefaultECFHandler extends DefaultECFHandler {
-    public LimitlessDefaultECFHandler(IEntityInstance entity) {
+    public LimitlessDefaultECFHandler(ECFNetworkMember entity) {
         super(entity);
     }
 

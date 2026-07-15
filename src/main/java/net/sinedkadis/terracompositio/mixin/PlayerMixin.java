@@ -55,7 +55,8 @@ public abstract class PlayerMixin extends LivingEntity implements ECFNetworkMemb
     }
 
     @Override
-    public int getRange() {
+    public int getRange(boolean inner) {
+        if (inner) return 1;
         return 10;
     }
 

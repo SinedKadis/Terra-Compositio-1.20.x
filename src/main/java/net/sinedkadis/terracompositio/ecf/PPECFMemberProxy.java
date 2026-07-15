@@ -19,7 +19,7 @@ public record PPECFMemberProxy(ECFNetworkMember target, PathPointerBlockEntity p
     }
 
     @Override
-    public int getRange() {
+    public int getRange(boolean inner) {
         return target.getRange();
     }
 

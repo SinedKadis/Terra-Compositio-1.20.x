@@ -104,7 +104,9 @@ public class FlowInfuserBlockEntity extends TCCraftingBlockEntity {
     @Override
     protected IItemHandlerModifiable getItemHandler() {
         if (level != null) {
-            return (IItemHandlerModifiable) level.getCapability(Capabilities.ItemHandler.BLOCK, worldPosition, null);
+            IItemHandler capability = level.getCapability(Capabilities.ItemHandler.BLOCK, worldPosition, null);
+            if (capability != null)
+                return (IItemHandlerModifiable) capability;
         }
         return (IItemHandlerModifiable) EmptyItemHandler.INSTANCE;
     }

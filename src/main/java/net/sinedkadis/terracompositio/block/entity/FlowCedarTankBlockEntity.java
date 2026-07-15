@@ -146,7 +146,8 @@ public class FlowCedarTankBlockEntity extends TCBlockEntity implements FluidNetw
     }
 
     @Override
-    public int getRange() {
+    public int getRange(boolean inner) {
+        if (inner) return 1;
         return 10;
     }
 

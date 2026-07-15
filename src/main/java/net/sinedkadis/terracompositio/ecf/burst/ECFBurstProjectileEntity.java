@@ -32,7 +32,6 @@ import net.sinedkadis.terracompositio.registries.TCEntities;
 import net.sinedkadis.terracompositio.registries.TCItems;
 import org.joml.Vector3f;
 
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Objects;
 
@@ -103,24 +102,15 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
         lastBP.set(pSource);
     }
 
-    public static @Nullable ECFBurstProjectileEntity sendBurst(IECFHandler pSource, ECFNetworkMember target, int cfe, float cfeTravelSpeed) {
-        if (cfe < 1) {
-            return null;
-        }
+    public static ECFBurstProjectileEntity sendBurst(IECFHandler pSource, ECFNetworkMember target, int cfe, float cfeTravelSpeed) {
         return new ECFBurstProjectileEntity(pSource, target, cfe, cfeTravelSpeed);
     }
 
-    public static @Nullable ECFBurstProjectileEntity sendBurst(BlockPos pSource, ECFNetworkMember target, int cfe, float cfeTravelSpeed) {
-        if (cfe < 1) {
-            return null;
-        }
+    public static ECFBurstProjectileEntity sendBurst(BlockPos pSource, ECFNetworkMember target, int cfe, float cfeTravelSpeed) {
         return new ECFBurstProjectileEntity(pSource, Vec3.ZERO, target, cfe, cfeTravelSpeed);
     }
 
-    public static @Nullable ECFBurstProjectileEntity sendBurst(IECFHandler pSource, Vec3 offset, ECFNetworkMember target, int cfe, float cfeTravelSpeed) {
-        if (cfe < 1) {
-            return null;
-        }
+    public static ECFBurstProjectileEntity sendBurst(IECFHandler pSource, Vec3 offset, ECFNetworkMember target, int cfe, float cfeTravelSpeed) {
         return new ECFBurstProjectileEntity(pSource, offset, target, cfe, cfeTravelSpeed);
     }
 
@@ -273,7 +263,7 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
     }
 
     private int tryConsumeCFEHandler(IECFHandler IECFHandler, int cfe) {
-        int added = IECFHandler.addECF(cfe, TransferAction.BOTH);
+        int added = IECFHandler.addECF(cfe, TransferAction.EXECUTE);
         discard();
         return added;
     }
