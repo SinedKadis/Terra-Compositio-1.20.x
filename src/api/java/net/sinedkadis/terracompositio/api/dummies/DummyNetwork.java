@@ -58,7 +58,7 @@ public class DummyNetwork implements ECFNetwork, FluidNetwork {
     }
 
     @Override
-    public void sendBurst(IECFHandler source, IECFHandler target, int count, float speed) {
+    public void sendBurst(IECFHandler source, ECFNetworkMember target, int count, float speed) {
 
     }
 

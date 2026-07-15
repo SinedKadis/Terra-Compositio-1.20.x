@@ -34,6 +34,7 @@ import net.sinedkadis.terracompositio.registries.TCItems;
 import org.joml.Vector3f;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Objects;
 
 @Slf4j
 @MethodsReturnNonnullByDefault
@@ -232,9 +233,7 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
             bindPos = getTarget();
             shootVec = pathPointerBlockEntity.getBlockPos().getCenter().vectorTo(bindPos.getCenter());
         } else if (bindposNotValid) {
-                shootVec = new Vec3(0, 0, 1)
-                        .yRot((float) Math.toRadians(pathPointerBlockEntity.getRotationYaw()))
-                        .xRot((float) Math.toRadians(pathPointerBlockEntity.getRotationPitch()));
+            shootVec = pathPointerBlockEntity.getBlockPos().getCenter().vectorTo(Objects.requireNonNull(this.getOwner()).position());
             if (isInfuser) {
                 trackCrown = true;
             }

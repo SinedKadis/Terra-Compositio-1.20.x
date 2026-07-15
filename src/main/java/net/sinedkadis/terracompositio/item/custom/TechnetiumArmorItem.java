@@ -242,8 +242,8 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
         CompoundTag persistentData = localPlayer.getPersistentData();
 
         persistentData.putInt(cd, localPlayer.tickCount);
-        localPlayer.level().playSound(localPlayer, localPlayer.blockPosition(), SoundEvents.CHICKEN_EGG, SoundSource.PLAYERS);
         localPlayer.move(MoverType.SELF, new Vec3(0, 6, 0));
+        localPlayer.level().playSound(localPlayer, localPlayer.blockPosition(), SoundEvents.CHICKEN_EGG, SoundSource.PLAYERS);
         persistentData.putInt(height, localPlayer.getBlockY() - 2);
 
     }
@@ -278,7 +278,7 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
     }
 
     private static void takeECFAndSetBoard(IECFHandler IECFHandler, Level level, BlockPos posOnHeight, BlockState boardState) {
-        if (IECFHandler.takeECF(1, TransferAction.EXECUTE) > 0 && level.isClientSide()) {
+        if (IECFHandler.takeECF(1, TransferAction.BOTH) > 0 && level.isClientSide()) {
             level.destroyBlock(posOnHeight, true);
             level.setBlock(posOnHeight, boardState, 1);
             TCPackets.CHANNEL.send(PacketDistributor.SERVER.noArg(),
@@ -341,7 +341,7 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
             }
             IECFHandler IECFHandler = stack.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER);
             int taken = thisHandler.takeECF(TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get(), TransferAction.SIMULATE);
-            int added = IECFHandler.addECF(taken, TransferAction.EXECUTE);
+            int added = IECFHandler.addECF(taken, TransferAction.BOTH);
             thisHandler.takeECF(added, TransferAction.EXECUTE);
         }
     }

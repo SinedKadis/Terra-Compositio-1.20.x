@@ -82,12 +82,13 @@ public class ECFItemWrapper implements IECFHandler, ICapabilityProvider {
 
     @Override
     public int takeECF(int cfe, TransferAction action) {
-        int toTake = cfe;
+        int toTake;
         if (action.simulate()) {
             toTake = Math.min(cfe, this.getECF());
-        }
+        } else
+            toTake = cfe;
         if (action.execute()) {
-            this.setECF(this.getECF() - toTake);
+            this.setECF(Math.max(this.getECF() - toTake, 0));
         }
         return toTake;
     }
@@ -99,7 +100,8 @@ public class ECFItemWrapper implements IECFHandler, ICapabilityProvider {
             toAdd = Math.min(this.getFreeSpace(), cfe);
         }
         if (action.execute()) {
-            this.setECF(Math.min(this.getECF() + toAdd, this.getMaxECF()));
+            int maxECF = this.getMaxECF();
+            this.setECF(Math.min(this.getECF() + toAdd, maxECF));
         }
         return toAdd;
     }

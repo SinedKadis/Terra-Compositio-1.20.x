@@ -128,25 +128,26 @@ public class ECFNetworkHandler implements ECFNetwork {
                     int addition = additions[i];
                     int finalI = i;
                     server.executeIfPossible(() -> scheduledDeliveries.add(new Pair<>((finalI % 2), () ->
-                            sendBurst(sourceMainHandler, targetMainHandler, addition, speed))));
+                            sendBurst(sourceMainHandler, target, addition, speed))));
                 }
             }
         }
     }
 
     @Override
-    public void sendBurst(IECFHandler source, IECFHandler target, int count, float speed) {
+    public void sendBurst(IECFHandler source, ECFNetworkMember target, int count, float speed) {
         Level level = target.getEntityInstance().tc$getLevel();
 
-        if (closeAndAllow(source, target)) {
-            target.addECF(count, TransferAction.EXECUTE);
-            target.subFromQueue(count);
+        IECFHandler targetMainHandler = target.getMainHandler();
+        if (closeAndAllow(source, targetMainHandler)) {
+            targetMainHandler.addECF(count, TransferAction.EXECUTE);
+            targetMainHandler.subFromQueue(count);
             return;
         }
 
         Vec3 offset = Vec3.ZERO;
         if (source.getAttachedEntity() instanceof ECFCloudEntity ecfCloudEntity) {
-            offset = ecfCloudEntity.getBurstOffset(target);
+            offset = ecfCloudEntity.getBurstOffset(target.getMainHandler());
         }
 
         ECFBurstProjectileEntity entity = ECFBurstProjectileEntity.sendBurst(source, offset, target, count, speed);

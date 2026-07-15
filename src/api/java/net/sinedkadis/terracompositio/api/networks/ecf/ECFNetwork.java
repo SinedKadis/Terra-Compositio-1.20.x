@@ -51,7 +51,7 @@ public interface ECFNetwork {
                             ECFNetworkMember source,
                             float speed);
 
-    void sendBurst(IECFHandler source, IECFHandler target, int count, float speed);
+    void sendBurst(IECFHandler source, ECFNetworkMember target, int count, float speed);
 
     /**
      * Searches for available to sent ECF members
