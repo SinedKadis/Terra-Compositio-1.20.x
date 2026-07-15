@@ -237,18 +237,24 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
         boolean isEmitter = pathPointerBlockEntity.parts.contains(PathPointerBlockEntity.PPPart.EMITTER);
         boolean isInfuser = pathPointerBlockEntity.parts.contains(PathPointerBlockEntity.PPPart.INFUSER);
 
+        Entity owner = this.getOwner();
         if (bindposNotValid && isEmitter) {
             bindPos = getTarget();
             shootVec = pathPointerBlockEntity.getBlockPos().getCenter().vectorTo(bindPos.getCenter());
-        } else if (bindposNotValid) {
-            shootVec = pathPointerBlockEntity.getBlockPos().getCenter().vectorTo(Objects.requireNonNull(this.getOwner()).position());
-                if (isInfuser) {
-                    trackCrown = true;
-                }
-        } else shootVec = pathPointerBlockEntity.getBlockPos().getCenter().vectorTo(bindPos.getCenter());
+        } else if (bindposNotValid && owner != null) {
+            shootVec = pathPointerBlockEntity.getBlockPos().getCenter().vectorTo(owner.position());
+
+        } else if (owner == null) {
+            shootVec = Vec3.ZERO;
+        } else {
+            shootVec = pathPointerBlockEntity.getBlockPos().getCenter().vectorTo(bindPos.getCenter());
+        }
 
 
-        if (isInfuser) PathPointerBlockEntity.setYawAndPitchFromRot(shootVec,pathPointerBlockEntity);
+        if (isInfuser) {
+            PathPointerBlockEntity.setYawAndPitchFromRot(shootVec, pathPointerBlockEntity);
+            trackCrown = true;
+        }
 
         this.shoot(shootVec.x(),shootVec.y(),shootVec.z(),5 / 20f,0);
         Level level = pathPointerBlockEntity.getLevel();
