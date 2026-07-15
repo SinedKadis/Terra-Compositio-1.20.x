@@ -51,9 +51,10 @@ public class CedarArmorItem extends TCArmorItem {
     @Override
     public void inventoryTick(@NotNull ItemStack pStack, @NotNull Level pLevel, @NotNull Entity pEntity, int pSlotId, boolean pIsSelected) {
         super.inventoryTick(pStack, pLevel, pEntity, pSlotId, pIsSelected);
+
         if (!pLevel.isClientSide()
                 && pEntity instanceof Player pPlayer) {
-            if (this.type.getSlot().getIndex() != pSlotId){
+            if (!pPlayer.getItemBySlot(pPlayer.getEquipmentSlotForItem(pStack)).equals(pStack)) {
                 this.setNonFlowArmorBack(pPlayer,pSlotId,false);
             }
             ItemStack boots = pPlayer.getItemBySlot(EquipmentSlot.FEET);
