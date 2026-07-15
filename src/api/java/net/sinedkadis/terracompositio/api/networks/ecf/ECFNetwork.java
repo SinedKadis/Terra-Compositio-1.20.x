@@ -1,7 +1,6 @@
 package net.sinedkadis.terracompositio.api.networks.ecf;
 
 import net.minecraft.world.level.Level;
-import net.sinedkadis.terracompositio.api.IEntityInstance;
 import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.networks.AnyNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.NetworkAction;
@@ -78,7 +77,7 @@ public interface ECFNetwork {
      * @param entityInstance the attached to handler member
      * @return the iecf handler
      */
-    default IECFHandler createDefaultECFHandler(IEntityInstance entityInstance) {
+    default IECFHandler createDefaultECFHandler(ECFNetworkMember entityInstance) {
         return SentinelHelper.EMPTY_ECF_HANDLER;
     }
 }

@@ -1,6 +1,6 @@
 package net.sinedkadis.terracompositio.block.behaviours;
 
-import lombok.Data;
+import lombok.Getter;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -33,13 +33,13 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 
-@Data
+
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
     private final TCBlockEntity blockEntity;
-
     protected int range;
+    @Getter
     protected int priority;
     protected IECFHandler ecfHandler;
     protected LazyOptional<IECFHandler> lazyCFEOptional = LazyOptional.empty();
@@ -50,7 +50,7 @@ public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
 
     public ECFHandlerBehaviour(TCBlockEntity blockEntity) {
         this.blockEntity = blockEntity;
-        ecfHandler = TerraCompositioAPI.instance().getECFNetworkInstance().createDefaultECFHandler(IEntityInstance.wrap(blockEntity));
+        ecfHandler = TerraCompositioAPI.instance().getECFNetworkInstance().createDefaultECFHandler(this);
         this.range = 5;
     }
 
@@ -70,6 +70,11 @@ public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
     public ECFHandlerBehaviour ecfHandler(Function<ECFHandlerBehaviour, IECFHandler> ecfHandler) {
         this.ecfHandler = ecfHandler.apply(this);
         return this;
+    }
+
+    public int getRange(boolean inner) {
+        if (inner) return 1;
+        return range;
     }
 
     @Override

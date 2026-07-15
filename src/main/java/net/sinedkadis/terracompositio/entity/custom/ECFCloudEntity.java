@@ -57,7 +57,7 @@ public class ECFCloudEntity extends Entity implements ECFNetworkMember, IHaveKno
     protected int scheduledMembersUpdate = -1;
 
 
-    protected LazyOptional<IECFHandler> lazyECFOptional = LazyOptional.of(() -> new LimitlessDefaultECFHandler(this.getEntityInstance()) {
+    protected LazyOptional<IECFHandler> lazyECFOptional = LazyOptional.of(() -> new LimitlessDefaultECFHandler(this) {
         @Override
         public int getECF() {
             return getSyncedECF();
@@ -132,7 +132,7 @@ public class ECFCloudEntity extends Entity implements ECFNetworkMember, IHaveKno
         return TerraCompositioAPI.instance().getECFNetworkInstance().validateRelation(this, updated, Math::max);
     }
 
-    private Vec3 getBurstOffset(IECFHandler target) {
+    public Vec3 getBurstOffset(IECFHandler target) {
         double r = getRadius();
         BlockPos sourcePos = this.blockPosition();
         BlockPos targetPos = target.getEntityInstance().tc$getBlockPos();
@@ -266,7 +266,8 @@ public class ECFCloudEntity extends Entity implements ECFNetworkMember, IHaveKno
     }
 
     @Override
-    public int getRange() {
+    public int getRange(boolean inner) {
+        if (inner) return (int) getRadius();
         return (int) (getRadius() + 5);
     }
 

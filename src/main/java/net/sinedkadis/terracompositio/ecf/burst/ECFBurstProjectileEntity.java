@@ -33,7 +33,6 @@ import net.sinedkadis.terracompositio.registries.TCEntities;
 import net.sinedkadis.terracompositio.registries.TCItems;
 import org.joml.Vector3f;
 
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @Slf4j
@@ -58,10 +57,6 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
 
     public ECFBurstProjectileEntity(double pX, double pY, double pZ, Level pLevel) {
         super(TCEntities.ECF_BURST_PROJECTILE.get(), pX, pY, pZ, pLevel);
-    }
-
-    private ECFBurstProjectileEntity(IECFHandler pSource, ECFNetworkMember target, int cfe, float cfeTravelSpeed) {
-        this(pSource, Vec3.ZERO, target, cfe, cfeTravelSpeed);
     }
 
 
@@ -103,18 +98,12 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
         lastBP.set(pSource);
     }
 
-    public static @Nullable ECFBurstProjectileEntity sendBurst(IECFHandler pSource, ECFNetworkMember target, int cfe, float cfeTravelSpeed) {
-        if (cfe < 1) {
-            return null;
-        }
-        return new ECFBurstProjectileEntity(pSource, target, cfe, cfeTravelSpeed);
+    public static ECFBurstProjectileEntity sendBurst(BlockPos pSource, ECFNetworkMember target, int cfe, float cfeTravelSpeed) {
+        return new ECFBurstProjectileEntity(pSource, Vec3.ZERO, target, cfe, cfeTravelSpeed);
     }
 
-    public static @Nullable ECFBurstProjectileEntity sendBurst(BlockPos pSource, ECFNetworkMember target, int cfe, float cfeTravelSpeed) {
-        if (cfe < 1) {
-            return null;
-        }
-        return new ECFBurstProjectileEntity(pSource, Vec3.ZERO, target, cfe, cfeTravelSpeed);
+    public static ECFBurstProjectileEntity sendBurst(IECFHandler pSource, Vec3 offset, ECFNetworkMember target, int cfe, float cfeTravelSpeed) {
+        return new ECFBurstProjectileEntity(pSource, offset, target, cfe, cfeTravelSpeed);
     }
 
     boolean trackCrown = false;
@@ -265,7 +254,7 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
     }
 
     private int tryConsumeCFEHandler(IECFHandler IECFHandler, int cfe) {
-        int added = IECFHandler.addECF(cfe, TransferAction.BOTH);
+        int added = IECFHandler.addECF(cfe, TransferAction.EXECUTE);
         discard();
         return added;
     }

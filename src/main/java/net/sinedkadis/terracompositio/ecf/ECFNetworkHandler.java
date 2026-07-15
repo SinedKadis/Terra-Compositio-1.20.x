@@ -7,6 +7,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -22,6 +23,7 @@ import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.block.entity.PathPointerBlockEntity;
 import net.sinedkadis.terracompositio.ecf.burst.ECFBurstProjectileEntity;
+import net.sinedkadis.terracompositio.entity.custom.ECFCloudEntity;
 import net.sinedkadis.terracompositio.events.ECFNetworkEvent;
 
 import java.util.*;
@@ -38,11 +40,11 @@ public class ECFNetworkHandler implements ECFNetwork {
     @SubscribeEvent
     public static void onLevelTickEvent(TickEvent.LevelTickEvent event) {
         long gameTime = event.level.getGameTime();
-        if (gameTime % 5 != 0) return;
+        if (gameTime % 10 != 0) return;
         Queue<Pair<Integer, Runnable>> skipped = new LinkedList<>();
         while (!scheduledDeliveries.isEmpty()) {
             Pair<Integer, Runnable> poll = scheduledDeliveries.poll();
-            if (poll.getFirst().equals((int) ((gameTime / 5) % 4))) {
+            if (poll.getFirst().equals((int) ((gameTime / 10) % 2))) {
                 poll.getSecond().run();
             } else {
                 skipped.add(poll);
@@ -120,13 +122,14 @@ public class ECFNetworkHandler implements ECFNetwork {
             additions[0] += added % divisions;
 
             MinecraftServer server = source.getEntityInstance().tc$getLevel().getServer();
-            assert server != null;
+            if (server != null) {
 
-            for (int i = 0; i < additions.length; i++) {
-                int addition = additions[i];
-                int finalI = i;
-                server.executeIfPossible(() -> scheduledDeliveries.add(new Pair<>((finalI % 4), () ->
-                        sendBurst(sourceMainHandler, targetMainHandler, addition, speed))));
+                for (int i = 0; i < additions.length; i++) {
+                    int addition = additions[i];
+                    int finalI = i;
+                    server.executeIfPossible(() -> scheduledDeliveries.add(new Pair<>((finalI % 2), () ->
+                            sendBurst(sourceMainHandler, targetMainHandler, addition, speed))));
+                }
             }
         }
     }
@@ -141,22 +144,28 @@ public class ECFNetworkHandler implements ECFNetwork {
             return;
         }
 
-        ECFBurstProjectileEntity entity = ECFBurstProjectileEntity.sendBurst(source, target, count, speed);
-        if (entity != null) {
-            level.addFreshEntity(entity);
+        Vec3 offset = Vec3.ZERO;
+        if (source.getAttachedEntity() instanceof ECFCloudEntity ecfCloudEntity) {
+            offset = ecfCloudEntity.getBurstOffset(target);
         }
+
+        ECFBurstProjectileEntity entity = ECFBurstProjectileEntity.sendBurst(source, offset, target, count, speed);
+        level.addFreshEntity(entity);
     }
 
     private boolean closeAndAllow(IECFHandler source, IECFHandler target) {
         IEntityInstance sourceAttachedEntity = source.getAttachedEntity();
         if (sourceAttachedEntity instanceof PathPointerBlockEntity) return false;
-        if (sourceAttachedEntity.tc$isEntity()) return false;
+//        if (sourceAttachedEntity.tc$isEntity()) return false;
 
         IEntityInstance targetAttachedEntity = target.getAttachedEntity();
         if (targetAttachedEntity instanceof PathPointerBlockEntity) return false;
         if (targetAttachedEntity.tc$isEntity()) return false;
 
-        return sourceAttachedEntity.tc$getPosition().closerThan(targetAttachedEntity.tc$getPosition(), 2);
+        return sourceAttachedEntity.tc$getPosition().closerThan(targetAttachedEntity.tc$getPosition(), Math.max(
+                source.getRange(true),
+                target.getRange(true)
+        ) + 1);
     }
 
 
@@ -297,7 +306,7 @@ public class ECFNetworkHandler implements ECFNetwork {
     }
 
     @Override
-    public IECFHandler createDefaultECFHandler(IEntityInstance entityInstance) {
+    public IECFHandler createDefaultECFHandler(ECFNetworkMember entityInstance) {
         return new DefaultECFHandler(entityInstance);
     }
 }

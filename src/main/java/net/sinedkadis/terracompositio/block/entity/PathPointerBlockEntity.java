@@ -724,7 +724,8 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
     }
 
     @Override
-    public int getRange() {
+    public int getRange(boolean inner) {
+        if (inner) return 1;
         return 7;
     }
 

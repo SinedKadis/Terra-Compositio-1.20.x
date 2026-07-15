@@ -29,7 +29,7 @@ import java.util.function.Function;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class DefaultECFHandler implements IECFHandler, INBTSerializable<CompoundTag> {
-    protected IEntityInstance attachedMember;
+    protected ECFNetworkMember attachedMember;
     @Getter
     protected int index = 0;
     @Getter
@@ -56,12 +56,17 @@ public class DefaultECFHandler implements IECFHandler, INBTSerializable<Compound
         queued = 0;
     }
 
-    public DefaultECFHandler(IEntityInstance attachedMember) {
+    public DefaultECFHandler(ECFNetworkMember attachedMember) {
         this.attachedMember = attachedMember;
     }
 
     @Override
     public IEntityInstance getAttachedEntity() {
+        return attachedMember.getEntityInstance();
+    }
+
+    @Override
+    public ECFNetworkMember getAttachedMember() {
         return attachedMember;
     }
 
@@ -94,7 +99,7 @@ public class DefaultECFHandler implements IECFHandler, INBTSerializable<Compound
     public int addECF(int cfe, TransferAction action) {
         int added = cfe;
         if (action.simulate()) {
-            int pMax = getMaxECF() - this.getECF();
+            int pMax = getMaxECF() - this.getECF() - this.getQueued();
             added = Mth.clamp(cfe, 0, pMax);
         }
         if (action.execute()) {
@@ -103,7 +108,7 @@ public class DefaultECFHandler implements IECFHandler, INBTSerializable<Compound
                 member.scheduleMemberUpdate();
             onContentsChanged();
         }
-        return added;
+        return Math.max(added, 0);
     }
 
     protected void sendCFEUpdate() {

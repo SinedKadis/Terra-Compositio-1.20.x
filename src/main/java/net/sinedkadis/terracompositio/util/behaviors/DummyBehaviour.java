@@ -64,7 +64,7 @@ public class DummyBehaviour implements IBEBehaviour, IBEItemWordlyContainerBehav
     }
 
     @Override
-    public int getRange() {
+    public int getRange(boolean inner) {
         return 0;
     }
 
