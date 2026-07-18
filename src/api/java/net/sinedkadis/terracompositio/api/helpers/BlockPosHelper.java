@@ -175,14 +175,14 @@ public class BlockPosHelper {
      * Load block pos from tag.
      *
      * @param tag the tag
-     * @return the blockPos or null if tag is not instance of {@link CompoundTag} or empty
+     * @return the blockPos or sentinel if tag is not instance of {@link CompoundTag} or empty
      */
-    public static @Nullable BlockPos loadBlockPos(Tag tag) {
+    public static BlockPos loadBlockPos(Tag tag) {
         CompoundTag compoundTag;
         if (tag instanceof CompoundTag) {
             compoundTag = ((CompoundTag) tag);
-        } else return null;
-        if (compoundTag.isEmpty()) return null;
+        } else return SentinelHelper.EMPTY_POS;
+        if (compoundTag.isEmpty()) return SentinelHelper.EMPTY_POS;
         int x = compoundTag.getInt("x");
         int y = compoundTag.getInt("y");
         int z = compoundTag.getInt("z");
