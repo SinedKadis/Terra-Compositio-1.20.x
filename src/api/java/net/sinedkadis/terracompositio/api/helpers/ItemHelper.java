@@ -107,27 +107,43 @@ public class ItemHelper {
      * Drop contents of blockEntity given cap.
      *
      * @param <T>         the type parameter
+     * @param <C>         the type parameter
      * @param blockEntity the block entity
      * @param cap         the capability that extends {@link IItemHandler}
      */
     public static <T extends IItemHandler, C> void dropContents(BlockEntity blockEntity, BlockCapability<T, C> cap) {
         Level level = blockEntity.getLevel();
         if (level == null) return;
+        dropContents(level, blockEntity.getBlockPos(), cap);
+    }
 
-        T itemHandler = level.getCapability(cap, blockEntity.getBlockPos(), blockEntity.getBlockState(), blockEntity, null);
+    /**
+     * Drop contents of given item handler.
+     *
+     * @param <T>      the item handler type parameter
+     * @param level    the level
+     * @param blockPos the block pos
+     * @param cap      the item handler cap
+     */
+    public static <T extends IItemHandler, C> void dropContents(Level level, BlockPos blockPos, BlockCapability<T, C> cap) {
+        T itemHandler = level.getCapability(cap, blockPos, null);
         if (itemHandler == null) return;
-
         SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
 
         for (int i = 0; i < inventory.getContainerSize(); i++) {
             inventory.setItem(i, itemHandler.getStackInSlot(i));
         }
 
-        BlockPos worldPosition = blockEntity.getBlockPos();
-        Containers.dropContents(level, worldPosition, inventory);
-
+        Containers.dropContents(level, blockPos, inventory);
     }
 
+    /**
+     * Hurt and break item.
+     *
+     * @param level  the level
+     * @param player the player
+     * @param item   the item
+     */
     public static void hurtAndBreakItem(ServerLevel level, Player player, ItemStack item) {
         item.hurtAndBreak(1, level, player, player1 -> EventHooks.onPlayerDestroyItem(player, item, InteractionHand.MAIN_HAND));
     }
