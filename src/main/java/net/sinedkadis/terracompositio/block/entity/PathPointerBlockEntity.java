@@ -71,7 +71,7 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
     @Setter
     private boolean updateScheduled = false;
 
-    private BlockPos receiverPos = null;
+    private BlockPos receiverPos = SentinelHelper.EMPTY_POS;
 
     public static boolean validAngle(PathPointerBlockEntity be, Vec3 burstDir) {
 
@@ -99,7 +99,7 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
     private final Set<BlockPos> senderPoses = new HashSet<>() {
     };
 
-    private BlockPos outputPos = null;
+    private BlockPos outputPos = SentinelHelper.EMPTY_POS;
 
     public void setOutputPos(@Nullable BlockPos emitterPos) {
         this.outputPos = emitterPos;
@@ -627,9 +627,9 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
         pTag.putInt("part0", parts.get(0).ordinal());
         pTag.putInt("part1", parts.get(1).ordinal());
 
-        if (receiverPos != null)
+        if (receiverPos != SentinelHelper.EMPTY_POS)
             pTag.put(RECEIVER_POS_TAG, BlockPosHelper.saveBlockPos(receiverPos));
-        if (outputPos != null)
+        if (outputPos != SentinelHelper.EMPTY_POS)
             pTag.put(OUTPUT_POS_TAG, BlockPosHelper.saveBlockPos(outputPos));
         saveFromSetToTag(pTag, SENDER_POSES_TAG, senderPoses);
         saveFromSetToTag(pTag, INPUT_POSES_TAG, inputPoses);
@@ -748,7 +748,7 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
 
     public BlockPos getOutputPos() {
         BlockPos outputPos1 = this.outputPos;
-        if (outputPos1 == null
+        if (outputPos1 == SentinelHelper.EMPTY_POS
                 && (parts.contains(PPPart.EMITTER) || parts.contains(PPPart.INFUSER))
                 && (parts.contains(PPPart.COLLECTOR) || parts.contains(PPPart.EXTRACTOR))) {
             return worldPosition;

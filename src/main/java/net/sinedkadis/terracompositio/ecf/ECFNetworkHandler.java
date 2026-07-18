@@ -60,6 +60,7 @@ public class ECFNetworkHandler implements ECFNetwork {
         if (target instanceof PPECFMemberProxy(
                 ECFNetworkMember trueTarget, PathPointerBlockEntity proxy, PathPointerBlockEntity ignoredSource
         )) {
+            if (proxy == null) return false;
             if (proxy.parts.contains(PathPointerBlockEntity.PPPart.COLLECTOR)
                     || proxy.parts.contains(PathPointerBlockEntity.PPPart.EXTRACTOR)) {
                 if (proxy.getOutputPos() == null) return false;
