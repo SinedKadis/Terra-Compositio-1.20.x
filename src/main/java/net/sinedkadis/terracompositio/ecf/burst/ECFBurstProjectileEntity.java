@@ -21,6 +21,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.networks.TransferAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
@@ -228,26 +229,23 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
 
         timeToLive += 100;
         setDeltaMovement(Vec3.ZERO);
-        setPos(pathPointerBlockEntity.getBlockPos().getCenter());
+        Vec3 center = pathPointerBlockEntity.getBlockPos().getCenter();
+        setPos(center);
         BlockPos bindPos = pathPointerBlockEntity.getReceiverPos();
 
         Vec3 shootVec;
 
-        boolean bindposNotValid = bindPos == null || bindPos.equals(BlockPos.ZERO);
-        boolean isEmitter = pathPointerBlockEntity.parts.contains(PathPointerBlockEntity.PPPart.EMITTER);
+        boolean bindposNotValid = bindPos == null || bindPos.equals(SentinelHelper.EMPTY_POS);
         boolean isInfuser = pathPointerBlockEntity.parts.contains(PathPointerBlockEntity.PPPart.INFUSER);
 
         Entity owner = this.getOwner();
-        if (bindposNotValid && isEmitter) {
+        if (bindposNotValid && owner != null) {
+            shootVec = center.vectorTo(owner.position());
+        } else if (bindposNotValid) {
             bindPos = getTarget();
-            shootVec = pathPointerBlockEntity.getBlockPos().getCenter().vectorTo(bindPos.getCenter());
-        } else if (bindposNotValid && owner != null) {
-            shootVec = pathPointerBlockEntity.getBlockPos().getCenter().vectorTo(owner.position());
-
-        } else if (owner == null) {
-            shootVec = Vec3.ZERO;
+            shootVec = center.vectorTo(bindPos.getCenter());
         } else {
-            shootVec = pathPointerBlockEntity.getBlockPos().getCenter().vectorTo(bindPos.getCenter());
+            shootVec = center.vectorTo(bindPos.getCenter());
         }
 
 
