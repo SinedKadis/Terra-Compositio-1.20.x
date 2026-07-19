@@ -19,7 +19,6 @@ import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
 import net.sinedkadis.terracompositio.api.networks.TransferAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
-import net.sinedkadis.terracompositio.config.TCCommonConfigs;
 import net.sinedkadis.terracompositio.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.util.behaviors.DummyBehaviour;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEItemBehaviour;
@@ -128,9 +127,10 @@ public abstract class TCCraftingBlockEntity extends TCBlockEntity implements Wor
     abstract protected IItemHandlerModifiable getItemHandler();
 
     public ItemStack getRenderStack() {
-        for (int i = getItemHandler().getSlots() - 1; i >= 0; i--) {
-            if (!getItemHandler().getStackInSlot(i).isEmpty()) {
-                return getItemHandler().getStackInSlot(i);
+        IItemHandlerModifiable itemHandler = getItemHandler();
+        for (int i = itemHandler.getSlots() - 1; i >= 0; i--) {
+            if (!itemHandler.getStackInSlot(i).isEmpty()) {
+                return itemHandler.getStackInSlot(i);
             }
         }
         return ItemStack.EMPTY;
@@ -213,10 +213,10 @@ public abstract class TCCraftingBlockEntity extends TCBlockEntity implements Wor
             data.putFloat(TooltipHelper.Keys.CONSUME.toData(), tickECFCost * 20f);
         }
 
-        if (TCCommonConfigs.DEBUG.get()) {
-            data.putInt(TooltipHelper.Keys.PROGRESS.toData(), progress);
-            data.putInt(TooltipHelper.Keys.MAX_PROGRESS.toData(), maxProgress);
-        }
+//        if (TCCommonConfigs.DEBUG.get()) {
+//            data.putInt(TooltipHelper.Keys.PROGRESS.toData(), progress);
+//            data.putInt(TooltipHelper.Keys.MAX_PROGRESS.toData(), maxProgress);
+//        }
 
     }
 

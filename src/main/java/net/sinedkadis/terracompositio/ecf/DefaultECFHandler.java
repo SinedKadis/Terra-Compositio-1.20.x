@@ -103,7 +103,7 @@ public class DefaultECFHandler implements IECFHandler, INBTSerializable<Compound
         }
         if (action.execute()) {
             this.setECF(Math.min(this.getECF() + added, this.getMaxECF()));
-            if (getAttachedEntity() instanceof ECFNetworkMember member)
+            if (getAttachedMember() instanceof ECFNetworkMember member)
                 member.scheduleMemberUpdate();
             onContentsChanged();
         }
@@ -111,14 +111,14 @@ public class DefaultECFHandler implements IECFHandler, INBTSerializable<Compound
     }
 
     protected void sendCFEUpdate() {
-        if (getAttachedEntity() instanceof ECFNetworkMember member) {
+        if (getAttachedMember() instanceof ECFNetworkMember member) {
             TerraCompositioAPI.INSTANCE.getECFNetworkInstance().fireECFNetworkEvent(member, NetworkAction.UPDATE);
         }
     }
 
 
     protected void onContentsChanged() {
-        if (getAttachedEntity() instanceof BlockEntity blockEntity) {
+        if (getAttachedMember() instanceof BlockEntity blockEntity) {
             blockEntity.setChanged();
             Level level = blockEntity.getLevel();
             if (level != null && !level.isClientSide()) {
