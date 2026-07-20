@@ -1,6 +1,6 @@
 package net.sinedkadis.terracompositio.api;
 
-import net.sinedkadis.terracompositio.api.dummies.DummyNetwork;
+import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetwork;
 import net.sinedkadis.terracompositio.api.networks.fluid.FluidNetwork;
 
@@ -35,7 +35,7 @@ public interface TerraCompositioAPI {
      * @return the instance
      */
     default ECFNetwork getECFNetworkInstance(){
-        return DummyNetwork.instance;
+        return SentinelHelper.EMPTY_NETWORK;
     }
 
     /**
@@ -44,6 +44,6 @@ public interface TerraCompositioAPI {
      * @return the fluid network
      */
     default FluidNetwork getFluidNetworkInstance(){
-        return DummyNetwork.instance;
+        return SentinelHelper.EMPTY_NETWORK;
     }
 }
