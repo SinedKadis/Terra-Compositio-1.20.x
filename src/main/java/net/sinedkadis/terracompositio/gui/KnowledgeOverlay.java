@@ -156,7 +156,10 @@ public class KnowledgeOverlay {
         }
 
         resolveHeaders(tooltip);
-        if (tooltip.isEmpty()) return;
+        if (tooltip.isEmpty()) {
+            resetHover();
+            return;
+        }
 
         renderOverlay(mc, graphics, deltaTracker.getGameTimeDeltaTicks(), graphics.guiWidth(), graphics.guiHeight(), tooltip);
 
