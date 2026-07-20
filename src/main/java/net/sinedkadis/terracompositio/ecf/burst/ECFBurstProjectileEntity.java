@@ -231,25 +231,31 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
         setDeltaMovement(Vec3.ZERO);
         Vec3 center = pathPointerBlockEntity.getBlockPos().getCenter();
         setPos(center);
-        BlockPos bindPos = pathPointerBlockEntity.getReceiverPos();
 
-        Vec3 shootVec;
+        Vec3 shootVec = Vec3.ZERO;
 
-        boolean bindposNotValid = bindPos == null || bindPos.equals(SentinelHelper.EMPTY_POS);
-        boolean isInfuser = pathPointerBlockEntity.parts.contains(PathPointerBlockEntity.PPPart.INFUSER);
+        boolean isSender = pathPointerBlockEntity.parts.contains(PathPointerBlockEntity.PPPart.SENDER);
+        if (isSender) {
+            BlockPos toSendPos = pathPointerBlockEntity.getReceiverPos();
+            boolean toSendPosNotValid = toSendPos == null || toSendPos.equals(SentinelHelper.EMPTY_POS);
 
-        Entity owner = this.getOwner();
-        if (bindposNotValid && owner != null) {
-            shootVec = center.vectorTo(owner.position());
-        } else if (bindposNotValid) {
-            bindPos = getTarget();
-            shootVec = center.vectorTo(bindPos.getCenter());
-        } else {
-            shootVec = center.vectorTo(bindPos.getCenter());
+            if (toSendPosNotValid) {
+                shootVec = new Vec3(-1, 0, 0).yRot(-pathPointerBlockEntity.getRotationYaw()).xRot(pathPointerBlockEntity.getRotationPitch());
+            } else {
+                shootVec = center.vectorTo(toSendPos.getCenter());
+            }
         }
-
-
+        boolean isEmitter = pathPointerBlockEntity.parts.contains(PathPointerBlockEntity.PPPart.EMITTER);
+        if (isEmitter) {
+            BlockPos target = this.getTarget();
+            shootVec = center.vectorTo(target.getCenter());
+        }
+        boolean isInfuser = pathPointerBlockEntity.parts.contains(PathPointerBlockEntity.PPPart.INFUSER);
         if (isInfuser) {
+            Entity owner = this.getOwner();
+            if (owner != null) {
+                shootVec = center.vectorTo(owner.position());
+            }
             PathPointerBlockEntity.setYawAndPitchFromRot(shootVec, pathPointerBlockEntity);
             trackCrown = true;
         }

@@ -83,6 +83,13 @@ public class ECFNetworkHandler implements ECFNetwork {
         if (!validateMember(source)) return false;
         if (!validateMember(target)) return false;
         if (!(source.getPriority() < target.getPriority())) return false;
+        if (target.getEntityInstance().tc$isEntity()
+                && source instanceof PathPointerBlockEntity pp
+                && !pp.parts.contains(PathPointerBlockEntity.PPPart.INFUSER)) return false;
+        if (target.getEntityInstance().tc$isBlock()
+                && source instanceof PathPointerBlockEntity pp
+                && !pp.parts.contains(PathPointerBlockEntity.PPPart.EMITTER)) return false;
+
 
         return source.getEntityInstance().tc$getPosition()
                 .closerThan(
@@ -127,9 +134,7 @@ public class ECFNetworkHandler implements ECFNetwork {
 
                 for (int i = 0; i < additions.length; i++) {
                     int addition = additions[i];
-                    int finalI = i;
-                    server.executeIfPossible(() -> scheduledDeliveries.add(new Pair<>((finalI % 2), () ->
-                            sendBurst(sourceMainHandler, target, addition, speed))));
+                    scheduledDeliveries.add(new Pair<>((i % 2), () -> sendBurst(sourceMainHandler, target, addition, speed)));
                 }
             }
         }
