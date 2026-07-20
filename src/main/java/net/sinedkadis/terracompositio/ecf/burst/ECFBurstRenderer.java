@@ -34,6 +34,8 @@ public class ECFBurstRenderer extends EntityRenderer<ECFBurstProjectileEntity> {
         if (tickCount >= 1 || !(this.entityRenderDispatcher.camera.getEntity().distanceToSqr(pEntity) < MIN_CAMERA_DISTANCE_SQUARED)) {
             int cfe = pEntity.getECF();
             int count = TCInnerConfig.RENDER_COUNT_FUNCTION.applyAsInt(cfe);
+            if (count > 100)
+                count = 100;
             Vector3f[] offsets1 = getOffsets(pEntity);
             if (offsets1 == null || offsets1.length < count) {
                 try {

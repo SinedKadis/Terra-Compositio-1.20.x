@@ -35,16 +35,16 @@ public class ECFNetworkHandler implements ECFNetwork {
     private final Map<Level, Set<ECFNetworkMember>> ecfSources = new WeakHashMap<>();
 
 
-    static Queue<Pair<Integer, Runnable>> scheduledDeliveries = new LinkedList<>();
+    static Queue<Pair<Long, Runnable>> scheduledDeliveries = new LinkedList<>();
 
     @SubscribeEvent
     public static void onLevelTickEvent(LevelTickEvent.Post event) {
         long gameTime = event.getLevel().getGameTime();
         if (gameTime % 10 != 0) return;
-        Queue<Pair<Integer, Runnable>> skipped = new LinkedList<>();
+        Queue<Pair<Long, Runnable>> skipped = new LinkedList<>();
         while (!scheduledDeliveries.isEmpty()) {
-            Pair<Integer, Runnable> poll = scheduledDeliveries.poll();
-            if (poll.getFirst().equals((int) ((gameTime / 10) % 2))) {
+            Pair<Long, Runnable> poll = scheduledDeliveries.poll();
+            if (poll.getFirst() < gameTime) {
                 poll.getSecond().run();
             } else {
                 skipped.add(poll);
@@ -129,12 +129,14 @@ public class ECFNetworkHandler implements ECFNetwork {
             Arrays.fill(additions, toAdd);
             additions[0] += added % divisions;
 
-            MinecraftServer server = source.getEntityInstance().tc$getLevel().getServer();
+            Level level = source.getEntityInstance().tc$getLevel();
+            MinecraftServer server = level.getServer();
             if (server != null) {
 
                 for (int i = 0; i < additions.length; i++) {
                     int addition = additions[i];
-                    scheduledDeliveries.add(new Pair<>((i % 2), () -> sendBurst(sourceMainHandler, target, addition, speed)));
+
+                    scheduledDeliveries.add(new Pair<>((level.getGameTime() + (i * 10L)), () -> sendBurst(sourceMainHandler, target, addition, speed)));
                 }
             }
         }

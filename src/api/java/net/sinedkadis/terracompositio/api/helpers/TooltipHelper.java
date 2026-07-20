@@ -178,6 +178,7 @@ public class TooltipHelper {
     public static void addScale(ICustomKey key, int current, int max, List<Component> list) {
         int segments = 20;
         float ratio = ((float) current / max);
+        if (ratio > 1) ratio = 1;
         int count = Math.round(ratio * segments);
         list.add(keyWithArg(key,
                 Component.literal(new StringBuilder().repeat("|", Math.max(0, count)).toString()).withStyle(ChatFormatting.AQUA)
