@@ -63,6 +63,7 @@ import net.sinedkadis.terracompositio.network.packets.C2SBoardSync;
 import net.sinedkadis.terracompositio.registries.TCArmorMaterials;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
 import net.sinedkadis.terracompositio.registries.TCItems;
+import net.sinedkadis.terracompositio.registries.TCSounds;
 import net.sinedkadis.terracompositio.util.OffsetVConsumer;
 import net.sinedkadis.terracompositio.util.accessors.PlayerKnowledgeAccessor;
 import net.sinedkadis.terracompositio.util.helpers.ParticleHelperInternal;

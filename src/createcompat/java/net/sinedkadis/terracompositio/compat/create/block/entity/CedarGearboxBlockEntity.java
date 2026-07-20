@@ -164,9 +164,9 @@ public class CedarGearboxBlockEntity extends GeneratingKineticBlockEntity implem
     @Override
     public void collectKnowledgeData(CompoundTag data) {
         data.putInt(TooltipHelper.Keys.ECF.toData(), ecfHandler.getECF());
+        data.putInt(TooltipHelper.Keys.MAX_ECF.toData(), ecfHandler.getMaxECF());
 
         if (TCCommonConfigs.DEBUG.get()) {
-            data.putInt(TooltipHelper.Keys.MAX_ECF.toData(), ecfHandler.getMaxECF());
             data.putInt(TooltipHelper.Keys.QUEUED.toData(), ecfHandler.getQueued());
         }
         data.putInt(TooltipHelper.Keys.PRIORITY.toData(), this.getPriority());
@@ -193,9 +193,13 @@ public class CedarGearboxBlockEntity extends GeneratingKineticBlockEntity implem
 
 
         TooltipHelper.addWithHeader(TooltipHelper.Headers.ECF, tooltip, t -> {
-            TooltipHelper.addIfExist(TooltipHelper.Keys.ECF, t, data);
-            TooltipHelper.addIfExist(TooltipHelper.Keys.MAX_ECF, t, data);
-            TooltipHelper.addIfExist(TooltipHelper.Keys.QUEUED, t, data);
+            if (isShifting) {
+                TooltipHelper.addIfExist(TooltipHelper.Keys.ECF, t, data);
+                TooltipHelper.addIfExist(TooltipHelper.Keys.MAX_ECF, t, data);
+                TooltipHelper.addIfExist(TooltipHelper.Keys.QUEUED, t, data);
+            } else {
+                TooltipHelper.addScaleIfExist(TooltipHelper.Keys.ECF, TooltipHelper.Keys.MAX_ECF, tooltip, data);
+            }
         });
 
     }

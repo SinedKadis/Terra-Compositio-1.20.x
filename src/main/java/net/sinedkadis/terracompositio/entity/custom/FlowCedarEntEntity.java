@@ -89,7 +89,7 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
     @Getter
     protected LazyOptional<IECFHandler> innerECFOptional = LazyOptional.of(() -> new DefaultECFHandler(this)
             .setMaxECF(32)
-            .setOffset(vec3 -> vec3.add(0,1,0))
+            .setOffset(vec3 -> vec3.add(0, 1, 0))
             .setIndex(1));
     public final AnimationState idleAnimationState = new AnimationState();
     public final AnimationState extractionAnimationState = new AnimationState();
@@ -168,7 +168,7 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
         super.tick();
         updateIfScheduled();
         ItemStack item = this.getItemBySlot(EquipmentSlot.HEAD);
-        item.getItem().inventoryTick(item,level(),this,3,false);
+        item.getItem().inventoryTick(item, level(), this, 3, false);
         if (this.level().isClientSide()) {
             setupAnimationStates();
         } else {
@@ -228,12 +228,12 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
     public void turnIntoStatue() {
         ItemStack crown = this.getItemBySlot(EquipmentSlot.HEAD);
         this.level().setBlock(this.blockPosition(),
-                TCBlocks.FLOW_CEDAR_ENT_STATUE.get().defaultBlockState(),3);
+                TCBlocks.FLOW_CEDAR_ENT_STATUE.get().defaultBlockState(), 3);
         BlockEntity blockEntity = this.level().getBlockEntity(this.blockPosition());
         if (blockEntity instanceof EntStatueBlockEntity entStatueBlockEntity) {
             entStatueBlockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iItemHandler -> {
                 if (iItemHandler instanceof ItemStackHandler itemStackHandler)
-                    itemStackHandler.setStackInSlot(0,crown);
+                    itemStackHandler.setStackInSlot(0, crown);
             });
 
         }
@@ -301,22 +301,24 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
     }
 
     boolean wasHeld = false;
+
     private void setupAnimationStates() {
         idleAnimationState.startIfStopped(this.tickCount);
 
-        extractionAnimationState.animateWhen(this.isExtracting(),this.tickCount);
+        extractionAnimationState.animateWhen(this.isExtracting(), this.tickCount);
         ecfHoldState.animateWhen(this.isHolding(), this.tickCount);
-        if (!isHolding() && wasHeld){
+        if (!isHolding() && wasHeld) {
             ecfHoldState.stop();
             extractionCompleteAnimationState.start(this.tickCount);
         }
         wasHeld = isHolding();
 
     }
+
     @Override
     protected void updateWalkAnimation(float pPartialTick) {
         float f;
-        if(this.getPose() == Pose.STANDING) {
+        if (this.getPose() == Pose.STANDING) {
             f = Math.min(pPartialTick * 6F, 1f);
         } else {
             f = 0f;
@@ -339,7 +341,6 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
         this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
 
     }
-
 
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -406,7 +407,7 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
 
     public void abortECFConsume() {
         lazyCFEOptional.ifPresent(icfeHandler -> {
-            if (!this.level().isClientSide()){
+            if (!this.level().isClientSide()) {
                 float scale = (0.1f + (icfeHandler.getECF() / (float) icfeHandler.getMaxECF())) * 10;
                 ParticleHelperInternal.spawnParticlesIn(this.level(), BlockPos.containing(this.position().add(0, this.getBbHeight() + scale * 0.2f, 0)), icfeHandler.getECF() / 10);
                 icfeHandler.setECF(0);
@@ -486,18 +487,20 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
 
         lazyCFEOptional.ifPresent(cfeHandler -> {
 
+
             data.putInt(TooltipHelper.Keys.ECF.toData(), cfeHandler.getECF());
+            data.putInt(TooltipHelper.Keys.MAX_ECF.toData(), cfeHandler.getMaxECF());
             if (TCCommonConfigs.DEBUG.get()) {
-                data.putInt(TooltipHelper.Keys.MAX_ECF.toData(), cfeHandler.getMaxECF());
                 data.putInt(TooltipHelper.Keys.QUEUED.toData(), cfeHandler.getQueued());
             }
-        });
-        innerECFOptional.ifPresent(cfeHandler -> {
-            data.putInt(TooltipHelper.Keys.ECF.toData() + 2, cfeHandler.getECF());
-            if (TCCommonConfigs.DEBUG.get()) {
-                data.putInt(TooltipHelper.Keys.MAX_ECF.toData() + 2, cfeHandler.getMaxECF());
-                data.putInt(TooltipHelper.Keys.QUEUED.toData() + 2, cfeHandler.getQueued());
-            }
+
+            innerECFOptional.ifPresent(innerECFHandler -> {
+                data.putInt(TooltipHelper.Keys.ECF.toData() + 2, innerECFHandler.getECF());
+                data.putInt(TooltipHelper.Keys.MAX_ECF.toData() + 2, innerECFHandler.getMaxECF());
+                if (TCCommonConfigs.DEBUG.get()) {
+                    data.putInt(TooltipHelper.Keys.QUEUED.toData() + 2, innerECFHandler.getQueued());
+                }
+            });
         });
 
         int priority = this.getPriority();
@@ -514,19 +517,25 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
 
         TooltipHelper.addWithHeader(TooltipHelper.Headers.ECF, tooltip, t1 -> {
             TooltipHelper.addWithHeader(TooltipHelper.Headers.ENT_HOLD, t1, t -> {
-                TooltipHelper.addIfExist(TooltipHelper.Keys.ECF, t, data);
-                TooltipHelper.addIfExist(TooltipHelper.Keys.MAX_ECF, t, data);
-                TooltipHelper.addIfExist(TooltipHelper.Keys.QUEUED, t, data);
+                if (isShifting) {
+                    TooltipHelper.addIfExist(TooltipHelper.Keys.ECF, t, data);
+                    TooltipHelper.addIfExist(TooltipHelper.Keys.MAX_ECF, t, data);
+                    TooltipHelper.addIfExist(TooltipHelper.Keys.QUEUED, t, data);
+                } else {
+                    TooltipHelper.addScaleIfExist(TooltipHelper.Keys.ECF, TooltipHelper.Keys.MAX_ECF, tooltip, data);
+                }
             });
 
 
             TooltipHelper.addWithHeader(TooltipHelper.Headers.ENT_INNER, t1, t -> {
-                TooltipHelper.addIfExist(TooltipHelper.Keys.ECF, t, data, 2);
                 if (isShifting) {
+                    TooltipHelper.addIfExist(TooltipHelper.Keys.ECF, t, data, 2);
+                    TooltipHelper.addIfExist(TooltipHelper.Keys.MAX_ECF, t, data, 2);
+                    TooltipHelper.addIfExist(TooltipHelper.Keys.QUEUED, t, data, 2);
                     t.add(TooltipHelper.keyWithArg(TooltipHelper.Keys.CONSUME, 0.1, TooltipHelper.Units.ECF_SECOND));
+                } else {
+                    TooltipHelper.addScaleIfExist(TooltipHelper.Keys.ECF, TooltipHelper.Keys.MAX_ECF, tooltip, data, 2);
                 }
-                TooltipHelper.addIfExist(TooltipHelper.Keys.MAX_ECF, t, data, 2);
-                TooltipHelper.addIfExist(TooltipHelper.Keys.QUEUED, t, data, 2);
             });
 
             TooltipHelper.addWithHeader(TooltipHelper.Headers.ENT_COMMON, t1, t -> {
