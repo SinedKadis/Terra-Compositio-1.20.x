@@ -45,6 +45,7 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
 
 
     private final BlockPos.MutableBlockPos lastBP = new BlockPos.MutableBlockPos();
+    @Getter
     private int timeToLive = 150;
 
     @Getter
@@ -71,7 +72,7 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
 
     private ECFBurstProjectileEntity(BlockPos pSource, Vec3 startOffset, ECFNetworkMember target, int cfe, float cfeTravelSpeed) {
         this(pSource.getX() + startOffset.x + 0.5f,
-                pSource.getY() + startOffset.y + 0.5f,
+                pSource.getY() + startOffset.y + 0.25f,
                 pSource.getZ() + startOffset.z + 0.5f,
                 target.getEntityInstance().tc$getLevel());
 
