@@ -27,10 +27,12 @@ import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.block.entity.PathPointerBlockEntity;
 import net.sinedkadis.terracompositio.block.entity.TCBlockEntity;
+import net.sinedkadis.terracompositio.config.TCInnerConfig;
 import net.sinedkadis.terracompositio.ecf.PPECFMemberProxy;
 import net.sinedkadis.terracompositio.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.registries.TCEntities;
 import net.sinedkadis.terracompositio.registries.TCItems;
+import net.sinedkadis.terracompositio.util.helpers.ParticleHelperInternal;
 import org.joml.Vector3f;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -233,7 +235,8 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
             boolean toSendPosNotValid = toSendPos == null || toSendPos.equals(SentinelHelper.EMPTY_POS);
 
             if (toSendPosNotValid) {
-                shootVec = new Vec3(-1, 0, 0).yRot(-pathPointerBlockEntity.getRotationYaw()).xRot(pathPointerBlockEntity.getRotationPitch());
+                ParticleHelperInternal.spawnParticlesIn(level(), blockPosition(), TCInnerConfig.RENDER_COUNT_FUNCTION.applyAsInt(getECF()));
+                discard();
             } else {
                 shootVec = center.vectorTo(toSendPos.getCenter());
             }
