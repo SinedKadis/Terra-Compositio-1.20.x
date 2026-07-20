@@ -306,6 +306,8 @@ public class ECFNetworkHandler implements ECFNetwork {
             case ADD -> add(source.getEntityInstance().tc$getLevel(), source);
             case REMOVE -> remove(source.getEntityInstance().tc$getLevel(), source);
             case UPDATE -> networkMemberUpdated(source);
+            case UPDATE_ALL ->
+                    ecfSources.get(source.getEntityInstance().tc$getLevel()).forEach(ECFNetworkMember::scheduleMemberUpdate);
             default     -> throw new RuntimeException("Unsupported Network action: " + action);
         }
     }

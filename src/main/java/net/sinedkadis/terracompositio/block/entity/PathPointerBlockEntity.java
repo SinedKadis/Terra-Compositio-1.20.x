@@ -68,6 +68,7 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
     @Setter
     private boolean updateScheduled = false;
 
+    @Setter
     private BlockPos receiverPos = SentinelHelper.EMPTY_POS;
 
     public static boolean validAngle(PathPointerBlockEntity be, Vec3 burstDir) {
@@ -89,18 +90,11 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
         return dot > 0;
     }
 
-    public void setReceiverPos(@Nullable BlockPos receiverPos) {
-        this.receiverPos = receiverPos;
-    }
-
     private final Set<BlockPos> senderPoses = new HashSet<>() {
     };
 
+    @Setter
     private BlockPos outputPos = SentinelHelper.EMPTY_POS;
-
-    public void setOutputPos(@Nullable BlockPos emitterPos) {
-        this.outputPos = emitterPos;
-    }
 
     private final Set<BlockPos> inputPoses = new HashSet<>();
 
@@ -246,8 +240,8 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
         inputs.forEach(inputPPBE -> fullUpdateBE(pPlayer, (ServerLevel) level, inputPPBE));
         fullUpdateBE(pPlayer, (ServerLevel) level, outputPPBE);
 
-        inputs.forEach(inputPPBE ->
-                TerraCompositioAPI.instance().getECFNetworkInstance().fireECFNetworkEvent(inputPPBE, NetworkAction.UPDATE));
+
+        TerraCompositioAPI.instance().getECFNetworkInstance().fireECFNetworkEvent(outputPPBE, NetworkAction.UPDATE_ALL);
     }
 
     private static void tryBindInputsAndOutput(Set<PathPointerBlockEntity> inputs, @Nullable PathPointerBlockEntity outputPPBE) {
@@ -402,7 +396,7 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
             Set<PathPointerBlockEntity> inputs = getInputOf(be);
             inputs.forEach(inputPPBE -> {
                 if (inputPPBE != null) {
-                    inputPPBE.setOutputPos(null);
+                    inputPPBE.setOutputPos(SentinelHelper.EMPTY_POS);
                     updateClientHighLight(pPlayer, inputPPBE);
                 }
             });
@@ -413,7 +407,7 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
                 inputs.add(be);
                 output.getInputPoses().removeAll(inputs.stream().map(BlockEntity::getBlockPos).collect(Collectors.toSet()));
                 inputs.forEach(input -> updateClientHighLight(pPlayer, input));
-                be.setOutputPos(null);
+                be.setOutputPos(SentinelHelper.EMPTY_POS);
                 updateClientHighLight(pPlayer, output);
             }
             be.getInputPoses().clear();
@@ -426,13 +420,13 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
                     updateClientHighLight(pPlayer, receiver);
                 }
 
-                be.setReceiverPos(null);
+                be.setReceiverPos(SentinelHelper.EMPTY_POS);
             }
 
             be.getSenderPoses().forEach(senderPos -> {
                 PathPointerBlockEntity sender = (PathPointerBlockEntity) level.getBlockEntity(senderPos);
                 if (sender != null) {
-                    sender.setReceiverPos(null);
+                    sender.setReceiverPos(SentinelHelper.EMPTY_POS);
                     updateClientHighLight(pPlayer, sender);
                 }
             });
@@ -487,12 +481,12 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
     @Nullable
     private static Vec3 calculateRot(
             Set<BlockPos> receiverSenderPoses,
-            @Nullable BlockPos senderBindPos,
+            BlockPos senderBindPos,
             BlockPos origin
     ) {
         Vec3 toBind = null;
 
-        if (senderBindPos != null && !senderBindPos.equals(origin)) {
+        if (senderBindPos != SentinelHelper.EMPTY_POS && !senderBindPos.equals(origin)) {
             toBind = Vec3.atCenterOf(senderBindPos)
                     .subtract(Vec3.atCenterOf(origin))
                     .normalize();
@@ -667,10 +661,10 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
 
             if (!TCClientConfigs.APPLE_PP_ENDPOINTS.get()) return;
 
-            if (receiverPos != null) {
+            if (receiverPos != SentinelHelper.EMPTY_POS) {
                 addParticle(level, receiverPos, ParticleTypes.FLAME);
             }
-            if (outputPos != null) {
+            if (outputPos != SentinelHelper.EMPTY_POS) {
                 addParticle(level, outputPos, ParticleTypes.WAX_OFF);
             }
 
