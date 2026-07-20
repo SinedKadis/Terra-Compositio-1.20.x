@@ -170,7 +170,7 @@ public class WedgeBlock extends Block {
     }
 
     @Override
-    public void tick(@NotNull BlockState pState, @NotNull ServerLevel pLevel, @NotNull BlockPos pPos, @NotNull RandomSource pRandom) {
+    public void randomTick(@NotNull BlockState pState, @NotNull ServerLevel pLevel, @NotNull BlockPos pPos, @NotNull RandomSource pRandom) {
         this.calculateState(pState, pLevel, pPos);
         if (pState.getValue(ATTACHED)) {
             double random = Math.random();
