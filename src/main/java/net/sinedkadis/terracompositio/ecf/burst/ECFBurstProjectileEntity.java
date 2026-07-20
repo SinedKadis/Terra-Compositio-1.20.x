@@ -45,7 +45,6 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
 
 
     private final BlockPos.MutableBlockPos lastBP = new BlockPos.MutableBlockPos();
-    private IECFHandler scheduledConsumer = SentinelHelper.EMPTY_ECF_HANDLER;
     @Getter
     private int timeToLive = 150;
 
@@ -72,10 +71,8 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
                 pSource.getZ() + startOffset.z + 0.5f,
                 target.getEntityInstance().tc$getLevel());
 
-        Vec3 offset;
-        if (target instanceof PPECFMemberProxy) {
-            offset = Vec3.ZERO;
-        } else {
+        Vec3 offset = Vec3.ZERO;
+        if (target.getEntityInstance().tc$isEntity()) {
             offset = target.getMainHandler().getOffset().apply(Vec3.ZERO);
         }
         if (target instanceof LivingEntity livingEntity) {
@@ -191,15 +188,10 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
                 return;
             }
             BlockPos target = getTarget();
-            if (scheduledConsumer != SentinelHelper.EMPTY_ECF_HANDLER) {
-                if (BlockPos.containing(scheduledConsumer.getOffset().apply(target.getCenter())).equals(blockPos))
-                    tryConsumeCFEHandler(scheduledConsumer, this.getECF());
-            }
+            //todo offset handling
             if (blockPos.equals(target) && blockEntity != null) {
                 IECFHandler capability = Objects.requireNonNull(level().getCapability(TCCapabilities.ECF_HANDLER_BLOCK, target, null));
-                if (BlockPos.containing(capability.getOffset().apply(target.getCenter())).equals(blockPos))
-                    tryConsumeCFEHandler(capability, this.getECF());
-                else scheduledConsumer = capability;
+                tryConsumeCFEHandler(capability, this.getECF());
             }
 
         }
