@@ -106,7 +106,7 @@ public class ECFCloudEntity extends Entity implements ECFNetworkMember, IHaveKno
 
     @Override
     public void onECFNetworkMemberUpdate() {
-        if (getPriority() < 0 && getMainHandler().getECF() > 0) {
+        if (getPriority() < 0 && getMainHandler().getECF() > 64) {
             ECFNetwork ECFNetwork = TerraCompositioAPI.instance().getECFNetworkInstance();
             Set<ECFNetworkMember> targets = ECFNetwork.getAvailableNetworkTargets(this);
             targets.forEach(target -> {
@@ -121,7 +121,7 @@ public class ECFCloudEntity extends Entity implements ECFNetworkMember, IHaveKno
     @Override
     public void onECFNetworkMemberUpdate(ECFNetworkMember updated) {
         if (updated.getEntityInstance() instanceof AirSaturatorBlockEntity) return;
-        if (getPriority() < 0 && getMainHandler().getECF() > 0 && isValidMember(updated)) {
+        if (getPriority() < 0 && getMainHandler().getECF() > 64 && isValidMember(updated)) {
             if (updated.getEntityInstance() instanceof AirSaturatorBlockEntity) return;
             if (updated.getMainHandler().getFreeSpace() > TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get())
                 scheduleMemberUpdate(updated);
