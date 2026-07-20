@@ -168,6 +168,55 @@ public class TooltipHelper {
     }
 
     /**
+     * Add translation key with scale
+     *
+     * @param key     the key
+     * @param current the current level of scale
+     * @param max     the max level of scale
+     * @param list    the list
+     */
+    public static void addScale(ICustomKey key, int current, int max, List<Component> list) {
+        int segments = 20;
+        float ratio = ((float) current / max);
+        int count = Math.round(ratio * segments);
+        list.add(keyWithArg(key,
+                Component.literal(new StringBuilder().repeat("|", Math.max(0, count)).toString()).withStyle(ChatFormatting.AQUA)
+                        .append(
+                                Component.literal(new StringBuilder().repeat("|", Math.max(0, segments - count)).toString()).withStyle(ChatFormatting.GRAY)
+                        ),
+                Units.NO_UNITS));
+    }
+
+    /**
+     * Add translation key with scale if it's data exist.
+     *
+     * @param key    the key
+     * @param maxKey the max key
+     * @param list   the list
+     * @param data   the data
+     * @param index  the index
+     */
+    public static void addScaleIfExist(ICustomKey key, ICustomKey maxKey, List<Component> list, CompoundTag data, int index) {
+        if (data.contains(key.toData(index)) && data.contains(maxKey.toData(index))) {
+            addScale(key, data.getInt(key.toData(index)), data.getInt(maxKey.toData(index)), list);
+        }
+    }
+
+    /**
+     * Add translation key with scale if it's data exist.
+     *
+     * @param key    the key
+     * @param maxKey the max key
+     * @param list   the list
+     * @param data   the data
+     */
+    public static void addScaleIfExist(ICustomKey key, ICustomKey maxKey, List<Component> list, CompoundTag data) {
+        if (data.contains(key.toData()) && data.contains(maxKey.toData())) {
+            addScale(key, data.getInt(key.toData()), data.getInt(maxKey.toData()), list);
+        }
+    }
+
+    /**
      * Adds translation key with args and default units, that lay in data, without checking it existence.
      *
      * @param key  the key
@@ -283,9 +332,9 @@ public class TooltipHelper {
 
     /**
      * Implement that to uze custom headers. Generated via adding
-     *  {@link net.sinedkadis.terracompositio.api.helpers.TooltipHelper#translationKeyHeader} at the start of string,
-     *  then provided MOD_ID, then provided name and with
-     *  {@link TooltipHelper#headerEnding} at the end of the string
+     * {@link net.sinedkadis.terracompositio.api.helpers.TooltipHelper#translationKeyHeader} at the start of string,
+     * then provided MOD_ID, then provided name and with
+     * {@link TooltipHelper#headerEnding} at the end of the string
      */
     public interface ICustomHeader {
 
@@ -315,9 +364,9 @@ public class TooltipHelper {
 
     /**
      * Implement that to uze custom keys. Generated via adding
-     *   {@link net.sinedkadis.terracompositio.api.helpers.TooltipHelper#translationKeyHeader} at the start of string,
-     *   then provided MOD_ID, then provided name. For usage in compoundTag data adds {@link TooltipHelper#dataHeader} at the start.
-     *   Translation keys must contain "%s" to make passing args possible
+     * {@link net.sinedkadis.terracompositio.api.helpers.TooltipHelper#translationKeyHeader} at the start of string,
+     * then provided MOD_ID, then provided name. For usage in compoundTag data adds {@link TooltipHelper#dataHeader} at the start.
+     * Translation keys must contain "%s" to make passing args possible
      */
     public interface ICustomKey {
 
@@ -366,8 +415,8 @@ public class TooltipHelper {
 
     /**
      * Implement that to use custom units. Generated via adding
-     *   {@link net.sinedkadis.terracompositio.api.helpers.TooltipHelper#translationKeyHeader} at the start of string,
-     *   then provided MOD_ID, then provided name
+     * {@link net.sinedkadis.terracompositio.api.helpers.TooltipHelper#translationKeyHeader} at the start of string,
+     * then provided MOD_ID, then provided name
      */
     public interface ICustomUnit {
         /**

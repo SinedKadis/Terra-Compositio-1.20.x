@@ -473,15 +473,15 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
 
 
             data.putInt(TooltipHelper.Keys.ECF.toData(), holdECFHandler.getECF());
-            if (TCCommonConfigs.DEBUG.get()) {
-                data.putInt(TooltipHelper.Keys.MAX_ECF.toData(), holdECFHandler.getMaxECF());
+        data.putInt(TooltipHelper.Keys.MAX_ECF.toData(), holdECFHandler.getMaxECF());
+        if (TCCommonConfigs.DEBUG.get()) {
                 data.putInt(TooltipHelper.Keys.QUEUED.toData(), holdECFHandler.getQueued());
             }
 
 
             data.putInt(TooltipHelper.Keys.ECF.toData() + 2, innerECFHandler.getECF());
+        data.putInt(TooltipHelper.Keys.MAX_ECF.toData() + 2, innerECFHandler.getMaxECF());
             if (TCCommonConfigs.DEBUG.get()) {
-                data.putInt(TooltipHelper.Keys.MAX_ECF.toData() + 2, innerECFHandler.getMaxECF());
                 data.putInt(TooltipHelper.Keys.QUEUED.toData() + 2, innerECFHandler.getQueued());
             }
 
@@ -500,19 +500,25 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
 
         TooltipHelper.addWithHeader(TooltipHelper.Headers.ECF, tooltip, t1 -> {
             TooltipHelper.addWithHeader(TooltipHelper.Headers.ENT_HOLD, t1, t -> {
-                TooltipHelper.addIfExist(TooltipHelper.Keys.ECF, t, data);
-                TooltipHelper.addIfExist(TooltipHelper.Keys.MAX_ECF, t, data);
-                TooltipHelper.addIfExist(TooltipHelper.Keys.QUEUED, t, data);
+                if (isShifting) {
+                    TooltipHelper.addIfExist(TooltipHelper.Keys.ECF, t, data);
+                    TooltipHelper.addIfExist(TooltipHelper.Keys.MAX_ECF, t, data);
+                    TooltipHelper.addIfExist(TooltipHelper.Keys.QUEUED, t, data);
+                } else {
+                    TooltipHelper.addScaleIfExist(TooltipHelper.Keys.ECF, TooltipHelper.Keys.MAX_ECF, tooltip, data);
+                }
             });
 
 
             TooltipHelper.addWithHeader(TooltipHelper.Headers.ENT_INNER, t1, t -> {
-                TooltipHelper.addIfExist(TooltipHelper.Keys.ECF, t, data, 2);
                 if (isShifting) {
+                    TooltipHelper.addIfExist(TooltipHelper.Keys.ECF, t, data, 2);
+                    TooltipHelper.addIfExist(TooltipHelper.Keys.MAX_ECF, t, data, 2);
+                    TooltipHelper.addIfExist(TooltipHelper.Keys.QUEUED, t, data, 2);
                     t.add(TooltipHelper.keyWithArg(TooltipHelper.Keys.CONSUME, 0.1, TooltipHelper.Units.ECF_SECOND));
+                } else {
+                    TooltipHelper.addScaleIfExist(TooltipHelper.Keys.ECF, TooltipHelper.Keys.MAX_ECF, tooltip, data, 2);
                 }
-                TooltipHelper.addIfExist(TooltipHelper.Keys.MAX_ECF, t, data, 2);
-                TooltipHelper.addIfExist(TooltipHelper.Keys.QUEUED, t, data, 2);
             });
 
             TooltipHelper.addWithHeader(TooltipHelper.Headers.ENT_COMMON, t1, t -> {
