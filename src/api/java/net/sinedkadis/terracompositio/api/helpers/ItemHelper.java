@@ -16,7 +16,6 @@ import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.capabilities.BlockCapability;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.items.IItemHandler;
 
@@ -94,14 +93,7 @@ public class ItemHelper {
         return listNBT;
     }
 
-    /**
-     * Drop contents of blockEntity default inventory.
-     *
-     * @param blockEntity the block entity
-     */
-    public static void dropContents(BlockEntity blockEntity) {
-        dropContents(blockEntity, Capabilities.ItemHandler.BLOCK);
-    }
+
 
     /**
      * Drop contents of blockEntity given cap.
@@ -118,7 +110,7 @@ public class ItemHelper {
     }
 
     /**
-     * Drop contents of given item handler.
+     * Drop contents of given item capability.
      *
      * @param <T>      the item handler type parameter
      * @param level    the level
@@ -128,6 +120,18 @@ public class ItemHelper {
     public static <T extends IItemHandler, C> void dropContents(Level level, BlockPos blockPos, BlockCapability<T, C> cap) {
         T itemHandler = level.getCapability(cap, blockPos, null);
         if (itemHandler == null) return;
+        dropContents(level, blockPos, itemHandler);
+    }
+
+    /**
+     * Drop contents of given item handler.
+     *
+     * @param <T>         the type parameter
+     * @param level       the level
+     * @param blockPos    the block pos
+     * @param itemHandler the item handler
+     */
+    public static <T extends IItemHandler> void dropContents(Level level, BlockPos blockPos, T itemHandler) {
         SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
 
         for (int i = 0; i < inventory.getContainerSize(); i++) {

@@ -108,7 +108,7 @@ public class ItemHandlerBehaviour implements IBEItemBehaviour, WorldlyContainer,
 
     @Override
     public void onRemoved() {
-
+        ItemHelper.dropContents(blockEntity.getLevel(), blockEntity.getBlockPos(), itemHandler);
     }
 
 
