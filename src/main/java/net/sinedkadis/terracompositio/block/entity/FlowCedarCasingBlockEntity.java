@@ -85,6 +85,8 @@ public class FlowCedarCasingBlockEntity extends TCCraftingBlockEntity{
                 if (level == null) return false;
 
                 Direction direction = Direction.get(Direction.AxisDirection.POSITIVE, getBlockState().getValue(BlockStateProperties.AXIS));
+                if (direction.getAxis().isVertical()) return false;
+
                 Block blockRelative = level.getBlockState(
                         worldPosition.relative(
                                 direction.getClockWise()

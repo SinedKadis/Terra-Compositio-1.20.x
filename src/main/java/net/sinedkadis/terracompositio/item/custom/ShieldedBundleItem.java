@@ -65,7 +65,7 @@ public class ShieldedBundleItem extends BundleItem {
 
     @SubscribeEvent
     public static void onItemPickUpEvent(ItemEntityPickupEvent.Post event) {
-        ItemStack stack = event.getOriginalStack();
+        ItemStack stack = event.getOriginalStack().copy();
         if (stack.is(TCTags.Items.UNSTABLE_TECHNETIUM)){
             Player player = event.getPlayer();
             Inventory inventory = player.getInventory();
@@ -83,9 +83,9 @@ public class ShieldedBundleItem extends BundleItem {
                     }
                 } else {
                     BundleContents bundlecontents = bundle.get(DataComponents.BUNDLE_CONTENTS);
-                    if (bundlecontents == null) continue;
+                    if (bundlecontents == null) bundlecontents = new BundleContents(List.of());
                     BundleContents.Mutable mutable = new BundleContents.Mutable(bundlecontents);
-                    added = mutable.tryInsert(stack);
+                    added = mutable.tryInsert(stack.copy());
                     bundle.set(DataComponents.BUNDLE_CONTENTS,mutable.toImmutable());
                 }
                 if (added != 0){

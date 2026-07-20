@@ -13,8 +13,9 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.helpers.WorldHelper;
-import net.sinedkadis.terracompositio.registries.TCCapabilities;
+import net.sinedkadis.terracompositio.api.networks.TransferAction;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
+import net.sinedkadis.terracompositio.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.util.helpers.ParticleHelperInternal;
 import org.jetbrains.annotations.NotNull;
 
@@ -50,7 +51,7 @@ public record C2SBoardSyncPayload(BlockPos pos, boolean place, int ecfToTake,
                     3);
             Optional.ofNullable(player.getItemBySlot(EquipmentSlot.FEET).getCapability(TCCapabilities.ECF_HANDLER_ITEM))
                     .orElse(SentinelHelper.EMPTY_ECF_HANDLER)
-                    .takeECF(payload.ecfToTake(), false);
+                    .takeECF(payload.ecfToTake(), TransferAction.EXECUTE);
             ParticleHelperInternal.spawnParticlesIn(level, pPos);
         }
     }

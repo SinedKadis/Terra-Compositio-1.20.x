@@ -1,12 +1,14 @@
 package net.sinedkadis.terracompositio.block.behaviours;
 
-import lombok.Data;
+import lombok.Getter;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+import net.sinedkadis.terracompositio.api.IEntityInstance;
 import net.sinedkadis.terracompositio.api.IHaveKnowledge;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
 import net.sinedkadis.terracompositio.api.helpers.ECFHelper;
@@ -20,9 +22,7 @@ import net.sinedkadis.terracompositio.block.entity.TCBlockEntity;
 import net.sinedkadis.terracompositio.config.TCCommonConfigs;
 import net.sinedkadis.terracompositio.config.TCInnerConfig;
 import net.sinedkadis.terracompositio.ecf.PPECFMemberProxy;
-import net.sinedkadis.terracompositio.util.IEntityInstance;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEECFBehaviour;
-import net.sinedkadis.terracompositio.util.helpers.ECFHelperInternal;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -32,13 +32,13 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 
-@Data
+
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
     private final TCBlockEntity blockEntity;
-
     protected int range;
+    @Getter
     protected int priority;
     protected IECFHandler ecfHandler;
 
@@ -48,7 +48,7 @@ public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
 
     public ECFHandlerBehaviour(TCBlockEntity blockEntity) {
         this.blockEntity = blockEntity;
-        ecfHandler = TerraCompositioAPI.instance().getECFNetworkInstance().createDefaultECFHandler(IEntityInstance.wrap(blockEntity));
+        ecfHandler = TerraCompositioAPI.instance().getECFNetworkInstance().createDefaultECFHandler(this);
         this.range = 5;
     }
 
@@ -60,6 +60,11 @@ public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
         this.range = range;
         return this;
     }
+
+    public ECFHandlerBehaviour offset(Function<Vec3, Vec3> offset) {
+        this.ecfHandler.setOffset(offset);
+        return this;
+    }
     public ECFHandlerBehaviour priority(int priority) {
         this.priority = priority;
         return this;
@@ -68,6 +73,11 @@ public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
     public ECFHandlerBehaviour ecfHandler(Function<ECFHandlerBehaviour, IECFHandler> ecfHandler) {
         this.ecfHandler = ecfHandler.apply(this);
         return this;
+    }
+
+    public int getRange(boolean inner) {
+        if (inner) return 1;
+        return range;
     }
 
     @Override
@@ -106,10 +116,11 @@ public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
 
     @Override
     public void onECFNetworkMemberUpdate(ECFNetworkMember updated) {
-        if (getMainHandler().getECF() > 0 && isValidMember(updated)) {
+        if (getMainHandler().getECF() > 0 && isValidMember(updated) && !updated.getEntityInstance().tc$isEntity()) {
             if (updated.getMainHandler().getFreeSpace() > TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get()) {
                 if (updated instanceof PPECFMemberProxy(
                         ECFNetworkMember target, PathPointerBlockEntity proxy1
+                        , PathPointerBlockEntity ignoredSource
                 ) && target.getEntityInstance().tc$isEntity()) {
                     if (updated.getEntityInstance().tc$getBlockPos().closerThan(proxy1.getOutputPos(), getRange()))
                         scheduleMemberUpdate(updated);
@@ -122,7 +133,7 @@ public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
     }
 
     public boolean isValidMember(ECFNetworkMember updated) {
-        return ECFHelper.validMember(updated) || ECFHelperInternal.validPPProxy(updated);
+        return TerraCompositioAPI.instance().getECFNetworkInstance().validateRelation(this, updated, Math::min);
     }
 
     @Override
@@ -189,9 +200,8 @@ public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
     public void collectKnowledgeData(CompoundTag data, HolderLookup.Provider provider) {
 
         data.putInt(TooltipHelper.Keys.ECF.toData(), ecfHandler.getECF());
-
+        data.putInt(TooltipHelper.Keys.MAX_ECF.toData(), ecfHandler.getMaxECF());
         if (TCCommonConfigs.DEBUG.get()) {
-            data.putInt(TooltipHelper.Keys.MAX_ECF.toData(), ecfHandler.getMaxECF());
             data.putInt(TooltipHelper.Keys.QUEUED.toData(), ecfHandler.getQueued());
         }
         data.putInt(TooltipHelper.Keys.PRIORITY.toData(), this.getPriority());
@@ -218,9 +228,13 @@ public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
 
 
         TooltipHelper.addWithHeader(TooltipHelper.Headers.ECF, tooltip, t -> {
-            TooltipHelper.addIfExist(TooltipHelper.Keys.ECF, t, data);
-            TooltipHelper.addIfExist(TooltipHelper.Keys.MAX_ECF, t, data);
-            TooltipHelper.addIfExist(TooltipHelper.Keys.QUEUED, t, data);
+            if (isShifting) {
+                TooltipHelper.addIfExist(TooltipHelper.Keys.ECF, t, data);
+                TooltipHelper.addIfExist(TooltipHelper.Keys.MAX_ECF, t, data);
+                TooltipHelper.addIfExist(TooltipHelper.Keys.QUEUED, t, data);
+            } else {
+                TooltipHelper.addScaleIfExist(TooltipHelper.Keys.ECF, TooltipHelper.Keys.MAX_ECF, tooltip, data);
+            }
         });
 
 

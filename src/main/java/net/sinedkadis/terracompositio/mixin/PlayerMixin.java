@@ -8,13 +8,13 @@ import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.sinedkadis.terracompositio.api.IEntityInstance;
 import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
-import net.sinedkadis.terracompositio.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.block.custom.ECFBoardBlock;
 import net.sinedkadis.terracompositio.config.TCInnerConfig;
-import net.sinedkadis.terracompositio.util.IEntityInstance;
+import net.sinedkadis.terracompositio.registries.TCCapabilities;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -55,7 +55,8 @@ public abstract class PlayerMixin extends LivingEntity implements ECFNetworkMemb
     }
 
     @Override
-    public int getRange() {
+    public int getRange(boolean inner) {
+        if (inner) return 1;
         return 10;
     }
 

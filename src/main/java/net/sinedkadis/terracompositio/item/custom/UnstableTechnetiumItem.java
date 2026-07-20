@@ -16,6 +16,7 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.api.IECFStorageExtensionItem;
 import net.sinedkadis.terracompositio.api.helpers.ItemHelper;
+import net.sinedkadis.terracompositio.registries.TCItems;
 import net.sinedkadis.terracompositio.registries.TCTags;
 import org.jetbrains.annotations.NotNull;
 
@@ -50,7 +51,7 @@ public class UnstableTechnetiumItem extends Item implements IECFStorageExtension
         if (!(entity instanceof Player player)) return;
         Level level = player.level();
         Inventory inventory= player.getInventory();
-        List<ItemStack> containers = inventory.items.stream().filter(itemStack -> itemStack.is(Items.BUNDLE) || itemStack.is(Items.SHULKER_BOX)).toList();
+        List<ItemStack> containers = inventory.items.stream().filter(itemStack -> !itemStack.is(TCItems.SHIELDED_BUNDLE)).toList();
         for (ItemStack container : containers){
             Stream<ItemStack> stream;
             if (container.is(Items.BUNDLE)) {

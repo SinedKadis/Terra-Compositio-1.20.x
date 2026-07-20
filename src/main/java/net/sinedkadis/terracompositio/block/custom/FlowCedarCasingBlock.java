@@ -26,6 +26,7 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.sinedkadis.terracompositio.api.helpers.ItemHelper;
+import net.sinedkadis.terracompositio.api.helpers.WorldHelper;
 import net.sinedkadis.terracompositio.api.registries.TCBlockStateProperties;
 import net.sinedkadis.terracompositio.block.IFluidApplicable;
 import net.sinedkadis.terracompositio.block.entity.TCBlockEntity;
@@ -34,8 +35,6 @@ import net.sinedkadis.terracompositio.registries.TCBlocks;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-
-import static net.sinedkadis.terracompositio.api.helpers.WorldHelper.handleInWorldBlockCraft;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
@@ -70,11 +69,11 @@ public class FlowCedarCasingBlock extends TCBaseEntityBlock implements IFluidApp
             }
         }
         if (item.is(Items.HONEYCOMB) && !state.getValue(WAXED)) {
-            return handleInWorldBlockCraft(state, state.setValue(WAXED, true), level, pos, item, 1, ParticleTypes.WAX_ON, SoundEvents.HONEYCOMB_WAX_ON);
+            return WorldHelper.handleInWorldBlockCraft(state, state.setValue(WAXED, true), level, pos, item, 1, ParticleTypes.WAX_ON, SoundEvents.HONEYCOMB_WAX_ON);
         }
         if (item.getItem() instanceof AxeItem && state.getValue(WAXED)) {
             ItemHelper.hurtAndBreakItem((ServerLevel) level, player, item);
-            return handleInWorldBlockCraft(state, state.setValue(WAXED, false), level, pos, item, 0, ParticleTypes.WAX_OFF, SoundEvents.AXE_WAX_OFF);
+            return WorldHelper.handleInWorldBlockCraft(state, state.setValue(WAXED, false), level, pos, item, 0, ParticleTypes.WAX_OFF, SoundEvents.AXE_WAX_OFF);
         }
         return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
     }
@@ -139,6 +138,7 @@ public class FlowCedarCasingBlock extends TCBaseEntityBlock implements IFluidApp
                 if (!dirState.getValue(BlockStateProperties.HORIZONTAL_FACING).equals(direction)) continue;
                 pLevel.destroyBlock(relativePos, true);
             }
+            WorldHelper.flowLeak(pState, pLevel, pPos);
         }
 
         super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);

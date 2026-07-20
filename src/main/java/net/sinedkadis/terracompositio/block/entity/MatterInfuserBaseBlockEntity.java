@@ -6,11 +6,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
-import net.sinedkadis.terracompositio.api.helpers.ItemHelper;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
-import net.sinedkadis.terracompositio.registries.TCCapabilities;
 import org.jetbrains.annotations.Nullable;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING;
@@ -55,30 +52,5 @@ public abstract class MatterInfuserBaseBlockEntity extends TCCraftingBlockEntity
             }
         }
         return null;
-    }
-
-    @Override
-    public void setRemoved() {
-        Direction direction = getBlockState().getValue(HORIZONTAL_FACING);
-        BlockPos blockPos2 = worldPosition.relative(direction.getCounterClockWise());
-        BlockEntity blockEntity1 = null;
-        if (level != null) {
-            blockEntity1 = level.getBlockEntity(blockPos2);
-        }
-        if (blockEntity1 instanceof MatterInfuserUnitBlockEntity) {
-            ItemHelper.dropContents(blockEntity1, TCCapabilities.ITEM_STATE_HOLDER_BLOCK);
-        }
-        BlockPos blockpos = worldPosition.relative(direction.getOpposite());
-        BlockState blockState = level.getBlockState(blockpos);
-        if (blockState.is(TCBlocks.FLOW_CEDAR_CASING.get())) {
-            level.setBlockAndUpdate(blockpos, blockState.setValue(BlockStateProperties.FACING, Direction.DOWN));
-            BlockEntity blockEntity = level.getBlockEntity(blockpos);
-            if (blockEntity instanceof FlowCedarCasingBlockEntity) {
-                ItemHelper.dropContents(blockEntity, TCCapabilities.ITEM_STATE_HOLDER_BLOCK,
-                        FlowCedarCasingBlockEntity.UP_CONNECTION_SLOT,
-                        FlowCedarCasingBlockEntity.DOWN_CONNECTION_SLOT);
-            }
-        }
-        super.setRemoved();
     }
 }

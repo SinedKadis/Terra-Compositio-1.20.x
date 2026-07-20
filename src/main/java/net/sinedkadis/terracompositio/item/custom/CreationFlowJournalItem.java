@@ -41,6 +41,11 @@ public class CreationFlowJournalItem extends Item {
         super(properties);
     }
 
+    @Override
+    public int getMaxStackSize(ItemStack stack) {
+        return 1;
+    }
+
     public static int getBookmarks(ItemStack stack){
         Integer bookmark = stack.get(TCDataComponents.BOOKMARKS);
         if (bookmark == null) bookmark = 1;

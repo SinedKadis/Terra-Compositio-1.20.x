@@ -5,7 +5,6 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.sinedkadis.terracompositio.TerraCompositio;
-import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.block.entity.PathPointerBlockEntity;
 import net.sinedkadis.terracompositio.network.ClientPayloadHandlers;
 import org.jetbrains.annotations.NotNull;
@@ -54,8 +53,8 @@ public record S2CHighLightNodesPayload(
 
     public S2CHighLightNodesPayload(PathPointerBlockEntity ppbe) {
         this(ppbe.getBlockPos(),
-                ppbe.getOutputPos() != null ? ppbe.getOutputPos() : SentinelHelper.EMPTY_POS,
-                ppbe.getReceiverPos() != null ? ppbe.getReceiverPos() : SentinelHelper.EMPTY_POS,
+                ppbe.getOutputPos(),
+                ppbe.getReceiverPos(),
                 ppbe.getSenderPoses(),
                 ppbe.getInputPoses());
     }

@@ -77,12 +77,6 @@ public abstract class TCBlockEntity extends BlockEntity implements IHaveKnowledg
     }
 
     @Override
-    public void setRemoved() {
-        behaviours.forEach(IBEBehaviour::onRemoved);
-        super.setRemoved();
-    }
-
-    @Override
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
         behaviours.forEach(iBehaviour -> iBehaviour.onSave(tag, registries));
@@ -136,6 +130,7 @@ public abstract class TCBlockEntity extends BlockEntity implements IHaveKnowledg
         Optional<IItemHandler> behaviourCap = behaviours.stream()
                 .map(iBehaviour -> iBehaviour.getItemCapability(direction))
                 .filter(Objects::nonNull)
+                .filter(iItemHandler -> !iItemHandler.equals(EmptyItemHandler.INSTANCE))
                 .findAny();
         return behaviourCap.orElse(EmptyItemHandler.INSTANCE);
     }
@@ -145,6 +140,7 @@ public abstract class TCBlockEntity extends BlockEntity implements IHaveKnowledg
         Optional<IECFHandler> behaviourCap = behaviours.stream()
                 .map(iBehaviour -> iBehaviour.getECFCapability(direction))
                 .filter(Objects::nonNull)
+                .filter(iecfHandler -> !iecfHandler.equals(SentinelHelper.EMPTY_ECF_HANDLER))
                 .findAny();
         return behaviourCap.orElse(SentinelHelper.EMPTY_ECF_HANDLER);
     }
@@ -154,6 +150,7 @@ public abstract class TCBlockEntity extends BlockEntity implements IHaveKnowledg
         Optional<IFluidHandler> behaviourCap = behaviours.stream()
                 .map(iBehaviour -> iBehaviour.getFluidCapability(direction))
                 .filter(Objects::nonNull)
+                .filter(iFluidHandler -> !iFluidHandler.equals(EmptyFluidHandler.INSTANCE))
                 .findAny();
         return behaviourCap.orElse(EmptyFluidHandler.INSTANCE);
     }
@@ -163,6 +160,7 @@ public abstract class TCBlockEntity extends BlockEntity implements IHaveKnowledg
         Optional<IItemHandler> behaviourCap = behaviours.stream()
                 .map(iBehaviour -> iBehaviour.getStateHolderCapability(direction))
                 .filter(Objects::nonNull)
+                .filter(itemHandler -> !itemHandler.equals(EmptyItemHandler.INSTANCE))
                 .findAny();
         return behaviourCap.orElse(EmptyItemHandler.INSTANCE);
     }

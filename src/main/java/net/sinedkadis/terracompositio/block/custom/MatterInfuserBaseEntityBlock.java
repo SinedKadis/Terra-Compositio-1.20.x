@@ -20,12 +20,15 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.sinedkadis.terracompositio.api.helpers.ItemHelper;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
+import net.sinedkadis.terracompositio.registries.TCCapabilities;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.AXIS;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING;
 
 public abstract class MatterInfuserBaseEntityBlock extends TCBaseEntityBlock {
     protected final static DirectionProperty FACING;
@@ -49,8 +52,10 @@ public abstract class MatterInfuserBaseEntityBlock extends TCBaseEntityBlock {
         Direction direction = pState.getValue(FACING);
         BlockPos blockpos = pPos.relative(direction.getOpposite());
         BlockState blockstate = pLevel.getBlockState(blockpos);
-        if (blockstate.hasProperty(AXIS) && blockstate.is(TCBlocks.FLOW_CEDAR_CASING.get()))
-            return direction.getAxis().isHorizontal() && !blockstate.getValue(AXIS).equals(direction.getAxis());
+        if (blockstate.hasProperty(AXIS) && blockstate.is(TCBlocks.FLOW_CEDAR_CASING.get())) {
+            Direction.Axis axis = blockstate.getValue(AXIS);
+            return axis.isHorizontal() && !axis.equals(direction.getAxis());
+        }
         return false;
     }
 
@@ -61,7 +66,6 @@ public abstract class MatterInfuserBaseEntityBlock extends TCBaseEntityBlock {
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         ItemInteractionResult use = super.useItemOn(stack, state, level, pos, player, hand, hitResult);
-        ;
         if (!use.equals(ItemInteractionResult.SUCCESS)) {
             Direction direction = state.getValue(FACING);
 
@@ -120,6 +124,23 @@ public abstract class MatterInfuserBaseEntityBlock extends TCBaseEntityBlock {
     @Override
     public @NotNull BlockState rotate(BlockState pState, Rotation pRotation) {
         return pState.setValue(FACING,pRotation.rotate(pState.getValue(FACING)));
+    }
+
+    @Override
+    @ParametersAreNonnullByDefault
+    public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
+        Direction direction = pState.getValue(HORIZONTAL_FACING);
+        BlockPos leftPos = pPos.relative(direction.getCounterClockWise());
+        BlockState leftState = pLevel.getBlockState(leftPos);
+        if (leftState.is(TCBlocks.MATTER_INFUSER_UNIT)) {
+            ItemHelper.dropContents(pLevel, leftPos, TCCapabilities.ITEM_STATE_HOLDER_BLOCK);
+        }
+        BlockPos backPos = pPos.relative(direction.getOpposite());
+        BlockState backState = pLevel.getBlockState(backPos);
+        if (backState.is(TCBlocks.FLOW_CEDAR_CASING.get())) {
+            ItemHelper.dropContents(pLevel, backPos, TCCapabilities.ITEM_STATE_HOLDER_BLOCK);
+        }
+        super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
     }
 
     static {

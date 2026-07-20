@@ -39,7 +39,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.function.Supplier;
 
-import static net.sinedkadis.terracompositio.api.helpers.WorldHelper.handleInWorldBlockCraft;
+import static net.sinedkadis.terracompositio.util.helpers.WorldHelperInternal.handleInWorldBlockCraft;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
@@ -108,11 +108,11 @@ public class FlowCedarLikeBlock extends RotatedPillarBlock implements IFluidAppl
             }
         }
         if (item.is(Items.HONEYCOMB) && !state.getValue(WAXED)) {
-            return handleInWorldBlockCraft(state, state.setValue(WAXED, true), level, pos, item, 1, ParticleTypes.WAX_ON, SoundEvents.HONEYCOMB_WAX_ON);
+            return WorldHelper.handleInWorldBlockCraft(state, state.setValue(WAXED, true), level, pos, item, 1, ParticleTypes.WAX_ON, SoundEvents.HONEYCOMB_WAX_ON);
         }
         if (item.getItem() instanceof AxeItem && state.getValue(WAXED)) {
             ItemHelper.hurtAndBreakItem((ServerLevel) level, player, item);
-            return handleInWorldBlockCraft(state, state.setValue(WAXED, false), level, pos, item, 0, ParticleTypes.WAX_OFF, SoundEvents.AXE_WAX_OFF);
+            return WorldHelper.handleInWorldBlockCraft(state, state.setValue(WAXED, false), level, pos, item, 0, ParticleTypes.WAX_OFF, SoundEvents.AXE_WAX_OFF);
         }
         return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
     }

@@ -58,8 +58,6 @@ import net.sinedkadis.terracompositio.api.helpers.ItemHelper;
 import net.sinedkadis.terracompositio.api.helpers.PlayerHelper;
 import net.sinedkadis.terracompositio.api.helpers.WorldHelper;
 import net.sinedkadis.terracompositio.block.custom.PathPointerBlock;
-import net.sinedkadis.terracompositio.block.entity.FlowCedarCasingBlockEntity;
-import net.sinedkadis.terracompositio.block.entity.MatterInfuserBaseBlockEntity;
 import net.sinedkadis.terracompositio.block.entity.PathPointerBlockEntity;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
 import net.sinedkadis.terracompositio.registries.TCDataComponents;
@@ -279,11 +277,7 @@ public class WrenchAxeItem extends AxeItem {
 
             boolean flag = false;
 
-            boolean isCasing = blockEntity instanceof FlowCedarCasingBlockEntity;
-            boolean isMI = blockEntity instanceof MatterInfuserBaseBlockEntity;
             for (int slot = 0; slot < handler.getSlots(); slot++) {
-                if (isCasing) continue;
-                if (isMI) continue;
 
                 ItemStack itemStack = handler.extractItem(slot, 511, false); //511 - hardcoded
                 if (itemStack.isEmpty()) continue;
@@ -294,7 +288,9 @@ public class WrenchAxeItem extends AxeItem {
             }
             if (flag) {
                 level.playSound(null, pos, SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS);
-                ItemHelper.hurtAndBreakItem((ServerLevel) level,player,player.getOffhandItem());
+                if (level instanceof ServerLevel serverLevel) {
+                    ItemHelper.hurtAndBreakItem(serverLevel, player, player.getOffhandItem());
+                }
                 return true;
             }
 

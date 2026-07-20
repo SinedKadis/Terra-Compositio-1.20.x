@@ -7,6 +7,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.sinedkadis.terracompositio.api.networks.TransferAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.api.registries.TCBlockStateProperties;
 import net.sinedkadis.terracompositio.block.IFluidApplicable;
@@ -51,15 +52,15 @@ public class AirSaturatorBlockEntity extends TCBlockEntity implements IFluidAppl
             if (!pLevel.getBlockState(toPlace).isAir()) return;
             if (pState.getValue(TCBlockStateProperties.INFUSED)) {
                 ECFCloudEntity.placeECFCloud(pLevel, toPlace, ecf);
-                ecfContainer().takeECF(ecf, false);
+                ecfContainer().takeECF(ecf, TransferAction.EXECUTE);
                 scheduleMemberUpdate();
 
                 if (level != null && level.getGameTime() % 20 == 0)
                     pLevel.playSound(null, toPlace, SoundEvents.WOOL_PLACE, SoundSource.BLOCKS, 0.5f, 1f);
             } else if (timer <= 0){
-                int toSaturate = ecfContainer().takeECF(10, true);
+                int toSaturate = ecfContainer().takeECF(10, TransferAction.SIMULATE);
                 ECFCloudEntity.placeECFCloud(pLevel, toPlace, toSaturate);
-                ecfContainer().takeECF(toSaturate, false);
+                ecfContainer().takeECF(toSaturate, TransferAction.EXECUTE);
                 scheduleMemberUpdate();
                 timer = 20;
                 pLevel.playSound(null,toPlace, SoundEvents.WOOL_PLACE, SoundSource.BLOCKS,0.5f,1f);

@@ -3,7 +3,11 @@ package net.sinedkadis.terracompositio.block.entity;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleContainer;
@@ -18,9 +22,13 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.wrapper.EmptyItemHandler;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
 import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
+import net.sinedkadis.terracompositio.api.helpers.ItemHelper;
+import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
+import net.sinedkadis.terracompositio.api.tooltip.ItemComponent;
 import net.sinedkadis.terracompositio.block.behaviours.ECFHandlerBehaviour;
 import net.sinedkadis.terracompositio.block.behaviours.ItemStateHolderBehaviour;
 import net.sinedkadis.terracompositio.block.custom.MatterInfuserBaseEntityBlock;
@@ -35,6 +43,7 @@ import net.sinedkadis.terracompositio.util.helpers.ParticleHelperInternal;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,10 +66,10 @@ public class MatterInfuserUnitBlockEntity extends MatterInfuserBaseBlockEntity{
     @Override
     public void addBEBehaviours(List<IBEBehaviour> list) {
         list.add(new ECFHandlerBehaviour(this)
+                .offset(vec3 -> vec3.relative(getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING).getOpposite(), 1))
                 .range(10)
                 .priority(TCInnerConfig.DEFAULT_CONSUMER_PRIORITY));
         list.add(new ItemStateHolderBehaviour(this) {
-
             @Override
             public int getLimitInSlot(int slot) {
                 return 2;
@@ -100,14 +109,16 @@ public class MatterInfuserUnitBlockEntity extends MatterInfuserBaseBlockEntity{
         if (timer <= 0) {
             timer = 20;
             isAssembled = assembleValid();
-            if (progress>0)
-                ParticleHelperInternal.spawnParticlesIn(pLevel,
-                        pPos.relative(pState.getValue(BlockStateProperties.HORIZONTAL_FACING).getOpposite()),
-                        ((int) Math.ceil(tickECFCost * 20)));
-
         }
         timer--;
         if (hasRecipe() && enoughECF() && isAssembled) {
+            if (timer <= 0) {
+                if (progress > 0)
+                    ParticleHelperInternal.spawnParticlesIn(pLevel,
+                            pPos.relative(pState.getValue(BlockStateProperties.HORIZONTAL_FACING).getOpposite()),
+                            ((int) Math.ceil(tickECFCost * 20)));
+            }
+
             increaseCraftingProgress();
             consumeECF();
             setChanged(pLevel, pPos, pState);
@@ -129,8 +140,8 @@ public class MatterInfuserUnitBlockEntity extends MatterInfuserBaseBlockEntity{
         if (casingBE == null) {
             return false;
         }
-        IItemHandler casingItemHandler = level.getCapability(TCCapabilities.ITEM_STATE_HOLDER_BLOCK, worldPosition, null);
-        if (casingItemHandler == null || casingItemHandler.getStackInSlot(UP_CONNECTION_SLOT).isEmpty()
+        IItemHandler casingItemHandler = casingBE.getStateHolderCapability(null);
+        if (casingItemHandler == EmptyItemHandler.INSTANCE || casingItemHandler.getStackInSlot(UP_CONNECTION_SLOT).isEmpty()
                 || casingItemHandler.getStackInSlot(DOWN_CONNECTION_SLOT).isEmpty())
             return false;
 
@@ -264,5 +275,31 @@ public class MatterInfuserUnitBlockEntity extends MatterInfuserBaseBlockEntity{
         boolean b = outputSlot.getCount() + count <= outputSlot.getMaxStackSize();
         checkCraftException(b, CraftException.NO_SPACE);
         return b;
+    }
+
+    @Override
+    public void collectKnowledgeData(CompoundTag data, HolderLookup.Provider provider) {
+        FlowCedarCasingBlockEntity casingBE = getCasingBE();
+        if (casingBE == null) return;
+        IItemHandler itemHandler = casingBE.getItemCapability(null);
+        List<ItemStack> list = new ArrayList<>();
+        for (int i = 0; i < itemHandler.getSlots(); i++) {
+            list.add(itemHandler.getStackInSlot(i));
+        }
+        data.put("inventory", ItemHelper.writeItemList(list, provider));
+        super.collectKnowledgeData(data, provider);
+    }
+
+    @Override
+    public void addTooltipLines(CompoundTag data, List<Component> tooltip, boolean isShifting, HolderLookup.Provider provider) {
+        super.addTooltipLines(data, tooltip, isShifting, provider);
+        TooltipHelper.addWithHeader(TooltipHelper.Headers.ITEMS, tooltip, t -> {
+            List<ItemStack> entries = ItemHelper.readItemList(data.getList("inventory", Tag.TAG_COMPOUND), provider);
+            for (ItemStack stack : entries) {
+                if (stack.isEmpty()) continue;
+                t.add(ItemComponent.of(stack));
+
+            }
+        });
     }
 }

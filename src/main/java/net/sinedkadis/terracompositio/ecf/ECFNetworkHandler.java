@@ -1,79 +1,196 @@
 package net.sinedkadis.terracompositio.ecf;
 
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import net.sinedkadis.terracompositio.api.IEntityInstance;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
-import net.sinedkadis.terracompositio.api.helpers.ECFHelper;
 import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
+import net.sinedkadis.terracompositio.api.networks.AnyNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.NetworkAction;
+import net.sinedkadis.terracompositio.api.networks.TransferAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetwork;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.block.entity.PathPointerBlockEntity;
-import net.sinedkadis.terracompositio.config.TCCommonConfigs;
-import net.sinedkadis.terracompositio.entity.custom.FlowCedarEntEntity;
+import net.sinedkadis.terracompositio.ecf.burst.ECFBurstProjectileEntity;
+import net.sinedkadis.terracompositio.entity.custom.ECFCloudEntity;
 import net.sinedkadis.terracompositio.events.ECFNetworkEvent;
-import net.sinedkadis.terracompositio.registries.TCItems;
-import net.sinedkadis.terracompositio.util.IEntityInstance;
-import net.sinedkadis.terracompositio.util.helpers.ECFHelperInternal;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.IntBinaryOperator;
 
+@EventBusSubscriber(modid = TerraCompositioAPI.MOD_ID)
 public class ECFNetworkHandler implements ECFNetwork {
     public static final ECFNetworkHandler INSTANCE = new ECFNetworkHandler();
     private final Map<Level, Set<ECFNetworkMember>> ecfSources = new WeakHashMap<>();
 
-    private static @Nullable BlockPos getClosestInput(ECFNetworkMember requesterMember, PathPointerBlockEntity proxyBE) {
-        BlockPos requesterPos = requesterMember.getEntityInstance().tc$getBlockPos();
-        BlockPos closestInput = null;
-        double closestDist = Double.MAX_VALUE;
-        if (proxyBE != null) {
-            for (BlockPos inputPos : proxyBE.getInputPoses()) {
-                double dist = requesterPos.distSqr(inputPos);
-                if (dist < closestDist) {
-                    closestDist = dist;
-                    closestInput = inputPos;
-                }
+
+    static Queue<Pair<Long, Runnable>> scheduledDeliveries = new LinkedList<>();
+
+    @SubscribeEvent
+    public static void onLevelTickEvent(LevelTickEvent.Post event) {
+        long gameTime = event.getLevel().getGameTime();
+        if (gameTime % 10 != 0) return;
+        Queue<Pair<Long, Runnable>> skipped = new LinkedList<>();
+        while (!scheduledDeliveries.isEmpty()) {
+            Pair<Long, Runnable> poll = scheduledDeliveries.poll();
+            if (poll.getFirst() < gameTime) {
+                poll.getSecond().run();
+            } else {
+                skipped.add(poll);
             }
         }
-        return closestInput;
+        scheduledDeliveries.addAll(skipped);
     }
 
     @Override
-    public void updateInRange(Level level, BlockPos origin, int range) {
-        Set<ECFNetworkMember> members = ecfSources.get(level);
-        if (members == null) return;
-        for (ECFNetworkMember member : members) {
-            if (member.getEntityInstance().tc$getBlockPos().closerThan(origin, range)) {
-                member.scheduleMemberUpdate();
+    public boolean validateMember(AnyNetworkMember target) {
+        if (target == null) return false;
+
+        if (target instanceof PPECFMemberProxy(
+                ECFNetworkMember trueTarget, PathPointerBlockEntity proxy, PathPointerBlockEntity ignoredSource
+        )) {
+            if (proxy == null) return false;
+            if (proxy.parts.contains(PathPointerBlockEntity.PPPart.COLLECTOR)
+                    || proxy.parts.contains(PathPointerBlockEntity.PPPart.EXTRACTOR)) {
+                if (proxy.getOutputPos() == null) return false;
+            }
+            target = trueTarget;
+        }
+
+        if (target.getEntityInstance() instanceof BlockEntity memberBE) {
+            return !memberBE.isRemoved();
+        }
+        if (target.getEntityInstance() instanceof Entity memberEntity) {
+            return !memberEntity.isRemoved();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean validateRelation(ECFNetworkMember source, ECFNetworkMember target, IntBinaryOperator distanceOp) {
+        if (target.getEntityInstance().equals(source.getEntityInstance())) return false;
+        if (!validateMember(source)) return false;
+        if (!validateMember(target)) return false;
+        if (!(source.getPriority() < target.getPriority())) return false;
+        if (target.getEntityInstance().tc$isEntity()
+                && source instanceof PathPointerBlockEntity pp
+                && !pp.parts.contains(PathPointerBlockEntity.PPPart.INFUSER)) return false;
+        if (target.getEntityInstance().tc$isBlock()
+                && source instanceof PathPointerBlockEntity pp
+                && !pp.parts.contains(PathPointerBlockEntity.PPPart.EMITTER)) return false;
+
+
+        return source.getEntityInstance().tc$getPosition()
+                .closerThan(
+                        target.getEntityInstance().tc$getPosition(),
+                        distanceOp.applyAsInt(source.getRange(), target.getRange())
+                );
+    }
+
+    /**
+     * Tries to make transfer between two members.
+     * If blocks are close enough, just takes ECF from source and adds it to target, else sends it like burst
+     *
+     * @param target the target member. Used for navigation in sending burst, actually receives {@link IECFHandler#getMainHandler()},
+     *               so passing {@link IECFHandler} like argument only make sense when two blocks are close enough
+     * @param source the source member. {@link IECFHandler} can be used as argument
+     * @param speed  the speed of th burst, 1 means 1 block per tick
+     */
+    @Override
+    public void executeECFTransfer(ECFNetworkMember target,
+                                   ECFNetworkMember source,
+                                   float speed) {
+        if (!validateRelation(source, target, Math::max)) return;
+
+
+        IECFHandler sourceMainHandler = source.getMainHandler();
+        int taken = sourceMainHandler.takeECF(Integer.MAX_VALUE, TransferAction.SIMULATE);
+        IECFHandler targetMainHandler = target.getMainHandler();
+        int added = targetMainHandler.addECF(taken, TransferAction.SIMULATE);
+
+        if (added > 0) {
+            sourceMainHandler.takeECF(added, TransferAction.EXECUTE);
+            target.getMainHandler().addToQueue(added);
+            int divisions = Mth.log2(added);
+            if (divisions <= 0) divisions = 1;
+            int[] additions = new int[divisions];
+            int toAdd = added / divisions;
+            Arrays.fill(additions, toAdd);
+            additions[0] += added % divisions;
+
+            Level level = source.getEntityInstance().tc$getLevel();
+            MinecraftServer server = level.getServer();
+            if (server != null) {
+
+                for (int i = 0; i < additions.length; i++) {
+                    int addition = additions[i];
+
+                    scheduledDeliveries.add(new Pair<>((level.getGameTime() + (i * 10L)), () -> sendBurst(sourceMainHandler, target, addition, speed)));
+                }
             }
         }
     }
+
+    @Override
+    public void sendBurst(IECFHandler source, ECFNetworkMember target, int count, float speed) {
+        Level level = target.getEntityInstance().tc$getLevel();
+
+        IECFHandler targetMainHandler = target.getMainHandler();
+        if (closeAndAllow(source, targetMainHandler)) {
+            targetMainHandler.addECF(count, TransferAction.EXECUTE);
+            targetMainHandler.subFromQueue(count);
+            return;
+        }
+
+        Vec3 offset = Vec3.ZERO;
+        if (source.getAttachedEntity() instanceof ECFCloudEntity ecfCloudEntity) {
+            Vec3 position = targetMainHandler.getAttachedEntity().tc$getPosition();
+            offset = ecfCloudEntity.getBurstOffset(position);
+        }
+
+        ECFBurstProjectileEntity entity = ECFBurstProjectileEntity.sendBurst(source, offset, target, count, speed);
+        level.addFreshEntity(entity);
+    }
+
+    private boolean closeAndAllow(IECFHandler source, IECFHandler target) {
+        IEntityInstance sourceAttachedEntity = source.getAttachedEntity();
+        if (sourceAttachedEntity instanceof PathPointerBlockEntity) return false;
+//        if (sourceAttachedEntity.tc$isEntity()) return false;
+
+        IEntityInstance targetAttachedEntity = target.getAttachedEntity();
+        if (targetAttachedEntity instanceof PathPointerBlockEntity) return false;
+        if (targetAttachedEntity.tc$isEntity()) return false;
+
+        return sourceAttachedEntity.tc$getPosition().closerThan(targetAttachedEntity.tc$getPosition(), Math.max(
+                source.getRange(true),
+                target.getRange(true)
+        ) + 1);
+    }
+
 
     @Override
     public Set<ECFNetworkMember> getAllECFNetworkMembers(Level level) {
         return ecfSources.getOrDefault(level, Set.of());
     }
 
-    @Override
-    public int getECFTransferLimit() {
-        return TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get();
-    }
-
     public void networkMemberUpdated(ECFNetworkMember updated) {
         Level level = updated.getEntityInstance().tc$getLevel();
-        Set<ECFNetworkMember> members = ecfSources.get(level);
-        if (members == null) return;
+        Set<ECFNetworkMember> members = Set.copyOf(ecfSources.getOrDefault(level, Set.of()));
 
         Queue<ECFNetworkMember> queue = new ArrayDeque<>();
         // Защита от зацикливания: храним entity, а не member (прокси могут отличаться)
-        Set<Object> visitedEntities = new HashSet<>();
+        Set<IEntityInstance> visitedEntities = new HashSet<>();
         Set<PathPointerBlockEntity> updatedEmitters = new HashSet<>();
 
         queue.add(updated);
@@ -81,53 +198,26 @@ public class ECFNetworkHandler implements ECFNetwork {
 
         while (!queue.isEmpty()) {
             ECFNetworkMember current = queue.poll();
-            if (current instanceof PPECFMemberProxy memberProxy) {
-                PathPointerBlockEntity ppBE = memberProxy.proxy();
-                if (ppBE != null && ppBE.parts.contains(PathPointerBlockEntity.PPPart.EXTRACTOR)) {
-                    TerraCompositioAPI.instance().getECFNetworkInstance().getAllECFNetworkMembers(level).stream()
-                            .filter(FlowCedarEntEntity.class::isInstance)
-                            .map(FlowCedarEntEntity.class::cast)
-                            .filter(entEntity -> entEntity.position().closerThan(ppBE.getBlockPos().getCenter(), 3))
-                            .forEach(entEntity -> entEntity.scheduleMemberUpdate(memberProxy));
-                }
-            }
             for (ECFNetworkMember member : members) {
-                IEntityInstance currentEntityInstance = current.getEntityInstance();
-                IEntityInstance memberEntityInstance = member.getEntityInstance();
-                if (!currentEntityInstance.tc$getBlockPos()
-                        .closerThan(memberEntityInstance.tc$getBlockPos(),
-                                Math.min(current.getRange(), member.getRange())))
-                    continue;
-                if (currentEntityInstance.equals(memberEntityInstance))
-                    continue;
-                if (current.getPriority() <= member.getPriority())
-                    continue;
+                if (!validateRelation(member, current, Math::max)) continue;
 
                 // PathPointer EMITTER — добавляем входы в очередь
-                if (memberEntityInstance instanceof PathPointerBlockEntity ppBE
+                if (member.getEntityInstance() instanceof PathPointerBlockEntity ppBE
                         && (ppBE.parts.contains(PathPointerBlockEntity.PPPart.EMITTER)
-                        || (ppBE.parts.contains(PathPointerBlockEntity.PPPart.INFUSER) && updated.getEntityInstance().tc$isEntity()))
+                        || (ppBE.parts.contains(PathPointerBlockEntity.PPPart.INFUSER)))
                         && updatedEmitters.add(ppBE)) { // add() возвращает false если уже есть
                     for (BlockPos inputPos : ppBE.getInputPoses()) {
                         BlockEntity be = level.getBlockEntity(inputPos);
                         if (be instanceof PathPointerBlockEntity inputEntity
-                                && visitedEntities.add(inputEntity)) { // защита от петли
+                                && visitedEntities.add(IEntityInstance.wrap(inputEntity))) { // защита от петли
                             queue.add(new PPECFMemberProxy(updated, inputEntity));
                         }
                     }
                 }
 
-                if (!currentEntityInstance.equals(updated.getEntityInstance()))
-                    member.scheduleMemberUpdate(current);
+                member.scheduleMemberUpdate(current);
             }
         }
-    }
-
-    @Override
-    public void updateAll(Level level) {
-        Set<ECFNetworkMember> ecfNetworkMembers = ecfSources.get(level);
-        if (ecfNetworkMembers == null) return;
-        ecfNetworkMembers.forEach(ECFNetworkMember::onECFNetworkMemberUpdate);
     }
 
     @Override
@@ -139,77 +229,42 @@ public class ECFNetworkHandler implements ECFNetwork {
         Set<ECFNetworkMember> toReturn = new HashSet<>();
         Queue<ECFNetworkMember> queue = new ArrayDeque<>();
         // Защита от зацикливания по entity-идентичности
-        Set<Object> visitedEntities = new HashSet<>();
+        Set<IEntityInstance> visitedPP = new HashSet<>();
 
         queue.add(requesterMember);
-        visitedEntities.add(requesterMember.getEntityInstance());
+        visitedPP.add(requesterMember.getEntityInstance());
 
         while (!queue.isEmpty()) {
             ECFNetworkMember current = queue.poll();
 
-            List<PathPointerBlockEntity.PPPart> parts = null;
-            PathPointerBlockEntity collector = null;
-
-            if (current instanceof PPECFMemberProxy proxy) {
-                PathPointerBlockEntity proxyBE = proxy.proxy();
-                if (proxyBE != null) {
-                    parts = proxyBE.parts;
-                }
-
-                // Ищем ближайший collector среди входов
-                BlockPos closestInput = getClosestInput(requesterMember, proxyBE);
-
-                if (closestInput != null
-                        && level.getBlockEntity(closestInput) instanceof PathPointerBlockEntity collectorBE) {
-                    collector = collectorBE;
-                }
-
-                // INFUSER: добавляем живые сущности с короной рядом с proxyBE
-                if (parts != null && collector != null && parts.contains(PathPointerBlockEntity.PPPart.INFUSER)) {
-                    PathPointerBlockEntity finalCollector = collector;
-                    level.getEntitiesOfClass(
-                            LivingEntity.class,
-                            new AABB(proxyBE.getBlockPos()).inflate(3),
-                            e -> e.getItemBySlot(EquipmentSlot.HEAD).is(TCItems.TECHNETIUM_CROWN.get())
-                    ).forEach(entity -> {
-                        if (entity instanceof ECFNetworkMember member
-                                && visitedEntities.add(entity)) { // защита: не добавляем уже посещённых
-                            toReturn.add(new PPECFMemberProxy(member, finalCollector));
-                        }
-                    });
-                }
-            }
-
-            // Фильтруем членов сети в радиусе с нужным приоритетом
             for (ECFNetworkMember member : members) {
-                if (!member.getEntityInstance().tc$getBlockPos().closerThan(current.getEntityInstance().tc$getBlockPos(), current.getRange()))
-                    continue;
-                if (member.getPriority() <= current.getPriority()) continue;
-                if (member.getEntityInstance().equals(current.getEntityInstance())) continue;
+                if (!validateRelation(current, member, Math::min)) continue;
 
-                // Если текущий — EMITTER прокси, перенаправляем позицию к collector
-                ECFNetworkMember mapped = (parts != null && collector != null
-                        && parts.contains(PathPointerBlockEntity.PPPart.EMITTER))
-                        ? new PPECFMemberProxy(member, collector)
-                        : member;
-
-                toReturn.add(mapped);
-
-                // COLLECTOR: идём дальше по цепочке PathPointer
-                if (member.getEntityInstance() instanceof PathPointerBlockEntity ppBE
-                        && ppBE.parts.contains(PathPointerBlockEntity.PPPart.COLLECTOR)) {
-                    BlockPos outputPos = ppBE.getOutputPos();
-                    if (outputPos != null
-                            && level.getBlockEntity(outputPos) instanceof PathPointerBlockEntity outputEntity
-                            && visitedEntities.add(outputEntity)) { // защита от петли A→B→A
-                        queue.add(new PPECFMemberProxy(requesterMember, outputEntity));
+                //member is collector or extractor if for entity
+                if (member.getEntityInstance() instanceof PathPointerBlockEntity ppBE) {
+                    if (ppBE.parts.contains(PathPointerBlockEntity.PPPart.COLLECTOR)
+                            || (ppBE.parts.contains(PathPointerBlockEntity.PPPart.EXTRACTOR)
+                            && current.getEntityInstance().tc$isEntity())) {
+                        if (visitedPP.add(IEntityInstance.wrap(ppBE))) {
+                            queue.add(new PPECFMemberProxy(requesterMember, (PathPointerBlockEntity) level.getBlockEntity(ppBE.getOutputPos()), ppBE));
+                        }
                     }
+                    continue;
+                }
+
+
+                if (current instanceof PPECFMemberProxy(
+                        ECFNetworkMember ignoredTarget, PathPointerBlockEntity proxy,
+                        PathPointerBlockEntity source
+                )) {
+                    if (!member.getEntityInstance().tc$isEntity() || proxy.parts.contains(PathPointerBlockEntity.PPPart.INFUSER)) {
+                        toReturn.add(new PPECFMemberProxy(member, source));
+                    }
+                } else if (!member.getEntityInstance().tc$isEntity()) {
+                    toReturn.add(member);
                 }
             }
         }
-
-
-        toReturn.removeIf(m -> !ECFHelper.validMember(m) && !ECFHelperInternal.validPPProxy(m));
         return toReturn;
     }
 
@@ -255,6 +310,8 @@ public class ECFNetworkHandler implements ECFNetwork {
             case ADD -> add(source.getEntityInstance().tc$getLevel(), source);
             case REMOVE -> remove(source.getEntityInstance().tc$getLevel(), source);
             case UPDATE -> networkMemberUpdated(source);
+            case UPDATE_ALL ->
+                    ecfSources.get(source.getEntityInstance().tc$getLevel()).forEach(ECFNetworkMember::scheduleMemberUpdate);
             default     -> throw new RuntimeException("Unsupported Network action: " + action);
         }
     }
@@ -264,7 +321,7 @@ public class ECFNetworkHandler implements ECFNetwork {
     }
 
     @Override
-    public IECFHandler createDefaultECFHandler(IEntityInstance entityInstance) {
+    public IECFHandler createDefaultECFHandler(ECFNetworkMember entityInstance) {
         return new DefaultECFHandler(entityInstance);
     }
 }

@@ -7,11 +7,12 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
+import net.sinedkadis.terracompositio.api.IEntityInstance;
 import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
-import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
+import net.sinedkadis.terracompositio.api.networks.TransferAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.registries.TCCapabilities;
-import net.sinedkadis.terracompositio.util.IEntityInstance;
+import org.jetbrains.annotations.UnknownNullability;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
@@ -85,13 +86,13 @@ public class ECFHandlerPlayerArmor implements IECFHandler {
     }
 
     @Override
-    public int addECF(int cfe, boolean simulate) {
+    public int addECF(int cfe, @UnknownNullability TransferAction action) {
         int allAdded = 0;
-        int toAdd = cfe - handler.addECF(cfe, false);
+        int toAdd = cfe - handler.addECF(cfe, action);
         for (ItemStack itemStack : handlerList) {
             IECFHandler IECFHandler = Optional.ofNullable(itemStack.getCapability(TCCapabilities.ECF_HANDLER_ITEM))
                     .orElse(SentinelHelper.EMPTY_ECF_HANDLER);
-            int added = IECFHandler.addECF(toAdd, simulate);
+            int added = IECFHandler.addECF(toAdd, action);
             allAdded += added;
             toAdd -= added;
         }
@@ -99,22 +100,17 @@ public class ECFHandlerPlayerArmor implements IECFHandler {
     }
 
     @Override
-    public int takeECF(int cfe, boolean simulate) {
+    public int takeECF(int cfe, @UnknownNullability TransferAction action) {
         int allTaken = 0;
-        int toTake = cfe - handler.takeECF(cfe, false);
+        int toTake = cfe - handler.takeECF(cfe, action);
         for (ItemStack itemStack : handlerList) {
             IECFHandler IECFHandler = Optional.ofNullable(itemStack.getCapability(TCCapabilities.ECF_HANDLER_ITEM))
                     .orElse(SentinelHelper.EMPTY_ECF_HANDLER);
-            int taken = IECFHandler.takeECF(toTake, simulate);
+            int taken = IECFHandler.takeECF(toTake, action);
             allTaken += taken;
             toTake -= taken;
         }
         return allTaken;
-    }
-
-    @Override
-    public int sendECF(ECFNetworkMember target, int cfe, float speed) {
-        throw new UnsupportedOperationException();
     }
 
     @Override

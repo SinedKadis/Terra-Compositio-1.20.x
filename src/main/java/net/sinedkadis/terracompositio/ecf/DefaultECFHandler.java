@@ -4,7 +4,6 @@ package net.sinedkadis.terracompositio.ecf;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.MethodsReturnNonnullByDefault;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
@@ -13,24 +12,22 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.sinedkadis.terracompositio.api.IEntityInstance;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
 import net.sinedkadis.terracompositio.api.networks.NetworkAction;
+import net.sinedkadis.terracompositio.api.networks.TransferAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
-import net.sinedkadis.terracompositio.block.entity.PathPointerBlockEntity;
-import net.sinedkadis.terracompositio.ecf.burst.ECFBurstProjectileEntity;
-import net.sinedkadis.terracompositio.util.IEntityInstance;
+import org.jetbrains.annotations.UnknownNullability;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.function.Function;
-
-import static net.sinedkadis.terracompositio.block.entity.PathPointerBlockEntity.setYawAndPitchFromRot;
 
 @Setter
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class DefaultECFHandler implements IECFHandler, INBTSerializable<CompoundTag> {
-    protected IEntityInstance attachedMember;
+    protected ECFNetworkMember attachedMember;
     @Getter
     protected int index = 0;
     @Getter
@@ -57,21 +54,29 @@ public class DefaultECFHandler implements IECFHandler, INBTSerializable<Compound
         queued = 0;
     }
 
-    public DefaultECFHandler(IEntityInstance attachedMember) {
+    public DefaultECFHandler(ECFNetworkMember attachedMember) {
         this.attachedMember = attachedMember;
     }
 
     @Override
     public IEntityInstance getAttachedEntity() {
+        return attachedMember.getEntityInstance();
+    }
+
+    @Override
+    public ECFNetworkMember getAttachedMember() {
         return attachedMember;
     }
 
     @Override
-    public int takeECF(int cfe, boolean simulate) {
-        int taken = Mth.clamp(cfe, 0, this.getECF());
-
-        if (!simulate) {
-            this.setECF(this.getECF() - taken);
+    public int takeECF(int cfe, @UnknownNullability TransferAction action) {
+        int taken;
+        if (action.simulate()) {
+            taken = Mth.clamp(cfe, 0, this.getECF());
+        } else
+            taken = cfe;
+        if (action.execute()) {
+            this.setECF(Math.max(this.getECF() - taken, 0));
 
             sendCFEUpdate();
             onContentsChanged();
@@ -90,59 +95,30 @@ public class DefaultECFHandler implements IECFHandler, INBTSerializable<Compound
         return this;
     }
 
-    @Override
-    public int sendECF(ECFNetworkMember target, int cfe, float speed) {
-        int freeSpace = target.getMainHandler().getFreeSpace();
-        int available = this.getECF();
-        int added = Mth.clamp(cfe, 0, Math.min(available, freeSpace));
-        if (added < 1)
-            return 0;
-        Level level = target.getEntityInstance().tc$getLevel();
-
-        if (target instanceof PPECFMemberProxy(ECFNetworkMember target1, PathPointerBlockEntity proxy1) && target1.getEntityInstance().tc$isEntity()) {
-            BlockPos pos = proxy1.getOutputPos();
-            PathPointerBlockEntity ppBE = (PathPointerBlockEntity) (level.getBlockEntity(pos));
-            if (ppBE != null) {
-                if (ppBE.parts.contains(PathPointerBlockEntity.PPPart.INFUSER)) {
-                    setYawAndPitchFromRot(pos.getCenter().vectorTo(target1.getEntityInstance().tc$getPosition()), ppBE);
-                }
-            }
+    public int addECF(int cfe, @UnknownNullability TransferAction action) {
+        int added = cfe;
+        if (action.simulate()) {
+            int pMax = getMaxECF() - this.getECF() - this.getQueued();
+            added = Mth.clamp(cfe, 0, pMax);
         }
-
-        ECFBurstProjectileEntity entity = ECFBurstProjectileEntity.sendBurst(this, target, added, speed);
-        if (entity != null) {
-            level.addFreshEntity(entity);
-            target.getMainHandler().addToQueue(added);
-        }
-
-        return added;
-    }
-
-    public int addECF(int cfe, boolean simulate) {
-        int pMax = getMaxECF() - this.getECF();
-        int added = Mth.clamp(cfe, 0, pMax);
-        if (!simulate) {
-            this.setECF(this.getECF() + added);
-
-            if (getAttachedEntity() instanceof ECFNetworkMember member)
+        if (action.execute()) {
+            this.setECF(Math.min(this.getECF() + added, this.getMaxECF()));
+            if (getAttachedMember() instanceof ECFNetworkMember member)
                 member.scheduleMemberUpdate();
             onContentsChanged();
         }
-        return added;
+        return Math.max(added, 0);
     }
 
     protected void sendCFEUpdate() {
-        if (getAttachedEntity() instanceof ECFNetworkMember cfeNetworkMemberBE) {
-            TerraCompositioAPI.INSTANCE.getECFNetworkInstance().fireECFNetworkEvent(cfeNetworkMemberBE, NetworkAction.UPDATE);
-        }
-        if (getAttachedEntity().tc$isEntity() && getAttachedEntity() instanceof ECFNetworkMember member) {
+        if (getAttachedMember() instanceof ECFNetworkMember member) {
             TerraCompositioAPI.INSTANCE.getECFNetworkInstance().fireECFNetworkEvent(member, NetworkAction.UPDATE);
         }
     }
 
 
     protected void onContentsChanged() {
-        if (getAttachedEntity() instanceof BlockEntity blockEntity) {
+        if (getAttachedMember() instanceof BlockEntity blockEntity) {
             blockEntity.setChanged();
             Level level = blockEntity.getLevel();
             if (level != null && !level.isClientSide()) {
@@ -183,13 +159,13 @@ public class DefaultECFHandler implements IECFHandler, INBTSerializable<Compound
     @Override
     public CompoundTag serializeNBT(HolderLookup.Provider provider) {
         CompoundTag nbt = new CompoundTag();
-        nbt.putInt("CFE", this.getECF());
+        nbt.putInt("ECF", this.getECF());
         return nbt;
     }
 
     @Override
     public void deserializeNBT(HolderLookup.Provider provider, CompoundTag tag) {
-        this.setECF(tag.getInt("CFE"));
+        this.setECF(tag.getInt("ECF"));
     }
 
     public int getMaxECF() {

@@ -6,9 +6,9 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.sinedkadis.terracompositio.api.IEntityInstance;
 import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
-import net.sinedkadis.terracompositio.util.IEntityInstance;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEECFBehaviour;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEItemWordlyContainerBehaviour;
@@ -56,7 +56,7 @@ public class DummyBehaviour implements IBEBehaviour, IBEItemWordlyContainerBehav
     }
 
     @Override
-    public int getRange() {
+    public int getRange(boolean inner) {
         return 0;
     }
 

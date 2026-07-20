@@ -22,10 +22,10 @@ import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.sinedkadis.terracompositio.api.IHaveKnowledge;
-import net.sinedkadis.terracompositio.api.components.ItemComponent;
 import net.sinedkadis.terracompositio.api.helpers.ItemHelper;
 import net.sinedkadis.terracompositio.api.helpers.PlayerHelper;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
+import net.sinedkadis.terracompositio.api.tooltip.ItemComponent;
 import net.sinedkadis.terracompositio.block.entity.TCBlockEntity;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEItemBehaviour;
 import org.jetbrains.annotations.Nullable;
@@ -108,7 +108,7 @@ public class ItemHandlerBehaviour implements IBEItemBehaviour, WorldlyContainer,
 
     @Override
     public void onRemoved() {
-
+        ItemHelper.dropContents(blockEntity.getLevel(), blockEntity.getBlockPos(), itemHandler);
     }
 
 

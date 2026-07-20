@@ -10,6 +10,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
+import net.sinedkadis.terracompositio.api.networks.TransferAction;
 import net.sinedkadis.terracompositio.registries.TCBlockEntities;
 import net.sinedkadis.terracompositio.util.helpers.ParticleHelperInternal;
 
@@ -71,15 +72,15 @@ public class TimePassageDesorberBlockEntity extends AbstractDesorberBlockEntity 
     private void addingECFProcess() {
         timeCounter = 0;
         if (timeBuffer > 20) {
-            timeBuffer -= ecfContainer().addECF(20, false);
+            timeBuffer -= ecfContainer().addECF(20, TransferAction.BOTH);
         } else if (timeBuffer > 0){
-            timeBuffer -= ecfContainer().addECF(timeBuffer, false);
+            timeBuffer -= ecfContainer().addECF(timeBuffer, TransferAction.BOTH);
         }
     }
 
 
     private void consumeFluid() {
-        this.fluidHandler.drain(10, IFluidHandler.FluidAction.EXECUTE);
+        this.fluidHandler.drain(1, IFluidHandler.FluidAction.EXECUTE);
     }
 
     private boolean isEnoughFluid() {

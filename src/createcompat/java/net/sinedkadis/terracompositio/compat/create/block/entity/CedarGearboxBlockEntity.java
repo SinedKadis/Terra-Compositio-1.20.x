@@ -9,10 +9,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.sinedkadis.terracompositio.TerraCompositio;
+import net.sinedkadis.terracompositio.api.IEntityInstance;
 import net.sinedkadis.terracompositio.api.IHaveKnowledge;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
 import net.sinedkadis.terracompositio.api.networks.NetworkAction;
+import net.sinedkadis.terracompositio.api.networks.TransferAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetwork;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
@@ -21,7 +23,6 @@ import net.sinedkadis.terracompositio.compat.create.TCCreateCompat;
 import net.sinedkadis.terracompositio.config.TCCommonConfigs;
 import net.sinedkadis.terracompositio.config.TCInnerConfig;
 import net.sinedkadis.terracompositio.ecf.DefaultECFHandler;
-import net.sinedkadis.terracompositio.util.IEntityInstance;
 import net.sinedkadis.terracompositio.util.ITCCapabilityProviderInstance;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,7 +34,7 @@ public class CedarGearboxBlockEntity extends GeneratingKineticBlockEntity implem
     protected int range;
     protected int priority;
     protected boolean scheduledUpdate = false;
-    protected IECFHandler ecfHandler = new DefaultECFHandler(this.getEntityInstance()) {
+    protected IECFHandler ecfHandler = new DefaultECFHandler(this) {
         @Override
         protected void sendCFEUpdate() {
             super.sendCFEUpdate();
@@ -70,7 +71,7 @@ public class CedarGearboxBlockEntity extends GeneratingKineticBlockEntity implem
                 ECFNetworkInstance.fireECFNetworkEvent(this, NetworkAction.ADD);
             }
         }
-        if (!isOverStressed() && ecfHandler.takeECF(1, false) > 0) {
+        if (!isOverStressed() && ecfHandler.takeECF(1, TransferAction.EXECUTE) > 0) {
             updateGeneratedRotation();
         } else {
             if (getSpeed() != 0)
@@ -118,7 +119,8 @@ public class CedarGearboxBlockEntity extends GeneratingKineticBlockEntity implem
     }
 
     @Override
-    public int getRange() {
+    public int getRange(boolean inner) {
+        if (inner) return 1;
         return range;
     }
 
@@ -148,9 +150,9 @@ public class CedarGearboxBlockEntity extends GeneratingKineticBlockEntity implem
     @Override
     public void collectKnowledgeData(CompoundTag data, HolderLookup.Provider provider) {
         data.putInt(TooltipHelper.Keys.ECF.toData(), ecfHandler.getECF());
+        data.putInt(TooltipHelper.Keys.MAX_ECF.toData(), ecfHandler.getMaxECF());
 
         if (TCCommonConfigs.DEBUG.get()) {
-            data.putInt(TooltipHelper.Keys.MAX_ECF.toData(), ecfHandler.getMaxECF());
             data.putInt(TooltipHelper.Keys.QUEUED.toData(), ecfHandler.getQueued());
         }
         data.putInt(TooltipHelper.Keys.PRIORITY.toData(), this.getPriority());
@@ -177,9 +179,13 @@ public class CedarGearboxBlockEntity extends GeneratingKineticBlockEntity implem
 
 
         TooltipHelper.addWithHeader(TooltipHelper.Headers.ECF, tooltip, t -> {
-            TooltipHelper.addIfExist(TooltipHelper.Keys.ECF, t, data);
-            TooltipHelper.addIfExist(TooltipHelper.Keys.MAX_ECF, t, data);
-            TooltipHelper.addIfExist(TooltipHelper.Keys.QUEUED, t, data);
+            if (isShifting) {
+                TooltipHelper.addIfExist(TooltipHelper.Keys.ECF, t, data);
+                TooltipHelper.addIfExist(TooltipHelper.Keys.MAX_ECF, t, data);
+                TooltipHelper.addIfExist(TooltipHelper.Keys.QUEUED, t, data);
+            } else {
+                TooltipHelper.addScaleIfExist(TooltipHelper.Keys.ECF, TooltipHelper.Keys.MAX_ECF, tooltip, data);
+            }
         });
 
     }

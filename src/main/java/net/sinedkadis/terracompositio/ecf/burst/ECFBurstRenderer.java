@@ -34,10 +34,13 @@ public class ECFBurstRenderer extends EntityRenderer<ECFBurstProjectileEntity> {
         if (tickCount >= 1 || !(this.entityRenderDispatcher.camera.getEntity().distanceToSqr(pEntity) < MIN_CAMERA_DISTANCE_SQUARED)) {
             int cfe = pEntity.getECF();
             int count = TCInnerConfig.RENDER_COUNT_FUNCTION.applyAsInt(cfe);
+            if (count > 100)
+                count = 100;
+            if (count < 1) count = 1;
             Vector3f[] offsets1 = getOffsets(pEntity);
             if (offsets1 == null || offsets1.length < count) {
                 try {
-                    genOffsets(pEntity);
+                    generateOffsets(pEntity, count);
                 } catch (RuntimeException e) {
                     return;
                 }
@@ -47,8 +50,8 @@ public class ECFBurstRenderer extends EntityRenderer<ECFBurstProjectileEntity> {
             var renderType = RenderType.entityTranslucentEmissive(getTextureLocation(pEntity));
             var buffer = pBuffer.getBuffer(renderType);
 
-            boolean isEnd = tickCount >= 60;
-            float pDelta = (float) (tickCount - 60) / 40f;
+            boolean isEnd = tickCount >= pEntity.getTimeToLive();
+            float pDelta = (float) (tickCount - pEntity.getTimeToLive()) / 40f;
 
             for (int i = 0; i < count; i++) {
 
@@ -56,7 +59,7 @@ public class ECFBurstRenderer extends EntityRenderer<ECFBurstProjectileEntity> {
 
                 var offset = offsets1[i];
                 float oX = offset.x();
-                float oY = offset.y();
+                float oY = offset.y() + (pEntity.getBbHeight() / 2);
                 float oZ = offset.z();
 
                 if (isEnd) {
@@ -79,15 +82,13 @@ public class ECFBurstRenderer extends EntityRenderer<ECFBurstProjectileEntity> {
         }
     }
 
-    private void genOffsets(ECFBurstProjectileEntity entity) {
-        int cfe = entity.getECF();
-        float count = TCInnerConfig.RENDER_COUNT_FUNCTION.applyAsInt(cfe);
+    private void generateOffsets(ECFBurstProjectileEntity entity, int count) {
         if (count > 100000) throw new RuntimeException("Particles amount is suspicious large: " + count);
         Vector3f[] offsets1 = getOffsets(entity);
         if (offsets1 == null || offsets1.length < count) {
-            offsets1 = new Vector3f[(int) Math.ceil(count)];
+            offsets1 = new Vector3f[(int) (double) count];
             for (int i = 0; i < count; i++) {
-                offsets1[i] = ParticleHelperInternal.getSpreadParticleOffset(entity.level().random, (int) (count)).toVector3f();
+                offsets1[i] = ParticleHelperInternal.getSpreadParticleOffset(entity.level().random, count).toVector3f();
             }
             setOffsets(entity,offsets1);
         }

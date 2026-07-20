@@ -7,7 +7,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.sinedkadis.terracompositio.util.IEntityInstance;
+import net.sinedkadis.terracompositio.api.IEntityInstance;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
@@ -27,18 +27,30 @@ public abstract class BlockEntityMixin implements IEntityInstance {
     public abstract BlockState getBlockState();
 
     @Override
+    public BlockPos tc$getBlockPos() {
+        return getBlockPos();
+    }
+
+    @Override
+    public Level tc$getLevel() {
+        Level level = getLevel();
+        if (level == null) throw new IllegalStateException("Tried to get level before it become not null - " + this);
+        return level;
+    }
+
+    @Override
+    public BlockState tc$getBlockState() {
+        return getBlockState();
+    }
+
+    @Override
     public BlockEntity tc$asBE() {
-        return ((BlockEntity) (Object) this);
+        return (BlockEntity) (Object) this;
     }
 
     @Override
     public Entity tc$asEntity() {
-        throw new RuntimeException("Tried to get Entity from BlockEntity");
-    }
-
-    @Override
-    public BlockPos tc$getBlockPos() {
-        return getBlockPos();
+        throw new IllegalStateException("Tried to get entity from blockEntity - " + this);
     }
 
     @Override
@@ -47,19 +59,8 @@ public abstract class BlockEntityMixin implements IEntityInstance {
     }
 
     @Override
-    public Level tc$getLevel() {
-        Level level = getLevel();
-        if (level == null) throw new RuntimeException("Method called before level became not null");
-        return level;
-    }
-
-    @Override
     public boolean tc$isEntity() {
         return false;
     }
 
-    @Override
-    public BlockState tc$getBlockState() {
-        return getBlockState();
-    }
 }

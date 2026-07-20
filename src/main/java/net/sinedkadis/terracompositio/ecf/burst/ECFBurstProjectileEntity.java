@@ -21,17 +21,20 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
+import net.sinedkadis.terracompositio.api.networks.TransferAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
-import net.sinedkadis.terracompositio.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.block.entity.PathPointerBlockEntity;
 import net.sinedkadis.terracompositio.block.entity.TCBlockEntity;
+import net.sinedkadis.terracompositio.config.TCInnerConfig;
 import net.sinedkadis.terracompositio.ecf.PPECFMemberProxy;
+import net.sinedkadis.terracompositio.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.registries.TCEntities;
 import net.sinedkadis.terracompositio.registries.TCItems;
+import net.sinedkadis.terracompositio.util.helpers.ParticleHelperInternal;
 import org.joml.Vector3f;
 
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Objects;
 
@@ -44,7 +47,8 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
 
 
     private final BlockPos.MutableBlockPos lastBP = new BlockPos.MutableBlockPos();
-    private int timeToLive = 120;
+    @Getter
+    private int timeToLive = 150;
 
     @Getter
     @Setter
@@ -59,25 +63,18 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
         super(TCEntities.ECF_BURST_PROJECTILE.get(), pX, pY, pZ, pLevel);
     }
 
-    private ECFBurstProjectileEntity(IECFHandler pSource, ECFNetworkMember target, int cfe, float cfeTravelSpeed) {
-        this(pSource, Vec3.ZERO, target, cfe, cfeTravelSpeed);
-    }
-
-
     private ECFBurstProjectileEntity(IECFHandler pSource, Vec3 startOffset, ECFNetworkMember target, int cfe, float cfeTravelSpeed) {
         this(pSource.getEntityInstance().tc$getBlockPos(), startOffset, target, cfe, cfeTravelSpeed);
     }
 
     private ECFBurstProjectileEntity(BlockPos pSource, Vec3 startOffset, ECFNetworkMember target, int cfe, float cfeTravelSpeed) {
         this(pSource.getX() + startOffset.x + 0.5f,
-                pSource.getY() + startOffset.y + 0.5f,
+                pSource.getY() + startOffset.y + 0.25f,
                 pSource.getZ() + startOffset.z + 0.5f,
                 target.getEntityInstance().tc$getLevel());
 
-        Vec3 offset;
-        if (target instanceof PPECFMemberProxy) {
-            offset = Vec3.ZERO;
-        } else {
+        Vec3 offset = Vec3.ZERO;
+        if (target.getEntityInstance().tc$isEntity()) {
             offset = target.getMainHandler().getOffset().apply(Vec3.ZERO);
         }
         if (target instanceof LivingEntity livingEntity) {
@@ -102,24 +99,11 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
         lastBP.set(pSource);
     }
 
-    public static @Nullable ECFBurstProjectileEntity sendBurst(IECFHandler pSource, ECFNetworkMember target, int cfe, float cfeTravelSpeed) {
-        if (cfe < 1) {
-            return null;
-        }
-        return new ECFBurstProjectileEntity(pSource, target, cfe, cfeTravelSpeed);
-    }
-
-    public static @Nullable ECFBurstProjectileEntity sendBurst(BlockPos pSource, ECFNetworkMember target, int cfe, float cfeTravelSpeed) {
-        if (cfe < 1) {
-            return null;
-        }
+    public static ECFBurstProjectileEntity sendBurst(BlockPos pSource, ECFNetworkMember target, int cfe, float cfeTravelSpeed) {
         return new ECFBurstProjectileEntity(pSource, Vec3.ZERO, target, cfe, cfeTravelSpeed);
     }
 
-    public static @Nullable ECFBurstProjectileEntity sendBurst(IECFHandler pSource, Vec3 offset, ECFNetworkMember target, int cfe, float cfeTravelSpeed) {
-        if (cfe < 1) {
-            return null;
-        }
+    public static ECFBurstProjectileEntity sendBurst(IECFHandler pSource, Vec3 offset, ECFNetworkMember target, int cfe, float cfeTravelSpeed) {
         return new ECFBurstProjectileEntity(pSource, offset, target, cfe, cfeTravelSpeed);
     }
 
@@ -175,9 +159,9 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
 
             if (cfe > 0) {
                 for (ItemStack stack : ((LivingEntity) owner).getArmorSlots()) {
-                    IECFHandler IECFHandler = stack.getCapability(TCCapabilities.ECF_HANDLER_ITEM);
-                    assert IECFHandler != null;
-                    cfe -= IECFHandler.addECF(cfe, false);
+                    IECFHandler iecfHandler = stack.getCapability(TCCapabilities.ECF_HANDLER_ITEM);
+                    if (iecfHandler == null) continue;
+                    cfe -= iecfHandler.addECF(cfe, TransferAction.BOTH);
                     if (cfe <= 0) break;
                 }
             }
@@ -206,9 +190,12 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
                 return;
             }
             BlockPos target = getTarget();
+            //todo offset handling
             if (blockPos.equals(target) && blockEntity != null) {
-                tryConsumeCFEHandler(Objects.requireNonNull(level().getCapability(TCCapabilities.ECF_HANDLER_BLOCK, target, null)), this.getECF());
+                IECFHandler capability = Objects.requireNonNull(level().getCapability(TCCapabilities.ECF_HANDLER_BLOCK, target, null));
+                tryConsumeCFEHandler(capability, this.getECF());
             }
+
         }
         lastBP.set(blockPos);
     }
@@ -216,7 +203,8 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
 
 
     private void killIfTimeEnded() {
-        if (tickCount > timeToLive) discard();
+        if (tickCount > timeToLive)
+            discard();
     }
 
     private void recalculateCrownOwnerTarget() {
@@ -236,29 +224,37 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
 
         timeToLive += 100;
         setDeltaMovement(Vec3.ZERO);
-        setPos(pathPointerBlockEntity.getBlockPos().getCenter());
-        BlockPos bindPos = pathPointerBlockEntity.getReceiverPos();
+        Vec3 center = pathPointerBlockEntity.getBlockPos().getCenter();
+        setPos(center);
 
-        Vec3 shootVec;
+        Vec3 shootVec = Vec3.ZERO;
 
-        boolean bindposNotValid = bindPos == null || bindPos.equals(BlockPos.ZERO);
+        boolean isSender = pathPointerBlockEntity.parts.contains(PathPointerBlockEntity.PPPart.SENDER);
+        if (isSender) {
+            BlockPos toSendPos = pathPointerBlockEntity.getReceiverPos();
+            boolean toSendPosNotValid = toSendPos == null || toSendPos.equals(SentinelHelper.EMPTY_POS);
+
+            if (toSendPosNotValid) {
+                ParticleHelperInternal.spawnParticlesIn(level(), blockPosition(), TCInnerConfig.RENDER_COUNT_FUNCTION.applyAsInt(getECF()));
+                discard();
+            } else {
+                shootVec = center.vectorTo(toSendPos.getCenter());
+            }
+        }
         boolean isEmitter = pathPointerBlockEntity.parts.contains(PathPointerBlockEntity.PPPart.EMITTER);
+        if (isEmitter) {
+            BlockPos target = this.getTarget();
+            shootVec = center.vectorTo(target.getCenter());
+        }
         boolean isInfuser = pathPointerBlockEntity.parts.contains(PathPointerBlockEntity.PPPart.INFUSER);
-
-        if (bindposNotValid && isEmitter) {
-            bindPos = getTarget();
-            shootVec = pathPointerBlockEntity.getBlockPos().getCenter().vectorTo(bindPos.getCenter());
-        } else if (bindposNotValid) {
-                shootVec = new Vec3(0, 0, 1)
-                        .yRot((float) Math.toRadians(pathPointerBlockEntity.getRotationYaw()))
-                        .xRot((float) Math.toRadians(pathPointerBlockEntity.getRotationPitch()));
-                if (isInfuser) {
-                    trackCrown = true;
-                }
-        } else shootVec = pathPointerBlockEntity.getBlockPos().getCenter().vectorTo(bindPos.getCenter());
-
-
-        if (isInfuser) PathPointerBlockEntity.setYawAndPitchFromRot(shootVec,pathPointerBlockEntity);
+        if (isInfuser) {
+            Entity owner = this.getOwner();
+            if (owner != null) {
+                shootVec = center.vectorTo(owner.position());
+            }
+            PathPointerBlockEntity.setYawAndPitchFromRot(shootVec, pathPointerBlockEntity);
+            trackCrown = true;
+        }
 
         this.shoot(shootVec.x(),shootVec.y(),shootVec.z(),5 / 20f,0);
         Level level = pathPointerBlockEntity.getLevel();
@@ -271,7 +267,7 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
     }
 
     private int tryConsumeCFEHandler(IECFHandler IECFHandler, int cfe) {
-        int added = IECFHandler.addECF(cfe, false);
+        int added = IECFHandler.addECF(cfe, TransferAction.EXECUTE);
         discard();
         return added;
     }
