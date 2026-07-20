@@ -102,7 +102,7 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
                     if (iECFHandler.getECF() <= 0) {
                         level.playSound(null,
                                 pPos,
-                                SoundEvents.SHIELD_BREAK,
+                                TCSounds.FLOW_EVAPORATION.get(),
                                 SoundSource.PLAYERS);
                     }
                 }
