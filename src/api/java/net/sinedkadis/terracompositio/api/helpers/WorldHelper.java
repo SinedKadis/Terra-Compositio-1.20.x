@@ -20,6 +20,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.FluidState;
+import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
 import net.sinedkadis.terracompositio.api.registries.TCBlockStateProperties;
 import net.sinedkadis.terracompositio.api.registries.TCGameRules;
 import org.jetbrains.annotations.NotNull;
@@ -83,7 +84,7 @@ public class WorldHelper {
         if ((!pState.hasProperty(TCBlockStateProperties.INFUSED) || pState.getValue(TCBlockStateProperties.INFUSED))
                 && !pLevel.getGameRules().getBoolean(TCGameRules.DISABLE_FLOW_LEAKING)
                 && (!pState.hasProperty(TCBlockStateProperties.WAXED) || !pState.getValue(TCBlockStateProperties.WAXED))) {
-
+            TerraCompositioAPI.instance().playFlowEvaporationSound(pLevel, pPos);
             BlockPos f_pos;
             BlockPos b_pos;
             if (pState.hasProperty(RotatedPillarBlock.AXIS)) {
@@ -94,9 +95,12 @@ public class WorldHelper {
                 b_pos = pPos.relative(Direction.Axis.Y, -1);
             }
 
+
             BlockPos.betweenClosedStream(b_pos.offset(-1, -1, -1), f_pos.offset(1, 1, 1))
                     .filter(pos -> pos != pPos)
                     .filter(pos -> pLevel.getBlockState(pos).hasProperty(TCBlockStateProperties.INFUSED))
+                    .peek(pos -> BlockPos.betweenClosed(pos.offset(-1, -1, -1), pos.offset(1, 1, 1))
+                            .forEach(pos1 -> TerraCompositioAPI.instance().spawnECFParticles(pLevel, pos1, 1)))
                     .forEach(pos -> pLevel.setBlockAndUpdate(pos, pLevel.getBlockState(pos).setValue(TCBlockStateProperties.INFUSED, false)));
         }
     }
