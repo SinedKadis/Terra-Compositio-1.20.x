@@ -6,6 +6,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.*;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
+import net.minecraftforge.client.model.generators.ConfiguredModel;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.client.model.generators.VariantBlockStateBuilder;
 import net.minecraftforge.common.data.ExistingFileHelper;
@@ -17,6 +18,8 @@ import net.sinedkadis.terracompositio.block.custom.FlowCedarLikeBlock;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
 
 import java.util.Objects;
+
+import static net.sinedkadis.terracompositio.registries.TCBlocks.*;
 
 
 public class TCBlockStateProvider extends BlockStateProvider {
@@ -59,17 +62,36 @@ public class TCBlockStateProvider extends BlockStateProvider {
 
         saplingBlock(TCBlocks.FLOW_CEDAR_SAPLING);
 
+        particleOnlyModel(FLOW_CEDAR_SIGN, FLOW_CEDAR_PLANKS);
+        particleOnlyModel(FLOW_CEDAR_WALL_SIGN, FLOW_CEDAR_PLANKS);
+        particleOnlyModel(FLOW_CEDAR_ENT_STATUE, FLOW_CEDAR_LOG);
+
+
+
         if (ModList.get().isLoaded("create")) {
             TerraCompositio.createCompat.getDataGen().registerBlockStatesAndModels();
         }
     }
 
+    private void particleOnlyModel(RegistryObject<Block> target, RegistryObject<Block> textureSource) {
+        Block targetBlock = target.get();
+        Block sourceBlock = textureSource.get();
+
+        String modelName = Objects.requireNonNull(ForgeRegistries.BLOCKS.getKey(targetBlock)).getPath();
+
+        getVariantBuilder(targetBlock)
+                .partialState()
+                .addModels(new ConfiguredModel(
+                        models().withExistingParent(modelName, mcLoc("block/block"))
+                                .texture("particle", blockTexture(sourceBlock))
+                ));
+    }
+
     private void saplingBlock(RegistryObject<Block> blockRegistryObject) {
-        ResourceLocation key = ForgeRegistries.BLOCKS.getKey(blockRegistryObject.get());
-        if (key != null) {
-            simpleBlock(blockRegistryObject.get(),
-                    models().cross(key.getPath(), blockTexture(blockRegistryObject.get())).renderType("cutout"));
-        }
+        ResourceLocation key = blockRegistryObject.getId();
+        assert key != null;
+        simpleBlock(blockRegistryObject.get(),
+                models().cross(key.getPath(), blockTexture(blockRegistryObject.get())).renderType("cutout"));
     }
 
     public void hangingSignBlock(Block signBlock, Block wallSignBlock, ResourceLocation texture) {

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "terracompositio:block/flow_cedar_log"
+  }
+}
