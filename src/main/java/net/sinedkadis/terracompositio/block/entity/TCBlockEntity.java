@@ -81,12 +81,6 @@ public abstract class TCBlockEntity extends BlockEntity implements IHaveKnowledg
     }
 
     @Override
-    public void setRemoved() {
-        behaviours.forEach(IBEBehaviour::onRemoved);
-        super.setRemoved();
-    }
-
-    @Override
     public void invalidateCaps() {
         super.invalidateCaps();
         behaviours.forEach(IBEBehaviour::onInvalidateCaps);
