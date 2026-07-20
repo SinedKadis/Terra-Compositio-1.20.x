@@ -36,10 +36,11 @@ public class ECFBurstRenderer extends EntityRenderer<ECFBurstProjectileEntity> {
             int count = TCInnerConfig.RENDER_COUNT_FUNCTION.applyAsInt(cfe);
             if (count > 100)
                 count = 100;
+            if (count < 1) count = 1;
             Vector3f[] offsets1 = getOffsets(pEntity);
             if (offsets1 == null || offsets1.length < count) {
                 try {
-                    generateOffsets(pEntity);
+                    generateOffsets(pEntity, count);
                 } catch (RuntimeException e) {
                     return;
                 }
@@ -81,15 +82,13 @@ public class ECFBurstRenderer extends EntityRenderer<ECFBurstProjectileEntity> {
         }
     }
 
-    private void generateOffsets(ECFBurstProjectileEntity entity) {
-        int cfe = entity.getECF();
-        float count = TCInnerConfig.RENDER_COUNT_FUNCTION.applyAsInt(cfe);
+    private void generateOffsets(ECFBurstProjectileEntity entity, int count) {
         if (count > 100000) throw new RuntimeException("Particles amount is suspicious large: " + count);
         Vector3f[] offsets1 = getOffsets(entity);
         if (offsets1 == null || offsets1.length < count) {
-            offsets1 = new Vector3f[(int) Math.ceil(count)];
+            offsets1 = new Vector3f[(int) (double) count];
             for (int i = 0; i < count; i++) {
-                offsets1[i] = ParticleHelperInternal.getSpreadParticleOffset(entity.level().random, (int) (count)).toVector3f();
+                offsets1[i] = ParticleHelperInternal.getSpreadParticleOffset(entity.level().random, count).toVector3f();
             }
             setOffsets(entity,offsets1);
         }
