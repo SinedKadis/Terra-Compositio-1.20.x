@@ -65,7 +65,7 @@ public class MatterInfuserPortBlockEntity extends MatterInfuserBaseBlockEntity {
         for (BlockPos blockpos : BlockPos.betweenClosed(pos.relative(direction),pos.relative(direction,8))) {
             BlockEntity blockEntity = level.getBlockEntity(blockpos);
             if (blockEntity instanceof MatterInfuserUnitBlockEntity unitBlockEntity) {
-                if (unitBlockEntity.progress > 0) {
+                if (unitBlockEntity.progress > 0 && unitBlockEntity.hasRecipe() && unitBlockEntity.getECF() > 0) {
                     level.playSound(null, blockpos, SoundEvents.AZALEA_STEP, SoundSource.BLOCKS);
                     return;
                 }

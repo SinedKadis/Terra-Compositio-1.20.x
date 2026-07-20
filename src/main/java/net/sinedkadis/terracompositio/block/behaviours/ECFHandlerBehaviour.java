@@ -7,6 +7,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.sinedkadis.terracompositio.api.IEntityInstance;
 import net.sinedkadis.terracompositio.api.IHaveKnowledge;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
@@ -57,6 +58,11 @@ public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
     }
     public ECFHandlerBehaviour range(int range) {
         this.range = range;
+        return this;
+    }
+
+    public ECFHandlerBehaviour offset(Function<Vec3, Vec3> offset) {
+        this.ecfHandler.setOffset(offset);
         return this;
     }
     public ECFHandlerBehaviour priority(int priority) {

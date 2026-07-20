@@ -45,6 +45,7 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
 
 
     private final BlockPos.MutableBlockPos lastBP = new BlockPos.MutableBlockPos();
+    private IECFHandler scheduledConsumer = SentinelHelper.EMPTY_ECF_HANDLER;
     @Getter
     private int timeToLive = 150;
 
@@ -60,11 +61,6 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
     public ECFBurstProjectileEntity(double pX, double pY, double pZ, Level pLevel) {
         super(TCEntities.ECF_BURST_PROJECTILE.get(), pX, pY, pZ, pLevel);
     }
-
-    private ECFBurstProjectileEntity(IECFHandler pSource, ECFNetworkMember target, int cfe, float cfeTravelSpeed) {
-        this(pSource, Vec3.ZERO, target, cfe, cfeTravelSpeed);
-    }
-
 
     private ECFBurstProjectileEntity(IECFHandler pSource, Vec3 startOffset, ECFNetworkMember target, int cfe, float cfeTravelSpeed) {
         this(pSource.getEntityInstance().tc$getBlockPos(), startOffset, target, cfe, cfeTravelSpeed);
@@ -102,10 +98,6 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
         this.setTarget(target.getMainHandler().getAttachedEntity().tc$getBlockPos());
         this.shoot(shootVec.x(), shootVec.y(), shootVec.z(), cfeTravelSpeed, 0);
         lastBP.set(pSource);
-    }
-
-    public static ECFBurstProjectileEntity sendBurst(IECFHandler pSource, ECFNetworkMember target, int cfe, float cfeTravelSpeed) {
-        return new ECFBurstProjectileEntity(pSource, target, cfe, cfeTravelSpeed);
     }
 
     public static ECFBurstProjectileEntity sendBurst(BlockPos pSource, ECFNetworkMember target, int cfe, float cfeTravelSpeed) {
@@ -199,9 +191,17 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
                 return;
             }
             BlockPos target = getTarget();
-            if (blockPos.equals(target) && blockEntity != null) {
-                tryConsumeCFEHandler(Objects.requireNonNull(level().getCapability(TCCapabilities.ECF_HANDLER_BLOCK, target, null)), this.getECF());
+            if (scheduledConsumer != SentinelHelper.EMPTY_ECF_HANDLER) {
+                if (BlockPos.containing(scheduledConsumer.getOffset().apply(target.getCenter())).equals(blockPos))
+                    tryConsumeCFEHandler(scheduledConsumer, this.getECF());
             }
+            if (blockPos.equals(target) && blockEntity != null) {
+                IECFHandler capability = Objects.requireNonNull(level().getCapability(TCCapabilities.ECF_HANDLER_BLOCK, target, null));
+                if (BlockPos.containing(capability.getOffset().apply(target.getCenter())).equals(blockPos))
+                    tryConsumeCFEHandler(capability, this.getECF());
+                else scheduledConsumer = capability;
+            }
+
         }
         lastBP.set(blockPos);
     }
