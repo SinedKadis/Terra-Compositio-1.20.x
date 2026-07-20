@@ -79,7 +79,7 @@ public class TimePassageDesorberBlockEntity extends AbstractDesorberBlockEntity 
 
 
     private void consumeFluid() {
-        this.fluidHandler.drain(10, IFluidHandler.FluidAction.EXECUTE);
+        this.fluidHandler.drain(1, IFluidHandler.FluidAction.EXECUTE);
     }
 
     private boolean isEnoughFluid() {
