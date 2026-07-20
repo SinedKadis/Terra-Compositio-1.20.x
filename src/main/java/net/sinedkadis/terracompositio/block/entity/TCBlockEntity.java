@@ -160,6 +160,7 @@ public abstract class TCBlockEntity extends BlockEntity implements IHaveKnowledg
         Optional<IItemHandler> behaviourCap = behaviours.stream()
                 .map(iBehaviour -> iBehaviour.getStateHolderCapability(direction))
                 .filter(Objects::nonNull)
+                .filter(itemHandler -> !itemHandler.equals(EmptyItemHandler.INSTANCE))
                 .findAny();
         return behaviourCap.orElse(EmptyItemHandler.INSTANCE);
     }

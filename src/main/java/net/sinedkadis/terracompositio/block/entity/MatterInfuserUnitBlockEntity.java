@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.wrapper.EmptyItemHandler;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
 import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
@@ -129,8 +130,8 @@ public class MatterInfuserUnitBlockEntity extends MatterInfuserBaseBlockEntity{
         if (casingBE == null) {
             return false;
         }
-        IItemHandler casingItemHandler = level.getCapability(TCCapabilities.ITEM_STATE_HOLDER_BLOCK, worldPosition, null);
-        if (casingItemHandler == null || casingItemHandler.getStackInSlot(UP_CONNECTION_SLOT).isEmpty()
+        IItemHandler casingItemHandler = casingBE.getStateHolderCapability(null);
+        if (casingItemHandler == EmptyItemHandler.INSTANCE || casingItemHandler.getStackInSlot(UP_CONNECTION_SLOT).isEmpty()
                 || casingItemHandler.getStackInSlot(DOWN_CONNECTION_SLOT).isEmpty())
             return false;
 

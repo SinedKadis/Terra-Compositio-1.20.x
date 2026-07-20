@@ -43,8 +43,7 @@ public class MatterInfuserPortBlockEntityRenderer implements BlockEntityRenderer
         Level level = pBlockEntity.getLevel();
         if (level == null) return;
 
-        IItemHandler handler = level.getCapability(Capabilities.ItemHandler.BLOCK, pBlockEntity.getBlockPos(), null);
-        if (handler == null) return;
+        IItemHandler handler = pBlockEntity.getStateHolderCapability(null);
         if (!(handler instanceof ItemStackHandler itemStackHandler)) return;
 
 

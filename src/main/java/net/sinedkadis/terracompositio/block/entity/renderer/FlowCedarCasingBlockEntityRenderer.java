@@ -16,8 +16,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.Vec3;
-
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.sinedkadis.terracompositio.api.helpers.WorldHelper;
@@ -47,8 +45,7 @@ public class FlowCedarCasingBlockEntityRenderer implements BlockEntityRenderer<F
         Level level = pBlockEntity.getLevel();
         if (level == null) return;
 
-        IItemHandler handler = level.getCapability(Capabilities.ItemHandler.BLOCK, pBlockEntity.getBlockPos(), null);
-        if (handler == null) return;
+        IItemHandler handler = pBlockEntity.getStateHolderCapability(null);
 
         if (!(handler instanceof ItemStackHandler itemStackHandler)) return;
 
