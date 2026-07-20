@@ -165,13 +165,13 @@ public class DefaultECFHandler implements IECFHandler, INBTSerializable<Compound
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag nbt = new CompoundTag();
-        nbt.putInt("CFE", this.getECF());
+        nbt.putInt("ECF", this.getECF());
         return nbt;
     }
 
     @Override
     public void deserializeNBT(CompoundTag tag) {
-        this.setECF(tag.getInt("CFE"));
+        this.setECF(tag.getInt("ECF"));
     }
 
     public int getMaxECF() {
