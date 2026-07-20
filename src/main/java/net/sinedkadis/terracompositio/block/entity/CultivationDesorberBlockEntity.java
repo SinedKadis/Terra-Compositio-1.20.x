@@ -23,6 +23,8 @@ import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
 import net.sinedkadis.terracompositio.api.networks.TransferAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetwork;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
+import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
+import net.sinedkadis.terracompositio.ecf.burst.ECFBurstProjectileEntity;
 import net.sinedkadis.terracompositio.registries.TCBlockEntities;
 import net.sinedkadis.terracompositio.util.helpers.ParticleHelperInternal;
 import org.jetbrains.annotations.NotNull;
@@ -97,21 +99,35 @@ public class CultivationDesorberBlockEntity extends AbstractDesorberBlockEntity 
         for (CultivationDesorberBlockEntity blockEntity : cultivators){
             FluidTank fluidHandler1 = blockEntity.fluidHandler;
             if (!fluidHandler1.isEmpty() && fluidHandler1.getFluidAmount() >= ECFToAdd) {
-                fluidHandler1.drain(ECFToAdd, IFluidHandler.FluidAction.EXECUTE);
-                int added = blockEntity.ecfContainer().addECF(ECFToAdd, TransferAction.EXECUTE);
+                IECFHandler iecfHandler = blockEntity.ecfContainer();
+                int added = iecfHandler.addECF(ECFToAdd, TransferAction.SIMULATE);
                 ECFToAdd -= added;
-                if (!level.isClientSide())
-                    level.playSound(null,pos, SoundEvents.AZALEA_LEAVES_STEP, SoundSource.BLOCKS);
-                ParticleHelperInternal.sendECFParticles((ServerLevel) level,
-                        blockEntity.ecfContainer().getOffset().apply(blockEntity.getBlockPos().getCenter()),
-                        pos.getCenter(),
-                        added);
-                //noinspection deprecation
-                blockEntity.setRenderStack(new ItemStack(state.getBlock()
-                        .getDrops(state,new LootParams.Builder((ServerLevel) level)
-                                .withParameter(LootContextParams.ORIGIN,pos.getCenter())
-                                .withParameter(LootContextParams.TOOL,ItemStack.EMPTY)).get(0).getItem().asItem()));
+                BlockPos blockEntityBlockPos = blockEntity.getBlockPos();
+                ((Level) level).sendBlockUpdated(blockEntityBlockPos, blockEntity.getBlockState(), blockEntity.getBlockState(), 3);
                 if (ECFToAdd == 0) {
+                    //noinspection deprecation
+                    blockEntity.setRenderStack(new ItemStack(
+                            state.getBlock().getDrops(state, new LootParams.Builder((ServerLevel) level)
+                                            .withParameter(LootContextParams.ORIGIN, pos.getCenter())
+                                            .withParameter(LootContextParams.TOOL, ItemStack.EMPTY))
+                                    .get(0).getItem().asItem())
+                    );
+                    fluidHandler1.drain(ECFToAdd, IFluidHandler.FluidAction.EXECUTE);
+                    if (!level.isClientSide()) {
+                        level.playSound(null, blockEntityBlockPos, SoundEvents.AZALEA_LEAVES_STEP, SoundSource.BLOCKS, 0.1f, 1f);
+                        level.addFreshEntity(
+                                Objects.requireNonNull(
+                                        ECFBurstProjectileEntity.sendBurst(pos, iecfHandler, added, 5 / 20f)
+                                )
+                        );
+                        ParticleHelperInternal.sendECFParticles((ServerLevel) level,
+                                blockEntity.ecfContainer().getOffset().apply(blockEntityBlockPos.getCenter()),
+                                pos.getCenter(),
+                                added,
+                                null,
+                                5 / 20f);
+
+                    }
                     break;
                 }
             }
