@@ -34,7 +34,6 @@ import net.sinedkadis.terracompositio.registries.TCItems;
 import org.joml.Vector3f;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Objects;
 
 @Slf4j
 @MethodsReturnNonnullByDefault
@@ -160,7 +159,7 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
             if (cfe > 0) {
                 for (ItemStack stack : owner.getArmorSlots()) {
                     IECFHandler IECFHandler = stack.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER);
-                    cfe -= IECFHandler.addECF(cfe, TransferAction.EXECUTE);
+                    cfe -= IECFHandler.addECF(cfe, TransferAction.BOTH);
                     if (cfe <= 0) break;
                 }
             }
@@ -220,27 +219,36 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
 
         timeToLive += 100;
         setDeltaMovement(Vec3.ZERO);
-        setPos(pathPointerBlockEntity.getBlockPos().getCenter());
-        BlockPos bindPos = pathPointerBlockEntity.getReceiverPos();
+        Vec3 center = pathPointerBlockEntity.getBlockPos().getCenter();
+        setPos(center);
 
-        Vec3 shootVec;
+        Vec3 shootVec = Vec3.ZERO;
 
-        boolean bindposNotValid = bindPos == null || bindPos.equals(BlockPos.ZERO);
-        boolean isEmitter = pathPointerBlockEntity.parts.contains(PathPointerBlockEntity.PPPart.EMITTER);
-        boolean isInfuser = pathPointerBlockEntity.parts.contains(PathPointerBlockEntity.PPPart.INFUSER);
+        boolean isSender = pathPointerBlockEntity.parts.contains(PathPointerBlockEntity.PPPart.SENDER);
+        if (isSender) {
+            BlockPos toSendPos = pathPointerBlockEntity.getReceiverPos();
+            boolean toSendPosNotValid = toSendPos == null || toSendPos.equals(SentinelHelper.EMPTY_POS);
 
-        if (bindposNotValid && isEmitter) {
-            bindPos = getTarget();
-            shootVec = pathPointerBlockEntity.getBlockPos().getCenter().vectorTo(bindPos.getCenter());
-        } else if (bindposNotValid) {
-            shootVec = pathPointerBlockEntity.getBlockPos().getCenter().vectorTo(Objects.requireNonNull(this.getOwner()).position());
-            if (isInfuser) {
-                trackCrown = true;
+            if (toSendPosNotValid) {
+                shootVec = new Vec3(-1, 0, 0).yRot(-pathPointerBlockEntity.getRotationYaw()).xRot(pathPointerBlockEntity.getRotationPitch());
+            } else {
+                shootVec = center.vectorTo(toSendPos.getCenter());
             }
-        } else shootVec = pathPointerBlockEntity.getBlockPos().getCenter().vectorTo(bindPos.getCenter());
-
-
-        if (isInfuser) PathPointerBlockEntity.setYawAndPitchFromRot(shootVec, pathPointerBlockEntity);
+        }
+        boolean isEmitter = pathPointerBlockEntity.parts.contains(PathPointerBlockEntity.PPPart.EMITTER);
+        if (isEmitter) {
+            BlockPos target = this.getTarget();
+            shootVec = center.vectorTo(target.getCenter());
+        }
+        boolean isInfuser = pathPointerBlockEntity.parts.contains(PathPointerBlockEntity.PPPart.INFUSER);
+        if (isInfuser) {
+            Entity owner = this.getOwner();
+            if (owner != null) {
+                shootVec = center.vectorTo(owner.position());
+            }
+            PathPointerBlockEntity.setYawAndPitchFromRot(shootVec, pathPointerBlockEntity);
+            trackCrown = true;
+        }
 
         this.shoot(shootVec.x(),shootVec.y(),shootVec.z(),5 / 20f,0);
         Level level = pathPointerBlockEntity.getLevel();
