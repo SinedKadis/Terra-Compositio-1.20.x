@@ -48,6 +48,12 @@ public class CreationFlowJournalItem extends Item {
         }
         return 1;
     }
+
+    @Override
+    public int getMaxStackSize(ItemStack stack) {
+        return 1;
+    }
+
     public static boolean isInHand(ItemStack stack,@Nullable Entity entity) {
         if (entity instanceof LivingEntity livingEntity) {
             boolean inMainHand = stack == livingEntity.getMainHandItem();
