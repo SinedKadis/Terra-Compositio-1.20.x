@@ -49,8 +49,10 @@ public abstract class MatterInfuserBaseEntityBlock extends TCBaseEntityBlock {
         Direction direction = pState.getValue(FACING);
         BlockPos blockpos = pPos.relative(direction.getOpposite());
         BlockState blockstate = pLevel.getBlockState(blockpos);
-        if (blockstate.hasProperty(AXIS) && blockstate.is(TCBlocks.FLOW_CEDAR_CASING.get()))
-            return direction.getAxis().isHorizontal() && !blockstate.getValue(AXIS).equals(direction.getAxis());
+        if (blockstate.hasProperty(AXIS) && blockstate.is(TCBlocks.FLOW_CEDAR_CASING.get())) {
+            Direction.Axis axis = blockstate.getValue(AXIS);
+            return axis.isHorizontal() && !axis.equals(direction.getAxis());
+        }
         return false;
     }
 
