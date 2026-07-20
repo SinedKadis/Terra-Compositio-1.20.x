@@ -2,11 +2,13 @@ package net.sinedkadis.terracompositio.datagen;
 
 
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.*;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
+import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.client.model.generators.VariantBlockStateBuilder;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
@@ -16,6 +18,8 @@ import net.sinedkadis.terracompositio.block.custom.FlowCedarLikeBlock;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
 
 import java.util.Objects;
+
+import static net.sinedkadis.terracompositio.registries.TCBlocks.*;
 
 
 public class TCBlockStateProvider extends BlockStateProvider {
@@ -58,9 +62,29 @@ public class TCBlockStateProvider extends BlockStateProvider {
 
         saplingBlock(TCBlocks.FLOW_CEDAR_SAPLING);
 
+        particleOnlyModel(FLOW_CEDAR_SIGN, FLOW_CEDAR_PLANKS);
+        particleOnlyModel(FLOW_CEDAR_WALL_SIGN, FLOW_CEDAR_PLANKS);
+        particleOnlyModel(FLOW_CEDAR_ENT_STATUE, FLOW_CEDAR_LOG);
+
+
+
         if (ModList.get().isLoaded("create")) {
             TerraCompositio.createCompat.getDataGen().registerBlockStatesAndModels();
         }
+    }
+
+    private void particleOnlyModel(DeferredBlock<? extends Block> target, DeferredBlock<? extends Block> textureSource) {
+        Block targetBlock = target.get();
+        Block sourceBlock = textureSource.get();
+
+        String modelName = BuiltInRegistries.BLOCK.getKey(targetBlock).getPath();
+
+        getVariantBuilder(targetBlock)
+                .partialState()
+                .addModels(new ConfiguredModel(
+                        models().withExistingParent(modelName, mcLoc("block/block"))
+                                .texture("particle", blockTexture(sourceBlock))
+                ));
     }
 
     private void saplingBlock(DeferredBlock<Block> blockRegistryObject) {
