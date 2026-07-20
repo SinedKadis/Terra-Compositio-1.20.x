@@ -16,6 +16,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -34,6 +35,7 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import net.sinedkadis.terracompositio.api.helpers.WorldHelper;
+import net.sinedkadis.terracompositio.block.entity.FlowCedarTankBlockEntity;
 import net.sinedkadis.terracompositio.block.entity.TCBlockEntity;
 import net.sinedkadis.terracompositio.item.custom.WrenchAxeItem;
 import net.sinedkadis.terracompositio.registries.*;
@@ -186,6 +188,15 @@ public class FlowCedarTankBlock extends TCBaseEntityBlock{
 
 
         return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    }
+
+    @Override
+    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity instanceof FlowCedarTankBlockEntity flowCedarTankBlockEntity) {
+            flowCedarTankBlockEntity.scheduleMemberUpdate();
+        }
+        return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
     }
 
     @Override
