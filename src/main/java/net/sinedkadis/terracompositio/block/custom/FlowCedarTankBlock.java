@@ -17,6 +17,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -33,6 +34,7 @@ import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.sinedkadis.terracompositio.block.entity.FlowCedarTankBlockEntity;
 import net.sinedkadis.terracompositio.block.entity.TCBlockEntity;
 import net.sinedkadis.terracompositio.item.custom.WrenchAxeItem;
 import net.sinedkadis.terracompositio.registries.*;
@@ -195,6 +197,15 @@ public class FlowCedarTankBlock extends TCBaseEntityBlock{
         return InteractionResult.PASS;
     }
 
+    @SuppressWarnings("deprecation")
+    @Override
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity instanceof FlowCedarTankBlockEntity flowCedarTankBlockEntity) {
+            flowCedarTankBlockEntity.scheduleMemberUpdate();
+        }
+        return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
+    }
     @SuppressWarnings("deprecation")
     @Override
     public List<ItemStack> getDrops(BlockState pState, LootParams.Builder pParams) {

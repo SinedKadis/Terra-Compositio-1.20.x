@@ -217,6 +217,10 @@ public class FlowCedarTankBlockEntity extends TCBlockEntity implements FluidNetw
                                     amount / 10,
                                     transferred);
                 }
+                setChanged();
+                if (level != null) {
+                    level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+                }
             });
         }
     }
@@ -238,6 +242,10 @@ public class FlowCedarTankBlockEntity extends TCBlockEntity implements FluidNetw
                                 this.getBlockPos(),
                                 amount / 10,
                                 transferred);
+                setChanged();
+                if (level != null) {
+                    level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+                }
             }
         } else onFluidNetworkMemberUpdate();
     }
