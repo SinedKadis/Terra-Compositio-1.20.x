@@ -75,9 +75,8 @@ public class FluidApplierItem extends Item implements DispensibleContainerItem, 
         if (fluidHandler.isPresent()){
             IFluidHandlerItem fluidHandlerItem = fluidHandler.get();
             FluidStack fluidStack = fluidHandlerItem.getFluidInTank(0);
-            Fluid fluid = fluidStack.getFluid();
             BlockHitResult blockhitresult = getPlayerPOVHitResult(pLevel, pPlayer,
-                    !(fluid instanceof FlowingFluid) ? ClipContext.Fluid.SOURCE_ONLY : ClipContext.Fluid.ANY);
+                    ClipContext.Fluid.SOURCE_ONLY);
 
             if (blockhitresult.getType() == HitResult.Type.MISS) {
                 return InteractionResultHolder.pass(itemstack);
@@ -96,7 +95,8 @@ public class FluidApplierItem extends Item implements DispensibleContainerItem, 
                 }
                 if (!pPlayer.isShiftKeyDown() && fluidApplicable != null) {
                     IFluidApplicable.FluidApplyResult result = fluidApplicable.tryApply(pLevel, blockpos, itemstack, fluidHandlerItem, pPlayer);
-                    if (result.cancel()) return InteractionResultHolder.pass(itemstack);
+                    if (result.cancel())
+                        return InteractionResultHolder.pass(itemstack);
                     if (result.success()) {
                         pLevel.playSound(null, blockpos, SoundEvents.NOTE_BLOCK_PLING.value(), SoundSource.BLOCKS);
                         return InteractionResultHolder.sidedSuccess(itemstack, pLevel.isClientSide);
@@ -294,7 +294,7 @@ public class FluidApplierItem extends Item implements DispensibleContainerItem, 
         public int fill(FluidStack resource, FluidAction action) {
             FluidStack current = getFluid();
             FluidStack toAdd = FluidStack.EMPTY;
-            if (FluidStack.matches(resource,current) || current.isEmpty()) {
+            if (FluidStack.isSameFluid(resource, current) || current.isEmpty()) {
                 toAdd = resource.copy();
 
                 toAdd.setAmount(Math.min(getTankCapacity(0) - current.getAmount(),resource.getAmount()));
@@ -326,7 +326,7 @@ public class FluidApplierItem extends Item implements DispensibleContainerItem, 
         @Override
         public FluidStack drain(FluidStack resource, FluidAction action) {
             FluidStack current = getFluid();
-            if (FluidStack.matches(resource,current)) {
+            if (FluidStack.isSameFluid(resource, current)) {
                 int maxDrain = resource.getAmount();
                 FluidStack toDrain = current.copy();
                 toDrain.setAmount(Math.max(current.getAmount(), maxDrain));
