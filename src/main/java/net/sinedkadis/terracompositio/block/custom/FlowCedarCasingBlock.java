@@ -138,6 +138,7 @@ public class FlowCedarCasingBlock extends TCBaseEntityBlock implements IFluidApp
                 if (!dirState.getValue(BlockStateProperties.HORIZONTAL_FACING).equals(direction)) continue;
                 pLevel.destroyBlock(relativePos, true);
             }
+            WorldHelper.flowLeak(pState, pLevel, pPos);
         }
 
         super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
