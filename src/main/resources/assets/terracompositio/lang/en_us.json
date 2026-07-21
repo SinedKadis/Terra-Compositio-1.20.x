@@ -119,6 +119,7 @@
   "info.terracompositio.seconds": " seconds",
   "info.terracompositio.no_ecf": "Not enough ECF",
   "info.terracompositio.no_space": "Not enough space in output",
+  "info.terracompositio.no_surroundings": "Wrong surroundings",
 
 
   "info.terracompositio.ent_hold_header": "Holds: ",
@@ -254,7 +255,7 @@
 
   "book.terracompositio.creation_flow_journal.entry.flow_infuser.name": "Flow Infuser",
   "book.terracompositio.creation_flow_journal.entry.flow_infuser.page1": "  With this device, you can create an interesting material that possesses the properties of both a liquid and iron. To do this, we’ll need sticks, copper, an axe, and steady hands.",
-  "book.terracompositio.creation_flow_journal.entry.flow_infuser.page2": "  To function, the device must be placed inside a living cedar tree filled with flow",
+  "book.terracompositio.creation_flow_journal.entry.flow_infuser.page2": "  To function, the device must be surrounded with liquid flow containing blocks, from up and down",
   "book.terracompositio.creation_flow_journal.entry.flow_infuser.page3": "  Once you place iron inside and add a little ECF, the device will fill up and the material will be produced",
 
   "book.terracompositio.creation_flow_journal.entry.infused_iron_axe.name": "Multi-Tool",

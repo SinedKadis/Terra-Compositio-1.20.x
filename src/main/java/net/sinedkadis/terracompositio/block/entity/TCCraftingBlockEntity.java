@@ -238,7 +238,7 @@ public abstract class TCCraftingBlockEntity extends TCBlockEntity implements Wor
     }
 
     public enum CraftException implements TooltipHelper.ICustomUnit {
-        NO_ECF, NO_SPACE, EMPTY;
+        NO_ECF, NO_SPACE, EMPTY, NO_SURROUNDINGS;
 
         @Override
         public String getModID() {

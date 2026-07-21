@@ -108,6 +108,9 @@
   "info.terracompositio.craft_exception": "%s",
   "info.terracompositio.no_ecf": "Недостатньо ЕПТ",
   "info.terracompositio.no_space": "Недостатньо місця на виході",
+  "info.terracompositio.no_surroundings": "Неправильне оточення",
+
+
   "item.terracompositio.creation_flow_journal.tooltip": "%s закладок",
   "block.terracompositio.item_io.input": "Вхід: ",
   "block.terracompositio.item_io.output": "Вихід: ",
@@ -222,7 +225,7 @@
   "book.terracompositio.creation_flow_journal.category.day_3.description": "  Закладка третя: Детальніше про використання ЕПТ. Для наступної закладки підготуйте заряд ЕПТ",
   "book.terracompositio.creation_flow_journal.entry.flow_infuser.name": "Наповнювач потоком",
   "book.terracompositio.creation_flow_journal.entry.flow_infuser.page1": " За допомогою цього пристрою можна створити цікавий матеріал, що має властивості як рідини, так і заліза. Для цього нам знадобляться палиці, мідь, сокира та вправні руки.",
-  "book.terracompositio.creation_flow_journal.entry.flow_infuser.page2": "Для його роботи пристрій має перебувати в живому, наповненому потоком кедрі",
+  "book.terracompositio.creation_flow_journal.entry.flow_infuser.page2": "Для його роботи пристрій має бути оточений блоками, що містять рідкий поток, зверху та знизу",
   "book.terracompositio.creation_flow_journal.entry.flow_infuser.page3": "Поклавши всередину залізо та додавши трохи ЕПТ, відбудеться наповнення, і матеріал буде отримано",
   "book.terracompositio.creation_flow_journal.entry.infused_iron_axe.name": "Мультиінструмент",
   "book.terracompositio.creation_flow_journal.entry.infused_iron_axe.page1": " Завдяки неймовірним властивостям матеріалу називати цей інструмент сокирою було б неправильно. Він може мати форму звичайної сокири, ключа, монтирувального інструменту, а також ключа-сокири",
