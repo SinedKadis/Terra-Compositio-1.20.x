@@ -106,8 +106,11 @@
   "info.terracompositio.time_collected": "Времени собрано: %s",
   "info.terracompositio.time_collection_chance": "Вероятность сбора времени: %s%%",
   "info.terracompositio.craft_exception": "%s",
+
   "info.terracompositio.no_ecf": "Недостаточно ЭПС",
   "info.terracompositio.no_space": "Недостаточно места на выходе",
+  "info.terracompositio.no_surroundings": "Неправильное окружение",
+
   "item.terracompositio.creation_flow_journal.tooltip": "%s закладок",
   "block.terracompositio.item_io.input": "Вход: ",
   "block.terracompositio.item_io.output": "Выход: ",
@@ -228,7 +231,7 @@
 
   "book.terracompositio.creation_flow_journal.entry.flow_infuser.name": "Наполнитель потоком",
   "book.terracompositio.creation_flow_journal.entry.flow_infuser.page1": " С помощью данного устройства можно создать интересный материал, обладающий свойствами как и жидкости, так и железа. Для этого нам понадобятся палки, медь, топор и прямые руки.",
-  "book.terracompositio.creation_flow_journal.entry.flow_infuser.page2": " Для его работы устройство должно находится в живом, наполненном потоком кедре",
+  "book.terracompositio.creation_flow_journal.entry.flow_infuser.page2": " Для его работы устройство должно быть окружено содержащими жидкий поток блоками, сверху и снизу",
   "book.terracompositio.creation_flow_journal.entry.flow_infuser.page3": " Положив внутрь железо, и добавив немного ЭПС, произойдет наполнение и материал будет получен",
 
   "book.terracompositio.creation_flow_journal.entry.infused_iron_axe.name": "Мульти-инструмент",

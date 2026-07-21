@@ -14,15 +14,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.FluidState;
-import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
-import net.sinedkadis.terracompositio.api.registries.TCBlockStateProperties;
-import net.sinedkadis.terracompositio.api.registries.TCGameRules;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -78,31 +74,6 @@ public class WorldHelper {
                 .map(block -> !state.is(block))
                 .reduce((aBoolean, aBoolean2) -> aBoolean && aBoolean2)
                 .orElse(true);
-    }
-
-    public static void flowLeak(BlockState pState, Level pLevel, BlockPos pPos) {
-        if ((!pState.hasProperty(TCBlockStateProperties.INFUSED) || pState.getValue(TCBlockStateProperties.INFUSED))
-                && !pLevel.getGameRules().getBoolean(TCGameRules.DISABLE_FLOW_LEAKING)
-                && (!pState.hasProperty(TCBlockStateProperties.WAXED) || !pState.getValue(TCBlockStateProperties.WAXED))) {
-            TerraCompositioAPI.instance().playFlowEvaporationSound(pLevel, pPos);
-            BlockPos f_pos;
-            BlockPos b_pos;
-            if (pState.hasProperty(RotatedPillarBlock.AXIS)) {
-                f_pos = pPos.relative(pState.getValue(RotatedPillarBlock.AXIS), 1);
-                b_pos = pPos.relative(pState.getValue(RotatedPillarBlock.AXIS), -1);
-            } else {
-                f_pos = pPos.relative(Direction.Axis.Y, 1);
-                b_pos = pPos.relative(Direction.Axis.Y, -1);
-            }
-
-
-            BlockPos.betweenClosedStream(b_pos.offset(-1, -1, -1), f_pos.offset(1, 1, 1))
-                    .filter(pos -> pos != pPos)
-                    .filter(pos -> pLevel.getBlockState(pos).hasProperty(TCBlockStateProperties.INFUSED))
-                    .peek(pos -> BlockPos.betweenClosed(pos.offset(-1, -1, -1), pos.offset(1, 1, 1))
-                            .forEach(pos1 -> TerraCompositioAPI.instance().spawnECFParticles(pLevel, pos1, 1)))
-                    .forEach(pos -> pLevel.setBlockAndUpdate(pos, pLevel.getBlockState(pos).setValue(TCBlockStateProperties.INFUSED, false)));
-        }
     }
 
     public static int getLightLevel(Level level, BlockPos pos, @Nullable Direction facing) {

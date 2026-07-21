@@ -34,6 +34,7 @@ import net.sinedkadis.terracompositio.item.custom.WrenchAxeItem;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
 import net.sinedkadis.terracompositio.registries.TCItems;
 import net.sinedkadis.terracompositio.registries.TCTags;
+import net.sinedkadis.terracompositio.util.helpers.WorldHelperInternal;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -123,7 +124,7 @@ public class FlowCedarLikeBlock extends RotatedPillarBlock implements IFluidAppl
         if (pState.getBlock() != pNewState.getBlock() && WorldHelper.onRemoveHandlerBlacklist(pNewState,
                 Blocks.STRUCTURE_VOID,
                 TCBlocks.FLOW_CEDAR_CASING.get())) {
-            WorldHelper.flowLeak(pState, pLevel, pPos);
+            WorldHelperInternal.flowLeak(pState, pLevel, pPos);
         }
     }
 

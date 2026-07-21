@@ -1,7 +1,5 @@
 package net.sinedkadis.terracompositio.api;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
 import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetwork;
 import net.sinedkadis.terracompositio.api.networks.fluid.FluidNetwork;
@@ -47,26 +45,5 @@ public interface TerraCompositioAPI {
      */
     default FluidNetwork getFluidNetworkInstance(){
         return SentinelHelper.EMPTY_NETWORK;
-    }
-
-    /**
-     * Play flow evaporation sound. Call on server
-     *
-     * @param level the level
-     * @param pos   the pos
-     */
-    default void playFlowEvaporationSound(Level level, BlockPos pos) {
-
-    }
-
-    /**
-     * Spawn ecf particles. Call on server
-     *
-     * @param pLevel    the p level
-     * @param targetPos the target pos
-     * @param count     the particle count
-     */
-    default void spawnECFParticles(Level pLevel, BlockPos targetPos, int count) {
-
     }
 }

@@ -22,6 +22,7 @@ import net.sinedkadis.terracompositio.particle.ECFParticleData;
 import net.sinedkadis.terracompositio.recipe.FlowInfusionRecipe;
 import net.sinedkadis.terracompositio.registries.TCBlockEntities;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
+import net.sinedkadis.terracompositio.util.helpers.WorldHelperInternal;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -31,6 +32,8 @@ import java.util.Optional;
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 public class FlowInfuserBlockEntity extends TCCraftingBlockEntity {
+
+    private boolean surroundedByFlow = false;
 
     public FlowInfuserBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(TCBlockEntities.FLOW_INFUSER_BE.get(),pPos, pBlockState);
@@ -62,7 +65,10 @@ public class FlowInfuserBlockEntity extends TCCraftingBlockEntity {
     public void tick(Level pLevel, BlockPos pPos, BlockState pState) {
         super.tick(pLevel, pPos, pState);
         if (!pLevel.isClientSide) {
-            if (hasRecipe() && enoughECF()) {
+            if (pLevel.getGameTime() % 20 == 0)
+                surroundedByFlow = WorldHelperInternal.surroundedByFlow(pLevel, pPos);
+            checkCraftException(surroundedByFlow, CraftException.NO_SURROUNDINGS);
+            if (hasRecipe() && enoughECF() && surroundedByFlow) {
                 increaseCraftingProgress();
                 consumeECF();
                 setChanged(pLevel, pPos, pState);

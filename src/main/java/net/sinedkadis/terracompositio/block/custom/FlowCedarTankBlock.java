@@ -34,7 +34,6 @@ import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
-import net.sinedkadis.terracompositio.api.helpers.WorldHelper;
 import net.sinedkadis.terracompositio.block.entity.FlowCedarTankBlockEntity;
 import net.sinedkadis.terracompositio.block.entity.TCBlockEntity;
 import net.sinedkadis.terracompositio.item.custom.WrenchAxeItem;
@@ -71,7 +70,7 @@ public class FlowCedarTankBlock extends TCBaseEntityBlock{
         Integer stage = state.getValue(STAGE);
         if (ItemAbilities.AXE_STRIP == itemAbility && (stage.equals(0) || stage.equals(1))) {
             if (stage.equals(0)){
-                WorldHelper.flowLeak(state, context.getLevel(), context.getClickedPos());
+                WorldHelperInternal.flowLeak(state, context.getLevel(), context.getClickedPos());
             }
             return state.setValue(STAGE, 2);
         }
@@ -107,10 +106,6 @@ public class FlowCedarTankBlock extends TCBaseEntityBlock{
         IFluidHandler fluidHandlerBlock = level.getCapability(Capabilities.FluidHandler.BLOCK, pos, null);
         if (!(fluidHandlerBlock instanceof FluidTank tank)) {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-        }
-
-        if (tank.getSpace() <= 0){
-            return ItemInteractionResult.SUCCESS;
         }
 
         if (player.isShiftKeyDown()) {
