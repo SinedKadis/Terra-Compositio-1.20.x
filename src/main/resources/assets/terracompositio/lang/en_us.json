@@ -87,6 +87,9 @@
 
   "info.terracompositio.ecf": "Stored ECF: %s",
   "info.terracompositio.ecf_tick": "ECF/tick: %s",
+  "info.terracompositio.ecf_consume": "ECF to consume: %s",
+  "info.terracompositio.dacay_rate": "Chance to consume catalyst: %s",
+
   "info.terracompositio.max_ecf": "Max ECF: %s",
   "info.terracompositio.priority": "Priority: %s",
   "info.terracompositio.range": "Range: %s",
@@ -124,7 +127,7 @@
   "info.terracompositio.seconds": " seconds",
   "info.terracompositio.no_ecf": "Not enough ECF",
   "info.terracompositio.no_space": "Not enough space in output",
-  "info.terracompositio.no_surroundings": "Wrong surroundings",
+  "info.terracompositio.no_surroundings": "Multiblock is not assembled",
 
 
   "info.terracompositio.ent_hold_header": "Holds: ",

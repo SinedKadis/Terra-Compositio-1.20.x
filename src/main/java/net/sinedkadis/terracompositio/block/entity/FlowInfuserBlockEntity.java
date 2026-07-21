@@ -3,37 +3,25 @@ package net.sinedkadis.terracompositio.block.entity;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.wrapper.EmptyHandler;
-import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
+import net.sinedkadis.terracompositio.block.behaviours.CraftingBehaviour;
 import net.sinedkadis.terracompositio.block.behaviours.ECFHandlerBehaviour;
 import net.sinedkadis.terracompositio.block.behaviours.ItemHandlerBehaviour;
 import net.sinedkadis.terracompositio.config.TCInnerConfig;
-import net.sinedkadis.terracompositio.particle.ECFParticleData;
 import net.sinedkadis.terracompositio.recipe.FlowInfusionRecipe;
-import net.sinedkadis.terracompositio.registries.TCBlockEntities;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
-import net.sinedkadis.terracompositio.util.helpers.WorldHelperInternal;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
-import java.util.Optional;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public class FlowInfuserBlockEntity extends TCCraftingBlockEntity {
-
-    private boolean surroundedByFlow = false;
+public class FlowInfuserBlockEntity extends TCBlockEntity {
 
     public FlowInfuserBlockEntity(BlockPos pPos, BlockState pBlockState) {
-        super(TCBlockEntities.FLOW_INFUSER_BE.get(),pPos, pBlockState);
+        super(pPos, pBlockState);
     }
 
     @Override
@@ -56,99 +44,7 @@ public class FlowInfuserBlockEntity extends TCCraftingBlockEntity {
                 return 1;
             }
         });
-
+        list.add(new CraftingBehaviour<>(this, FlowInfusionRecipe.Type.INSTANCE));
     }
-
-    public void tick(Level pLevel, BlockPos pPos, BlockState pState) {
-        super.tick(pLevel, pPos, pState);
-        if (!pLevel.isClientSide) {
-            if (pLevel.getGameTime() % 20 == 0)
-                surroundedByFlow = WorldHelperInternal.surroundedByFlow(pLevel, pPos);
-            checkCraftException(surroundedByFlow, CraftException.NO_SURROUNDINGS);
-            if (hasRecipe() && enoughECF() && surroundedByFlow) {
-                increaseCraftingProgress();
-                consumeECF();
-                setChanged(pLevel, pPos, pState);
-                spawnParticles();
-                if (hasProgressFinished()) {
-                    craftItem();
-                    resetProgress();
-                }
-            } else if (!hasRecipe()) {
-                resetProgress();
-            }
-        }
-    }
-
-    public boolean hasRecipe() {
-        Optional<FlowInfusionRecipe> recipe = getCurrentRecipe();
-        if (recipe.isEmpty()){
-            return false;
-        }
-        ItemStack result = recipe.get().getResultItem(null);
-        boolean outputTest = enoughSpaceInOutput(result.getCount()) && sameItemInOutput(result.getItem());
-        if (outputTest){
-            maxProgress = recipe.get().getTicks();
-            tickECFCost = recipe.get().getECFTick();
-        }
-        return outputTest;
-    }
-
-    protected Optional<FlowInfusionRecipe> getCurrentRecipe() {
-        SimpleContainer inventory = new SimpleContainer(this.getItemHandler().getSlots());
-        for (int i = 0; i < getItemHandler().getSlots(); i++) {
-            inventory.setItem(i, this.getItemHandler().getStackInSlot(i));
-        }
-
-        assert this.level != null;
-        return this.level.getRecipeManager().getRecipeFor(FlowInfusionRecipe.Type.INSTANCE, inventory, level);
-    }
-
-    @Override
-    protected int getECF() {
-        return ecfContainer().getECF();
-    }
-
-    @Override
-    protected IItemHandlerModifiable getItemHandler() {
-        return (IItemHandlerModifiable) getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(EmptyHandler.INSTANCE);
-    }
-
-    protected IECFHandler ecfContainer() {
-        return ((ECFHandlerBehaviour) behaviours.get(0)).getECFHandler();
-    }
-
-
-    private void spawnParticles() {
-        if (level instanceof ServerLevel serverLevel) {
-            BlockPos blockPos = getBlockPos();
-            serverLevel.sendParticles(new ECFParticleData(1 / 20f),
-                    blockPos.getX() + 0.5D,
-                    blockPos.getY() + 0.5D,
-                    blockPos.getZ() + 0.5D, 1, 0, -0.1D, 0, 0.1D);
-        }
-    }
-
-
-    protected void craftItem() {
-        Optional<FlowInfusionRecipe> recipe = getCurrentRecipe();
-        if (recipe.isPresent()) {
-            ItemStack result = recipe.get().getResultItem(null);
-            this.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iItemHandler -> {
-                if (iItemHandler instanceof IItemHandlerModifiable modifiable) {
-                    ItemStack copy = modifiable.getStackInSlot(0).copy();
-                    copy.shrink(1);
-                    modifiable.setStackInSlot(0, copy);
-                    modifiable.setStackInSlot(1, result.copy());
-                    if (level != null) {
-                        BlockState blockState = getBlockState();
-                        level.sendBlockUpdated(worldPosition, blockState, blockState, 3);
-                    }
-                }
-            });
-        }
-    }
-
-
 
 }

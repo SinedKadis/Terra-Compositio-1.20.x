@@ -77,6 +77,11 @@
   "block.terracompositio.matter_infuser.decay_chance": "Шанс потратить катализатор: %s%%",
   "info.terracompositio.ecf": "Хранится ЭПС: %s",
   "info.terracompositio.ecf_tick": "ЭПС/тик: %s",
+  "info.terracompositio.ecf_consume": "ЭПС необходимо: %s",
+  "info.terracompositio.dacay_rate": "Шанс потребить катализатор: %s",
+
+
+
   "info.terracompositio.max_ecf": "Максимум ЭПС: %s",
   "info.terracompositio.priority": "Приоритет: %s",
   "info.terracompositio.range": "Дальность: %s",
@@ -115,7 +120,7 @@
 
   "info.terracompositio.no_ecf": "Недостаточно ЭПС",
   "info.terracompositio.no_space": "Недостаточно места на выходе",
-  "info.terracompositio.no_surroundings": "Неправильное окружение",
+  "info.terracompositio.no_surroundings": "Мультиблок не собран",
 
   "item.terracompositio.creation_flow_journal.tooltip": "%s закладок",
   "block.terracompositio.item_io.input": "Вход: ",

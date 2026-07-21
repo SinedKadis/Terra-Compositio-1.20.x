@@ -20,6 +20,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class FEProviderCoreBlock extends TCBaseEntityBlock {
     public FEProviderCoreBlock(Properties pProperties) {
         super(pProperties);
+        registerDefaultState(defaultBlockState().setValue(TCBlockStateProperties.INFUSED, false));
     }
 
     @Override

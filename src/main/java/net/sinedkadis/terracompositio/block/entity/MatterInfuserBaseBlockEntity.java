@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING;
 
-public abstract class MatterInfuserBaseBlockEntity extends TCCraftingBlockEntity {
+public abstract class MatterInfuserBaseBlockEntity extends TCBlockEntity {
     public MatterInfuserBaseBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
