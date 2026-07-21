@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=east,infused=false": {
+      "model": "terracompositio:block/fe_provider_core",
+      "y": 90
+    },
+    "facing=east,infused=true": {
+      "model": "terracompositio:block/fe_provider_core_infused",
+      "y": 90
+    },
+    "facing=north,infused=false": {
+      "model": "terracompositio:block/fe_provider_core"
+    },
+    "facing=north,infused=true": {
+      "model": "terracompositio:block/fe_provider_core_infused"
+    },
+    "facing=south,infused=false": {
+      "model": "terracompositio:block/fe_provider_core",
+      "y": 180
+    },
+    "facing=south,infused=true": {
+      "model": "terracompositio:block/fe_provider_core_infused",
+      "y": 180
+    },
+    "facing=west,infused=false": {
+      "model": "terracompositio:block/fe_provider_core",
+      "y": 270
+    },
+    "facing=west,infused=true": {
+      "model": "terracompositio:block/fe_provider_core_infused",
+      "y": 270
+    }
+  }
+}

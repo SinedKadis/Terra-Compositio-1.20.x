@@ -373,7 +373,7 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
     }
 
     @Override
-    public IECFHandler getMainHandler() {
+    public IECFHandler getECFHandler() {
         return holdECFHandler;
     }
 
@@ -403,8 +403,8 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
     }
 
     public void sendViaPP(PPECFMemberProxy current) {
-        if (getMainHandler().getECF() > 0 && TerraCompositioAPI.instance().getECFNetworkInstance().validateMember(current)) {
-            if (current.getMainHandler().getFreeSpace() > TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get())
+        if (getECFHandler().getECF() > 0 && TerraCompositioAPI.instance().getECFNetworkInstance().validateMember(current)) {
+            if (current.getECFHandler().getFreeSpace() > TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get())
                 scheduleMemberUpdate(current);
             ECFHelper.newTransfer().targetAndSource(current, this).speed(5 / 20f).build();
         }

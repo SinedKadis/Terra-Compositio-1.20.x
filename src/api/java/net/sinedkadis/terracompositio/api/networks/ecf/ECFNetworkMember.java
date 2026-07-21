@@ -12,7 +12,7 @@ public interface ECFNetworkMember extends AnyNetworkMember {
      *
      * @return the main handler
      */
-    IECFHandler getMainHandler();
+    IECFHandler getECFHandler();
 
     /**
      * Executes updates, that was scheduled. Behavior relates on implementation, recommended to call at tick method of your entity,

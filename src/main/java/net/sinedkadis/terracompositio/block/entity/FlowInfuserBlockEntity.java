@@ -118,7 +118,7 @@ public class FlowInfuserBlockEntity extends TCCraftingBlockEntity {
     }
 
     protected IECFHandler ecfContainer() {
-        return ((ECFHandlerBehaviour) behaviours.getFirst()).getMainHandler();
+        return ((ECFHandlerBehaviour) behaviours.getFirst()).getECFHandler();
     }
 
 

@@ -115,6 +115,11 @@ public class TCBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FloatingComparatorBlockEntity>> FLOATING_COMPARATOR_BE =
             registerBE("floating_comparator", FloatingComparatorBlockEntity::new, FLOATING_COMPARATOR);
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FEProviderCoreBlockEntity>> FE_PROVIDER_CORE_BE =
+            registerBE("fe_provider_core_be", FEProviderCoreBlockEntity::new, FE_PROVIDER_CORE);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FEProviderPylonBlockEntity>> FE_PROVIDER_PYLON_BE =
+            registerBE("fe_provider_pylon_be", FEProviderPylonBlockEntity::new, FE_PROVIDER_PYLON);
+
 
 
     public static void register(IEventBus eventBus){

@@ -1,6 +1,7 @@
 package net.sinedkadis.terracompositio.block.behaviours;
 
 import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -11,6 +12,7 @@ import net.minecraft.world.phys.Vec3;
 import net.sinedkadis.terracompositio.api.IEntityInstance;
 import net.sinedkadis.terracompositio.api.IHaveKnowledge;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
+import net.sinedkadis.terracompositio.api.dummies.DummyNetworkMember;
 import net.sinedkadis.terracompositio.api.helpers.ECFHelper;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
 import net.sinedkadis.terracompositio.api.networks.NetworkAction;
@@ -37,27 +39,25 @@ import java.util.function.Function;
 @ParametersAreNonnullByDefault
 public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
     private final TCBlockEntity blockEntity;
-    protected int range;
-    @Getter
-    protected int priority;
     protected IECFHandler ecfHandler;
+    protected ECFNetworkMember member;
 
-    protected boolean scheduledUpdate = false;
-    protected int scheduledMembersUpdate = -1;
-    protected Set<ECFNetworkMember> scheduledMembers = new HashSet<>();
 
     public ECFHandlerBehaviour(TCBlockEntity blockEntity) {
         this.blockEntity = blockEntity;
         ecfHandler = TerraCompositioAPI.instance().getECFNetworkInstance().createDefaultECFHandler(this);
-        this.range = 5;
+        member = new InnerECFNetworkMember(blockEntity);
     }
 
     public ECFHandlerBehaviour maxECF(int maxCFE) {
         this.ecfHandler.setMaxECF(maxCFE);
         return this;
     }
+
     public ECFHandlerBehaviour range(int range) {
-        this.range = range;
+        if (this.member instanceof InnerECFNetworkMember innerECFNetworkMember) {
+            innerECFNetworkMember.setRange(range);
+        }
         return this;
     }
 
@@ -65,8 +65,11 @@ public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
         this.ecfHandler.setOffset(offset);
         return this;
     }
+
     public ECFHandlerBehaviour priority(int priority) {
-        this.priority = priority;
+        if (this.member instanceof InnerECFNetworkMember innerECFNetworkMember) {
+            innerECFNetworkMember.setPriority(priority);
+        }
         return this;
     }
 
@@ -75,20 +78,31 @@ public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
         return this;
     }
 
+    public ECFHandlerBehaviour ecfNetworkMember(Function<ECFHandlerBehaviour, ECFNetworkMember> ecfNetworkMember) {
+        ECFNetwork ecfNetworkInstance = TerraCompositioAPI.INSTANCE.getECFNetworkInstance();
+        if (!(member instanceof DummyNetworkMember) && ecfNetworkInstance.isIn(blockEntity.getLevel(), member))
+            ecfNetworkInstance.fireECFNetworkEvent(member, NetworkAction.REMOVE);
+        this.member = ecfNetworkMember.apply(this);
+        if (!(member instanceof DummyNetworkMember) && !ecfNetworkInstance.isIn(blockEntity.getLevel(), member))
+            ecfNetworkInstance.fireECFNetworkEvent(member, NetworkAction.ADD);
+        return this;
+    }
+
+
     public int getRange(boolean inner) {
-        if (inner) return 1;
-        return range;
+        return member.getRange();
     }
 
     @Override
     public void tick() {
-        ECFNetwork ECFNetworkInstance = TerraCompositioAPI.INSTANCE.getECFNetworkInstance();
+        ECFNetwork ecfNetworkInstance = TerraCompositioAPI.INSTANCE.getECFNetworkInstance();
         Level pLevel = blockEntity.getLevel();
         if (pLevel == null) return;
-        if (!pLevel.isClientSide && range != 0) {
-            boolean inNetwork = ECFNetworkInstance.isIn(pLevel, this);
+        if (!pLevel.isClientSide && getRange() != 0) {
+            boolean inNetwork = ecfNetworkInstance.isIn(pLevel, member);
             if (!inNetwork && !blockEntity.isRemoved()) {
-                ECFNetworkInstance.fireECFNetworkEvent(this, NetworkAction.ADD);
+                if (!(member instanceof DummyNetworkMember))
+                    ecfNetworkInstance.fireECFNetworkEvent(member, NetworkAction.ADD);
             }
         }
         updateIfScheduled();
@@ -101,35 +115,12 @@ public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
 
     @Override
     public void onECFNetworkMemberUpdate() {
-        if (getMainHandler().getECF() > 0) {
-            ECFNetwork ECFNetwork = TerraCompositioAPI.instance().getECFNetworkInstance();
-            Set<ECFNetworkMember> targets = ECFNetwork.getAvailableNetworkTargets(this);
-            targets.forEach(target -> {
-                if (target.getMainHandler().getFreeSpace() > TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get())
-                    scheduleMemberUpdate(target);
-                ECFHelper.ECFTransferBuilder transferBuilder = ECFHelper.newTransfer().targetAndSource(target, this);
-                if (target.getEntityInstance() instanceof PathPointerBlockEntity) transferBuilder.speed(2/20f);
-                transferBuilder.build();
-            });
-        }
+        member.onECFNetworkMemberUpdate();
     }
 
     @Override
     public void onECFNetworkMemberUpdate(ECFNetworkMember updated) {
-        if (getMainHandler().getECF() > 0 && isValidMember(updated) && !updated.getEntityInstance().tc$isEntity()) {
-            if (updated.getMainHandler().getFreeSpace() > TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get()) {
-                if (updated instanceof PPECFMemberProxy(
-                        ECFNetworkMember target, PathPointerBlockEntity proxy1
-                        , PathPointerBlockEntity ignoredSource
-                ) && target.getEntityInstance().tc$isEntity()) {
-                    if (updated.getEntityInstance().tc$getBlockPos().closerThan(proxy1.getOutputPos(), getRange()))
-                        scheduleMemberUpdate(updated);
-                } else scheduleMemberUpdate(updated);
-            }
-            ECFHelper.ECFTransferBuilder transferBuilder = ECFHelper.newTransfer().targetAndSource(updated, this);
-            if (updated.getEntityInstance() instanceof PathPointerBlockEntity) transferBuilder.speed(2/20f);
-            transferBuilder.build();
-        } else onECFNetworkMemberUpdate();
+        member.onECFNetworkMemberUpdate(updated);
     }
 
     public boolean isValidMember(ECFNetworkMember updated) {
@@ -148,40 +139,28 @@ public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
 
     @Override
     public void onLoad(CompoundTag tag, HolderLookup.Provider registries) {
-        ecfHandler.readFromNBT(registries, tag );
+        ecfHandler.readFromNBT(registries, tag);
     }
 
 
     @Override
-    public IECFHandler getMainHandler() {
+    public IECFHandler getECFHandler() {
         return ecfHandler;
     }
 
     @Override
     public void updateIfScheduled() {
-        if (scheduledUpdate) {
-            this.scheduledUpdate = false;
-            this.onECFNetworkMemberUpdate();
-        }
-        if (scheduledMembersUpdate == 0) {
-            scheduledMembersUpdate = -1;
-            Set<ECFNetworkMember> scheduledMembers1 = Set.copyOf(this.scheduledMembers);
-            this.scheduledMembers.clear();
-            scheduledMembers1.forEach(this::onECFNetworkMemberUpdate);
-        } else if (scheduledMembersUpdate > 0)
-            scheduledMembersUpdate--;
-
+        member.updateIfScheduled();
     }
 
     @Override
     public void scheduleMemberUpdate() {
-        this.scheduledUpdate = true;
+        member.scheduleMemberUpdate();
     }
 
     @Override
     public void scheduleMemberUpdate(ECFNetworkMember updated) {
-        this.scheduledMembers.add(updated);
-        if (scheduledMembersUpdate < 0) scheduledMembersUpdate = TCCommonConfigs.TICKS_BETWEEN_BURSTS.get();
+        member.scheduleMemberUpdate(updated);
     }
 
     @Override
@@ -238,8 +217,6 @@ public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
         });
 
 
-
-
     }
 
     @Override
@@ -250,5 +227,110 @@ public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
     @Override
     public IECFHandler getECFCapability(@Nullable Direction direction) {
         return ecfHandler;
+    }
+
+    public int getPriority() {
+        return member.getPriority();
+    }
+
+    @Getter
+    @Setter
+    private class InnerECFNetworkMember implements ECFNetworkMember {
+        private final TCBlockEntity blockEntity;
+        protected int range;
+        protected int priority;
+        protected boolean scheduledUpdate;
+        protected int scheduledMembersUpdate;
+        protected Set<ECFNetworkMember> scheduledMembers;
+
+        public InnerECFNetworkMember(TCBlockEntity blockEntity) {
+            this.blockEntity = blockEntity;
+            scheduledUpdate = false;
+            scheduledMembersUpdate = -1;
+            scheduledMembers = new HashSet<>();
+            range = 5;
+        }
+
+        @Override
+        public IECFHandler getECFHandler() {
+            return ecfHandler;
+        }
+
+        @Override
+        public void updateIfScheduled() {
+            if (scheduledUpdate) {
+                this.scheduledUpdate = false;
+                this.onECFNetworkMemberUpdate();
+            }
+            if (scheduledMembersUpdate == 0) {
+                scheduledMembersUpdate = -1;
+                Set<ECFNetworkMember> scheduledMembers1 = Set.copyOf(this.scheduledMembers);
+                this.scheduledMembers.clear();
+                scheduledMembers1.forEach(this::onECFNetworkMemberUpdate);
+            } else if (scheduledMembersUpdate > 0)
+                scheduledMembersUpdate--;
+
+        }
+
+        @Override
+        public void scheduleMemberUpdate() {
+            this.scheduledUpdate = true;
+        }
+
+        @Override
+        public void scheduleMemberUpdate(ECFNetworkMember updated) {
+            this.scheduledMembers.add(updated);
+            if (scheduledMembersUpdate < 0) scheduledMembersUpdate = TCCommonConfigs.TICKS_BETWEEN_BURSTS.get();
+        }
+
+        @Override
+        public void onECFNetworkMemberUpdate() {
+            if (getECFHandler().getECF() > 0) {
+                ECFNetwork ECFNetwork = TerraCompositioAPI.instance().getECFNetworkInstance();
+                Set<ECFNetworkMember> targets = ECFNetwork.getAvailableNetworkTargets(this);
+                targets.forEach(target -> {
+                    if (target.getECFHandler().getFreeSpace() > TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get())
+                        scheduleMemberUpdate(target);
+                    ECFHelper.ECFTransferBuilder transferBuilder = ECFHelper.newTransfer().targetAndSource(target, this);
+                    if (target.getEntityInstance() instanceof PathPointerBlockEntity)
+                        transferBuilder.speed(2 / 20f);
+                    transferBuilder.build();
+                });
+            }
+        }
+
+        @Override
+        public void onECFNetworkMemberUpdate(ECFNetworkMember updated) {
+            if (getECFHandler().getECF() > 0 && isValidMember(updated) && !updated.getEntityInstance().tc$isEntity()) {
+                if (updated.getECFHandler().getFreeSpace() > TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get()) {
+                    if (updated instanceof PPECFMemberProxy(
+                            ECFNetworkMember target, PathPointerBlockEntity proxy1
+                            , PathPointerBlockEntity ignoredSource
+                    ) && target.getEntityInstance().tc$isEntity()) {
+                        if (updated.getEntityInstance().tc$getBlockPos().closerThan(proxy1.getOutputPos(), getRange()))
+                            scheduleMemberUpdate(updated);
+                    } else scheduleMemberUpdate(updated);
+                }
+                ECFHelper.ECFTransferBuilder transferBuilder = ECFHelper.newTransfer().targetAndSource(updated, this);
+                if (updated.getEntityInstance() instanceof PathPointerBlockEntity) transferBuilder.speed(2 / 20f);
+                transferBuilder.build();
+            } else onECFNetworkMemberUpdate();
+        }
+
+        @Override
+        public IEntityInstance getEntityInstance() {
+            return IEntityInstance.wrap(blockEntity);
+        }
+
+        @Override
+        public int getRange(boolean inner) {
+            if (inner) return 1;
+            return range;
+        }
+
+        @Override
+        public int getPriority() {
+            return priority;
+        }
     }
 }

@@ -177,7 +177,7 @@ public class ECFHandlerPlayerArmor implements IECFHandler {
     }
 
     @Override
-    public IECFHandler getMainHandler() {
+    public IECFHandler getECFHandler() {
         return handler;
     }
 

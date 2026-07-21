@@ -62,7 +62,7 @@ public class TCCommands {
 
     private static int clearAllQueues(CommandContext<CommandSourceStack> ctx) {
         TerraCompositioAPI.instance().getECFNetworkInstance().getAllECFNetworkMembers(ctx.getSource().getLevel()).stream()
-                .map(ECFNetworkMember::getMainHandler)
+                .map(ECFNetworkMember::getECFHandler)
                 .forEach(iEcfHandler -> iEcfHandler.setQueued(0));
         return 0;
     }
@@ -86,7 +86,7 @@ public class TCCommands {
                 return 0;
             }
         }
-        IECFHandler mainHandler = memberEntity.getMainHandler();
+        IECFHandler mainHandler = memberEntity.getECFHandler();
         mainHandler.clear();
 
         Supplier<Exception> exception = Exception::new;
@@ -127,7 +127,7 @@ public class TCCommands {
 
         StringBuilder message = new StringBuilder();
 
-        IECFHandler mainHandler = memberEntity.getMainHandler();
+        IECFHandler mainHandler = memberEntity.getECFHandler();
         message.append(mainHandler.toString()).append("\n\n");
 
         source.sendSuccess(() ->

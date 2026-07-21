@@ -182,6 +182,19 @@
   "item.terracompositio.infused_fertilizer": "Наполненное удобрение",
   "item.terracompositio.apple_of_knowledge": "Яблоко Знания",
   "item.terracompositio.apple_of_ignorance": "Яблоко Забытия",
+  "block.terracompositio.fe_provider_core": "Ядро поставщика Формальной Энергии",
+  "block.terracompositio.fe_provider_pylon": "Пилон поставщика Формальной Энергии",
+
+
+
+
+
+
+
+
+
+
+
   "key.terracompositio.categories.main": "Terra Compositio",
   "create.recipe.item_with_wrench_application": "Ручное создание с Инструментом",
   "item.terracompositio.creation_flow_journal.no_pathchouli": "Установите Patchouli для лучшего игрового опыта",

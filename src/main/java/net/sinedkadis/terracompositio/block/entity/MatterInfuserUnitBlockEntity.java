@@ -221,7 +221,7 @@ public class MatterInfuserUnitBlockEntity extends MatterInfuserBaseBlockEntity{
     protected IECFHandler getEcfContainer() {
         IBEECFBehaviour cfeBehaviour = getECFBehaviour();
         if (cfeBehaviour != null) {
-            return cfeBehaviour.getMainHandler();
+            return cfeBehaviour.getECFHandler();
         }
         throw new RuntimeException("CFE handler not present: " + this);
     }

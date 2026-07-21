@@ -66,7 +66,7 @@ public abstract class PlayerMixin extends LivingEntity implements ECFNetworkMemb
     }
 
     @Override
-    public IECFHandler getMainHandler() {
+    public IECFHandler getECFHandler() {
         return Optional.ofNullable(this.getCapability(TCCapabilities.ECF_HANDLER_ENTITY)).orElse(SentinelHelper.EMPTY_ECF_HANDLER);
     }
 

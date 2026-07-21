@@ -130,7 +130,7 @@ public class CedarGearboxBlockEntity extends GeneratingKineticBlockEntity implem
     }
 
     @Override
-    public IECFHandler getMainHandler() {
+    public IECFHandler getECFHandler() {
         return ecfHandler;
     }
 

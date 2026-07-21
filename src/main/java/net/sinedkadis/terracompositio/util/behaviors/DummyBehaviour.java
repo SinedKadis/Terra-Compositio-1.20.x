@@ -66,7 +66,7 @@ public class DummyBehaviour implements IBEBehaviour, IBEItemWordlyContainerBehav
     }
 
     @Override
-    public IECFHandler getMainHandler() {
+    public IECFHandler getECFHandler() {
         return SentinelHelper.EMPTY_ECF_HANDLER;
     }
 

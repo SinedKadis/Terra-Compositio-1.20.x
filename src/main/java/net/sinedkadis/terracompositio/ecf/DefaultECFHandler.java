@@ -118,7 +118,7 @@ public class DefaultECFHandler implements IECFHandler, INBTSerializable<Compound
 
 
     protected void onContentsChanged() {
-        if (getAttachedMember() instanceof BlockEntity blockEntity) {
+        if (getAttachedEntity() instanceof BlockEntity blockEntity) {
             blockEntity.setChanged();
             Level level = blockEntity.getLevel();
             if (level != null && !level.isClientSide()) {
