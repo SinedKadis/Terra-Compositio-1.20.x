@@ -93,7 +93,7 @@ public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
 
 
     public int getRange(boolean inner) {
-        return member.getRange();
+        return member.getRange(inner);
     }
 
     @Override
@@ -229,7 +229,7 @@ public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
                 TooltipHelper.addIfExist(TooltipHelper.Keys.MAX_ECF, t, data);
                 TooltipHelper.addIfExist(TooltipHelper.Keys.QUEUED, t, data);
             } else {
-                TooltipHelper.addScaleIfExist(TooltipHelper.Keys.ECF, TooltipHelper.Keys.MAX_ECF, tooltip, data);
+                TooltipHelper.addScaleIfExist(TooltipHelper.Keys.ECF, TooltipHelper.Keys.MAX_ECF, t, data);
             }
         });
 
