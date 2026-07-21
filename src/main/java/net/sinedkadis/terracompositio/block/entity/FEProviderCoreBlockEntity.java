@@ -14,6 +14,7 @@ import net.minecraftforge.energy.IEnergyStorage;
 import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
 import net.sinedkadis.terracompositio.block.behaviours.ECFHandlerBehaviour;
+import net.sinedkadis.terracompositio.config.TCCommonConfigs;
 import net.sinedkadis.terracompositio.ecf.OutOfNetworkECFHandler;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
 import org.jetbrains.annotations.Nullable;
@@ -72,10 +73,14 @@ public class FEProviderCoreBlockEntity extends TCBlockEntity {
     public void addTooltipLines(CompoundTag data, List<Component> tooltip, boolean isShifting) {
         super.addTooltipLines(data, tooltip, isShifting);
         TooltipHelper.addWithHeader(TooltipHelper.Headers.FE, tooltip, t -> {
-            if (!isShifting)
+            if (!isShifting) {
                 TooltipHelper.addScaleIfExist(TooltipHelper.Keys.FE, TooltipHelper.Keys.MAX_FE, t, data);
-            else
+            } else {
                 TooltipHelper.addIfExist(TooltipHelper.Keys.FE, t, data);
+                if (TCCommonConfigs.DEBUG.get()) {
+                    TooltipHelper.addIfExist(TooltipHelper.Keys.MAX_FE, t, data);
+                }
+            }
         });
     }
 }
