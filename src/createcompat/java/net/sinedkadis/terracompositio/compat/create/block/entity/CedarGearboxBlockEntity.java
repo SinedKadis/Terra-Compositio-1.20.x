@@ -184,7 +184,7 @@ public class CedarGearboxBlockEntity extends GeneratingKineticBlockEntity implem
                 TooltipHelper.addIfExist(TooltipHelper.Keys.MAX_ECF, t, data);
                 TooltipHelper.addIfExist(TooltipHelper.Keys.QUEUED, t, data);
             } else {
-                TooltipHelper.addScaleIfExist(TooltipHelper.Keys.ECF, TooltipHelper.Keys.MAX_ECF, tooltip, data);
+                TooltipHelper.addScaleIfExist(TooltipHelper.Keys.ECF, TooltipHelper.Keys.MAX_ECF, t, data);
             }
         });
 
