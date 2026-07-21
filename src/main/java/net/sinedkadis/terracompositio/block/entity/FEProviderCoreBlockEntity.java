@@ -6,12 +6,14 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.neoforged.neoforge.energy.EnergyStorage;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
+import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.block.behaviours.ECFHandlerBehaviour;
 import net.sinedkadis.terracompositio.config.TCCommonConfigs;
 import net.sinedkadis.terracompositio.ecf.OutOfNetworkECFHandler;
@@ -29,6 +31,13 @@ public class FEProviderCoreBlockEntity extends TCBlockEntity {
 
     public FEProviderCoreBlockEntity(BlockPos pos, BlockState state) {
         super(pos, state);
+    }
+
+    @Override
+    public void tick(Level pLevel, BlockPos pPos, BlockState pState) {
+        super.tick(pLevel, pPos, pState);
+        IECFHandler ecfCapability = getECFCapability(null);
+//        if (ecfCapability.getECF() > 0)
     }
 
     @Override

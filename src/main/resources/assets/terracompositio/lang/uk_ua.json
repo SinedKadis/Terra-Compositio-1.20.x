@@ -77,6 +77,11 @@
   "block.terracompositio.matter_infuser.decay_chance": "Шанс витратити каталізатор: %s%%",
   "info.terracompositio.ecf": "Зберігається ЕПТ: %s",
   "info.terracompositio.ecf_tick": "ЕПТ/тік: %s",
+  "info.terracompositio.ecf_consume": "ЕПТ необідно: %s",
+  "info.terracompositio.dacay_rate": "Шанс спожити каталізатор: %s",
+
+
+
   "info.terracompositio.max_ecf": "Максимум ЕПТ: %s",
   "info.terracompositio.priority": "Приоритет: %s",
   "info.terracompositio.range": "Дальність: %s",
@@ -113,7 +118,7 @@
   "info.terracompositio.craft_exception": "%s",
   "info.terracompositio.no_ecf": "Недостатньо ЕПТ",
   "info.terracompositio.no_space": "Недостатньо місця на виході",
-  "info.terracompositio.no_surroundings": "Неправильне оточення",
+  "info.terracompositio.no_surroundings": "Мультиблок не зібраний",
 
 
   "item.terracompositio.creation_flow_journal.tooltip": "%s закладок",

@@ -7,24 +7,41 @@ import lombok.Getter;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
 import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 import net.sinedkadis.terracompositio.TerraCompositio;
+import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
+import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
+import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
+import net.sinedkadis.terracompositio.block.entity.FlowCedarCasingBlockEntity;
+import net.sinedkadis.terracompositio.block.entity.MatterInfuserPortBlockEntity;
+import net.sinedkadis.terracompositio.block.entity.MatterInfuserUnitBlockEntity;
+import net.sinedkadis.terracompositio.block.entity.TCBlockEntity;
+import net.sinedkadis.terracompositio.config.TCCommonConfigs;
+import net.sinedkadis.terracompositio.util.helpers.ParticleHelperInternal;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.List;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 @Getter
-public class MatterInfusionRecipe implements Recipe<RecipeWrapper> {
+public class MatterInfusionRecipe implements ITCRecipe<RecipeWrapper> {
 
     @Getter
     private final ItemStack catalyst;
@@ -94,9 +111,115 @@ public class MatterInfusionRecipe implements Recipe<RecipeWrapper> {
     public RecipeType<?> getType() {
         return Type.INSTANCE;
     }
-    public static class Type implements RecipeType<MatterInfusionRecipe>{
+
+    @Override
+    public CraftException canBeProcessed(TCBlockEntity be) {
+        if (!(be instanceof MatterInfuserUnitBlockEntity miBE)) throw new AssertionError();
+        FlowCedarCasingBlockEntity casingBE = miBE.getCasingBE();
+
+        CraftException noSurroundings = ITCRecipe.checkInfusion(casingBE);
+        if (noSurroundings.hasExceptions()) return noSurroundings;
+
+        assert casingBE != null;
+
+        IItemHandler itemCapability = casingBE.getItemCapability(null);
+        ItemStack recipeOutput = getOutput();
+
+        CraftException noSpace = ITCRecipe.checkSpace(itemCapability, recipeOutput);
+        if (noSpace.hasExceptions()) return noSpace;
+
+
+        IECFHandler ecfCapability = be.getECFCapability(null);
+        float ecf = getECFTick();
+
+        CraftException noECF = ITCRecipe.checkECF(ecfCapability, ecf);
+        if (noECF.hasExceptions()) return noECF;
+
+        if (!miBE.assembleValid()) return CraftException.NO_SURROUNDINGS;
+
+        return CraftException.OK;
+    }
+
+    @Override
+    public void onCraftingTick(TCBlockEntity be) {
+        Level level = be.getLevel();
+        if (level == null) return;
+        if ((level.getGameTime() & 20) == 0) {
+            ParticleHelperInternal.spawnParticlesIn(level,
+                    be.getBlockPos().relative(be.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING).getOpposite()),
+                    ((int) Math.ceil(getECFTick() * 20)));
+        }
+
+        ITCRecipe.consumeECF(be, getECFTick());
+        be.setChanged();
+    }
+
+    @Override
+    public boolean onComplete(TCBlockEntity be, int progress) {
+        if (progress > getTicks() && be instanceof MatterInfuserUnitBlockEntity miBE) {
+            craftItem(miBE);
+            return true;
+        }
+        return false;
+    }
+
+    protected void craftItem(MatterInfuserUnitBlockEntity be) {
+        MatterInfuserPortBlockEntity portBE = be.getPortBE();
+        FlowCedarCasingBlockEntity casingBE = be.getCasingBE();
+        Level level = be.getLevel();
+        if (level != null
+                && portBE != null
+                && casingBE != null) {
+            ItemStack result = getOutput();
+            int takeCount = getIngredients().get(1).getItems()[0].getCount();
+
+            IItemHandlerModifiable itemHandler = (IItemHandlerModifiable) casingBE.getItemCapability(null);
+
+            ItemStack copy = itemHandler.getStackInSlot(0).copy();
+            copy.shrink(takeCount);
+            itemHandler.setStackInSlot(0, copy);
+            ItemStack resultCopy = result.copy();
+            resultCopy.setCount(resultCopy.getCount() + itemHandler.getStackInSlot(1).getCount());
+            itemHandler.setStackInSlot(1, resultCopy);
+            BlockState blockState = be.getBlockState();
+            level.sendBlockUpdated(be.getBlockPos(), blockState, blockState, 3);
+            if (level.getRandom().nextInt(100) < catalystDecayRate) {
+                portBE.extractItemStackViaSetter(0, 1);
+            }
+        }
+    }
+
+    @Override
+    public void collectKnowledgeData(CompoundTag data, HolderLookup.Provider provider) {
+        data.putInt(TooltipHelper.Keys.ECF_CONSUME.toData(), getEcf());
+        data.putInt(TooltipHelper.Keys.MAX_PROGRESS.toData(), getTicks());
+        data.putInt(TooltipHelper.Keys.DECAY_RATE.toData(), getCatalystDecayRate());
+    }
+
+    @Override
+    public void addTooltipLines(CompoundTag data, List<Component> tooltip, boolean isShifting, HolderLookup.Provider provider) {
+        if (TCCommonConfigs.DEBUG.get()) {
+            TooltipHelper.addIfExist(TooltipHelper.Keys.MAX_PROGRESS, tooltip, data);
+        }
+        TooltipHelper.addIfExist(TooltipHelper.Keys.DECAY_RATE, tooltip, data);
+    }
+
+    public static class Type implements ITCRecipeType<RecipeWrapper, MatterInfusionRecipe> {
         public static final Type INSTANCE = new Type();
         public static final String ID = "matter_infusion";
+
+        @Override
+        public RecipeWrapper getRecipeInput(TCBlockEntity be) {
+            if (be instanceof MatterInfuserUnitBlockEntity miBE) {
+                ItemStack catalyst = miBE.getCatalyst();
+                ItemStack inputSlot = miBE.getInputSlot();
+                if (catalyst.isEmpty() || inputSlot.isEmpty())
+                    return new RecipeWrapper(SentinelHelper.EMPTY_ITEM_HANDLER);
+                IItemHandler inventory = new InvWrapper(new SimpleContainer(catalyst, inputSlot));
+                return new RecipeWrapper(inventory);
+            }
+            return new RecipeWrapper(SentinelHelper.EMPTY_ITEM_HANDLER);
+        }
     }
     public static class Serializer implements RecipeSerializer<MatterInfusionRecipe>{
         public static final Serializer INSTANCE = new Serializer();

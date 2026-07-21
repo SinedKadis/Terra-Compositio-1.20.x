@@ -16,6 +16,7 @@ import net.sinedkadis.terracompositio.api.helpers.WorldHelper;
 import net.sinedkadis.terracompositio.api.registries.TCBlockStateProperties;
 import net.sinedkadis.terracompositio.api.registries.TCGameRules;
 import net.sinedkadis.terracompositio.particle.ECFParticleData;
+import net.sinedkadis.terracompositio.recipe.ITCRecipe;
 import net.sinedkadis.terracompositio.registries.TCFluids;
 import net.sinedkadis.terracompositio.registries.TCSounds;
 import org.jetbrains.annotations.NotNull;
@@ -53,7 +54,7 @@ public class WorldHelperInternal {
         }
     }
 
-    public static boolean surroundedByFlow(Level level, BlockPos pos) {
+    public static ITCRecipe.CraftException surroundedByFlow(Level level, BlockPos pos) {
         boolean upIsTrue = false;
         {
             BlockPos blockPos = pos.above();
@@ -71,7 +72,7 @@ public class WorldHelperInternal {
                 }
             } else upIsTrue = true;
         }
-        if (!upIsTrue) return false;
+        if (!upIsTrue) return ITCRecipe.CraftException.NO_SURROUNDINGS;
 
         boolean downIsTrue = false;
         {
@@ -91,6 +92,6 @@ public class WorldHelperInternal {
             } else downIsTrue = true;
         }
 
-        return downIsTrue;
+        return downIsTrue ? ITCRecipe.CraftException.OK : ITCRecipe.CraftException.NO_SURROUNDINGS;
     }
 }

@@ -7,25 +7,32 @@ import lombok.Getter;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 import net.sinedkadis.terracompositio.TerraCompositio;
+import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
+import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
+import net.sinedkadis.terracompositio.block.entity.TCBlockEntity;
+import net.sinedkadis.terracompositio.config.TCCommonConfigs;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.List;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 @Getter
-public class FlowInfusionRecipe implements Recipe<RecipeWrapper> {
+public class FlowInfusionRecipe implements ITCRecipe<RecipeWrapper> {
     private final NonNullList<Ingredient> inputItems;
     private final ItemStack output;
     @Getter
@@ -84,9 +91,68 @@ public class FlowInfusionRecipe implements Recipe<RecipeWrapper> {
     public RecipeType<?> getType() {
         return Type.INSTANCE;
     }
-    public static class Type implements RecipeType<FlowInfusionRecipe>{
+
+    @Override
+    public CraftException canBeProcessed(TCBlockEntity be) {
+        IItemHandler itemCapability = be.getItemCapability(null);
+        ItemStack recipeOutput = getOutput();
+
+        CraftException noSpace = ITCRecipe.checkSpace(itemCapability, recipeOutput);
+        if (noSpace.hasExceptions()) return noSpace;
+
+
+        IECFHandler ecfCapability = be.getECFCapability(null);
+        float ecf = getECFTick();
+
+        CraftException noECF = ITCRecipe.checkECF(ecfCapability, ecf);
+        if (noECF.hasExceptions()) return noECF;
+
+
+        CraftException noSurrounding = ITCRecipe.checkSurroundings(be);
+        if (noSurrounding.hasExceptions()) return noSurrounding;
+
+
+        return CraftException.OK;
+    }
+
+    @Override
+    public void onCraftingTick(TCBlockEntity be) {
+        ITCRecipe.spawnParticles(be);
+        ITCRecipe.consumeECF(be, getECFTick());
+        be.setChanged();
+    }
+
+    @Override
+    public boolean onComplete(TCBlockEntity be, int progress) {
+        if (progress > getTicks()) {
+            ITCRecipe.craftItem(be, getOutput());
+            return true;
+        }
+        return false;
+    }
+
+
+    @Override
+    public void collectKnowledgeData(CompoundTag data, HolderLookup.Provider provider) {
+        data.putInt(TooltipHelper.Keys.ECF_CONSUME.toData(), getEcf());
+        data.putInt(TooltipHelper.Keys.MAX_PROGRESS.toData(), getTicks());
+    }
+
+    @Override
+    public void addTooltipLines(CompoundTag data, List<Component> tooltip, boolean isShifting, HolderLookup.Provider provider) {
+        if (TCCommonConfigs.DEBUG.get()) {
+            TooltipHelper.addIfExist(TooltipHelper.Keys.MAX_PROGRESS, tooltip, data);
+        }
+    }
+
+    public static class Type implements ITCRecipeType<RecipeWrapper, FlowInfusionRecipe> {
         public static final Type INSTANCE = new Type();
         public static final String ID = "flow_infusion";
+
+        @Override
+        public RecipeWrapper getRecipeInput(TCBlockEntity be) {
+            return new RecipeWrapper(be.getItemCapability(null));
+        }
     }
     public static class Serializer implements RecipeSerializer<FlowInfusionRecipe>{
         public static final Serializer INSTANCE = new Serializer();

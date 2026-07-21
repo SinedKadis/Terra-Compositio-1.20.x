@@ -285,6 +285,7 @@ public class TooltipHelper {
         STORAGE_EXTENSION,
         TIME_REMAINING,
         ECF,
+        ECF_CONSUME,
         ECF_TICK,
         MAX_ECF,
         PRIORITY,
@@ -299,7 +300,8 @@ public class TooltipHelper {
         TIME_COLLECTION_CHANCE,
         CRAFT_EXCEPTION,
         FE,
-        MAX_FE;
+        MAX_FE,
+        DECAY_RATE;
 
         @Override
         public String getModID() {

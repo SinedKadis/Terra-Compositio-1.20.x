@@ -4,31 +4,24 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.wrapper.EmptyItemHandler;
-import net.neoforged.neoforge.items.wrapper.InvWrapper;
-import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 import net.sinedkadis.terracompositio.api.helpers.ItemHelper;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
-import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.api.tooltip.ItemComponent;
+import net.sinedkadis.terracompositio.block.behaviours.CraftingBehaviour;
 import net.sinedkadis.terracompositio.block.behaviours.ECFHandlerBehaviour;
 import net.sinedkadis.terracompositio.block.behaviours.ItemStateHolderBehaviour;
 import net.sinedkadis.terracompositio.block.custom.MatterInfuserBaseEntityBlock;
@@ -38,16 +31,12 @@ import net.sinedkadis.terracompositio.registries.TCBlockEntities;
 import net.sinedkadis.terracompositio.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.registries.TCItems;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
-import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEECFBehaviour;
-import net.sinedkadis.terracompositio.util.helpers.ParticleHelperInternal;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-import static net.sinedkadis.terracompositio.api.registries.TCBlockStateProperties.INFUSED;
 import static net.sinedkadis.terracompositio.block.entity.FlowCedarCasingBlockEntity.DOWN_CONNECTION_SLOT;
 import static net.sinedkadis.terracompositio.block.entity.FlowCedarCasingBlockEntity.UP_CONNECTION_SLOT;
 
@@ -55,9 +44,6 @@ import static net.sinedkadis.terracompositio.block.entity.FlowCedarCasingBlockEn
 @MethodsReturnNonnullByDefault
 public class MatterInfuserUnitBlockEntity extends MatterInfuserBaseBlockEntity{
 
-
-    protected float catalystDecayRate;
-    private boolean isAssembled;
 
     public MatterInfuserUnitBlockEntity(BlockPos pos, BlockState state) {
         super(TCBlockEntities.MATTER_INFUSER_IO_BE.get(), pos, state);
@@ -100,39 +86,11 @@ public class MatterInfuserUnitBlockEntity extends MatterInfuserBaseBlockEntity{
                 return InteractionResult.PASS;
             }
         });
+        list.add(new CraftingBehaviour<>(this, MatterInfusionRecipe.Type.INSTANCE));
 
     }
 
-    int timer = 0;
-    public void tick(Level pLevel, BlockPos pPos, BlockState pState) {
-        super.tick(pLevel, pPos, pState);
-        if (timer <= 0) {
-            timer = 20;
-            isAssembled = assembleValid();
-        }
-        timer--;
-        if (hasRecipe() && enoughECF() && isAssembled) {
-            if (timer <= 0) {
-                if (progress > 0)
-                    ParticleHelperInternal.spawnParticlesIn(pLevel,
-                            pPos.relative(pState.getValue(BlockStateProperties.HORIZONTAL_FACING).getOpposite()),
-                            ((int) Math.ceil(tickECFCost * 20)));
-            }
-
-            increaseCraftingProgress();
-            consumeECF();
-            setChanged(pLevel, pPos, pState);
-
-            if(hasProgressFinished()){
-                craftItem();
-                resetProgress();
-            }
-        }else if(!hasRecipe()) {
-            resetProgress();
-        }
-    }
-
-    private boolean assembleValid() {
+    public boolean assembleValid() {
         if (level == null) return false;
 
         FlowCedarCasingBlockEntity casingBE = getCasingBE();
@@ -160,96 +118,14 @@ public class MatterInfuserUnitBlockEntity extends MatterInfuserBaseBlockEntity{
         return true;
     }
 
-    protected void craftItem() {
-        Optional<RecipeHolder<MatterInfusionRecipe>> recipe = getCurrentRecipe();
-        MatterInfuserPortBlockEntity portBE = this.getPortBE();
-        FlowCedarCasingBlockEntity casingBE = this.getCasingBE();
-        if (recipe.isPresent()
-                && this.level != null
-                && portBE != null
-                && casingBE != null) {
-            ItemStack result = recipe.get().value().getResultItem(RegistryAccess.EMPTY);
-            int takeCount = recipe.get().value().getIngredients().get(1).getItems()[0].getCount();
-
-            IItemHandlerModifiable itemHandler = casingBE.getItemHandler();
-
-            ItemStack copy = itemHandler.getStackInSlot(0).copy();
-            copy.shrink(takeCount);
-            itemHandler.setStackInSlot(0, copy);
-            ItemStack resultCopy = result.copy();
-            resultCopy.setCount(resultCopy.getCount() + itemHandler.getStackInSlot(1).getCount());
-            itemHandler.setStackInSlot(1, resultCopy);
-            if (level != null) {
-                BlockState blockState = getBlockState();
-                level.sendBlockUpdated(worldPosition, blockState, blockState, 3);
-                if (this.level.getRandom().nextInt(100) < catalystDecayRate) {
-                    portBE.extractItemStackViaSetter(0, 1);
-                }
-            }
-        }
-    }
-
-    protected boolean hasRecipe() {
-        Optional<RecipeHolder<MatterInfusionRecipe>> recipe = getCurrentRecipe();
-        if (recipe.isEmpty()){
-            return false;
-        }
-        MatterInfusionRecipe matterInfusionRecipe = recipe.get().value();
-        ItemStack result = matterInfusionRecipe.getResultItem(RegistryAccess.EMPTY);
-        boolean outputTest = enoughSpaceInOutput(result.getCount()) && sameItemInOutput(result.getItem());
-        FlowCedarCasingBlockEntity casingBE = this.getCasingBE();
-        boolean infusedTest = false;
-        if (casingBE != null) {
-            infusedTest = casingBE.getBlockState().getValue(INFUSED);
-        }
-        if (outputTest && infusedTest) {
-            maxProgress = matterInfusionRecipe.getTicks();
-            tickECFCost = matterInfusionRecipe.getECFTick();
-            catalystDecayRate = matterInfusionRecipe.getCatalystDecayRate();
-        }
-        return outputTest && infusedTest;
-    }
-
-    @Override
-    protected IItemHandlerModifiable getItemHandler() {
-        FlowCedarCasingBlockEntity casingBE = getCasingBE();
-        if (casingBE != null)
-            return casingBE.getItemHandler();
-        throw new RuntimeException("Item handler not present: " + this);
-    }
-
-    protected IECFHandler getEcfContainer() {
-        IBEECFBehaviour cfeBehaviour = getECFBehaviour();
-        if (cfeBehaviour != null) {
-            return cfeBehaviour.getECFHandler();
-        }
-        throw new RuntimeException("CFE handler not present: " + this);
-    }
-
-    public Optional<RecipeHolder<MatterInfusionRecipe>> getCurrentRecipe() {
-        ItemStack catalyst = this.getCatalyst();
-        ItemStack inputSlot = this.getInputSlot();
-        if (catalyst.isEmpty() || inputSlot.isEmpty())
-            return Optional.empty();
-        IItemHandler inventory = new InvWrapper(new SimpleContainer(catalyst, inputSlot));
-
-        if (this.level != null) {
-            return this.level.getRecipeManager().getRecipeFor(MatterInfusionRecipe.Type.INSTANCE, new RecipeWrapper(inventory), level);
-        }
-        return Optional.empty();
-    }
-
-    @Override
-    protected int getECF() {
-        return getEcfContainer().getECF();
-    }
 
     public ItemStack getCatalyst() {
         MatterInfuserPortBlockEntity port = this.getPortBE();
         return port != null ? port.getInputSlot() : ItemStack.EMPTY;
     }
 
-    private @Nullable MatterInfuserPortBlockEntity getPortBE() {
+    @Nullable
+    public MatterInfuserPortBlockEntity getPortBE() {
         for (int i = 1; i <= 8; i++){
             if (level != null
                     && level.getBlockEntity(worldPosition.relative(
@@ -261,20 +137,6 @@ public class MatterInfuserUnitBlockEntity extends MatterInfuserBaseBlockEntity{
             }
         }
         return null;
-    }
-
-    protected boolean sameItemInOutput(Item item) {
-        ItemStack outputSlot = this.getItemInSlot(FlowCedarCasingBlockEntity.OUTPUT_INVENTORY_SLOT);
-        boolean b = outputSlot.isEmpty() || outputSlot.is(item);
-        checkCraftException(b, CraftException.NO_SPACE);
-        return b;
-    }
-
-    protected boolean enoughSpaceInOutput(int count) {
-        ItemStack outputSlot = this.getItemInSlot(FlowCedarCasingBlockEntity.OUTPUT_INVENTORY_SLOT);
-        boolean b = outputSlot.getCount() + count <= outputSlot.getMaxStackSize();
-        checkCraftException(b, CraftException.NO_SPACE);
-        return b;
     }
 
     @Override

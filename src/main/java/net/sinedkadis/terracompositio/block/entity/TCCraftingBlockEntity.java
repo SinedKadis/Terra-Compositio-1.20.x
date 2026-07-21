@@ -15,11 +15,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.sinedkadis.terracompositio.api.IHaveKnowledge;
-import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
-import net.sinedkadis.terracompositio.api.networks.TransferAction;
-import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
-import net.sinedkadis.terracompositio.registries.TCCapabilities;
+import net.sinedkadis.terracompositio.recipe.ITCRecipe;
 import net.sinedkadis.terracompositio.util.behaviors.DummyBehaviour;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEItemBehaviour;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEItemWordlyContainerBehaviour;
@@ -36,7 +33,7 @@ public abstract class TCCraftingBlockEntity extends TCBlockEntity implements Wor
     protected int progress = 0;
     protected int maxProgress;
     protected float tickECFCost;
-    protected CraftException craftException = CraftException.EMPTY;
+    private final float partialECF = 0;
 
     public TCCraftingBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -49,19 +46,9 @@ public abstract class TCCraftingBlockEntity extends TCBlockEntity implements Wor
     protected boolean hasProgressFinished() {
         return progress>=maxProgress;
     }
+    protected ITCRecipe.CraftException craftException = ITCRecipe.CraftException.OK;
 
-    private float partialECF = 0;
 
-    protected void consumeECF() {
-        int floorECF = (int) Math.floor(tickECFCost);
-        partialECF += tickECFCost - floorECF;
-        int floorPart = (int) Math.floor(partialECF);
-        partialECF = partialECF - floorPart;
-        if (this.level == null) return;
-        IECFHandler capability = level.getCapability(TCCapabilities.ECF_HANDLER_BLOCK, worldPosition, null);
-        if (capability == null) return;
-        capability.takeECF(floorECF + floorPart, TransferAction.EXECUTE);
-    }
 
     @Override
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
@@ -79,10 +66,9 @@ public abstract class TCCraftingBlockEntity extends TCBlockEntity implements Wor
         progress++;
     }
 
-
-    protected boolean sameItemInOutput(Item item) {
+    public boolean sameItemInOutput(Item item) {
         boolean toReturn = this.getItemHandler().getStackInSlot(getOutputSlotIndex()).isEmpty() || this.getItemHandler().getStackInSlot(getOutputSlotIndex()).is(item);
-        checkCraftException(toReturn, CraftException.NO_SPACE);
+        checkCraftException(toReturn, ITCRecipe.CraftException.NO_SPACE);
         return toReturn;
     }
 
@@ -90,19 +76,19 @@ public abstract class TCCraftingBlockEntity extends TCBlockEntity implements Wor
         return getItemHandler().getSlots() - 1;
     }
 
-    protected boolean enoughSpaceInOutput(int count) {
+    public boolean enoughSpaceInOutput(int count) {
         boolean toReturn = this.getItemHandler().getStackInSlot(getOutputSlotIndex()).getCount() + count
                 <= Math.min(this.getItemHandler().getStackInSlot(getOutputSlotIndex()).getMaxStackSize(),
                 getItemHandler().getSlotLimit(1));
-        checkCraftException(toReturn, CraftException.NO_SPACE);
+        checkCraftException(toReturn, ITCRecipe.CraftException.NO_SPACE);
         return toReturn;
     }
 
-    public void checkCraftException(boolean toReturn, CraftException exception) {
+    public void checkCraftException(boolean toReturn, ITCRecipe.CraftException exception) {
         if (!toReturn)
             craftException = exception;
         if (toReturn && craftException.equals(exception))
-            craftException = CraftException.EMPTY;
+            craftException = ITCRecipe.CraftException.OK;
     }
 
     protected void playSoundIfNeeded(Level level, BlockPos pos) {
@@ -116,7 +102,7 @@ public abstract class TCCraftingBlockEntity extends TCBlockEntity implements Wor
     public boolean enoughECF() {
         int ecf = getECF();
         boolean toReturn = ecf > tickECFCost;
-        checkCraftException(toReturn, CraftException.NO_ECF);
+        checkCraftException(toReturn, ITCRecipe.CraftException.NO_ECF);
         return toReturn;
     }
 
@@ -203,7 +189,7 @@ public abstract class TCCraftingBlockEntity extends TCBlockEntity implements Wor
     @Override
     public void collectKnowledgeData(CompoundTag data, HolderLookup.Provider provider) {
         super.collectKnowledgeData(data, provider);
-        if (!craftException.equals(CraftException.EMPTY))
+        if (!craftException.equals(ITCRecipe.CraftException.OK))
             data.putString(TooltipHelper.Keys.CRAFT_EXCEPTION.toData(), craftException.name());
         if (maxProgress == 0) return;
 
@@ -231,7 +217,7 @@ public abstract class TCCraftingBlockEntity extends TCBlockEntity implements Wor
             if (data.contains(TooltipHelper.Keys.CRAFT_EXCEPTION.toData())) {
                 TooltipHelper.addWithNoArg(
                         TooltipHelper.Keys.CRAFT_EXCEPTION,
-                        Enum.valueOf(CraftException.class, data.getString(TooltipHelper.Keys.CRAFT_EXCEPTION.toData())),
+                        Enum.valueOf(ITCRecipe.CraftException.class, data.getString(TooltipHelper.Keys.CRAFT_EXCEPTION.toData())),
                         t
                 );
             }
@@ -241,12 +227,4 @@ public abstract class TCCraftingBlockEntity extends TCBlockEntity implements Wor
         super.addTooltipLines(data, tooltip, isShifting, provider);
     }
 
-    public enum CraftException implements TooltipHelper.ICustomUnit {
-        NO_ECF, NO_SPACE, EMPTY, NO_SURROUNDINGS;
-
-        @Override
-        public String getModID() {
-            return TerraCompositioAPI.MOD_ID;
-        }
-    }
 }
