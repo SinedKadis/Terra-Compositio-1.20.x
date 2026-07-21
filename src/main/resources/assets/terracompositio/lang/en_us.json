@@ -94,6 +94,9 @@
   "info.terracompositio.extracted_ecf": "Extracted ECF: %s",
   "info.terracompositio.ecf_header": "Creation Flow Energy info: ",
   "info.terracompositio.type": "Type: %s",
+  "info.terracompositio.fe": "FE: %s",
+  "info.terracompositio.max_fe": "Max FE: %s",
+
   "info.terracompositio.consumer": " Consumer",
   "info.terracompositio.source": " Source",
 
@@ -110,6 +113,8 @@
   "info.terracompositio.items_header": "Items Info: ",
   "info.terracompositio.fluids_header": "Fluids Info: ",
   "info.terracompositio.crafting_header": "Crafting Info: ",
+  "info.terracompositio.fe_header": "Formal Energy Info: ",
+
   "info.terracompositio.time_remaining": "Remaining: %s",
   "info.terracompositio.time_collected": "Time Collected: %s",
   "info.terracompositio.time_collection_chance": "Time collection chance: %s%%",

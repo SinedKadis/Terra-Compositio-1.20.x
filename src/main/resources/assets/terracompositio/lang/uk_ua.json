@@ -89,6 +89,9 @@
   "info.terracompositio.consume": "Споживається: %s",
   "info.terracompositio.generate": "Добувається: %s",
   "info.terracompositio.storage_extension": "Розширення: %s",
+  "info.terracompositio.fe": "FE: %s",
+  "info.terracompositio.max_fe": "Максимум FE: %s",
+
   "info.terracompositio.blocks": " блоків",
   "info.terracompositio.units": " одиниць",
   "info.terracompositio.milibuckets": " мілібакетів",
@@ -98,6 +101,8 @@
   "info.terracompositio.items_header": "Інформація про Предмети: ",
   "info.terracompositio.fluids_header": "Інформація про Рідини: ",
   "info.terracompositio.crafting_header": "Інформація про Процес Створення: ",
+  "info.terracompositio.fe_header": "Інформація про FE: ",
+
   "info.terracompositio.time_remaining": "Залишилось: %s",
   "info.terracompositio.seconds": " секунд",
   "info.terracompositio.ent_hold_header": "Тримає: ",

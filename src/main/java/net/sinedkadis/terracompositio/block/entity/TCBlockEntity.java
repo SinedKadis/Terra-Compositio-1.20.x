@@ -16,9 +16,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.templates.EmptyFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.wrapper.EmptyItemHandler;
 import net.sinedkadis.terracompositio.api.IHaveKnowledge;
 import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
@@ -130,9 +128,9 @@ public abstract class TCBlockEntity extends BlockEntity implements IHaveKnowledg
         Optional<IItemHandler> behaviourCap = behaviours.stream()
                 .map(iBehaviour -> iBehaviour.getItemCapability(direction))
                 .filter(Objects::nonNull)
-                .filter(iItemHandler -> !iItemHandler.equals(EmptyItemHandler.INSTANCE))
+                .filter(iItemHandler -> !iItemHandler.equals(SentinelHelper.EMPTY_ITEM_HANDLER))
                 .findAny();
-        return behaviourCap.orElse(EmptyItemHandler.INSTANCE);
+        return behaviourCap.orElse(SentinelHelper.EMPTY_ITEM_HANDLER);
     }
 
     @Override
@@ -150,9 +148,9 @@ public abstract class TCBlockEntity extends BlockEntity implements IHaveKnowledg
         Optional<IFluidHandler> behaviourCap = behaviours.stream()
                 .map(iBehaviour -> iBehaviour.getFluidCapability(direction))
                 .filter(Objects::nonNull)
-                .filter(iFluidHandler -> !iFluidHandler.equals(EmptyFluidHandler.INSTANCE))
+                .filter(iFluidHandler -> !iFluidHandler.equals(SentinelHelper.EMPTY_FLUID_HANDLER))
                 .findAny();
-        return behaviourCap.orElse(EmptyFluidHandler.INSTANCE);
+        return behaviourCap.orElse(SentinelHelper.EMPTY_FLUID_HANDLER);
     }
 
     @Override
@@ -160,8 +158,8 @@ public abstract class TCBlockEntity extends BlockEntity implements IHaveKnowledg
         Optional<IItemHandler> behaviourCap = behaviours.stream()
                 .map(iBehaviour -> iBehaviour.getStateHolderCapability(direction))
                 .filter(Objects::nonNull)
-                .filter(itemHandler -> !itemHandler.equals(EmptyItemHandler.INSTANCE))
+                .filter(itemHandler -> !itemHandler.equals(SentinelHelper.EMPTY_ITEM_HANDLER))
                 .findAny();
-        return behaviourCap.orElse(EmptyItemHandler.INSTANCE);
+        return behaviourCap.orElse(SentinelHelper.EMPTY_ITEM_HANDLER);
     }
 }

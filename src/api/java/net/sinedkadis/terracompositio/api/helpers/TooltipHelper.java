@@ -267,7 +267,8 @@ public class TooltipHelper {
         ECF,
         ENT_HOLD,
         ENT_INNER,
-        ENT_COMMON;
+        ENT_COMMON,
+        FE;
 
         @Override
         public String getModID() {
@@ -296,7 +297,9 @@ public class TooltipHelper {
         MAX_PROGRESS,
         TIME_COLLECTED,
         TIME_COLLECTION_CHANCE,
-        CRAFT_EXCEPTION;
+        CRAFT_EXCEPTION,
+        FE,
+        MAX_FE;
 
         @Override
         public String getModID() {

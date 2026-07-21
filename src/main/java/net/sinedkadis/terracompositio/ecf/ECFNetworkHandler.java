@@ -172,9 +172,13 @@ public class ECFNetworkHandler implements ECFNetwork {
         if (targetAttachedEntity instanceof PathPointerBlockEntity) return false;
         if (targetAttachedEntity.tc$isEntity()) return false;
 
-        return sourceAttachedEntity.tc$getPosition().closerThan(targetAttachedEntity.tc$getPosition(), Math.max(
-                source.getRange(true),
-                target.getRange(true)
+        Vec3 vec3 = sourceAttachedEntity.tc$getPosition();
+        Vec3 vec4 = targetAttachedEntity.tc$getPosition();
+        int range = source.getRange(true);
+        int range1 = target.getRange(true);
+        return vec3.closerThan(vec4, Math.max(
+                range,
+                range1
         ) + 1);
     }
 
