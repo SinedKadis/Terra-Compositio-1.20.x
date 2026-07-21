@@ -29,8 +29,8 @@ public record PPECFMemberProxy(ECFNetworkMember target, PathPointerBlockEntity p
     }
 
     @Override
-    public IECFHandler getMainHandler() {
-        return target.getMainHandler();
+    public IECFHandler getECFHandler() {
+        return target.getECFHandler();
     }
 
 

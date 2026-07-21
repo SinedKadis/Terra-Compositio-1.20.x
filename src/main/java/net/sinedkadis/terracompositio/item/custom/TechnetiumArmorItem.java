@@ -334,9 +334,10 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
     private void leggingsInventoryTick(ItemStack itemStack, Level ignoredPLevel, Entity entity, IECFHandler thisHandler) {
         for (ItemStack stack : entity.getArmorSlots()) {
             if (stack.equals(itemStack)) {
-                IECFHandler playerHandler = entity.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER).getMainHandler();
+                IECFHandler playerHandler = entity.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER)
+                        .getECFHandler();
                 int taken = thisHandler.addECF(TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get(), TransferAction.SIMULATE);
-                int added = playerHandler.takeECF(taken, TransferAction.EXECUTE);
+                int added = playerHandler.takeECF(taken, TransferAction.BOTH);
                 thisHandler.addECF(added, TransferAction.EXECUTE);
                 continue;
             }

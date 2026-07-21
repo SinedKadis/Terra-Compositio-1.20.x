@@ -193,7 +193,7 @@ public interface IECFHandler extends ECFNetworkMember {
     }
 
     @Override
-    default IECFHandler getMainHandler() {
+    default IECFHandler getECFHandler() {
         return this;
     }
 

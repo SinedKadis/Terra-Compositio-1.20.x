@@ -102,7 +102,7 @@ public class ECFNetworkHandler implements ECFNetwork {
      * Tries to make transfer between two members.
      * If blocks are close enough, just takes ECF from source and adds it to target, else sends it like burst
      *
-     * @param target the target member. Used for navigation in sending burst, actually receives {@link IECFHandler#getMainHandler()},
+     * @param target the target member. Used for navigation in sending burst, actually receives {@link IECFHandler#getECFHandler()},
      *               so passing {@link IECFHandler} like argument only make sense when two blocks are close enough
      * @param source the source member. {@link IECFHandler} can be used as argument
      * @param speed  the speed of th burst, 1 means 1 block per tick
@@ -114,14 +114,14 @@ public class ECFNetworkHandler implements ECFNetwork {
         if (!validateRelation(source, target, Math::max)) return;
 
 
-        IECFHandler sourceMainHandler = source.getMainHandler();
+        IECFHandler sourceMainHandler = source.getECFHandler();
         int taken = sourceMainHandler.takeECF(Integer.MAX_VALUE, TransferAction.SIMULATE);
-        IECFHandler targetMainHandler = target.getMainHandler();
+        IECFHandler targetMainHandler = target.getECFHandler();
         int added = targetMainHandler.addECF(taken, TransferAction.SIMULATE);
 
         if (added > 0) {
             sourceMainHandler.takeECF(added, TransferAction.EXECUTE);
-            target.getMainHandler().addToQueue(added);
+            target.getECFHandler().addToQueue(added);
             int divisions = Mth.log2(added);
             if (divisions <= 0) divisions = 1;
             int[] additions = new int[divisions];
@@ -146,7 +146,7 @@ public class ECFNetworkHandler implements ECFNetwork {
     public void sendBurst(IECFHandler source, ECFNetworkMember target, int count, float speed) {
         Level level = target.getEntityInstance().tc$getLevel();
 
-        IECFHandler targetMainHandler = target.getMainHandler();
+        IECFHandler targetMainHandler = target.getECFHandler();
         if (closeAndAllow(source, targetMainHandler)) {
             targetMainHandler.addECF(count, TransferAction.EXECUTE);
             targetMainHandler.subFromQueue(count);
@@ -155,7 +155,7 @@ public class ECFNetworkHandler implements ECFNetwork {
 
         Vec3 offset = Vec3.ZERO;
         if (source.getAttachedEntity() instanceof ECFCloudEntity ecfCloudEntity) {
-            offset = ecfCloudEntity.getBurstOffset(target.getMainHandler());
+            offset = ecfCloudEntity.getBurstOffset(target.getECFHandler());
         }
 
         ECFBurstProjectileEntity entity = ECFBurstProjectileEntity.sendBurst(source, offset, target, count, speed);
@@ -268,10 +268,10 @@ public class ECFNetworkHandler implements ECFNetwork {
     public boolean isIn(Level level, ECFNetworkMember networkMember) {
         Set<ECFNetworkMember> members = ecfSources.get(level);
         if (members == null) return false;
-        IECFHandler mainHandler = networkMember.getMainHandler();
+        IECFHandler mainHandler = networkMember.getECFHandler();
         if (!mainHandler.equals(SentinelHelper.EMPTY_ECF_HANDLER)) {
             for (ECFNetworkMember member : members) {
-                if (member.getMainHandler().equals(mainHandler)) return true;
+                if (member.getECFHandler().equals(mainHandler)) return true;
             }
         }
         return members.contains(networkMember);
@@ -280,7 +280,6 @@ public class ECFNetworkHandler implements ECFNetwork {
     private void remove(Level level, ECFNetworkMember thing) {
         Set<ECFNetworkMember> set = ecfSources.get(level);
         if (set == null) return;
-        networkMemberUpdated(thing);
         set.remove(thing);
         if (set.isEmpty()) ecfSources.remove(level);
     }

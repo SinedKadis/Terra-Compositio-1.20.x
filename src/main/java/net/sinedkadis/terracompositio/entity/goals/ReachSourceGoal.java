@@ -100,7 +100,7 @@ public class ReachSourceGoal extends Goal {
             if (!memberPos.closerThan(mobPos, searchLimit)) continue;
             if (memberPos.closerThan(mobPos, stopDistance)) continue;
             if (member.getEntityInstance().equals(mob)) continue;
-            if (member.getMainHandler().getECF() <= 0) continue;
+            if (member.getECFHandler().getECF() <= 0) continue;
 
             if (member instanceof FlowCedarEntEntity ent) {
                 boolean hasEnough = ent.getCapability(TCCapabilities.ECF)

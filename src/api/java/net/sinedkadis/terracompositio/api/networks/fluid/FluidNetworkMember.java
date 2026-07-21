@@ -15,7 +15,7 @@ public interface FluidNetworkMember extends AnyNetworkMember {
      *
      * @return the main handler
      */
-    IFluidHandler getMainHandler();
+    IFluidHandler getFluidHandler();
 
     /**
      * Executes updates, that was scheduled. Behavior relates on implementation, recommended to call at tick method of your entity,

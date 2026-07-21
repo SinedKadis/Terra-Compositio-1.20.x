@@ -729,7 +729,7 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
     }
 
     @Override
-    public IECFHandler getMainHandler() {
+    public IECFHandler getECFHandler() {
         return SentinelHelper.EMPTY_ECF_HANDLER;
     }
 

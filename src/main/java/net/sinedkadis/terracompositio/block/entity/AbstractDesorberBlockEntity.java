@@ -107,7 +107,7 @@ public abstract class AbstractDesorberBlockEntity extends TCBlockEntity {
     }
 
     protected IECFHandler ecfContainer() {
-        return ((ECFHandlerBehaviour) behaviours.get(0)).getMainHandler();
+        return ((ECFHandlerBehaviour) behaviours.get(0)).getECFHandler();
     }
 
     @Override

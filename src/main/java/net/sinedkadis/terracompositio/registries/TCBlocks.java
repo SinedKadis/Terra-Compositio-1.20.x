@@ -297,8 +297,13 @@ public class TCBlocks {
     public static final RegistryObject<Block> AIR_SATURATOR = registerBlock("air_saturator",
             () -> new AirSaturatorBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS).strength(3f)));
 
+    //Formal Energy Provider
+    public static final RegistryObject<Block> FE_PROVIDER_CORE = registerBlock("fe_provider_core",
+            () -> new FEProviderCoreBlock(BlockBehaviour.Properties.copy(Blocks.NETHERITE_BLOCK).noOcclusion()));
+    public static final RegistryObject<Block> FE_PROVIDER_PYLON = registerBlock("fe_provider_pylon",
+            () -> new FEProviderPylonBlock(BlockBehaviour.Properties.copy(Blocks.TINTED_GLASS).noOcclusion()));
 
-    public static <T extends Block>RegistryObject<T> registerBlock(String name, Supplier<T> block) {
+    public static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block) {
         return registerBlock(name, block, () -> true);
     }
 

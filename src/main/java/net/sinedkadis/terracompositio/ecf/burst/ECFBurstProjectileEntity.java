@@ -73,11 +73,9 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
                 pSource.getZ() + startOffset.z + 0.5f,
                 target.getEntityInstance().tc$getLevel());
 
-        Vec3 offset;
-        if (target instanceof PPECFMemberProxy) {
-            offset = Vec3.ZERO;
-        } else {
-            offset = target.getMainHandler().getOffset().apply(Vec3.ZERO);
+        Vec3 offset = Vec3.ZERO;
+        if (target.getEntityInstance().tc$isEntity()) {
+            offset = target.getECFHandler().getOffset().apply(Vec3.ZERO);
         }
         if (target instanceof LivingEntity livingEntity) {
             this.setOwner(livingEntity);
@@ -96,7 +94,7 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
         Vec3 startPos = pSource.getCenter().add(startOffset);
         Vec3 shootVec = targetPos.subtract(startPos);
         //pp proxy backdoor
-        this.setTarget(target.getMainHandler().getAttachedEntity().tc$getBlockPos());
+        this.setTarget(target.getECFHandler().getAttachedEntity().tc$getBlockPos());
         this.shoot(shootVec.x(), shootVec.y(), shootVec.z(), cfeTravelSpeed, 0);
         lastBP.set(pSource);
     }
@@ -147,7 +145,7 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
         this.setDeltaMovement(vec3.scale(f));
         if (!this.isNoGravity()) {
             Vec3 vec31 = this.getDeltaMovement();
-            this.setDeltaMovement(vec31.x, vec31.y - (double) this.getGravity(), vec31.z);
+            this.setDeltaMovement(vec31.x, vec31.y - this.getGravity(), vec31.z);
         }
 
         this.setPos(d2, d0, d1);
@@ -157,7 +155,7 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
         Entity owner = getOwner();
         if (owner instanceof ECFNetworkMember member) {
             int oCfe = this.getECF();
-            int cfe = oCfe - tryConsumeCFEHandler(member.getMainHandler(), oCfe);
+            int cfe = oCfe - tryConsumeCFEHandler(member.getECFHandler(), oCfe);
 
             if (cfe > 0) {
                 for (ItemStack stack : owner.getArmorSlots()) {
@@ -174,7 +172,7 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
         Entity owner = getOwner();
         if (owner instanceof ECFNetworkMember member) {
             Vec3 position = this.position();
-            Vec3 offsetPos = member.getMainHandler()
+            Vec3 offsetPos = member.getECFHandler()
                     .getOffset().apply(owner.position());
             double distanceToSqr = position.distanceToSqr(offsetPos);
             if (distanceToSqr < 1.1f) {
@@ -191,6 +189,7 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
                 return;
             }
             BlockPos target = getTarget();
+            //todo offset handling
             if (blockPos.equals(target) && blockEntity != null) {
                 tryConsumeCFEHandler(blockEntity.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER), this.getECF());
             }
@@ -212,7 +211,7 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
                 && tickCount % 5 == 0
                 && owner instanceof ECFNetworkMember member) {
             setDeltaMovement(Vec3.ZERO);
-            Vec3 shootVec = member.getMainHandler().getOffset().apply(livingEntity.position()).subtract(this.position());
+            Vec3 shootVec = member.getECFHandler().getOffset().apply(livingEntity.position()).subtract(this.position());
             this.shoot(shootVec.x(),shootVec.y(),shootVec.z(),5/20f,0);
         }
     }
@@ -280,7 +279,7 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
         BlockEntity blockEntity = level().getBlockEntity(getTarget());
         int cfe = getECF();
         if (blockEntity instanceof ECFNetworkMember memberBE) {
-            memberBE.getMainHandler().subFromQueue(cfe);
+            memberBE.getECFHandler().subFromQueue(cfe);
         } else if (blockEntity instanceof TCBlockEntity tcBlockEntity) {
             tcBlockEntity.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER)
                     .subFromQueue(cfe);
@@ -294,7 +293,7 @@ public class ECFBurstProjectileEntity extends ThrowableProjectile {
             }
             ECFNetworkMember cfeNetworkMemberEntity = ((ECFNetworkMember) target);
 
-            cfeNetworkMemberEntity.getMainHandler().subFromQueue(cfe);
+            cfeNetworkMemberEntity.getECFHandler().subFromQueue(cfe);
 
         }
     }

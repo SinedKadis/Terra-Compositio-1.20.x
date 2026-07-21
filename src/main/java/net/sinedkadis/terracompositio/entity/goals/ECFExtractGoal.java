@@ -93,7 +93,7 @@ public class ECFExtractGoal extends Goal {
             if (!TerraCompositioAPI.instance().getECFNetworkInstance().validateMember(member)) continue;
             if (!member.getEntityInstance().tc$getBlockPos().closerThan(mobPos, extractRange)) continue;
             if (member.getEntityInstance().equals(mob)) continue;
-            if (member.getMainHandler().getECF() <= 0) continue;
+            if (member.getECFHandler().getECF() <= 0) continue;
 
             if (member instanceof FlowCedarEntEntity ent) {
                 boolean hasEnough = ent.getCapability(TCCapabilities.ECF)

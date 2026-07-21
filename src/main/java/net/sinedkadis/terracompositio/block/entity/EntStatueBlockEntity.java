@@ -103,7 +103,7 @@ public class EntStatueBlockEntity extends TCBlockEntity implements FluidNetworkM
     }
 
     @Override
-    public IFluidHandler getMainHandler() {
+    public IFluidHandler getFluidHandler() {
         return fluidHandler;
     }
 

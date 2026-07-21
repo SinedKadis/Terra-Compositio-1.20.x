@@ -76,7 +76,7 @@ public abstract class PlayerMixin extends LivingEntity implements ECFNetworkMemb
     }
 
     @Override
-    public IECFHandler getMainHandler() {
+    public IECFHandler getECFHandler() {
         return this.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER);
     }
 
@@ -141,7 +141,7 @@ public abstract class PlayerMixin extends LivingEntity implements ECFNetworkMemb
                     TCPackets.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer),
                         new S2CAddPlayerKnowledge());
                 TCPackets.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer),
-                        new S2CPlayerEcfContainerSync(((ECFNetworkMember) serverPlayer).getMainHandler().getECF()));
+                        new S2CPlayerEcfContainerSync(((ECFNetworkMember) serverPlayer).getECFHandler().getECF()));
             }
     }
 
