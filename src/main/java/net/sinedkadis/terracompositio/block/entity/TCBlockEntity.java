@@ -23,7 +23,6 @@ import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.block.custom.TCBaseEntityBlock;
 import net.sinedkadis.terracompositio.util.ITCCapabilityProviderInstance;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
-import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEECFBehaviour;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEItemBehaviour;
 import org.jetbrains.annotations.Nullable;
 
@@ -56,22 +55,9 @@ public abstract class TCBlockEntity extends BlockEntity implements IHaveKnowledg
         return toReturn;
     }
 
-    public @Nullable IBEECFBehaviour getECFBehaviour() {
-        for (IBEBehaviour ibeBehaviour : behaviours) {
-            if (ibeBehaviour instanceof IBEECFBehaviour IBEECFBehaviour) return IBEECFBehaviour;
-        }
-        return null;
-    }
-
     public void tick(Level pLevel, BlockPos pPos, BlockState pState) {
         if (level instanceof ServerLevel)
             behaviours.forEach(IBEBehaviour::tick);
-    }
-
-    @Override
-    public void onLoad() {
-        super.onLoad();
-        behaviours.forEach(IBEBehaviour::onChunkLoad);
     }
 
     @Override

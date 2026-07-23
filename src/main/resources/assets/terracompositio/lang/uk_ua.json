@@ -96,6 +96,8 @@
   "info.terracompositio.storage_extension": "Розширення: %s",
   "info.terracompositio.fe": "FE: %s",
   "info.terracompositio.max_fe": "Максимум FE: %s",
+  "info.terracompositio.progress": "Прогрес: %s",
+  "info.terracompositio.max_progress": "Максимальний прогрес: %s",
 
   "info.terracompositio.blocks": " блоків",
   "info.terracompositio.units": " одиниць",

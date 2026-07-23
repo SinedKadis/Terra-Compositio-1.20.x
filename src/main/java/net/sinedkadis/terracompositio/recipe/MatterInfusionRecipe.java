@@ -11,7 +11,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -21,10 +20,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
 import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
-import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
@@ -113,7 +110,7 @@ public class MatterInfusionRecipe implements ITCRecipe<RecipeWrapper> {
     }
 
     @Override
-    public CraftException canBeProcessed(TCBlockEntity be) {
+    public CraftException allowOnTick(TCBlockEntity be) {
         if (!(be instanceof MatterInfuserUnitBlockEntity miBE)) throw new AssertionError();
         FlowCedarCasingBlockEntity casingBE = miBE.getCasingBE();
 
@@ -141,7 +138,7 @@ public class MatterInfusionRecipe implements ITCRecipe<RecipeWrapper> {
     }
 
     @Override
-    public void onCraftingTick(TCBlockEntity be) {
+    public void onCraftingTick(TCBlockEntity be, int progress) {
         Level level = be.getLevel();
         if (level == null) return;
         if ((level.getGameTime() & 20) == 0) {
@@ -155,7 +152,7 @@ public class MatterInfusionRecipe implements ITCRecipe<RecipeWrapper> {
     }
 
     @Override
-    public boolean onComplete(TCBlockEntity be, int progress) {
+    public boolean isCompleteThenCraft(TCBlockEntity be, int progress) {
         if (progress > getTicks() && be instanceof MatterInfuserUnitBlockEntity miBE) {
             craftItem(miBE);
             return true;
@@ -170,17 +167,7 @@ public class MatterInfusionRecipe implements ITCRecipe<RecipeWrapper> {
         if (level != null
                 && portBE != null
                 && casingBE != null) {
-            ItemStack result = getOutput();
-            int takeCount = getIngredients().get(1).getItems()[0].getCount();
-
-            IItemHandlerModifiable itemHandler = (IItemHandlerModifiable) casingBE.getItemCapability(null);
-
-            ItemStack copy = itemHandler.getStackInSlot(0).copy();
-            copy.shrink(takeCount);
-            itemHandler.setStackInSlot(0, copy);
-            ItemStack resultCopy = result.copy();
-            resultCopy.setCount(resultCopy.getCount() + itemHandler.getStackInSlot(1).getCount());
-            itemHandler.setStackInSlot(1, resultCopy);
+            ITCRecipe.craftItem(be, this);
             BlockState blockState = be.getBlockState();
             level.sendBlockUpdated(be.getBlockPos(), blockState, blockState, 3);
             if (level.getRandom().nextInt(100) < catalystDecayRate) {
@@ -223,7 +210,7 @@ public class MatterInfusionRecipe implements ITCRecipe<RecipeWrapper> {
     }
     public static class Serializer implements RecipeSerializer<MatterInfusionRecipe>{
         public static final Serializer INSTANCE = new Serializer();
-        public static final ResourceLocation ID = ResourceLocation.tryBuild(TerraCompositio.MOD_ID,"matter_infusion");
+        //public static final ResourceLocation ID = ResourceLocation.tryBuild(TerraCompositio.MOD_ID,"matter_infusion");
 
         @Override
         public MapCodec<MatterInfusionRecipe> codec() {

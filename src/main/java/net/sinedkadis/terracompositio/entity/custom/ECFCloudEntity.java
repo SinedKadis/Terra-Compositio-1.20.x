@@ -1,6 +1,5 @@
 package net.sinedkadis.terracompositio.entity.custom;
 
-import lombok.Getter;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -57,7 +56,6 @@ public class ECFCloudEntity extends Entity implements ECFNetworkMember, IHaveKno
     protected int scheduledMembersUpdate = -1;
 
 
-    @Getter
     protected IECFHandler ecfHandler = new LimitlessDefaultECFHandler(this) {
         @Override
         public int getECF() {

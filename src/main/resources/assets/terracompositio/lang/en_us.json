@@ -99,6 +99,9 @@
   "info.terracompositio.type": "Type: %s",
   "info.terracompositio.fe": "FE: %s",
   "info.terracompositio.max_fe": "Max FE: %s",
+  "info.terracompositio.progress": "Progress: %s",
+  "info.terracompositio.max_progress": "Max Progress: %s",
+
 
   "info.terracompositio.consumer": " Consumer",
   "info.terracompositio.source": " Source",

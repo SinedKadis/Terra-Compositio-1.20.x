@@ -1,14 +1,19 @@
 package net.sinedkadis.terracompositio.block.behaviours;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.state.BlockState;
 import net.sinedkadis.terracompositio.api.IHaveKnowledge;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
 import net.sinedkadis.terracompositio.block.entity.TCBlockEntity;
+import net.sinedkadis.terracompositio.config.TCCommonConfigs;
 import net.sinedkadis.terracompositio.recipe.ITCRecipe;
 import net.sinedkadis.terracompositio.recipe.ITCRecipeType;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
@@ -24,6 +29,7 @@ public class CraftingBehaviour<INPUT extends RecipeInput, RECIPE extends ITCReci
 
     protected int progress = 0;
     protected ITCRecipe.CraftException craftException = ITCRecipe.CraftException.OK;
+    protected boolean exceptionLock = false;
 
     public CraftingBehaviour(TCBlockEntity blockEntity, ITCRecipeType<INPUT, RECIPE> type) {
         this.blockEntity = blockEntity;
@@ -32,11 +38,14 @@ public class CraftingBehaviour<INPUT extends RecipeInput, RECIPE extends ITCReci
 
     @Override
     public void tick() {
+        if (exceptionLock) return;
+
         craftException = hasRecipe();
+
         if (cachedRecipe != null) {
             ++progress;
-            cachedRecipe.onCraftingTick(blockEntity);
-            if (cachedRecipe.onComplete(blockEntity, progress)) {
+            cachedRecipe.onCraftingTick(blockEntity, progress);
+            if (cachedRecipe.isCompleteThenCraft(blockEntity, progress)) {
                 progress = 0;
                 cachedRecipe = null;
             }
@@ -46,13 +55,12 @@ public class CraftingBehaviour<INPUT extends RecipeInput, RECIPE extends ITCReci
     }
 
     @Override
-    public void onChunkLoad() {
-
-    }
-
-    @Override
-    public void onRemoved() {
-
+    public void onNeighbourUpdated(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+        if (cachedRecipe != null) {
+            ITCRecipe.CraftException exception = cachedRecipe.allowOnNeighbourUpdate(blockEntity);
+            exceptionLock = exception.hasExceptions();
+            craftException = exception;
+        }
     }
 
     @Override
@@ -71,7 +79,7 @@ public class CraftingBehaviour<INPUT extends RecipeInput, RECIPE extends ITCReci
             return ITCRecipe.CraftException.NO_RECIPE;
         }
         RECIPE value = recipe.get().value();
-        ITCRecipe.CraftException canBeProcessed = value.canBeProcessed(blockEntity);
+        ITCRecipe.CraftException canBeProcessed = value.allowOnTick(blockEntity);
         if (!canBeProcessed.hasExceptions()) {
             cachedRecipe = value;
         } else {
@@ -90,7 +98,7 @@ public class CraftingBehaviour<INPUT extends RecipeInput, RECIPE extends ITCReci
     public void collectKnowledgeData(CompoundTag data, HolderLookup.Provider provider) {
         if (!craftException.equals(ITCRecipe.CraftException.OK) && !craftException.equals(ITCRecipe.CraftException.NO_RECIPE)) {
             data.putString(TooltipHelper.Keys.CRAFT_EXCEPTION.toData(), craftException.name());
-        } else {
+        } else if (craftException.equals(ITCRecipe.CraftException.OK)) {
             data.putInt(TooltipHelper.Keys.PROGRESS.toData(), progress);
             cachedRecipe.collectKnowledgeData(data, provider);
         }
@@ -99,9 +107,11 @@ public class CraftingBehaviour<INPUT extends RecipeInput, RECIPE extends ITCReci
     @Override
     public void addTooltipLines(CompoundTag data, List<Component> tooltip, boolean isShifting, HolderLookup.Provider provider) {
         TooltipHelper.addWithHeader(TooltipHelper.Headers.CRAFTING, tooltip, t -> {
-            cachedRecipe.addTooltipLines(data, t, isShifting, provider);
+            if (cachedRecipe != null)
+                cachedRecipe.addTooltipLines(data, t, isShifting, provider);
 
-            TooltipHelper.addIfExist(TooltipHelper.Keys.PROGRESS, TooltipHelper.Units.UNITS, t, data);
+            if (TCCommonConfigs.DEBUG.get())
+                TooltipHelper.addIfExist(TooltipHelper.Keys.PROGRESS, TooltipHelper.Units.UNITS, t, data);
             if (data.contains(TooltipHelper.Keys.MAX_PROGRESS.toData())) {
                 int max = data.getInt(TooltipHelper.Keys.MAX_PROGRESS.toData());
                 if (data.contains(TooltipHelper.Keys.PROGRESS.toData())) {

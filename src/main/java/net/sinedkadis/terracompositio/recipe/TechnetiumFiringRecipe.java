@@ -19,7 +19,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @Getter
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class TechnetiumFiringRecipe implements Recipe<SingleRecipeInput> {
+public class TechnetiumFiringRecipe implements Recipe<SingleRecipeInput> { //used not by TCBE so using vanilla interface
     private final ItemStack furnaceOutputItem;
     private final int ecf;
     private boolean assembled;
