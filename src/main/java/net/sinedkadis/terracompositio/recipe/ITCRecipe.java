@@ -1,9 +1,11 @@
 package net.sinedkadis.terracompositio.recipe;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.NonNullList;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -17,11 +19,13 @@ import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
 import net.sinedkadis.terracompositio.api.networks.TransferAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.api.registries.TCCapabilities;
-import net.sinedkadis.terracompositio.block.entity.FlowCedarCasingBlockEntity;
 import net.sinedkadis.terracompositio.block.entity.TCBlockEntity;
 import net.sinedkadis.terracompositio.particle.ECFParticleData;
+import net.sinedkadis.terracompositio.registries.TCBlocks;
 import net.sinedkadis.terracompositio.util.helpers.WorldHelperInternal;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Arrays;
 
 import static net.sinedkadis.terracompositio.api.registries.TCBlockStateProperties.INFUSED;
 
@@ -48,16 +52,43 @@ public interface ITCRecipe<INPUT extends Container> extends Recipe<INPUT>, IHave
         capability.takeECF(amount, TransferAction.EXECUTE);
     }
 
-    static void craftItem(TCBlockEntity be, ItemStack result) {
+    static void craftItem(TCBlockEntity be, ITCRecipe<? extends Container> recipe) {
         Level level = be.getLevel();
         if (level != null) {
             IItemHandler iItemHandler = be.getCapability(ForgeCapabilities.ITEM_HANDLER)
                     .orElse(SentinelHelper.EMPTY_ITEM_HANDLER);
             if (iItemHandler instanceof IItemHandlerModifiable modifiable) {
-                ItemStack copy = modifiable.getStackInSlot(0).copy();
-                copy.shrink(1);
-                modifiable.setStackInSlot(0, copy);
-                modifiable.setStackInSlot(1, result.copy());
+                NonNullList<Ingredient> ingredients = recipe.getIngredients();
+
+                for (int i = 0; i < iItemHandler.getSlots() - 1; i++) { //ignore last slot
+                    ItemStack copy = modifiable.getStackInSlot(0).copy();
+                    int count = -1;
+                    for (ItemStack stack : ingredients.get(i).getItems()) {
+                        if (stack.is(copy.getItem())) {
+                            count = stack.getCount();
+                            break;
+                        }
+                    }
+                    if (count == -1) throw new IllegalArgumentException("ItemStack " + copy + " not found in " +
+                            Arrays.toString(ingredients.get(i).getItems()));
+                    copy.shrink(count);
+                    modifiable.setStackInSlot(i, copy);
+                }
+
+                int lastSlot = iItemHandler.getSlots() - 1;
+                ItemStack resultItem = recipe.getResultItem(level.registryAccess());
+                ItemStack lastItem = iItemHandler.getStackInSlot(lastSlot).copy();
+
+                if (lastItem.isEmpty()) {
+                    lastItem = resultItem;
+                } else {
+                    if (!lastItem.is(resultItem.getItem())) {
+                        throw new IllegalArgumentException("Last slot is not output slot - " + iItemHandler);
+                    }
+                    lastItem.grow(resultItem.getCount());
+                }
+
+                modifiable.setStackInSlot(lastSlot, lastItem);
                 BlockState blockState = be.getBlockState();
                 level.sendBlockUpdated(be.getBlockPos(), blockState, blockState, 3);
                 be.setChanged();
@@ -90,7 +121,7 @@ public interface ITCRecipe<INPUT extends Container> extends Recipe<INPUT>, IHave
         int lastSlot = itemCapability.getSlots() - 1;
         ItemStack outputSlot = itemCapability.getStackInSlot(lastSlot);
 
-        if (!outputSlot.is(recipeOutput.getItem()))
+        if (!outputSlot.isEmpty() && !outputSlot.is(recipeOutput.getItem()))
             return CraftException.NO_SPACE;
         if (outputSlot.getCount() + recipeOutput.getCount() >
                 Math.min(
@@ -101,17 +132,32 @@ public interface ITCRecipe<INPUT extends Container> extends Recipe<INPUT>, IHave
         return CraftException.OK;
     }
 
-    static CraftException checkInfusion(@Nullable FlowCedarCasingBlockEntity casingBE) {
+    static CraftException checkInfusion(@Nullable TCBlockEntity casingBE) {
         if (casingBE == null) return CraftException.NO_SURROUNDINGS;
         if (!casingBE.getBlockState().getValue(INFUSED)) return CraftException.NO_SURROUNDINGS;
         return CraftException.OK;
     }
 
-    CraftException canBeProcessed(TCBlockEntity be);
+    static CraftException checkPedestal(TCBlockEntity be) {
+        Level level = be.getLevel();
+        if (level == null) return CraftException.NO_SURROUNDINGS;
 
-    void onCraftingTick(TCBlockEntity be);
+        BlockPos belowPos = be.getBlockPos().below();
+        BlockState belowState = level.getBlockState(belowPos);
 
-    boolean onComplete(TCBlockEntity be, int progress);
+        if (!belowState.is(TCBlocks.FLOW_CEDAR_PEDESTAL.get())) return CraftException.NO_SURROUNDINGS;
+        return CraftException.OK;
+    }
+
+    CraftException allowOnTick(TCBlockEntity be);
+
+    default CraftException allowOnNeighbourUpdate(TCBlockEntity be) {
+        return CraftException.OK;
+    }
+
+    void onCraftingTick(TCBlockEntity be, int progress);
+
+    boolean isCompleteThenCraft(TCBlockEntity be, int progress);
 
     enum CraftException implements TooltipHelper.ICustomUnit {
         OK,

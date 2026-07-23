@@ -5,11 +5,15 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.items.IItemHandler;
+import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.block.behaviours.CraftingBehaviour;
 import net.sinedkadis.terracompositio.block.behaviours.ECFHandlerBehaviour;
 import net.sinedkadis.terracompositio.block.behaviours.ItemHandlerBehaviour;
 import net.sinedkadis.terracompositio.config.TCInnerConfig;
 import net.sinedkadis.terracompositio.recipe.FlowInfusionRecipe;
+import net.sinedkadis.terracompositio.util.IHaveRenderStack;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,7 +22,7 @@ import java.util.List;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public class FlowInfuserBlockEntity extends TCBlockEntity {
+public class FlowInfuserBlockEntity extends TCBlockEntity implements IHaveRenderStack {
 
     public FlowInfuserBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(pPos, pBlockState);
@@ -47,4 +51,14 @@ public class FlowInfuserBlockEntity extends TCBlockEntity {
         list.add(new CraftingBehaviour<>(this, FlowInfusionRecipe.Type.INSTANCE));
     }
 
+    @Override
+    public ItemStack getRenderStack() {
+        IItemHandler itemCapability = getCapability(ForgeCapabilities.ITEM_HANDLER)
+                .orElse(SentinelHelper.EMPTY_ITEM_HANDLER);
+        for (int i = itemCapability.getSlots() - 1; i >= 0; i--) {
+            ItemStack stackInSlot = itemCapability.getStackInSlot(i);
+            if (!stackInSlot.isEmpty()) return stackInSlot;
+        }
+        return ItemStack.EMPTY;
+    }
 }

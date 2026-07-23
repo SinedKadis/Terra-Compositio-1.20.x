@@ -101,7 +101,7 @@ public class FlowInfusionRecipe implements ITCRecipe<RecipeWrapper> {
     }
 
     @Override
-    public CraftException canBeProcessed(TCBlockEntity be) {
+    public CraftException allowOnTick(TCBlockEntity be) {
         IItemHandler itemCapability = be.getCapability(ForgeCapabilities.ITEM_HANDLER)
                 .orElse(SentinelHelper.EMPTY_ITEM_HANDLER);
         ItemStack recipeOutput = getOutput();
@@ -118,24 +118,27 @@ public class FlowInfusionRecipe implements ITCRecipe<RecipeWrapper> {
         if (noECF.hasExceptions()) return noECF;
 
 
-        CraftException noSurrounding = ITCRecipe.checkSurroundings(be);
-        if (noSurrounding.hasExceptions()) return noSurrounding;
-
-
         return CraftException.OK;
     }
 
     @Override
-    public void onCraftingTick(TCBlockEntity be) {
+    public CraftException allowOnNeighbourUpdate(TCBlockEntity be) {
+        CraftException noSurrounding = ITCRecipe.checkSurroundings(be);
+        if (noSurrounding.hasExceptions()) return noSurrounding;
+        return CraftException.OK;
+    }
+
+    @Override
+    public void onCraftingTick(TCBlockEntity be, int progress) {
         ITCRecipe.spawnParticles(be);
         ITCRecipe.consumeECF(be, getECFTick());
         be.setChanged();
     }
 
     @Override
-    public boolean onComplete(TCBlockEntity be, int progress) {
+    public boolean isCompleteThenCraft(TCBlockEntity be, int progress) {
         if (progress > getTicks()) {
-            ITCRecipe.craftItem(be, getOutput());
+            ITCRecipe.craftItem(be, this);
             return true;
         }
         return false;

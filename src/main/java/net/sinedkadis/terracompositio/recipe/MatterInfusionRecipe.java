@@ -122,7 +122,7 @@ public class MatterInfusionRecipe implements ITCRecipe<RecipeWrapper> {
     }
 
     @Override
-    public CraftException canBeProcessed(TCBlockEntity be) {
+    public CraftException allowOnTick(TCBlockEntity be) {
         if (!(be instanceof MatterInfuserUnitBlockEntity miBE)) throw new AssertionError();
         FlowCedarCasingBlockEntity casingBE = miBE.getCasingBE();
 
@@ -152,7 +152,7 @@ public class MatterInfusionRecipe implements ITCRecipe<RecipeWrapper> {
     }
 
     @Override
-    public void onCraftingTick(TCBlockEntity be) {
+    public void onCraftingTick(TCBlockEntity be, int progress) {
         Level level = be.getLevel();
         if (level == null) return;
         if ((level.getGameTime() & 20) == 0) {
@@ -166,7 +166,7 @@ public class MatterInfusionRecipe implements ITCRecipe<RecipeWrapper> {
     }
 
     @Override
-    public boolean onComplete(TCBlockEntity be, int progress) {
+    public boolean isCompleteThenCraft(TCBlockEntity be, int progress) {
         if (progress > getTicks() && be instanceof MatterInfuserUnitBlockEntity miBE) {
             craftItem(miBE);
             return true;
@@ -181,18 +181,7 @@ public class MatterInfusionRecipe implements ITCRecipe<RecipeWrapper> {
         if (level != null
                 && portBE != null
                 && casingBE != null) {
-            ItemStack result = getOutput();
-            int takeCount = getIngredients().get(1).getItems()[0].getCount();
-
-            IItemHandlerModifiable itemHandler = casingBE.getCapability(TCCapabilities.ITEM_STATE_HOLDER)
-                    .orElse((IItemHandlerModifiable) SentinelHelper.EMPTY_ITEM_HANDLER);
-
-            ItemStack copy = itemHandler.getStackInSlot(0).copy();
-            copy.shrink(takeCount);
-            itemHandler.setStackInSlot(0, copy);
-            ItemStack resultCopy = result.copy();
-            resultCopy.setCount(resultCopy.getCount() + itemHandler.getStackInSlot(1).getCount());
-            itemHandler.setStackInSlot(1, resultCopy);
+            ITCRecipe.craftItem(be, this);
             BlockState blockState = be.getBlockState();
             level.sendBlockUpdated(be.getBlockPos(), blockState, blockState, 3);
             if (level.getRandom().nextInt(100) < catalystDecayRate) {
