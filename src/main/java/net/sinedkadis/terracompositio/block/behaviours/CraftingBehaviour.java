@@ -103,7 +103,11 @@ public class CraftingBehaviour<INPUT extends Container, RECIPE extends ITCRecipe
         RECIPE value = recipe.get();
         ITCRecipe.CraftException canBeProcessed = value.allowOnTick(blockEntity);
         if (!canBeProcessed.hasExceptions()) {
-            cachedRecipe = value;
+            if (cachedRecipe == null) {
+                canBeProcessed = value.allowOnNeighbourUpdate(blockEntity);
+            }
+            if (!canBeProcessed.hasExceptions())
+                cachedRecipe = value;
         } else {
             cachedRecipe = null;
         }

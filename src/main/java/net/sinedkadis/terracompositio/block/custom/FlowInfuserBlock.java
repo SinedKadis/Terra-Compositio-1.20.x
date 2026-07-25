@@ -8,12 +8,13 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.sinedkadis.terracompositio.api.registries.TCBlockStateProperties;
+import net.sinedkadis.terracompositio.block.IFluidApplicable;
 import net.sinedkadis.terracompositio.block.entity.TCBlockEntity;
 import net.sinedkadis.terracompositio.registries.TCBlockEntities;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class FlowInfuserBlock extends TCBaseEntityBlock {
+public class FlowInfuserBlock extends TCBaseEntityBlock implements IFluidApplicable {
 
     public FlowInfuserBlock(Properties pProperties) {
         super(pProperties);

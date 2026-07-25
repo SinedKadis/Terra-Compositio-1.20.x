@@ -13,6 +13,7 @@ import net.sinedkadis.terracompositio.block.behaviours.ECFHandlerBehaviour;
 import net.sinedkadis.terracompositio.block.behaviours.ItemHandlerBehaviour;
 import net.sinedkadis.terracompositio.config.TCInnerConfig;
 import net.sinedkadis.terracompositio.recipe.FlowInfusionRecipe;
+import net.sinedkadis.terracompositio.registries.TCItems;
 import net.sinedkadis.terracompositio.util.IHaveRenderStack;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
 import org.jetbrains.annotations.Nullable;
@@ -35,7 +36,7 @@ public class FlowInfuserBlockEntity extends TCBlockEntity implements IHaveRender
         list.add(new ItemHandlerBehaviour(this, 2) {
             @Override
             public boolean allowInsert(int pSlot, ItemStack pStack, @Nullable Direction pDirection, boolean manual) {
-                return manual && pSlot == 0;
+                return manual && pSlot == 0 && !pStack.is(TCItems.FLUID_APPLIER);
             }
 
             @Override
