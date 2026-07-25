@@ -10,7 +10,6 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -604,17 +603,6 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
         return true;
     }
 
-    public static void saveFromSetToTag(CompoundTag pTag, String tag, Set<BlockPos> senderPoses) {
-        ListTag listTag = new ListTag();
-        listTag.addAll(senderPoses.stream().map(BlockPosHelper::saveBlockPos).toList());
-        pTag.put(tag, listTag);
-    }
-
-    public static void loadFromTagToSet(CompoundTag pTag, String tag, Set<BlockPos> senderPoses) {
-        ListTag tagList = pTag.getList(tag, CompoundTag.TAG_COMPOUND);
-        senderPoses.addAll(tagList.stream().map(BlockPosHelper::loadBlockPos).toList());
-    }
-
     @Override
     protected void saveAdditional(CompoundTag pTag) {
         pTag.putFloat("rot_y", rotationYaw);
@@ -628,8 +616,8 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
             pTag.put(RECEIVER_POS_TAG, BlockPosHelper.saveBlockPos(receiverPos));
         if (outputPos != SentinelHelper.EMPTY_POS)
             pTag.put(OUTPUT_POS_TAG, BlockPosHelper.saveBlockPos(outputPos));
-        saveFromSetToTag(pTag, SENDER_POSES_TAG, senderPoses);
-        saveFromSetToTag(pTag, INPUT_POSES_TAG, inputPoses);
+        BlockPosHelper.saveFromSetToTag(pTag, SENDER_POSES_TAG, senderPoses);
+        BlockPosHelper.saveFromSetToTag(pTag, INPUT_POSES_TAG, inputPoses);
         super.saveAdditional(pTag);
     }
 
@@ -648,8 +636,8 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
 
         outputPos = BlockPosHelper.loadBlockPos(pTag.getCompound(OUTPUT_POS_TAG));
 
-        loadFromTagToSet(pTag, SENDER_POSES_TAG, senderPoses);
-        loadFromTagToSet(pTag, INPUT_POSES_TAG, inputPoses);
+        BlockPosHelper.loadFromTagToSet(pTag, SENDER_POSES_TAG, senderPoses);
+        BlockPosHelper.loadFromTagToSet(pTag, INPUT_POSES_TAG, inputPoses);
 
     }
 
