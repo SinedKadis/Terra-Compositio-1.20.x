@@ -1,5 +1,6 @@
 package net.sinedkadis.terracompositio.block.entity;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -14,12 +15,14 @@ import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
+import net.sinedkadis.terracompositio.api.networks.TransferAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.api.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.block.behaviours.ECFHandlerBehaviour;
 import net.sinedkadis.terracompositio.config.TCCommonConfigs;
 import net.sinedkadis.terracompositio.ecf.OutOfNetworkECFHandler;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
+import net.sinedkadis.terracompositio.util.helpers.ParticleHelperInternal;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -42,7 +45,14 @@ public class FEProviderCoreBlockEntity extends TCBlockEntity {
         super.tick(pLevel, pPos, pState);
         IECFHandler ecfCapability = getCapability(TCCapabilities.ECF)
                 .orElse(SentinelHelper.EMPTY_ECF_HANDLER);
-//        if (ecfCapability.getECF() > 0)
+        if (ecfCapability.getECF() > 0) {
+            int toAddEnergy = energyStorage.receiveEnergy(ecfCapability.takeECF(1, TransferAction.SIMULATE) * 20, true);
+            if (toAddEnergy > 0) {
+                ecfCapability.takeECF(1, TransferAction.EXECUTE);
+                energyStorage.receiveEnergy(toAddEnergy, false);
+                ParticleHelperInternal.spawnParticlesIn(pLevel, pPos);
+            }
+        }
     }
 
     @Override
@@ -85,7 +95,7 @@ public class FEProviderCoreBlockEntity extends TCBlockEntity {
         super.addTooltipLines(data, tooltip, isShifting);
         TooltipHelper.addWithHeader(TooltipHelper.Headers.FE, tooltip, t -> {
             if (!isShifting) {
-                TooltipHelper.addScaleIfExist(TooltipHelper.Keys.FE, TooltipHelper.Keys.MAX_FE, t, data);
+                TooltipHelper.addScaleIfExist(TooltipHelper.Keys.FE, TooltipHelper.Keys.MAX_FE, t, data, ChatFormatting.DARK_RED);
             } else {
                 TooltipHelper.addIfExist(TooltipHelper.Keys.FE, t, data);
                 if (TCCommonConfigs.DEBUG.get()) {
