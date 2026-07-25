@@ -327,4 +327,9 @@ public class ECFNetworkHandler implements ECFNetwork {
     public IECFHandler createDefaultECFHandler(ECFNetworkMember entityInstance) {
         return new DefaultECFHandler(entityInstance);
     }
+
+    @Override
+    public void clear(Level level) {
+        ecfSources.computeIfPresent(level, (level1, old) -> new HashSet<>());
+    }
 }

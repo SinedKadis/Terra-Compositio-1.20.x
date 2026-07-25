@@ -104,7 +104,8 @@ public class CraftingBehaviour<INPUT extends RecipeInput, RECIPE extends ITCReci
             data.putString(TooltipHelper.Keys.CRAFT_EXCEPTION.toData(), craftException.name());
         } else if (craftException.equals(ITCRecipe.CraftException.OK)) {
             data.putInt(TooltipHelper.Keys.PROGRESS.toData(), progress);
-            cachedRecipe.collectKnowledgeData(data, provider);
+            if (cachedRecipe != null)
+                cachedRecipe.collectKnowledgeData(data, provider);
         }
     }
 
