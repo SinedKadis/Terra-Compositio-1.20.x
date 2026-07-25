@@ -1,5 +1,6 @@
 package net.sinedkadis.terracompositio.block.behaviours;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -124,7 +125,7 @@ public class CraftingBehaviour<INPUT extends RecipeInput, RECIPE extends ITCReci
                     if (isShifting)
                         t.add(TooltipHelper.keyWithArg(TooltipHelper.Keys.TIME_REMAINING, (max - cur) / 20, TooltipHelper.Units.SECONDS));
                     else
-                        TooltipHelper.addScale(TooltipHelper.Keys.PROGRESS, cur, max, t);
+                        TooltipHelper.addScale(TooltipHelper.Keys.PROGRESS, cur, max, t, ChatFormatting.GREEN);
                 }
                 if (data.contains(TooltipHelper.Keys.ECF_CONSUME.toData())) {
                     int consume = data.getInt(TooltipHelper.Keys.ECF_CONSUME.toData());
