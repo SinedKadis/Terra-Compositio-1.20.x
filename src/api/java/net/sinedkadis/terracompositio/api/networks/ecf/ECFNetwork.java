@@ -40,17 +40,32 @@ public interface ECFNetwork {
     /**
      * Checks for validating relation between given members.
      *
-     * @param source the source member
-     * @param target the target member
+     * @param source     the source member
+     * @param target     the target member
      * @param distanceOp the operation, that returns range between two members, combined from their range property
      * @return the true if member is valid
      */
     boolean validateRelation(ECFNetworkMember source, ECFNetworkMember target, IntBinaryOperator distanceOp);
 
+    /**
+     * Execute ecf transfer.
+     *
+     * @param target the target
+     * @param source the source
+     * @param speed  the speed
+     */
     void executeECFTransfer(ECFNetworkMember target,
                             ECFNetworkMember source,
                             float speed);
 
+    /**
+     * Send burst.
+     *
+     * @param source the source
+     * @param target the target
+     * @param count  the count
+     * @param speed  the speed
+     */
     void sendBurst(IECFHandler source, ECFNetworkMember target, int count, float speed);
 
     /**
@@ -79,5 +94,12 @@ public interface ECFNetwork {
      */
     default IECFHandler createDefaultECFHandler(ECFNetworkMember entityInstance) {
         return SentinelHelper.EMPTY_ECF_HANDLER;
+    }
+
+    /**
+     * Clears the set of network members. Valid ones will be added back on next tick automatically
+     */
+    default void clear(Level level) {
+
     }
 }

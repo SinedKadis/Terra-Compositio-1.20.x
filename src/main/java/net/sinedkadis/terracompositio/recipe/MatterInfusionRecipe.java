@@ -9,6 +9,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.Item;
@@ -155,10 +157,14 @@ public class MatterInfusionRecipe implements ITCRecipe<RecipeWrapper> {
     public void onCraftingTick(TCBlockEntity be, int progress) {
         Level level = be.getLevel();
         if (level == null) return;
-        if ((level.getGameTime() & 20) == 0) {
+        long gameTime = level.getGameTime();
+        if ((gameTime % 20) == 0) {
             ParticleHelperInternal.spawnParticlesIn(level,
                     be.getBlockPos().relative(be.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING).getOpposite()),
                     ((int) Math.ceil(getECFTick() * 20)));
+        }
+        if ((gameTime % 10) == 5) {
+            level.playSound(null, be.getBlockPos(), SoundEvents.AZALEA_STEP, SoundSource.BLOCKS);
         }
 
         ITCRecipe.consumeECF(be, getECFTick());

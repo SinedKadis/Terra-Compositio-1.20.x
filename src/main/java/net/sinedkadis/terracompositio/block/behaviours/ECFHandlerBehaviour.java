@@ -104,8 +104,10 @@ public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
         if (!pLevel.isClientSide && getRange() != 0) {
             boolean inNetwork = ecfNetworkInstance.isIn(pLevel, member);
             if (!inNetwork && !blockEntity.isRemoved()) {
-                if (!(member instanceof DummyNetworkMember))
+                if (!(member instanceof DummyNetworkMember)) {
                     ecfNetworkInstance.fireECFNetworkEvent(member, NetworkAction.ADD);
+                    scheduleMemberUpdate();
+                }
             }
         }
         updateIfScheduled();
@@ -141,7 +143,7 @@ public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
 
     @Override
     public void onRemoved() {
-        TerraCompositioAPI.INSTANCE.getECFNetworkInstance().fireECFNetworkEvent(this, NetworkAction.REMOVE);
+        TerraCompositioAPI.INSTANCE.getECFNetworkInstance().fireECFNetworkEvent(this.member, NetworkAction.REMOVE);
     }
 
     @Override
