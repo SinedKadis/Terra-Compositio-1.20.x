@@ -38,6 +38,19 @@ public class TooltipHelper {
      * @return the mutable component
      */
     public static MutableComponent defaultTextWithArg(String translationKey, Object arg, ICustomUnit measurement) {
+        return defaultTextWithArg(translationKey, arg, measurement, ChatFormatting.AQUA);
+    }
+
+    /**
+     * Translation key as string with argument and given units. Cuts long floats
+     *
+     * @param translationKey the translation key
+     * @param arg            the arg
+     * @param measurement    the measurement unit
+     * @param argStyle       the style of arg
+     * @return the mutable component
+     */
+    public static MutableComponent defaultTextWithArg(String translationKey, Object arg, ICustomUnit measurement, ChatFormatting argStyle) {
 
         MutableComponent mutableComponent;
 
@@ -63,7 +76,7 @@ public class TooltipHelper {
         if (translationKey.equals(Keys.CRAFT_EXCEPTION.toTranslation()))
             color = ChatFormatting.RED;
         else
-            color = ChatFormatting.AQUA;
+            color = argStyle;
         return Component.translatable(translationKey,
                         mutableComponent.withStyle(color))
                 .withStyle(ChatFormatting.GRAY);
@@ -108,7 +121,20 @@ public class TooltipHelper {
      * @return the mutable component
      */
     public static MutableComponent keyWithArg(ICustomKey key, Object arg, ICustomUnit unit) {
-        return defaultTextWithArg(key.toTranslation(), arg, unit);
+        return keyWithArg(key, arg, unit, ChatFormatting.AQUA);
+    }
+
+    /**
+     * Translation key with argument and given units.
+     *
+     * @param key      the key
+     * @param arg      the arg
+     * @param unit     the unit
+     * @param argStyle the style of arg
+     * @return the mutable component
+     */
+    public static MutableComponent keyWithArg(ICustomKey key, Object arg, ICustomUnit unit, ChatFormatting argStyle) {
+        return defaultTextWithArg(key.toTranslation(), arg, unit, argStyle);
     }
 
     /**
@@ -176,6 +202,19 @@ public class TooltipHelper {
      * @param list    the list
      */
     public static void addScale(ICustomKey key, int current, int max, List<Component> list) {
+        addScale(key, current, max, list, ChatFormatting.AQUA);
+    }
+
+    /**
+     * Add translation key with scale
+     *
+     * @param key      the key
+     * @param current  the current level of scale
+     * @param max      the max level of scale
+     * @param list     the list
+     * @param argStyle the style of scale
+     */
+    public static void addScale(ICustomKey key, int current, int max, List<Component> list, ChatFormatting argStyle) {
         int segments = 20;
         float ratio = ((float) current / max);
         if (ratio > 1) ratio = 1;
@@ -185,7 +224,8 @@ public class TooltipHelper {
                         .append(
                                 Component.literal("|".repeat(Math.max(0, segments - count))).withStyle(ChatFormatting.GRAY)
                         ),
-                Units.NO_UNITS));
+                Units.NO_UNITS,
+                argStyle));
     }
 
     /**
@@ -198,8 +238,22 @@ public class TooltipHelper {
      * @param index  the index
      */
     public static void addScaleIfExist(ICustomKey key, ICustomKey maxKey, List<Component> list, CompoundTag data, int index) {
+        addScaleIfExist(key, maxKey, list, data, index, ChatFormatting.AQUA);
+    }
+
+    /**
+     * Add translation key with scale if it's data exist.
+     *
+     * @param key      the key
+     * @param maxKey   the max key
+     * @param list     the list
+     * @param data     the data
+     * @param index    the index
+     * @param argStyle the style of scale
+     */
+    public static void addScaleIfExist(ICustomKey key, ICustomKey maxKey, List<Component> list, CompoundTag data, int index, ChatFormatting argStyle) {
         if (data.contains(key.toData(index)) && data.contains(maxKey.toData(index))) {
-            addScale(key, data.getInt(key.toData(index)), data.getInt(maxKey.toData(index)), list);
+            addScale(key, data.getInt(key.toData(index)), data.getInt(maxKey.toData(index)), list, argStyle);
         }
     }
 
@@ -212,8 +266,21 @@ public class TooltipHelper {
      * @param data   the data
      */
     public static void addScaleIfExist(ICustomKey key, ICustomKey maxKey, List<Component> list, CompoundTag data) {
+        addScaleIfExist(key, maxKey, list, data, ChatFormatting.AQUA);
+    }
+
+    /**
+     * Add translation key with scale if it's data exist.
+     *
+     * @param key      the key
+     * @param maxKey   the max key
+     * @param list     the list
+     * @param data     the data
+     * @param argStyle the style of scale
+     */
+    public static void addScaleIfExist(ICustomKey key, ICustomKey maxKey, List<Component> list, CompoundTag data, ChatFormatting argStyle) {
         if (data.contains(key.toData()) && data.contains(maxKey.toData())) {
-            addScale(key, data.getInt(key.toData()), data.getInt(maxKey.toData()), list);
+            addScale(key, data.getInt(key.toData()), data.getInt(maxKey.toData()), list, argStyle);
         }
     }
 
