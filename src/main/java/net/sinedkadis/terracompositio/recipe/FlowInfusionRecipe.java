@@ -4,12 +4,14 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import lombok.Getter;
 import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -28,6 +30,7 @@ import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.api.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.block.entity.TCBlockEntity;
 import net.sinedkadis.terracompositio.config.TCCommonConfigs;
+import net.sinedkadis.terracompositio.particle.ECFParticleData;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -133,10 +136,21 @@ public class FlowInfusionRecipe implements ITCRecipe<RecipeWrapper> {
 
     @Override
     public void onCraftingTick(TCBlockEntity be, int progress) {
-        ITCRecipe.spawnParticles(be);
+        spawnParticles(be);
         ITCRecipe.consumeECF(be, getECFTick());
         be.setChanged();
     }
+
+    public void spawnParticles(TCBlockEntity be) {
+        if (be.getLevel() instanceof ServerLevel serverLevel) {
+            BlockPos blockPos = be.getBlockPos();
+            serverLevel.sendParticles(new ECFParticleData(1 / 20f),
+                    blockPos.getX() + 0.5D,
+                    blockPos.getY() + 0.5D,
+                    blockPos.getZ() + 0.5D, 1, 0, -0.1D, 0, 0.1D);
+        }
+    }
+
 
     @Override
     public boolean isCompleteThenCraft(TCBlockEntity be, int progress) {

@@ -2,7 +2,6 @@ package net.sinedkadis.terracompositio.recipe;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -20,8 +19,8 @@ import net.sinedkadis.terracompositio.api.networks.TransferAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.api.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.block.entity.TCBlockEntity;
-import net.sinedkadis.terracompositio.particle.ECFParticleData;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
+import net.sinedkadis.terracompositio.util.helpers.ParticleHelperInternal;
 import net.sinedkadis.terracompositio.util.helpers.WorldHelperInternal;
 import org.jetbrains.annotations.Nullable;
 
@@ -97,13 +96,7 @@ public interface ITCRecipe<INPUT extends Container> extends Recipe<INPUT>, IHave
     }
 
     static void spawnParticles(TCBlockEntity be) {
-        if (be.getLevel() instanceof ServerLevel serverLevel) {
-            BlockPos blockPos = be.getBlockPos();
-            serverLevel.sendParticles(new ECFParticleData(1 / 20f),
-                    blockPos.getX() + 0.5D,
-                    blockPos.getY() + 0.5D,
-                    blockPos.getZ() + 0.5D, 1, 0, -0.1D, 0, 0.1D);
-        }
+        ParticleHelperInternal.spawnParticlesIn(be.getLevel(), be.getBlockPos());
     }
 
     static CraftException checkECF(IECFHandler ecfCapability, float ecf) {
