@@ -350,10 +350,8 @@
   "book.terracompositio.creation_flow_journal.entry.enriched_technetium.page2": "  To extract ECF from it, smelt the enriched material. But remember, the more enriched it is, the more toxic it becomes",
   "book.terracompositio.creation_flow_journal.category.day_5.name": "Chapter Five",
   "book.terracompositio.creation_flow_journal.category.day_5.description": "Bookmark Five: Technetium and Its Applications. The final tab",
-
-
-  "book.terracompositio.creation_flow_journal.entry.fluid_applier.name": "Fluid Applicator",
-  "book.terracompositio.creation_flow_journal.entry.fluid_applier.page1": "  A cool device. Can be used as a bucket; holds 8 buckets of liquid. Can pour liquids one after another, instead of pouring them into a single block",
+  "book.terracompositio.creation_flow_journal.entry.fluid_applier.name": "Fluid Applier",
+  "book.terracompositio.creation_flow_journal.entry.fluid_applier.page1": "  A cool device. Can be used as a bucket; holds 8 buckets of liquid. Can pour liquids one after another, instead of pouring them into a single block. Also can apply fluids in 5x bigger range",
   "book.terracompositio.creation_flow_journal.entry.fluid_applier.page2": "  If it contains a liquid flow, it can fill wooden blocks with it and revive withered Ents",
   "book.terracompositio.creation_flow_journal.entry.technetium_armor.name": "Technetium Armor",
   "book.terracompositio.creation_flow_journal.entry.technetium_armor.desc": "  An incredible material that can be used to craft good armor. Initially, each piece can store up to 8 ECF, but by combining it at a workbench with a piece of enriched technetium, its capacity will equal the cost of production: from 128 to 3,200, respectively",
