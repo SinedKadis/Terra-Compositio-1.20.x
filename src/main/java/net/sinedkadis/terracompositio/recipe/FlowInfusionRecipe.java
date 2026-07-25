@@ -105,6 +105,9 @@ public class FlowInfusionRecipe implements ITCRecipe<RecipeWrapper> {
         CraftException noECF = ITCRecipe.checkECF(ecfCapability, ecf);
         if (noECF.hasExceptions()) return noECF;
 
+        CraftException noInfusion = ITCRecipe.checkInfusion(be);
+        if (noInfusion.hasExceptions()) return noInfusion;
+
 
         return CraftException.OK;
     }
