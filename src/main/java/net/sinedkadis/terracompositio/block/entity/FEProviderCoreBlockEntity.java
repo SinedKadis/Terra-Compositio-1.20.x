@@ -1,5 +1,6 @@
 package net.sinedkadis.terracompositio.block.entity;
 
+import lombok.Getter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -12,25 +13,30 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.neoforged.neoforge.energy.EnergyStorage;
 import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.sinedkadis.terracompositio.api.helpers.BlockPosHelper;
 import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
 import net.sinedkadis.terracompositio.api.networks.TransferAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.block.behaviours.ECFHandlerBehaviour;
 import net.sinedkadis.terracompositio.config.TCCommonConfigs;
-import net.sinedkadis.terracompositio.ecf.OutOfNetworkECFHandler;
+import net.sinedkadis.terracompositio.config.TCInnerConfig;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
 import net.sinedkadis.terracompositio.util.helpers.ParticleHelperInternal;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class FEProviderCoreBlockEntity extends TCBlockEntity {
 
     private final IEnergyStorage energyStorage = new EnergyStorage(3200);
+    @Getter
+    private final Set<BlockPos> pylonPoses = new HashSet<>();
 
     public FEProviderCoreBlockEntity(BlockPos pos, BlockState state) {
         super(pos, state);
@@ -40,12 +46,14 @@ public class FEProviderCoreBlockEntity extends TCBlockEntity {
     public void tick(Level pLevel, BlockPos pPos, BlockState pState) {
         super.tick(pLevel, pPos, pState);
         IECFHandler ecfCapability = getECFCapability(null);
-        if (ecfCapability.getECF() > 0) {
-            int toAddEnergy = energyStorage.receiveEnergy(ecfCapability.takeECF(1, TransferAction.SIMULATE) * 20, true);
-            if (toAddEnergy > 0) {
-                ecfCapability.takeECF(1, TransferAction.EXECUTE);
-                energyStorage.receiveEnergy(toAddEnergy, false);
-                ParticleHelperInternal.spawnParticlesIn(pLevel, pPos);
+        if (ecfCapability.getECF() > 0 && pLevel.getGameTime() % 20 == 3) {
+            for (int i = 0; i < pylonPoses.size(); i++) {
+                int toAddEnergy = energyStorage.receiveEnergy(ecfCapability.takeECF(1, TransferAction.SIMULATE) * 20, true);
+                if (toAddEnergy > 0) {
+                    ecfCapability.takeECF(1, TransferAction.EXECUTE);
+                    energyStorage.receiveEnergy(toAddEnergy, false);
+                    ParticleHelperInternal.spawnParticlesIn(pLevel, pPos);
+                }
             }
         }
     }
@@ -53,9 +61,22 @@ public class FEProviderCoreBlockEntity extends TCBlockEntity {
     @Override
     void addBEBehaviours(List<IBEBehaviour> behaviourList) {
         behaviourList.add(new ECFHandlerBehaviour(this)
-                .ecfHandler(ecfHandlerBehaviour -> new OutOfNetworkECFHandler(ecfHandlerBehaviour.getEntityInstance()))
-                .ecfNetworkMember(ecfHandlerBehaviour -> SentinelHelper.EMPTY_MEMBER)
+                .maxECF(128)
+                .priority(TCInnerConfig.DEFAULT_SOURCE_PRIORITY)
+                .range(7)
         );
+    }
+
+    @Override
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        BlockPosHelper.saveFromSetToTag(tag, "pylon_poses", pylonPoses);
+    }
+
+    @Override
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        BlockPosHelper.loadFromTagToSet(tag, "pylon_poses", pylonPoses);
     }
 
     @Override
