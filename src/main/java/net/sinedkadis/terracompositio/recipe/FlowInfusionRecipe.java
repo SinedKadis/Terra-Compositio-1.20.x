@@ -5,6 +5,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import lombok.Getter;
 import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -12,6 +13,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -23,6 +25,7 @@ import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.block.entity.TCBlockEntity;
 import net.sinedkadis.terracompositio.config.TCCommonConfigs;
+import net.sinedkadis.terracompositio.particle.ECFParticleData;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
@@ -121,10 +124,21 @@ public class FlowInfusionRecipe implements ITCRecipe<RecipeWrapper> {
 
     @Override
     public void onCraftingTick(TCBlockEntity be, int progress) {
-        ITCRecipe.spawnParticles(be);
+        spawnParticles(be);
         ITCRecipe.consumeECF(be, getECFTick());
         be.setChanged();
     }
+
+    public void spawnParticles(TCBlockEntity be) {
+        if (be.getLevel() instanceof ServerLevel serverLevel) {
+            BlockPos blockPos = be.getBlockPos();
+            serverLevel.sendParticles(new ECFParticleData(1 / 20f),
+                    blockPos.getX() + 0.5D,
+                    blockPos.getY() + 0.5D,
+                    blockPos.getZ() + 0.5D, 1, 0, -0.1D, 0, 0.1D);
+        }
+    }
+
 
     @Override
     public boolean isCompleteThenCraft(TCBlockEntity be, int progress) {

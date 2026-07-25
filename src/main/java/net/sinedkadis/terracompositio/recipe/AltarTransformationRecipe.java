@@ -137,6 +137,10 @@ public class AltarTransformationRecipe implements ITCRecipe<RecipeWrapper> {
         capability.setStackInSlot(0, ItemStack.EMPTY);
         capability.setStackInSlot(1, ItemStack.EMPTY);
         capability.setStackInSlot(2, result);
+        Level level = blockEntity.getLevel();
+        if (level != null)
+            level.sendBlockUpdated(blockEntity.getBlockPos(), blockEntity.getBlockState(), blockEntity.getBlockState(), 3);
+        blockEntity.setChanged();
     }
 
     @Override
