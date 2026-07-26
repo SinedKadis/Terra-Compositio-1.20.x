@@ -189,6 +189,7 @@ public class TCEventBusClientEvents {
         event.registerBlockEntityRenderer(TCBlockEntities.ENT_STATUE_BE.get(), EntStatueBlockEntityRenderer::new);
         event.registerBlockEntityRenderer(TCBlockEntities.MATTER_INFUSER_IO_BE.get(), MatterInfuserIOBlockEntityRenderer::new);
         event.registerBlockEntityRenderer(TCBlockEntities.MATTER_INFUSER_PORT_BE.get(), MatterInfuserPortBlockEntityRenderer::new);
+        event.registerBlockEntityRenderer(TCBlockEntities.FE_PROVIDER_CORE_BE.get(), FEProviderCoreBlockEntityRenderer::new);
 
 
         if (ModList.get().isLoaded("create")) {

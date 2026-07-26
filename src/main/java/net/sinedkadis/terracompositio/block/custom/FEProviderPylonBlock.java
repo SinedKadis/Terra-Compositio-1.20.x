@@ -5,7 +5,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.shapes.BooleanOp;
@@ -15,22 +14,15 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.sinedkadis.terracompositio.api.registries.TCBlockStateProperties;
 import net.sinedkadis.terracompositio.block.IFluidApplicable;
 import net.sinedkadis.terracompositio.block.entity.FEProviderCoreBlockEntity;
-import net.sinedkadis.terracompositio.block.entity.TCBlockEntity;
-import net.sinedkadis.terracompositio.registries.TCBlockEntities;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class FEProviderPylonBlock extends TCBaseEntityBlock implements IFluidApplicable {
+public class FEProviderPylonBlock extends Block implements IFluidApplicable {
     public FEProviderPylonBlock(Properties pProperties) {
         super(pProperties);
         registerDefaultState(defaultBlockState().setValue(TCBlockStateProperties.INFUSED, false));
-    }
-
-    @Override
-    public BlockEntityType<? extends TCBlockEntity> getBlockEntityType() {
-        return TCBlockEntities.FE_PROVIDER_PYLON_BE.get();
     }
 
     @Override
@@ -68,6 +60,7 @@ public class FEProviderPylonBlock extends TCBaseEntityBlock implements IFluidApp
                     .ifPresent(be -> be.getPylonPoses().add(pos));
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void onRemove(BlockState pState, Level level, BlockPos pos, BlockState pNewState, boolean pIsMoving) {
         super.onRemove(pState, level, pos, pNewState, pIsMoving);
