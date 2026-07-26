@@ -7,10 +7,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.energy.EnergyStorage;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.sinedkadis.terracompositio.api.helpers.BlockPosHelper;
@@ -18,9 +20,11 @@ import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
 import net.sinedkadis.terracompositio.api.networks.TransferAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
+import net.sinedkadis.terracompositio.api.registries.TCBlockStateProperties;
 import net.sinedkadis.terracompositio.block.behaviours.ECFHandlerBehaviour;
 import net.sinedkadis.terracompositio.config.TCCommonConfigs;
 import net.sinedkadis.terracompositio.config.TCInnerConfig;
+import net.sinedkadis.terracompositio.registries.TCBlocks;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
 import net.sinedkadis.terracompositio.util.helpers.ParticleHelperInternal;
 import org.jetbrains.annotations.Nullable;
@@ -38,13 +42,27 @@ public class FEProviderCoreBlockEntity extends TCBlockEntity {
     @Getter
     private final Set<BlockPos> pylonPoses = new HashSet<>();
 
-    public FEProviderCoreBlockEntity(BlockPos pos, BlockState state) {
-        super(pos, state);
+    boolean firstTick = true;
+
+
+    public FEProviderCoreBlockEntity(BlockPos pos, BlockState pState) {
+        super(pos, pState);
     }
 
     @Override
     public void tick(Level pLevel, BlockPos pPos, BlockState pState) {
         super.tick(pLevel, pPos, pState);
+        if (pylonPoses.isEmpty() && level != null && firstTick) {
+            BlockPos.betweenClosedStream(pPos.offset(-7, 0, -7), pPos.offset(7, 0, 7))
+                    .filter(blockPos -> !blockPos.closerThan(pPos, 1.5f))
+                    .filter(blockPos -> {
+                        BlockState state = level.getBlockState(blockPos);
+                        return state.is(TCBlocks.FE_PROVIDER_PYLON.get())
+                                && state.getValue(TCBlockStateProperties.INFUSED);
+                    })
+                    .forEach(blockPos -> this.getPylonPoses().add(blockPos));
+            firstTick = false;
+        }
         IECFHandler ecfCapability = getECFCapability(null);
         if (ecfCapability.getECF() > 0 && pLevel.getGameTime() % 20 == 3) {
             for (int i = 0; i < pylonPoses.size(); i++) {
@@ -53,6 +71,17 @@ public class FEProviderCoreBlockEntity extends TCBlockEntity {
                     ecfCapability.takeECF(1, TransferAction.EXECUTE);
                     energyStorage.receiveEnergy(toAddEnergy, false);
                     ParticleHelperInternal.spawnParticlesIn(pLevel, pPos);
+                }
+            }
+        }
+        if (level != null && energyStorage.getEnergyStored() > 0) {
+            Direction direction = pState.getValue(BlockStateProperties.HORIZONTAL_FACING);
+            IEnergyStorage capability = level.getCapability(Capabilities.EnergyStorage.BLOCK, pPos.relative(direction), direction);
+            if (capability != null) {
+                int toTransfer = capability.receiveEnergy(energyStorage.extractEnergy(energyStorage.getEnergyStored(), true), true);
+                if (toTransfer > 0) {
+                    energyStorage.extractEnergy(toTransfer, false);
+                    capability.receiveEnergy(toTransfer, false);
                 }
             }
         }
@@ -71,12 +100,16 @@ public class FEProviderCoreBlockEntity extends TCBlockEntity {
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
         BlockPosHelper.saveFromSetToTag(tag, "pylon_poses", pylonPoses);
+        tag.put("energy", ((EnergyStorage) energyStorage).serializeNBT(registries));
     }
 
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
         BlockPosHelper.loadFromTagToSet(tag, "pylon_poses", pylonPoses);
+        Tag energy = tag.get("energy");
+        if (energy != null)
+            ((EnergyStorage) energyStorage).deserializeNBT(registries, energy);
     }
 
     @Override
