@@ -32,11 +32,14 @@ public class FEProviderCoreBlock extends TCBaseEntityBlock {
     public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
         BlockState stateForPlacement = super.getStateForPlacement(context);
         if (stateForPlacement == null) return null;
-        return stateForPlacement.setValue(BlockStateProperties.HORIZONTAL_FACING, context.getNearestLookingDirection().getOpposite());
+        return stateForPlacement.setValue(
+                BlockStateProperties.HORIZONTAL_FACING,
+                context.getHorizontalDirection().getOpposite()
+        );
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(TCBlockStateProperties.INFUSED, BlockStateProperties.HORIZONTAL_FACING);
+        builder.add(BlockStateProperties.HORIZONTAL_FACING, TCBlockStateProperties.INFUSED);
     }
 }

@@ -297,7 +297,7 @@ public class TCBlocks {
     public static final DeferredBlock<Block> FE_PROVIDER_CORE = registerBlock("fe_provider_core",
             () -> new FEProviderCoreBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHERITE_BLOCK).noOcclusion()));
     public static final DeferredBlock<Block> FE_PROVIDER_PYLON = registerBlock("fe_provider_pylon",
-            () -> new FEProviderPylonBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.TINTED_GLASS).noOcclusion()));
+            () -> new FEProviderPylonBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS).noOcclusion()));
 
     public static <T extends Block> DeferredBlock<T> registerBlock(String name, Supplier<T> block) {
         return registerBlock(name, block, () -> true);

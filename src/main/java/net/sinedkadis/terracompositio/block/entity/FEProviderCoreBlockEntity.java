@@ -62,7 +62,7 @@ public class FEProviderCoreBlockEntity extends TCBlockEntity {
     void addBEBehaviours(List<IBEBehaviour> behaviourList) {
         behaviourList.add(new ECFHandlerBehaviour(this)
                 .maxECF(128)
-                .priority(TCInnerConfig.DEFAULT_SOURCE_PRIORITY)
+                .priority(TCInnerConfig.DEFAULT_CONSUMER_PRIORITY)
                 .range(7)
         );
     }
