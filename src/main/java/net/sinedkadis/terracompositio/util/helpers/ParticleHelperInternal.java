@@ -211,7 +211,7 @@ public class ParticleHelperInternal {
         }
 
         int lifetimeTicks = Mth.clamp(
-                (int) Math.round(distance / SpiralParticle.AXIAL_SPEED),
+                (int) Math.round(distance / SpiralParticle.getAxialSpeed()),
                 1,
                 SpiralParticle.MAX_LIFETIME
         );
