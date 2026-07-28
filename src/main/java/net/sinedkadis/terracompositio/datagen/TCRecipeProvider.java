@@ -44,33 +44,40 @@ public class TCRecipeProvider extends RecipeProvider implements IConditionBuilde
         super(pOutput,provider);
     }
 
-    @Override
-    protected void buildRecipes(RecipeOutput pWriter) {
+    private static void buildFEP(RecipeOutput pWriter) {
+        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, TCBlocks.FE_PROVIDER_CORE.get())
+                .pattern("RTI")
+                .pattern(" C ")
+                .define('C', TCBlocks.FLOW_CEDAR_CASING)
+                .define('R', TCItems.COPPER_ROD)
+                .define('T', TCItems.TECHNETIUM_INGOT)
+                .define('I', TCBlocks.INFUSED_IRON_PRESSURE_PLATE)
+                .unlockedBy(getHasName(TCItems.TECHNETIUM_INGOT), has(TCItems.TECHNETIUM_INGOT))
+                .save(pWriter);
+        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, TCBlocks.FE_PROVIDER_PYLON.get())
+                .pattern("R")
+                .pattern("C")
+                .pattern("B")
+                .define('C', TCBlocks.FLOW_CEDAR_CASING)
+                .define('R', TCItems.COPPER_ROD)
+                .define('B', Items.REDSTONE_BLOCK)
+                .unlockedBy(getHasName(TCBlocks.FLOW_CEDAR_PLANKS.get()), has(TCBlocks.FLOW_CEDAR_PLANKS.get()))
+                .save(pWriter);
+    }
 
-        specialCraftingRecipe(pWriter, ECFStorageUpgradeRecipe::new,"storage_upgrade");
-
-        buildCedarBlocks(pWriter);
-        buildMatterInfuserBlocks(pWriter);
-        buildCopperMaterials(pWriter);
-        buildTechnetiumMaterials(pWriter);
-        buildTechnetiumArmor(pWriter);
-        buildCedarArmor(pWriter);
-        buildInfusedIronMaterials(pWriter);
-        buildGoldMaterials(pWriter);
-        buildDesorbers(pWriter);
-        buildPathPointers(pWriter);
-        buildFloatingRedstone(pWriter);
-        buildCFJ(pWriter);
-
-
-        buildTechnetiumOreProcessing(pWriter);
-        buildMisc(pWriter);
-        buildSpecial(pWriter);
-        buildApples(pWriter);
-
-        buildCompat(pWriter);
-
-
+    private static void buildApples(RecipeOutput pWriter) {
+        FlowInfusionRecipeBuilder.create(
+                TCItems.APPLE_OF_KNOWLEDGE.get().getDefaultInstance(),
+                NonNullList.of(Ingredient.EMPTY,Ingredient.of(Items.APPLE)),
+                100,
+                200
+        ).save(pWriter, TerraCompositio.modLoc("flow_infusion/apple_of_knowledge"));
+        FlowInfusionRecipeBuilder.create(
+                TCItems.APPLE_OF_IGNORANCE.get().getDefaultInstance(),
+                NonNullList.of(Ingredient.EMPTY,Ingredient.of(Items.GOLDEN_APPLE)),
+                100,
+                200
+        ).save(pWriter, TerraCompositio.modLoc("flow_infusion/apple_of_ignorance"));
     }
 
     private static void buildCFJ(RecipeOutput pWriter) {
@@ -127,19 +134,66 @@ public class TCRecipeProvider extends RecipeProvider implements IConditionBuilde
                 .save(pWriter, "upgrade_book_to_day_5");
     }
 
-    private void buildApples(RecipeOutput pWriter) {
-        FlowInfusionRecipeBuilder.create(
-                TCItems.APPLE_OF_KNOWLEDGE.get().getDefaultInstance(),
-                NonNullList.of(Ingredient.EMPTY,Ingredient.of(Items.APPLE)),
-                100,
-                200
-        ).save(pWriter, TerraCompositio.modLoc("flow_infusion/apple_of_knowledge"));
-        FlowInfusionRecipeBuilder.create(
-                TCItems.APPLE_OF_IGNORANCE.get().getDefaultInstance(),
-                NonNullList.of(Ingredient.EMPTY,Ingredient.of(Items.GOLDEN_APPLE)),
-                100,
-                200
-        ).save(pWriter, TerraCompositio.modLoc("flow_infusion/apple_of_ignorance"));
+    private static void buildFloatingRedstone(RecipeOutput pWriter) {
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, TCBlocks.FLOATING_REDSTONE.get())
+                .pattern("R")
+                .pattern("N")
+                .define('R', Items.REDSTONE)
+                .define('N', TCItems.INFUSED_IRON_NUGGET.get())
+                .unlockedBy(getHasName(TCItems.INFUSED_IRON_INGOT.get()), has(TCItems.INFUSED_IRON_INGOT.get()))
+                .save(pWriter);
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, TCBlocks.FLOATING_TORCH_HOLDER.get())
+                .pattern("P")
+                .pattern("I")
+                .define('P', Items.FLOWER_POT)
+                .define('I', TCItems.INFUSED_IRON_INGOT.get())
+                .unlockedBy(getHasName(TCItems.INFUSED_IRON_INGOT.get()), has(TCItems.INFUSED_IRON_INGOT.get()))
+                .save(pWriter);
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, TCBlocks.FLOATING_REPEATER.get())
+                .pattern("TRT")
+                .pattern("SIS")
+                .define('T', Items.REDSTONE_TORCH)
+                .define('R', Items.REDSTONE)
+                .define('S', Items.STONE)
+                .define('I',TCItems.INFUSED_IRON_INGOT.get())
+                .unlockedBy(getHasName(TCItems.INFUSED_IRON_INGOT.get()), has(TCItems.INFUSED_IRON_INGOT.get()))
+                .save(pWriter);
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, TCBlocks.FLOATING_COMPARATOR.get())
+                .pattern(" T ")
+                .pattern("TQT")
+                .pattern("SIS")
+                .define('T', Items.REDSTONE_TORCH)
+                .define('Q', Items.QUARTZ)
+                .define('S', Items.STONE)
+                .define('I',TCItems.INFUSED_IRON_INGOT.get())
+                .unlockedBy(getHasName(TCItems.INFUSED_IRON_INGOT.get()), has(TCItems.INFUSED_IRON_INGOT.get()))
+                .save(pWriter);
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, TCBlocks.INFUSED_IRON_PRESSURE_PLATE.get())
+                .pattern("II")
+                .define('I',TCItems.INFUSED_IRON_INGOT.get())
+                .unlockedBy(getHasName(TCItems.INFUSED_IRON_INGOT.get()), has(TCItems.INFUSED_IRON_INGOT.get()))
+                .save(pWriter);
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, TCBlocks.INFUSED_IRON_DOOR.get())
+                .pattern("II")
+                .pattern("II")
+                .pattern("II")
+                .define('I',TCItems.INFUSED_IRON_INGOT.get())
+                .unlockedBy(getHasName(TCItems.INFUSED_IRON_INGOT.get()), has(TCItems.INFUSED_IRON_INGOT.get()))
+                .save(pWriter);
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.BUILDING_BLOCKS, TCBlocks.FLOATING_BUTTON.get(), 1)
+                .requires(TCItems.INFUSED_IRON_INGOT.get())
+                .requires(ItemTags.STONE_BUTTONS)
+                .unlockedBy(getHasName(TCItems.INFUSED_IRON_INGOT.get()), has(TCItems.INFUSED_IRON_INGOT.get()))
+                .save(pWriter);
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, TCBlocks.FLOATING_LEVER.get())
+                .pattern("n")
+                .pattern("p")
+                .pattern("i")
+                .define('i', TCItems.INFUSED_IRON_INGOT.get())
+                .define('n', TCItems.INFUSED_IRON_NUGGET.get())
+                .define('p', TCBlocks.FLOW_CEDAR_PLANKS.get())
+                .unlockedBy(getHasName(TCItems.INFUSED_IRON_INGOT.get()), has(TCItems.INFUSED_IRON_INGOT.get()))
+                .save(pWriter);
     }
 
     private void buildCompat(RecipeOutput pWriter) {
@@ -772,66 +826,34 @@ public class TCRecipeProvider extends RecipeProvider implements IConditionBuilde
                 .save(pWriter);
     }
 
-    private void buildFloatingRedstone(RecipeOutput pWriter) {
-        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, TCBlocks.FLOATING_REDSTONE.get())
-                .pattern("R")
-                .pattern("N")
-                .define('R', Items.REDSTONE)
-                .define('N', TCItems.INFUSED_IRON_NUGGET.get())
-                .unlockedBy(getHasName(TCItems.INFUSED_IRON_INGOT.get()), has(TCItems.INFUSED_IRON_INGOT.get()))
-                .save(pWriter);
-        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, TCBlocks.FLOATING_TORCH_HOLDER.get())
-                .pattern("P")
-                .pattern("I")
-                .define('P', Items.FLOWER_POT)
-                .define('I', TCItems.INFUSED_IRON_INGOT.get())
-                .unlockedBy(getHasName(TCItems.INFUSED_IRON_INGOT.get()), has(TCItems.INFUSED_IRON_INGOT.get()))
-                .save(pWriter);
-        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, TCBlocks.FLOATING_REPEATER.get())
-                .pattern("TRT")
-                .pattern("SIS")
-                .define('T', Items.REDSTONE_TORCH)
-                .define('R', Items.REDSTONE)
-                .define('S', Items.STONE)
-                .define('I',TCItems.INFUSED_IRON_INGOT.get())
-                .unlockedBy(getHasName(TCItems.INFUSED_IRON_INGOT.get()), has(TCItems.INFUSED_IRON_INGOT.get()))
-                .save(pWriter);
-        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, TCBlocks.FLOATING_COMPARATOR.get())
-                .pattern(" T ")
-                .pattern("TQT")
-                .pattern("SIS")
-                .define('T', Items.REDSTONE_TORCH)
-                .define('Q', Items.QUARTZ)
-                .define('S', Items.STONE)
-                .define('I',TCItems.INFUSED_IRON_INGOT.get())
-                .unlockedBy(getHasName(TCItems.INFUSED_IRON_INGOT.get()), has(TCItems.INFUSED_IRON_INGOT.get()))
-                .save(pWriter);
-        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, TCBlocks.INFUSED_IRON_PRESSURE_PLATE.get())
-                .pattern("II")
-                .define('I',TCItems.INFUSED_IRON_INGOT.get())
-                .unlockedBy(getHasName(TCItems.INFUSED_IRON_INGOT.get()), has(TCItems.INFUSED_IRON_INGOT.get()))
-                .save(pWriter);
-        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, TCBlocks.INFUSED_IRON_DOOR.get())
-                .pattern("II")
-                .pattern("II")
-                .pattern("II")
-                .define('I',TCItems.INFUSED_IRON_INGOT.get())
-                .unlockedBy(getHasName(TCItems.INFUSED_IRON_INGOT.get()), has(TCItems.INFUSED_IRON_INGOT.get()))
-                .save(pWriter);
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.BUILDING_BLOCKS, TCBlocks.FLOATING_BUTTON.get(), 1)
-                .requires(TCItems.INFUSED_IRON_INGOT.get())
-                .requires(ItemTags.STONE_BUTTONS)
-                .unlockedBy(getHasName(TCItems.INFUSED_IRON_INGOT.get()), has(TCItems.INFUSED_IRON_INGOT.get()))
-                .save(pWriter);
-        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, TCBlocks.FLOATING_LEVER.get())
-                .pattern("n")
-                .pattern("p")
-                .pattern("i")
-                .define('i', TCItems.INFUSED_IRON_INGOT.get())
-                .define('n', TCItems.INFUSED_IRON_NUGGET.get())
-                .define('p', TCBlocks.FLOW_CEDAR_PLANKS.get())
-                .unlockedBy(getHasName(TCItems.INFUSED_IRON_INGOT.get()), has(TCItems.INFUSED_IRON_INGOT.get()))
-                .save(pWriter);
+    @Override
+    protected void buildRecipes(RecipeOutput pWriter) {
+
+        specialCraftingRecipe(pWriter, ECFStorageUpgradeRecipe::new,"storage_upgrade");
+
+        buildCedarBlocks(pWriter);
+        buildMatterInfuserBlocks(pWriter);
+        buildCopperMaterials(pWriter);
+        buildTechnetiumMaterials(pWriter);
+        buildTechnetiumArmor(pWriter);
+        buildCedarArmor(pWriter);
+        buildInfusedIronMaterials(pWriter);
+        buildGoldMaterials(pWriter);
+        buildDesorbers(pWriter);
+        buildPathPointers(pWriter);
+        buildFloatingRedstone(pWriter);
+        buildCFJ(pWriter);
+        buildFEP(pWriter);
+
+
+        buildTechnetiumOreProcessing(pWriter);
+        buildMisc(pWriter);
+        buildSpecial(pWriter);
+        buildApples(pWriter);
+
+        buildCompat(pWriter);
+
+
     }
 
     private static ItemStack createCFJBook(int day) {
