@@ -41,7 +41,7 @@ public class FEProviderCoreBlockEntityRenderer implements BlockEntityRenderer<FE
         if (ecf > 0) {
             renderCube(partialTick, pPoseStack, pBuffer, pPackedLight, pPackedOverlay, level);
 
-            if (level.getGameTime() % 2 == 0 && ((energyCapability.getMaxEnergyStored() - energyCapability.getEnergyStored()) > 0)) {
+            if (level.getGameTime() % 5 == 0 && ((energyCapability.getMaxEnergyStored() - energyCapability.getEnergyStored()) > 0)) {
                 for (BlockPos pylonPos : pBlockEntity.getPylonPoses()) {
                     ParticleHelperInternal.spawnSpiralEcf((ClientLevel) level, origin, pylonPos);
                     ParticleHelperInternal.spawnSpiralFE((ClientLevel) level, origin, pylonPos);

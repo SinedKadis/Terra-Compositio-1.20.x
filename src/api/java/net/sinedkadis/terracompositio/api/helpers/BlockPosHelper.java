@@ -212,6 +212,7 @@ public class BlockPosHelper {
      */
     public static void loadFromTagToSet(CompoundTag pTag, String tag, Set<BlockPos> posSet) {
         ListTag tagList = pTag.getList(tag, CompoundTag.TAG_COMPOUND);
+        posSet.clear();
         posSet.addAll(tagList.stream().map(BlockPosHelper::loadBlockPos).toList());
     }
 }

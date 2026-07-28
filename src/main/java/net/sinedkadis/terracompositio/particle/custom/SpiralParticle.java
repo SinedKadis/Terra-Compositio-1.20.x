@@ -11,82 +11,59 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public class SpiralParticle extends TextureSheetParticle {
 
-    /**
-     * Скорость, с которой "длина вектора" (тики) конвертируется в реальное расстояние.
-     */
-    public static final double AXIAL_SPEED = 0.01;
     public static final int MAX_LIFETIME = 20 * 60;
-    private static final double PHI = (1.0 + Math.sqrt(5.0)) * 0.5;
-    /**
-     * Минимальный радиус — не даём спирали вырождаться в точку и ловить деление на 0.
-     */
-    private static final double MIN_RADIUS = 0.05;
 
-    /**
-     * Гарантированный минимум оборотов, даже если дистанция маленькая.
-     */
-    private static final double MIN_ANGLE_TOTAL = Math.PI * 2; // 1 полный оборот
-
-    /**
-     * Скорость роста радиуса лог-спирали: рост в φ раз за каждую четверть оборота.
-     */
-    private static final double GOLDEN_RATE = Math.log(PHI) / (Math.PI / 2.0);
-
-    private final double startX, startY, startZ;
-    private final double endX, endY, endZ;
-
-    private final double centerX, centerZ; // вертикальная ось вращения (origin по XZ)
-    private final double radiusStart, radiusEnd;
-    private final double angle0;        // начальный угол (чтобы не было скачка позиции)
-    private final double angleTotal;    // полный угол поворота за всю жизнь партикла
-    private final double rotationSign;  // +1 / -1 — направление закрутки
+    private final double startY;
+    private final double endY;
 
     protected SpiralParticle(ClientLevel level, double x, double y, double z,
                              double xSpeed, double ySpeed, double zSpeed,
                              SpriteSet spriteSet, boolean originAtStart, double rotationSign) {
         super(level, x, y, z);
 
-        this.startX = x;
         this.startY = y;
-        this.startZ = z;
         this.rotationSign = rotationSign;
 
         double length = Math.sqrt(xSpeed * xSpeed + ySpeed * ySpeed + zSpeed * zSpeed);
 
+        double endX;
+        double endZ;
         if (length < 1.0e-6) {
             this.lifetime = 20;
-            this.endX = x;
+            endX = x;
             this.endY = y;
-            this.endZ = z;
+            endZ = z;
         } else {
-            this.lifetime = Mth.clamp((int) Math.round(length), 1, MAX_LIFETIME);
-            // конец пути восстанавливается прямо из вектора: направление*лайфтайм*AXIAL_SPEED = точное расстояние до цели
-            this.endX = x + xSpeed * AXIAL_SPEED;
-            this.endY = y + ySpeed * AXIAL_SPEED;
-            this.endZ = z + zSpeed * AXIAL_SPEED;
+            this.lifetime = Mth.clamp((int) (Math.round(length) / 4), 1, MAX_LIFETIME);
+            endX = x + xSpeed * getAxialSpeed();
+            this.endY = y + ySpeed * getAxialSpeed();
+            endZ = z + zSpeed * getAxialSpeed();
         }
 
-        // ось вращения (по XZ) — либо точка спавна (прямая спираль), либо точка финиша (обратная спираль)
         if (originAtStart) {
-            this.centerX = this.startX;
-            this.centerZ = this.startZ;
+            this.centerX = x;
+            this.centerZ = z;
         } else {
-            this.centerX = this.endX;
-            this.centerZ = this.endZ;
+            this.centerX = endX;
+            this.centerZ = endZ;
         }
 
-        double rStartRaw = Math.hypot(this.startX - this.centerX, this.startZ - this.centerZ);
-        double rEndRaw = Math.hypot(this.endX - this.centerX, this.endZ - this.centerZ);
+        double rStartRaw = Math.hypot(x - this.centerX, z - this.centerZ);
+        double rEndRaw = Math.hypot(endX - this.centerX, endZ - this.centerZ);
 
-        this.radiusStart = Math.max(rStartRaw, MIN_RADIUS);
-        this.radiusEnd = Math.max(rEndRaw, MIN_RADIUS);
+        this.radiusStart = Math.max(rStartRaw, getMinRadius());
+        this.radiusEnd = Math.max(rEndRaw, getMinRadius());
 
-        // начальный угол — направление от центра к точке спавна, чтобы не было визуального скачка
-        this.angle0 = Math.atan2(this.startZ - this.centerZ, this.startX - this.centerX);
+        double rawAngle = Math.abs(Math.log(this.radiusEnd / this.radiusStart)) / getRate();
+        this.angleTotal = Math.max(rawAngle, getMinAngleTotal());
 
-        // угол, за который лог-спираль с "золотой" скоростью роста меняет радиус от radiusStart до radiusEnd
-        double rawAngle = Math.abs(Math.log(this.radiusEnd / this.radiusStart)) / GOLDEN_RATE;
-        this.angleTotal = Math.max(rawAngle, MIN_ANGLE_TOTAL);
+        if (originAtStart) {
+            double farAngle = Math.atan2(endZ - this.centerZ, endX - this.centerX);
+            this.angle0 = farAngle - this.rotationSign * this.angleTotal;
+        } else {
+            // дальняя точка — старт пути (target), как и раньше — тут всё было корректно.
+            this.angle0 = Math.atan2(z - this.centerZ, x - this.centerX);
+        }
 
         this.xd = 0.0;
         this.yd = 0.0;
@@ -96,6 +73,29 @@ public class SpiralParticle extends TextureSheetParticle {
 
         this.quadSize = 0.08f;
         this.pickSprite(spriteSet);
+        this.scale(1.5f);
+    }
+
+    public static double getAxialSpeed() {
+        return 0.01;
+    }
+
+    public static double getMinRadius() {
+        return 0.000000001d;
+    }
+
+    private final double centerX, centerZ; // вертикальная ось вращения (origin по XZ)
+    private final double radiusStart, radiusEnd;
+    private final double angle0;        // начальный угол (чтобы не было скачка позиции)
+    private final double angleTotal;    // полный угол поворота за всю жизнь партикла
+    private final double rotationSign;  // +1 / -1 — направление закрутки
+
+    public static double getMinAngleTotal() {
+        return 0;
+    }
+
+    private static double getRate() {
+        return 5;
     }
 
     @Override
@@ -123,6 +123,10 @@ public class SpiralParticle extends TextureSheetParticle {
         this.x = this.centerX + radius * cosA;
         this.z = this.centerZ + radius * sinA;
         this.y = Mth.lerp(s, this.startY, this.endY);
+
+        double lerp = Mth.lerp((double) age / lifetime, 0.18d, 0.01d);
+        this.quadSize = (float) lerp;
+        //this.scale((float) lerp);
     }
 
     @Override

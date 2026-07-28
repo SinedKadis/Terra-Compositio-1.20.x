@@ -20,11 +20,9 @@ import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
 import net.sinedkadis.terracompositio.api.networks.TransferAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
-import net.sinedkadis.terracompositio.api.registries.TCBlockStateProperties;
 import net.sinedkadis.terracompositio.block.behaviours.ECFHandlerBehaviour;
 import net.sinedkadis.terracompositio.config.TCCommonConfigs;
 import net.sinedkadis.terracompositio.config.TCInnerConfig;
-import net.sinedkadis.terracompositio.registries.TCBlocks;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
 import net.sinedkadis.terracompositio.util.helpers.ParticleHelperInternal;
 import org.jetbrains.annotations.Nullable;
@@ -42,8 +40,6 @@ public class FEProviderCoreBlockEntity extends TCBlockEntity {
     @Getter
     private final Set<BlockPos> pylonPoses = new HashSet<>();
 
-    boolean firstTick = true;
-
 
     public FEProviderCoreBlockEntity(BlockPos pos, BlockState pState) {
         super(pos, pState);
@@ -52,17 +48,6 @@ public class FEProviderCoreBlockEntity extends TCBlockEntity {
     @Override
     public void tick(Level pLevel, BlockPos pPos, BlockState pState) {
         super.tick(pLevel, pPos, pState);
-        if (pylonPoses.isEmpty() && level != null && firstTick) {
-            BlockPos.betweenClosedStream(pPos.offset(-7, 0, -7), pPos.offset(7, 0, 7))
-                    .filter(blockPos -> !blockPos.closerThan(pPos, 1.5f))
-                    .filter(blockPos -> {
-                        BlockState state = level.getBlockState(blockPos);
-                        return state.is(TCBlocks.FE_PROVIDER_PYLON.get())
-                                && state.getValue(TCBlockStateProperties.INFUSED);
-                    })
-                    .forEach(blockPos -> this.getPylonPoses().add(blockPos));
-            firstTick = false;
-        }
         IECFHandler ecfCapability = getECFCapability(null);
         if (ecfCapability.getECF() > 0 && pLevel.getGameTime() % 20 == 3) {
             for (int i = 0; i < pylonPoses.size(); i++) {
