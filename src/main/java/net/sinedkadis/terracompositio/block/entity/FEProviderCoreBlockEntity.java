@@ -22,10 +22,12 @@ import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
 import net.sinedkadis.terracompositio.api.networks.TransferAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
+import net.sinedkadis.terracompositio.api.registries.TCBlockStateProperties;
 import net.sinedkadis.terracompositio.api.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.block.behaviours.ECFHandlerBehaviour;
 import net.sinedkadis.terracompositio.config.TCCommonConfigs;
 import net.sinedkadis.terracompositio.config.TCInnerConfig;
+import net.sinedkadis.terracompositio.recipe.ITCRecipe;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
 import net.sinedkadis.terracompositio.util.helpers.ParticleHelperInternal;
 import org.jetbrains.annotations.Nullable;
@@ -45,6 +47,10 @@ public class FEProviderCoreBlockEntity extends TCBlockEntity {
 
     private LazyOptional<IEnergyStorage> lazyOptional = LazyOptional.empty();
 
+    public ITCRecipe.CraftException exception = ITCRecipe.CraftException.OK;
+    public boolean exceptionLock = false;
+
+
     public FEProviderCoreBlockEntity(BlockPos pos, BlockState state) {
         super(pos, state);
     }
@@ -52,9 +58,26 @@ public class FEProviderCoreBlockEntity extends TCBlockEntity {
     @Override
     public void tick(Level pLevel, BlockPos pPos, BlockState pState) {
         super.tick(pLevel, pPos, pState);
+
+        transferEnergy(pLevel, pPos, pState);
+
+        if (exceptionLock) return;
+
         IECFHandler ecfCapability = getCapability(TCCapabilities.ECF)
                 .orElse(SentinelHelper.EMPTY_ECF_HANDLER);
-        if (ecfCapability.getECF() > 0 && pLevel.getGameTime() % 20 == 3) {
+        if (!pState.getValue(TCBlockStateProperties.INFUSED)) {
+            exception = ITCRecipe.CraftException.NO_SURROUNDINGS;
+            return;
+        }
+        if (ecfCapability.getECF() <= 0) {
+            exception = ITCRecipe.CraftException.NO_ECF;
+            return;
+        }
+        if (energyStorage.receiveEnergy(ecfCapability.takeECF(1, TransferAction.SIMULATE) * 20, true) <= 0) {
+            exception = ITCRecipe.CraftException.NO_SPACE;
+            return;
+        }
+        if (pLevel.getGameTime() % 20 == 3) {
             for (int i = 0; i < pylonPoses.size(); i++) {
                 int toAddEnergy = energyStorage.receiveEnergy(ecfCapability.takeECF(1, TransferAction.SIMULATE) * 20, true);
                 if (toAddEnergy > 0) {
@@ -64,7 +87,11 @@ public class FEProviderCoreBlockEntity extends TCBlockEntity {
                 }
             }
         }
-        if (level != null && energyStorage.getEnergyStored() > 0) {
+        exception = ITCRecipe.CraftException.OK;
+    }
+
+    public void transferEnergy(Level level, BlockPos pPos, BlockState pState) {
+        if (energyStorage.getEnergyStored() > 0) {
             Direction direction = pState.getValue(BlockStateProperties.HORIZONTAL_FACING);
             BlockEntity blockEntity = level.getBlockEntity(pPos.relative(direction));
             if (blockEntity != null) {
@@ -93,6 +120,7 @@ public class FEProviderCoreBlockEntity extends TCBlockEntity {
         super.saveAdditional(tag);
         BlockPosHelper.saveFromSetToTag(tag, "pylon_poses", pylonPoses);
         tag.put("energy", ((EnergyStorage) energyStorage).serializeNBT());
+        tag.putString("exception", exception.name());
     }
 
     @Override
@@ -102,6 +130,8 @@ public class FEProviderCoreBlockEntity extends TCBlockEntity {
         Tag energy = tag.get("energy");
         if (energy != null)
             ((EnergyStorage) energyStorage).deserializeNBT(energy);
+        exception = Enum.valueOf(ITCRecipe.CraftException.class, tag.getString("exception"));
+
     }
 
     @Override
@@ -129,6 +159,9 @@ public class FEProviderCoreBlockEntity extends TCBlockEntity {
         super.collectKnowledgeData(data);
         data.putInt(TooltipHelper.Keys.FE.toData(), energyStorage.getEnergyStored());
         data.putInt(TooltipHelper.Keys.MAX_FE.toData(), energyStorage.getMaxEnergyStored());
+        if (!exception.equals(ITCRecipe.CraftException.OK)) {
+            data.putString(TooltipHelper.Keys.CRAFT_EXCEPTION.toData(), exception.name());
+        }
     }
 
     @Override
@@ -142,6 +175,16 @@ public class FEProviderCoreBlockEntity extends TCBlockEntity {
                 if (TCCommonConfigs.DEBUG.get()) {
                     TooltipHelper.addIfExist(TooltipHelper.Keys.MAX_FE, t, data);
                 }
+            }
+        });
+        TooltipHelper.addWithHeader(TooltipHelper.Headers.CRAFTING, tooltip, t -> {
+
+            if (data.contains(TooltipHelper.Keys.CRAFT_EXCEPTION.toData())) {
+                TooltipHelper.addWithNoArg(
+                        TooltipHelper.Keys.CRAFT_EXCEPTION,
+                        Enum.valueOf(ITCRecipe.CraftException.class, data.getString(TooltipHelper.Keys.CRAFT_EXCEPTION.toData())),
+                        t
+                );
             }
         });
     }
