@@ -54,10 +54,10 @@ public class FEProviderPylonBlock extends Block implements IFluidApplicable {
                     .map(level::getBlockEntity)
                     .filter(FEProviderCoreBlockEntity.class::isInstance)
                     .map(FEProviderCoreBlockEntity.class::cast)
-                    .findAny()
-                    .ifPresent(be -> {
+                    .forEach(be -> {
                         be.getPylonPoses().add(pos);
                         be.setChanged();
+                        level.sendBlockUpdated(be.getBlockPos(), be.getBlockState(), be.getBlockState(), 3);
                     });
     }
 
@@ -69,10 +69,10 @@ public class FEProviderPylonBlock extends Block implements IFluidApplicable {
                 .map(level::getBlockEntity)
                 .filter(FEProviderCoreBlockEntity.class::isInstance)
                 .map(FEProviderCoreBlockEntity.class::cast)
-                .findAny()
-                .ifPresent(be -> {
+                .forEach(be -> {
                     be.getPylonPoses().remove(pos);
                     be.setChanged();
+                    level.sendBlockUpdated(be.getBlockPos(), be.getBlockState(), be.getBlockState(), 3);
                 });
     }
 

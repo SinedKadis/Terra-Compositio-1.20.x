@@ -2,8 +2,10 @@ package net.sinedkadis.terracompositio.block.custom;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -11,10 +13,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.sinedkadis.terracompositio.api.registries.TCBlockStateProperties;
+import net.sinedkadis.terracompositio.block.IFluidApplicable;
 import net.sinedkadis.terracompositio.block.entity.FEProviderCoreBlockEntity;
 import net.sinedkadis.terracompositio.block.entity.TCBlockEntity;
+import net.sinedkadis.terracompositio.recipe.ITCRecipe;
 import net.sinedkadis.terracompositio.registries.TCBlockEntities;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
+import net.sinedkadis.terracompositio.util.helpers.WorldHelperInternal;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -22,7 +27,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class FEProviderCoreBlock extends TCBaseEntityBlock {
+public class FEProviderCoreBlock extends TCBaseEntityBlock implements IFluidApplicable {
     public FEProviderCoreBlock(Properties pProperties) {
         super(pProperties);
         registerDefaultState(defaultBlockState().setValue(TCBlockStateProperties.INFUSED, false));
@@ -61,9 +66,31 @@ public class FEProviderCoreBlock extends TCBaseEntityBlock {
                                 && blockState.getValue(TCBlockStateProperties.INFUSED);
                     })
                     .forEach(blockPos -> {
-                        fepBE.getPylonPoses().add(blockPos);
+                        fepBE.getPylonPoses().add(blockPos.immutable());
                         fepBE.setChanged();
+                        level.sendBlockUpdated(fepBE.getBlockPos(), fepBE.getBlockState(), fepBE.getBlockState(), 3);
                     });
         }
+    }
+
+    @Override
+    public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
+        super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
+        if (!pNewState.getBlock().equals(pState.getBlock())) {
+            WorldHelperInternal.flowLeak(pState, pLevel, pPos);
+        }
+    }
+
+    @Override
+    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity instanceof FEProviderCoreBlockEntity fepBE) {
+            ITCRecipe.CraftException craftException = ITCRecipe.checkSurroundings(fepBE);
+            if (craftException.hasExceptions()) {
+                fepBE.exception = craftException;
+            }
+            fepBE.exceptionLock = craftException.hasExceptions();
+        }
+        return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
     }
 }
