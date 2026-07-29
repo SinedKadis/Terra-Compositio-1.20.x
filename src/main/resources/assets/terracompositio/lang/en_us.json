@@ -362,6 +362,10 @@
   "book.terracompositio.creation_flow_journal.entry.technetium_armor.boots_usage": "  Each platform placed costs 1 ECF; it also absorbs fall damage, and you cannot slip off it.  To use them, jump from a ledge after making sure you have enough ECF in your boots. If you look high enough while jumping, the platform’s level will rise; if you look low enough, it will lower. To descend quickly, step off the platform while crouching; to ascend quickly, jump twice. It saves you when falling from a great height",
   "book.terracompositio.creation_flow_journal.entry.floating_redstone.name": "Levitating Redstone",
   "book.terracompositio.creation_flow_journal.entry.floating_redstone.page1": "  Thanks to the levitation properties of filled iron, as well as its redstone conductivity, you can create redstone components that don’t need a support to function",
-  "book.terracompositio.creation_flow_journal.entry.floating_redstone.page2": "  You can insert any torch into the holder—it doesn’t have to be made of redstone"
-
+  "book.terracompositio.creation_flow_journal.entry.floating_redstone.page2": "  You can insert any torch into the holder—it doesn’t have to be made of redstone",
+  "book.terracompositio.creation_flow_journal.entry.fe_provider.name": "FE Provider",
+  "book.terracompositio.creation_flow_journal.entry.fe_provider.page1": "  Formal Energy provider is a device, that capable to exchanging ECF to FE in 1:60 rate. <br>  To function, the provider must be surrounded with liquid flow containing blocks, from up and down",
+  "book.terracompositio.creation_flow_journal.entry.fe_provider.page2": "  Pylons need to be placed around provider on the same level. Each pylon increases speed by 60FE per second. To function needs to be infused",
+  "book.terracompositio.creation_flow_journal.entry.fe_provider.page1.title": "FE Provider Core",
+  "book.terracompositio.creation_flow_journal.entry.fe_provider.page2.title": "FE Provider Pylon"
 }
