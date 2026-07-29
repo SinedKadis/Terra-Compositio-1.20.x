@@ -57,7 +57,10 @@ public class TooltipHelper {
 
         if (arg instanceof MutableComponent component)
             mutableComponent = component;
-        else {
+        else if (arg.toString().equals("2147483647")) {
+            mutableComponent = Component.literal("∞")
+                    .append(Component.translatable(measurement.toTranslation()));
+        } else {
             String stringArg = String.valueOf(arg);
             int toCrop = 0;
             if (stringArg.endsWith("f")) toCrop++;
