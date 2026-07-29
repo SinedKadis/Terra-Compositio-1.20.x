@@ -323,5 +323,10 @@
   "book.terracompositio.creation_flow_journal.entry.technetium_armor.boots_usage": "  Кожна встановлена платформа коштує 1 ЕПТ, а також вона гасить шкоду від падіння, і з неї неможливо зісковзнути.  Щоб скористатися нею, стрибніть з уступу, попередньо переконавшись, що у черевиках є ЕПТ. Якщо дивитися досить високо, під час стрибка рівень платформ підніметься, а якщо досить низько — опуститься. Щоб швидко спуститися, зійдіть з платформи, присівши, а щоб швидко піднятися, стрибніть двічі. Рятує при падінні з великої висоти",
   "book.terracompositio.creation_flow_journal.entry.floating_redstone.name": "Левітуючий редстоун",
   "book.terracompositio.creation_flow_journal.entry.floating_redstone.page1": "  Завдяки властивостям наповненого заліза до левітації, а також його провідності редстоуну, можна створити компоненти з редстоуну, яким не потрібна опора для роботи",
-  "book.terracompositio.creation_flow_journal.entry.floating_redstone.page2": "  У тримач можна вставити будь-який факел, не обов’язково з редстоуну"
+  "book.terracompositio.creation_flow_journal.entry.floating_redstone.page2": "  У тримач можна вставити будь-який факел, не обов’язково з редстоуну",
+  "book.terracompositio.creation_flow_journal.entry.fe_provider.name": "FE Постачальник",
+  "book.terracompositio.creation_flow_journal.entry.fe_provider.page1": "  Постачальник Формальної Энергії здатен перетворювати ЕПТ в FE у співвідношенні 1:60. <br>  Для роботи постачальник має бути оточений блоками, що містять рідкий поток, зверху та знизу",
+  "book.terracompositio.creation_flow_journal.entry.fe_provider.page2": "  Пілони мають бути розташовані навколо постачальника на одному рівні. Кожен збільшує швидкість на 60FE за секунду. Для роботи мають бути наповненими",
+  "book.terracompositio.creation_flow_journal.entry.fe_provider.page1.title": "Ядро FE Постачальника",
+  "book.terracompositio.creation_flow_journal.entry.fe_provider.page2.title": "Пілон FE Постачальника"
 }

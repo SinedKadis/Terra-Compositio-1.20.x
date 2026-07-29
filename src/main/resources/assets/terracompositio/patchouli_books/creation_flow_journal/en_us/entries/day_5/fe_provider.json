@@ -1,0 +1,20 @@
+{
+  "name": "book.terracompositio.creation_flow_journal.entry.fe_provider.name",
+  "category": "terracompositio:day_5",
+  "icon": "terracompositio:fe_provider_core",
+  "flag": "terracompositio:day_5",
+  "pages": [
+    {
+      "type": "patchouli:crafting",
+      "title": "book.terracompositio.creation_flow_journal.entry.fe_provider.page1.title",
+      "recipe": "terracompositio:fe_provider_core",
+      "text": "book.terracompositio.creation_flow_journal.entry.fe_provider.page1"
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "book.terracompositio.creation_flow_journal.entry.fe_provider.page2.title",
+      "recipe": "terracompositio:fe_provider_pylon",
+      "text": "book.terracompositio.creation_flow_journal.entry.fe_provider.page2"
+    }
+  ]
+}

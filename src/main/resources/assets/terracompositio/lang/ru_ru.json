@@ -353,6 +353,11 @@
   "book.terracompositio.creation_flow_journal.entry.technetium_armor.boots_usage": "  Каждая поставленная платформа стоит 1 ЭПС, а так же она гасит урон от падения и с нее нельзя соскользнуть.  Для использования, прыгните с уступа, предварительно убедившись, что в ботинках есть ЭПС. Если смотреть достаточно высоко, при прыжке уровень платформ поднимется, а если достаточно низко - опустится. Для того, что б быстро спуститься, сойдите с платформы присев, а что б быстро подняться, 2 раза прыгнете. Спасает при падении с большой высоты",
   "book.terracompositio.creation_flow_journal.entry.floating_redstone.name": "Левитирующий редстоун",
   "book.terracompositio.creation_flow_journal.entry.floating_redstone.page1": "  Благодаря свойствам наполненного железа к левитации, а так же его редстоун проводимость, можно создать редстоун компоненты, которым не нужна опора что б работать",
-  "book.terracompositio.creation_flow_journal.entry.floating_redstone.page2": "  В держатель можно вставить любой факел, не обязательно из редстоуна"
+  "book.terracompositio.creation_flow_journal.entry.floating_redstone.page2": "  В держатель можно вставить любой факел, не обязательно из редстоуна",
+  "book.terracompositio.creation_flow_journal.entry.fe_provider.name": "FE Поставщик",
+  "book.terracompositio.creation_flow_journal.entry.fe_provider.page1": "  Поставщик Формальной Энергии способен превращать ЭПС в FE в соотношении 1:60. <br>  Для работы поставщик должен быть окружен содержащими жидкий поток блоками, сверху и снизу",
+  "book.terracompositio.creation_flow_journal.entry.fe_provider.page2": "  Пилоны должны быть размещены вокруг поставщика на одном уровне. Каждый увеличивает скорость на 60FE за секунду. Для роботы должны быть наполненными",
+  "book.terracompositio.creation_flow_journal.entry.fe_provider.page1.title": "Ядро FE Поставщика",
+  "book.terracompositio.creation_flow_journal.entry.fe_provider.page2.title": "Пилон FE Поставщика"
 
 }
