@@ -327,7 +327,7 @@ public class TechnetiumArmorItem extends TCArmorItem implements IHaveExtensibleE
             for (ItemStack stack : ((LivingEntity) entity).getArmorSlots()) {
                 if (stack.equals(itemStack)) {
                     IECFHandler playerHandler = Objects.requireNonNull(entity.getCapability(TCCapabilities.ECF_HANDLER_ENTITY))
-                            .getMainHandler();
+                            .getECFHandler();
                     int taken = thisHandler.addECF(TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get(), TransferAction.SIMULATE);
                     int added = playerHandler.takeECF(taken, TransferAction.BOTH);
                     thisHandler.addECF(added, TransferAction.EXECUTE);

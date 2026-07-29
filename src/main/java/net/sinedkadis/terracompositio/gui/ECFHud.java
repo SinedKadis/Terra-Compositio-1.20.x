@@ -22,7 +22,7 @@ public class ECFHud {
     public static void render(GuiGraphics graphics, DeltaTracker ignoredDeltaTracker) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return;
-        IECFHandler playerHandler = Objects.requireNonNull(player.getCapability(TCCapabilities.ECF_HANDLER_ENTITY)).getMainHandler();
+        IECFHandler playerHandler = Objects.requireNonNull(player.getCapability(TCCapabilities.ECF_HANDLER_ENTITY)).getECFHandler();
         int cfeTotal = playerHandler.getECF();
         int cfeMaxTotal = playerHandler.getMaxECF();
 

@@ -7,6 +7,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -15,6 +16,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
+import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetwork;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 
@@ -57,12 +59,34 @@ public class TCCommands {
                                 Commands.literal("clear-all-queues")
                                         .executes(TCCommands::clearAllQueues)
                         )
+                        .then(
+                                Commands.literal("networks")
+                                        .then(
+                                                Commands.literal("ecf")
+                                                        .then(
+                                                                Commands.literal("clear")
+                                                                        .executes(TCCommands::clearECFNetwork)
+                                                        )
+                                        )
+
+                        )
                         );
+    }
+
+    private static int clearECFNetwork(CommandContext<CommandSourceStack> ctx) {
+        CommandSourceStack source = ctx.getSource();
+        ECFNetwork ecfNetworkInstance = TerraCompositioAPI.instance().getECFNetworkInstance();
+        ServerLevel level = source.getLevel();
+        int size = ecfNetworkInstance.getAllECFNetworkMembers(level).size();
+        ecfNetworkInstance.clear(level);
+        int newSize = ecfNetworkInstance.getAllECFNetworkMembers(level).size();
+        source.sendSuccess(() -> Component.literal("Cleared " + (size - newSize) + " entries"), true);
+        return 0;
     }
 
     private static int clearAllQueues(CommandContext<CommandSourceStack> ctx) {
         TerraCompositioAPI.instance().getECFNetworkInstance().getAllECFNetworkMembers(ctx.getSource().getLevel()).stream()
-                .map(ECFNetworkMember::getMainHandler)
+                .map(ECFNetworkMember::getECFHandler)
                 .forEach(iEcfHandler -> iEcfHandler.setQueued(0));
         return 0;
     }
@@ -86,7 +110,7 @@ public class TCCommands {
                 return 0;
             }
         }
-        IECFHandler mainHandler = memberEntity.getMainHandler();
+        IECFHandler mainHandler = memberEntity.getECFHandler();
         mainHandler.clear();
 
         Supplier<Exception> exception = Exception::new;
@@ -127,7 +151,7 @@ public class TCCommands {
 
         StringBuilder message = new StringBuilder();
 
-        IECFHandler mainHandler = memberEntity.getMainHandler();
+        IECFHandler mainHandler = memberEntity.getECFHandler();
         message.append(mainHandler.toString()).append("\n\n");
 
         source.sendSuccess(() ->

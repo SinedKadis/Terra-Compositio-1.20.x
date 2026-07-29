@@ -1,6 +1,5 @@
 package net.sinedkadis.terracompositio.entity.custom;
 
-import lombok.Getter;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -57,7 +56,6 @@ public class ECFCloudEntity extends Entity implements ECFNetworkMember, IHaveKno
     protected int scheduledMembersUpdate = -1;
 
 
-    @Getter
     protected IECFHandler ecfHandler = new LimitlessDefaultECFHandler(this) {
         @Override
         public int getECF() {
@@ -106,12 +104,12 @@ public class ECFCloudEntity extends Entity implements ECFNetworkMember, IHaveKno
 
     @Override
     public void onECFNetworkMemberUpdate() {
-        if (getPriority() < 0 && getMainHandler().getECF() > 64) {
+        if (getPriority() < 0 && getECFHandler().getECF() > 64) {
             ECFNetwork ECFNetwork = TerraCompositioAPI.instance().getECFNetworkInstance();
             Set<ECFNetworkMember> targets = ECFNetwork.getAvailableNetworkTargets(this);
             targets.forEach(target -> {
                 if (target.getEntityInstance() instanceof AirSaturatorBlockEntity) return;
-                if (target.getMainHandler().getFreeSpace() > TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get())
+                if (target.getECFHandler().getFreeSpace() > TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get())
                     scheduleMemberUpdate(target);
                 ECFHelper.newTransfer().targetAndSource(target, this).build();
             });
@@ -121,9 +119,9 @@ public class ECFCloudEntity extends Entity implements ECFNetworkMember, IHaveKno
     @Override
     public void onECFNetworkMemberUpdate(ECFNetworkMember updated) {
         if (updated.getEntityInstance() instanceof AirSaturatorBlockEntity) return;
-        if (getPriority() < 0 && getMainHandler().getECF() > 64 && isValidMember(updated)) {
+        if (getPriority() < 0 && getECFHandler().getECF() > 64 && isValidMember(updated)) {
             if (updated.getEntityInstance() instanceof AirSaturatorBlockEntity) return;
-            if (updated.getMainHandler().getFreeSpace() > TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get())
+            if (updated.getECFHandler().getFreeSpace() > TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get())
                 scheduleMemberUpdate(updated);
             ECFHelper.newTransfer().targetAndSource(updated, this).build();
         }
@@ -270,7 +268,7 @@ public class ECFCloudEntity extends Entity implements ECFNetworkMember, IHaveKno
 
 
     @Override
-    public IECFHandler getMainHandler() {
+    public IECFHandler getECFHandler() {
         return ecfHandler;
     }
 

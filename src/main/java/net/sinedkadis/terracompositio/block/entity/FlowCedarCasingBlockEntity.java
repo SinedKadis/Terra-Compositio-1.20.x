@@ -22,6 +22,7 @@ import net.sinedkadis.terracompositio.block.custom.MatterInfuserUnitBlock;
 import net.sinedkadis.terracompositio.registries.TCBlockEntities;
 import net.sinedkadis.terracompositio.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.registries.TCItems;
+import net.sinedkadis.terracompositio.util.IHaveRenderStack;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,7 +34,7 @@ import static net.minecraft.world.level.block.entity.HopperBlockEntity.getContai
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class FlowCedarCasingBlockEntity extends TCCraftingBlockEntity{
+public class FlowCedarCasingBlockEntity extends TCBlockEntity implements IHaveRenderStack {
 
     public static final int INPUT_BUS_SLOT = 0;
     public static final int OUTPUT_BUS_SLOT = 1;
@@ -157,11 +158,6 @@ public class FlowCedarCasingBlockEntity extends TCCraftingBlockEntity{
             }
         }
         return false;
-    }
-
-    @Override
-    protected int getECF() {
-        return 0;
     }
 
     private boolean hasOutputBusConnection() {
@@ -292,7 +288,7 @@ public class FlowCedarCasingBlockEntity extends TCCraftingBlockEntity{
 
     @Override
     public ItemStack getRenderStack() {
-        return getItemHandler().getStackInSlot(INPUT_INVENTORY_SLOT);
+        return getItemCapability(null).getStackInSlot(INPUT_INVENTORY_SLOT);
     }
 
     private boolean notOnCooldown() {

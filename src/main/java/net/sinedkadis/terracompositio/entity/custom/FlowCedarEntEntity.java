@@ -373,7 +373,7 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
     }
 
     @Override
-    public IECFHandler getMainHandler() {
+    public IECFHandler getECFHandler() {
         return holdECFHandler;
     }
 
@@ -403,8 +403,8 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
     }
 
     public void sendViaPP(PPECFMemberProxy current) {
-        if (getMainHandler().getECF() > 0 && TerraCompositioAPI.instance().getECFNetworkInstance().validateMember(current)) {
-            if (current.getMainHandler().getFreeSpace() > TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get())
+        if (getECFHandler().getECF() > 0 && TerraCompositioAPI.instance().getECFNetworkInstance().validateMember(current)) {
+            if (current.getECFHandler().getFreeSpace() > TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get())
                 scheduleMemberUpdate(current);
             ECFHelper.newTransfer().targetAndSource(current, this).speed(5 / 20f).build();
         }
@@ -505,7 +505,7 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
                     TooltipHelper.addIfExist(TooltipHelper.Keys.MAX_ECF, t, data);
                     TooltipHelper.addIfExist(TooltipHelper.Keys.QUEUED, t, data);
                 } else {
-                    TooltipHelper.addScaleIfExist(TooltipHelper.Keys.ECF, TooltipHelper.Keys.MAX_ECF, tooltip, data);
+                    TooltipHelper.addScaleIfExist(TooltipHelper.Keys.ECF, TooltipHelper.Keys.MAX_ECF, t, data);
                 }
             });
 
@@ -517,7 +517,7 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
                     TooltipHelper.addIfExist(TooltipHelper.Keys.QUEUED, t, data, 2);
                     t.add(TooltipHelper.keyWithArg(TooltipHelper.Keys.CONSUME, 0.1, TooltipHelper.Units.ECF_SECOND));
                 } else {
-                    TooltipHelper.addScaleIfExist(TooltipHelper.Keys.ECF, TooltipHelper.Keys.MAX_ECF, tooltip, data, 2);
+                    TooltipHelper.addScaleIfExist(TooltipHelper.Keys.ECF, TooltipHelper.Keys.MAX_ECF, t, data, 2);
                 }
             });
 

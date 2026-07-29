@@ -1,6 +1,8 @@
 package net.sinedkadis.terracompositio.item.custom;
 
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -68,7 +70,12 @@ public class CedarArmorItem extends TCArmorItem{
 
                 if (boots.getItem() == TCItems.FLOWING_FLOW_CEDAR_BOOTS.get()) {
                     ItemStack stack = new ItemStack(TCItems.FLOW_CEDAR_BOOTS.get());
-                    stack.applyComponents(pPlayer.getItemBySlot(EquipmentSlot.FEET).getComponents());
+                    DataComponentMap components = pPlayer.getItemBySlot(EquipmentSlot.FEET).getComponents();
+                    DataComponentMap newComponents = DataComponentMap.builder()
+                            .addAll(components)
+                            .set(DataComponents.MAX_DAMAGE, stack.get(DataComponents.MAX_DAMAGE))
+                            .build();
+                    stack.applyComponents(newComponents);
                     Integer damage = stack.get(TCDataComponents.OLD_DAMAGE);
                     if (damage == null) damage = stack.getMaxDamage();
                     stack.setDamageValue(damage);
@@ -76,7 +83,12 @@ public class CedarArmorItem extends TCArmorItem{
                 }
                 if (leggings.getItem() == TCItems.FLOWING_FLOW_CEDAR_LEGGINGS.get()) {
                     ItemStack stack = new ItemStack(TCItems.FLOW_CEDAR_LEGGINGS.get());
-                    stack.applyComponents(pPlayer.getItemBySlot(EquipmentSlot.LEGS).getComponents());
+                    DataComponentMap components = pPlayer.getItemBySlot(EquipmentSlot.LEGS).getComponents();
+                    DataComponentMap newComponents = DataComponentMap.builder()
+                            .addAll(components)
+                            .set(DataComponents.MAX_DAMAGE, stack.get(DataComponents.MAX_DAMAGE))
+                            .build();
+                    stack.applyComponents(newComponents);
                     Integer damage = stack.get(TCDataComponents.OLD_DAMAGE);
                     if (damage == null) damage = stack.getMaxDamage();
                     stack.setDamageValue(damage);
@@ -84,7 +96,12 @@ public class CedarArmorItem extends TCArmorItem{
                 }
                 if (chestplate.getItem() == TCItems.FLOWING_FLOW_CEDAR_CHESTPLATE.get()) {
                     ItemStack stack = new ItemStack(TCItems.FLOW_CEDAR_CHESTPLATE.get());
-                    stack.applyComponents(pPlayer.getItemBySlot(EquipmentSlot.CHEST).getComponents());
+                    DataComponentMap components = pPlayer.getItemBySlot(EquipmentSlot.CHEST).getComponents();
+                    DataComponentMap newComponents = DataComponentMap.builder()
+                            .addAll(components)
+                            .set(DataComponents.MAX_DAMAGE, stack.get(DataComponents.MAX_DAMAGE))
+                            .build();
+                    stack.applyComponents(newComponents);
                     Integer damage = stack.get(TCDataComponents.OLD_DAMAGE);
                     if (damage == null) damage = stack.getMaxDamage();
                     stack.setDamageValue(damage);
@@ -92,7 +109,12 @@ public class CedarArmorItem extends TCArmorItem{
                 }
                 if (helmet.getItem() == TCItems.FLOWING_FLOW_CEDAR_HELMET.get()) {
                     ItemStack stack = new ItemStack(TCItems.FLOW_CEDAR_HELMET.get());
-                    stack.applyComponents(pPlayer.getItemBySlot(EquipmentSlot.HEAD).getComponents());
+                    DataComponentMap components = pPlayer.getItemBySlot(EquipmentSlot.HEAD).getComponents();
+                    DataComponentMap newComponents = DataComponentMap.builder()
+                            .addAll(components)
+                            .set(DataComponents.MAX_DAMAGE, stack.get(DataComponents.MAX_DAMAGE))
+                            .build();
+                    stack.applyComponents(newComponents);
                     Integer damage = stack.get(TCDataComponents.OLD_DAMAGE);
                     if (damage == null) damage = stack.getMaxDamage();
                     stack.setDamageValue(damage);
@@ -112,8 +134,18 @@ public class CedarArmorItem extends TCArmorItem{
         }
         if (stack == ItemStack.EMPTY) return;
 
-        stack.applyComponents(pPlayer.getInventory().getItem(slotID).getComponents());
-        Integer damage = stack.get(TCDataComponents.OLD_DAMAGE);
+        ItemStack item;
+        if (!inArmorSlot)
+            item = pPlayer.getInventory().getItem(slotID);
+        else
+            item = pPlayer.getInventory().armor.get(slotID);
+        DataComponentMap components = item.getComponents();
+        DataComponentMap newComponents = DataComponentMap.builder()
+                .addAll(components)
+                .set(DataComponents.MAX_DAMAGE, stack.get(DataComponents.MAX_DAMAGE))
+                .build();
+        stack.applyComponents(newComponents);
+        Integer damage = item.get(TCDataComponents.OLD_DAMAGE);
         if (damage == null) damage = stack.getMaxDamage();
         stack.setDamageValue(damage);
         if (inArmorSlot){

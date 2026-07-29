@@ -77,6 +77,11 @@
   "block.terracompositio.matter_infuser.decay_chance": "Шанс потратить катализатор: %s%%",
   "info.terracompositio.ecf": "Хранится ЭПС: %s",
   "info.terracompositio.ecf_tick": "ЭПС/тик: %s",
+  "info.terracompositio.ecf_consume": "ЭПС необходимо: %s",
+  "info.terracompositio.dacay_rate": "Шанс потребить катализатор: %s",
+
+
+
   "info.terracompositio.max_ecf": "Максимум ЭПС: %s",
   "info.terracompositio.priority": "Приоритет: %s",
   "info.terracompositio.range": "Дальность: %s",
@@ -89,6 +94,11 @@
   "info.terracompositio.consume": "Потребляется: %s",
   "info.terracompositio.generate": "Добывается: %s",
   "info.terracompositio.storage_extension": "Расширение: %s",
+  "info.terracompositio.fe": "FE: %s",
+  "info.terracompositio.max_fe": "Максимум FE: %s",
+  "info.terracompositio.progress": "Прогресс: %s",
+  "info.terracompositio.max_progress": "Максимальный прогресс: %s",
+
   "info.terracompositio.blocks": " блоков",
   "info.terracompositio.units": " единиц",
   "info.terracompositio.milibuckets": " милибакетов",
@@ -98,6 +108,9 @@
   "info.terracompositio.items_header": "Информация о Предметах: ",
   "info.terracompositio.fluids_header": "Информация о Жидкостях: ",
   "info.terracompositio.crafting_header": "Информация о Процессе Создания: ",
+  "info.terracompositio.fe_header": "Информация о FE: ",
+
+
   "info.terracompositio.time_remaining": "Осталось: %s",
   "info.terracompositio.seconds": " секунд",
   "info.terracompositio.ent_hold_header": "Держит: ",
@@ -106,8 +119,11 @@
   "info.terracompositio.time_collected": "Времени собрано: %s",
   "info.terracompositio.time_collection_chance": "Вероятность сбора времени: %s%%",
   "info.terracompositio.craft_exception": "%s",
+
   "info.terracompositio.no_ecf": "Недостаточно ЭПС",
   "info.terracompositio.no_space": "Недостаточно места на выходе",
+  "info.terracompositio.no_surroundings": "Мультиблок не собран",
+
   "item.terracompositio.creation_flow_journal.tooltip": "%s закладок",
   "block.terracompositio.item_io.input": "Вход: ",
   "block.terracompositio.item_io.output": "Выход: ",
@@ -179,6 +195,19 @@
   "item.terracompositio.infused_fertilizer": "Наполненное удобрение",
   "item.terracompositio.apple_of_knowledge": "Яблоко Знания",
   "item.terracompositio.apple_of_ignorance": "Яблоко Забытия",
+  "block.terracompositio.fe_provider_core": "Ядро поставщика Формальной Энергии",
+  "block.terracompositio.fe_provider_pylon": "Пилон поставщика Формальной Энергии",
+
+
+
+
+
+
+
+
+
+
+
   "key.terracompositio.categories.main": "Terra Compositio",
   "create.recipe.item_with_wrench_application": "Ручное создание с Инструментом",
   "item.terracompositio.creation_flow_journal.no_pathchouli": "Установите Patchouli для лучшего игрового опыта",
@@ -228,7 +257,7 @@
 
   "book.terracompositio.creation_flow_journal.entry.flow_infuser.name": "Наполнитель потоком",
   "book.terracompositio.creation_flow_journal.entry.flow_infuser.page1": " С помощью данного устройства можно создать интересный материал, обладающий свойствами как и жидкости, так и железа. Для этого нам понадобятся палки, медь, топор и прямые руки.",
-  "book.terracompositio.creation_flow_journal.entry.flow_infuser.page2": " Для его работы устройство должно находится в живом, наполненном потоком кедре",
+  "book.terracompositio.creation_flow_journal.entry.flow_infuser.page2": " Для его работы устройство должно быть окружено содержащими жидкий поток блоками, сверху и снизу",
   "book.terracompositio.creation_flow_journal.entry.flow_infuser.page3": " Положив внутрь железо, и добавив немного ЭПС, произойдет наполнение и материал будет получен",
 
   "book.terracompositio.creation_flow_journal.entry.infused_iron_axe.name": "Мульти-инструмент",
@@ -324,6 +353,11 @@
   "book.terracompositio.creation_flow_journal.entry.technetium_armor.boots_usage": "  Каждая поставленная платформа стоит 1 ЭПС, а так же она гасит урон от падения и с нее нельзя соскользнуть.  Для использования, прыгните с уступа, предварительно убедившись, что в ботинках есть ЭПС. Если смотреть достаточно высоко, при прыжке уровень платформ поднимется, а если достаточно низко - опустится. Для того, что б быстро спуститься, сойдите с платформы присев, а что б быстро подняться, 2 раза прыгнете. Спасает при падении с большой высоты",
   "book.terracompositio.creation_flow_journal.entry.floating_redstone.name": "Левитирующий редстоун",
   "book.terracompositio.creation_flow_journal.entry.floating_redstone.page1": "  Благодаря свойствам наполненного железа к левитации, а так же его редстоун проводимость, можно создать редстоун компоненты, которым не нужна опора что б работать",
-  "book.terracompositio.creation_flow_journal.entry.floating_redstone.page2": "  В держатель можно вставить любой факел, не обязательно из редстоуна"
+  "book.terracompositio.creation_flow_journal.entry.floating_redstone.page2": "  В держатель можно вставить любой факел, не обязательно из редстоуна",
+  "book.terracompositio.creation_flow_journal.entry.fe_provider.name": "FE Поставщик",
+  "book.terracompositio.creation_flow_journal.entry.fe_provider.page1": "  Поставщик Формальной Энергии способен превращать ЭПС в FE в соотношении 1:60. <br>  Для работы поставщик должен быть окружен содержащими жидкий поток блоками, сверху и снизу",
+  "book.terracompositio.creation_flow_journal.entry.fe_provider.page2": "  Пилоны должны быть размещены вокруг поставщика на одном уровне. Каждый увеличивает скорость на 60FE за секунду. Для роботы должны быть наполненными",
+  "book.terracompositio.creation_flow_journal.entry.fe_provider.page1.title": "Ядро FE Поставщика",
+  "book.terracompositio.creation_flow_journal.entry.fe_provider.page2.title": "Пилон FE Поставщика"
 
 }

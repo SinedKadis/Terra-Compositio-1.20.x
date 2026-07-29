@@ -102,7 +102,7 @@ public class ECFNetworkHandler implements ECFNetwork {
      * Tries to make transfer between two members.
      * If blocks are close enough, just takes ECF from source and adds it to target, else sends it like burst
      *
-     * @param target the target member. Used for navigation in sending burst, actually receives {@link IECFHandler#getMainHandler()},
+     * @param target the target member. Used for navigation in sending burst, actually receives {@link IECFHandler#getECFHandler()},
      *               so passing {@link IECFHandler} like argument only make sense when two blocks are close enough
      * @param source the source member. {@link IECFHandler} can be used as argument
      * @param speed  the speed of th burst, 1 means 1 block per tick
@@ -114,14 +114,14 @@ public class ECFNetworkHandler implements ECFNetwork {
         if (!validateRelation(source, target, Math::max)) return;
 
 
-        IECFHandler sourceMainHandler = source.getMainHandler();
+        IECFHandler sourceMainHandler = source.getECFHandler();
         int taken = sourceMainHandler.takeECF(Integer.MAX_VALUE, TransferAction.SIMULATE);
-        IECFHandler targetMainHandler = target.getMainHandler();
+        IECFHandler targetMainHandler = target.getECFHandler();
         int added = targetMainHandler.addECF(taken, TransferAction.SIMULATE);
 
         if (added > 0) {
             sourceMainHandler.takeECF(added, TransferAction.EXECUTE);
-            target.getMainHandler().addToQueue(added);
+            target.getECFHandler().addToQueue(added);
             int divisions = Mth.log2(added);
             if (divisions <= 0) divisions = 1;
             int[] additions = new int[divisions];
@@ -146,7 +146,7 @@ public class ECFNetworkHandler implements ECFNetwork {
     public void sendBurst(IECFHandler source, ECFNetworkMember target, int count, float speed) {
         Level level = target.getEntityInstance().tc$getLevel();
 
-        IECFHandler targetMainHandler = target.getMainHandler();
+        IECFHandler targetMainHandler = target.getECFHandler();
         if (closeAndAllow(source, targetMainHandler)) {
             targetMainHandler.addECF(count, TransferAction.EXECUTE);
             targetMainHandler.subFromQueue(count);
@@ -172,9 +172,13 @@ public class ECFNetworkHandler implements ECFNetwork {
         if (targetAttachedEntity instanceof PathPointerBlockEntity) return false;
         if (targetAttachedEntity.tc$isEntity()) return false;
 
-        return sourceAttachedEntity.tc$getPosition().closerThan(targetAttachedEntity.tc$getPosition(), Math.max(
-                source.getRange(true),
-                target.getRange(true)
+        Vec3 vec3 = sourceAttachedEntity.tc$getPosition();
+        Vec3 vec4 = targetAttachedEntity.tc$getPosition();
+        int range = source.getRange(true);
+        int range1 = target.getRange(true);
+        return vec3.closerThan(vec4, Math.max(
+                range,
+                range1
         ) + 1);
     }
 
@@ -202,15 +206,18 @@ public class ECFNetworkHandler implements ECFNetwork {
                 if (!validateRelation(member, current, Math::max)) continue;
 
                 // PathPointer EMITTER — добавляем входы в очередь
-                if (member.getEntityInstance() instanceof PathPointerBlockEntity ppBE
-                        && (ppBE.parts.contains(PathPointerBlockEntity.PPPart.EMITTER)
-                        || (ppBE.parts.contains(PathPointerBlockEntity.PPPart.INFUSER)))
-                        && updatedEmitters.add(ppBE)) { // add() возвращает false если уже есть
-                    for (BlockPos inputPos : ppBE.getInputPoses()) {
-                        BlockEntity be = level.getBlockEntity(inputPos);
-                        if (be instanceof PathPointerBlockEntity inputEntity
-                                && visitedEntities.add(IEntityInstance.wrap(inputEntity))) { // защита от петли
-                            queue.add(new PPECFMemberProxy(updated, inputEntity));
+                IEntityInstance entityInstance = member.getEntityInstance();
+                if (entityInstance instanceof PathPointerBlockEntity ppBE) {
+                    boolean isEmitter = ppBE.parts.contains(PathPointerBlockEntity.PPPart.EMITTER) && entityInstance.tc$isBlock();
+                    boolean isInfuser = ppBE.parts.contains(PathPointerBlockEntity.PPPart.INFUSER) && entityInstance.tc$isEntity();
+                    if ((isEmitter || isInfuser)
+                            && updatedEmitters.add(ppBE)) { // add() возвращает false если уже есть
+                        for (BlockPos inputPos : ppBE.getInputPoses()) {
+                            BlockEntity be = level.getBlockEntity(inputPos);
+                            if (be instanceof PathPointerBlockEntity inputEntity
+                                    && visitedEntities.add(IEntityInstance.wrap(inputEntity))) { // защита от петли
+                                queue.add(new PPECFMemberProxy(updated, inputEntity));
+                            }
                         }
                     }
                 }
@@ -272,10 +279,10 @@ public class ECFNetworkHandler implements ECFNetwork {
     public boolean isIn(Level level, ECFNetworkMember networkMember) {
         Set<ECFNetworkMember> members = ecfSources.get(level);
         if (members == null) return false;
-        IECFHandler mainHandler = networkMember.getMainHandler();
+        IECFHandler mainHandler = networkMember.getECFHandler();
         if (!mainHandler.equals(SentinelHelper.EMPTY_ECF_HANDLER)) {
             for (ECFNetworkMember member : members) {
-                if (member.getMainHandler().equals(mainHandler)) return true;
+                if (member.getECFHandler().equals(mainHandler)) return true;
             }
         }
         return members.contains(networkMember);
@@ -284,7 +291,6 @@ public class ECFNetworkHandler implements ECFNetwork {
     private void remove(Level level, ECFNetworkMember thing) {
         Set<ECFNetworkMember> set = ecfSources.get(level);
         if (set == null) return;
-        networkMemberUpdated(thing);
         set.remove(thing);
         if (set.isEmpty()) ecfSources.remove(level);
     }
@@ -323,5 +329,10 @@ public class ECFNetworkHandler implements ECFNetwork {
     @Override
     public IECFHandler createDefaultECFHandler(ECFNetworkMember entityInstance) {
         return new DefaultECFHandler(entityInstance);
+    }
+
+    @Override
+    public void clear(Level level) {
+        ecfSources.computeIfPresent(level, (level1, old) -> new HashSet<>());
     }
 }

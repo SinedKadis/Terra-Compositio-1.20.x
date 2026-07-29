@@ -118,7 +118,7 @@ public class FlowCedarTankBlockEntity extends TCBlockEntity implements FluidNetw
     }
 
     @Override
-    public IFluidHandler getMainHandler() {
+    public IFluidHandler getFluidHandler() {
         return fluidHandler;
     }
 
@@ -180,12 +180,12 @@ public class FlowCedarTankBlockEntity extends TCBlockEntity implements FluidNetw
 
     @Override
     public void onFluidNetworkMemberUpdate() {
-        if (getMainHandler().getFluidInTank(0).getAmount() > 0) {
+        if (getFluidHandler().getFluidInTank(0).getAmount() > 0) {
             FluidNetwork fluidNetwork = TerraCompositioAPI.instance().getFluidNetworkInstance();
             Set<FluidNetworkMember> targets = fluidNetwork.getAvailableNetworkTargets(this);
             targets.forEach(target -> {
                 if (target.getPriority() <= 0) return;
-                IFluidHandler mainHandler = target.getMainHandler();
+                IFluidHandler mainHandler = target.getFluidHandler();
                 FluidStack fluidInTank = mainHandler.getFluidInTank(0);
                 if (mainHandler.getTankCapacity(0) - fluidInTank.getAmount() > 0)
                     scheduleMemberUpdate(target);
@@ -210,9 +210,9 @@ public class FlowCedarTankBlockEntity extends TCBlockEntity implements FluidNetw
 
     @Override
     public void onFluidNetworkMemberUpdate(FluidNetworkMember updated) {
-        if (updated.getPriority() > this.getPriority() && getMainHandler().getFluidInTank(0).getAmount() > 0
+        if (updated.getPriority() > this.getPriority() && getFluidHandler().getFluidInTank(0).getAmount() > 0
                 && TerraCompositioAPI.instance().getECFNetworkInstance().validateMember(updated)) {
-            IFluidHandler mainHandler = updated.getMainHandler();
+            IFluidHandler mainHandler = updated.getFluidHandler();
             if (mainHandler.getTankCapacity(0) - mainHandler.getFluidInTank(0).getAmount() > 0) {
                 scheduleMemberUpdate(updated);
             }

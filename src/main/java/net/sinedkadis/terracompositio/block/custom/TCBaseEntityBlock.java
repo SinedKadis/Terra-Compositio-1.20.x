@@ -2,6 +2,7 @@ package net.sinedkadis.terracompositio.block.custom;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
@@ -9,6 +10,7 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -88,5 +90,15 @@ public abstract class TCBaseEntityBlock extends Block implements EntityBlock {
             return match ? ItemInteractionResult.SUCCESS : ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    }
+
+    @Override
+    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+        BlockEntity entity = level.getBlockEntity(pos);
+        if (entity instanceof TCBlockEntity tcBlockEntity) {
+            tcBlockEntity.getBehaviours().forEach(ibeBehaviour ->
+                    ibeBehaviour.onNeighbourUpdated(state, direction, neighborState, level, pos, neighborPos));
+        }
+        return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
     }
 }

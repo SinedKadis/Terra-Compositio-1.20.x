@@ -95,16 +95,6 @@ public class ItemHandlerBehaviour implements IBEItemBehaviour, WorldlyContainer,
         return true;
     }
 
-    @Override
-    public void tick() {
-
-    }
-
-    @Override
-    public void onChunkLoad() {
-
-    }
-
 
     @Override
     public void onRemoved() {

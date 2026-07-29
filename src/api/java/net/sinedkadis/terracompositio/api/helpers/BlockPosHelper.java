@@ -3,6 +3,7 @@ package net.sinedkadis.terracompositio.api.helpers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.Level;
@@ -187,5 +188,31 @@ public class BlockPosHelper {
         int y = compoundTag.getInt("y");
         int z = compoundTag.getInt("z");
         return new BlockPos(x, y, z);
+    }
+
+    /**
+     * Save from set to tag.
+     *
+     * @param pTag   the p tag
+     * @param tag    the tag
+     * @param posSet the pos set
+     */
+    public static void saveFromSetToTag(CompoundTag pTag, String tag, Set<BlockPos> posSet) {
+        ListTag listTag = new ListTag();
+        listTag.addAll(posSet.stream().map(BlockPosHelper::saveBlockPos).toList());
+        pTag.put(tag, listTag);
+    }
+
+    /**
+     * Load from tag to set.
+     *
+     * @param pTag   the p tag
+     * @param tag    the tag
+     * @param posSet the pos set
+     */
+    public static void loadFromTagToSet(CompoundTag pTag, String tag, Set<BlockPos> posSet) {
+        ListTag tagList = pTag.getList(tag, CompoundTag.TAG_COMPOUND);
+        posSet.clear();
+        posSet.addAll(tagList.stream().map(BlockPosHelper::loadBlockPos).toList());
     }
 }

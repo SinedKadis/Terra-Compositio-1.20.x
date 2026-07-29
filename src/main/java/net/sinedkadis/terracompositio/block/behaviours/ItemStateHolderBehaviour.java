@@ -19,8 +19,8 @@ import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.sinedkadis.terracompositio.api.helpers.ItemHelper;
 import net.sinedkadis.terracompositio.api.helpers.PlayerHelper;
-import net.sinedkadis.terracompositio.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.block.entity.TCBlockEntity;
+import net.sinedkadis.terracompositio.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEItemBehaviour;
 import org.jetbrains.annotations.Nullable;
 
@@ -114,16 +114,6 @@ public class ItemStateHolderBehaviour implements IBEItemBehaviour {
 
     public int getLimitInSlot(int slot) {
         return 64;
-    }
-
-    @Override
-    public void tick() {
-
-    }
-
-    @Override
-    public void onChunkLoad() {
-
     }
 
     @Override

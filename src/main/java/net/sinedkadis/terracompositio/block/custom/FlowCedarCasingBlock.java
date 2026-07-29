@@ -32,6 +32,7 @@ import net.sinedkadis.terracompositio.block.IFluidApplicable;
 import net.sinedkadis.terracompositio.block.entity.TCBlockEntity;
 import net.sinedkadis.terracompositio.registries.TCBlockEntities;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
+import net.sinedkadis.terracompositio.util.helpers.WorldHelperInternal;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -138,7 +139,7 @@ public class FlowCedarCasingBlock extends TCBaseEntityBlock implements IFluidApp
                 if (!dirState.getValue(BlockStateProperties.HORIZONTAL_FACING).equals(direction)) continue;
                 pLevel.destroyBlock(relativePos, true);
             }
-            WorldHelper.flowLeak(pState, pLevel, pPos);
+            WorldHelperInternal.flowLeak(pState, pLevel, pPos);
         }
 
         super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);

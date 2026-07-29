@@ -105,7 +105,7 @@ public class FluidNetworkHandler implements FluidNetwork {
     @Override
     public boolean isIn(Level pLevel, IFluidHandler fluidHandler) {
         return fluidSources.getOrDefault(pLevel, Collections.emptySet()).stream().anyMatch(fluidSource -> {
-            IFluidHandler fluidHandler2 = fluidSource.getMainHandler();
+            IFluidHandler fluidHandler2 = fluidSource.getFluidHandler();
             return fluidHandler2.equals(fluidHandler);
         });
     }

@@ -77,6 +77,11 @@
   "block.terracompositio.matter_infuser.decay_chance": "Шанс витратити каталізатор: %s%%",
   "info.terracompositio.ecf": "Зберігається ЕПТ: %s",
   "info.terracompositio.ecf_tick": "ЕПТ/тік: %s",
+  "info.terracompositio.ecf_consume": "ЕПТ необідно: %s",
+  "info.terracompositio.dacay_rate": "Шанс спожити каталізатор: %s",
+
+
+
   "info.terracompositio.max_ecf": "Максимум ЕПТ: %s",
   "info.terracompositio.priority": "Приоритет: %s",
   "info.terracompositio.range": "Дальність: %s",
@@ -89,6 +94,11 @@
   "info.terracompositio.consume": "Споживається: %s",
   "info.terracompositio.generate": "Добувається: %s",
   "info.terracompositio.storage_extension": "Розширення: %s",
+  "info.terracompositio.fe": "FE: %s",
+  "info.terracompositio.max_fe": "Максимум FE: %s",
+  "info.terracompositio.progress": "Прогрес: %s",
+  "info.terracompositio.max_progress": "Максимальний прогрес: %s",
+
   "info.terracompositio.blocks": " блоків",
   "info.terracompositio.units": " одиниць",
   "info.terracompositio.milibuckets": " мілібакетів",
@@ -98,6 +108,8 @@
   "info.terracompositio.items_header": "Інформація про Предмети: ",
   "info.terracompositio.fluids_header": "Інформація про Рідини: ",
   "info.terracompositio.crafting_header": "Інформація про Процес Створення: ",
+  "info.terracompositio.fe_header": "Інформація про FE: ",
+
   "info.terracompositio.time_remaining": "Залишилось: %s",
   "info.terracompositio.seconds": " секунд",
   "info.terracompositio.ent_hold_header": "Тримає: ",
@@ -108,6 +120,9 @@
   "info.terracompositio.craft_exception": "%s",
   "info.terracompositio.no_ecf": "Недостатньо ЕПТ",
   "info.terracompositio.no_space": "Недостатньо місця на виході",
+  "info.terracompositio.no_surroundings": "Мультиблок не зібраний",
+
+
   "item.terracompositio.creation_flow_journal.tooltip": "%s закладок",
   "block.terracompositio.item_io.input": "Вхід: ",
   "block.terracompositio.item_io.output": "Вихід: ",
@@ -179,6 +194,15 @@
   "item.terracompositio.infused_fertilizer": "Наповнене добриво",
   "item.terracompositio.apple_of_knowledge": "Яблуко Знання",
   "item.terracompositio.apple_of_ignorance": "Яблуко Забуття",
+  "block.terracompositio.fe_provider_core": "Ядро поставщика Формальної Энергії",
+  "block.terracompositio.fe_provider_pylon": "Пілон поставщика Формальної Энергії",
+
+
+
+
+
+
+
   "item.terracompositio.creation_flow_journal.no_pathchouli": "Встанови Patchouli, що б отримати кращий досвід",
 
 
@@ -222,7 +246,7 @@
   "book.terracompositio.creation_flow_journal.category.day_3.description": "  Закладка третя: Детальніше про використання ЕПТ. Для наступної закладки підготуйте заряд ЕПТ",
   "book.terracompositio.creation_flow_journal.entry.flow_infuser.name": "Наповнювач потоком",
   "book.terracompositio.creation_flow_journal.entry.flow_infuser.page1": " За допомогою цього пристрою можна створити цікавий матеріал, що має властивості як рідини, так і заліза. Для цього нам знадобляться палиці, мідь, сокира та вправні руки.",
-  "book.terracompositio.creation_flow_journal.entry.flow_infuser.page2": "Для його роботи пристрій має перебувати в живому, наповненому потоком кедрі",
+  "book.terracompositio.creation_flow_journal.entry.flow_infuser.page2": "Для його роботи пристрій має бути оточений блоками, що містять рідкий поток, зверху та знизу",
   "book.terracompositio.creation_flow_journal.entry.flow_infuser.page3": "Поклавши всередину залізо та додавши трохи ЕПТ, відбудеться наповнення, і матеріал буде отримано",
   "book.terracompositio.creation_flow_journal.entry.infused_iron_axe.name": "Мультиінструмент",
   "book.terracompositio.creation_flow_journal.entry.infused_iron_axe.page1": " Завдяки неймовірним властивостям матеріалу називати цей інструмент сокирою було б неправильно. Він може мати форму звичайної сокири, ключа, монтирувального інструменту, а також ключа-сокири",
@@ -299,5 +323,10 @@
   "book.terracompositio.creation_flow_journal.entry.technetium_armor.boots_usage": "  Кожна встановлена платформа коштує 1 ЕПТ, а також вона гасить шкоду від падіння, і з неї неможливо зісковзнути.  Щоб скористатися нею, стрибніть з уступу, попередньо переконавшись, що у черевиках є ЕПТ. Якщо дивитися досить високо, під час стрибка рівень платформ підніметься, а якщо досить низько — опуститься. Щоб швидко спуститися, зійдіть з платформи, присівши, а щоб швидко піднятися, стрибніть двічі. Рятує при падінні з великої висоти",
   "book.terracompositio.creation_flow_journal.entry.floating_redstone.name": "Левітуючий редстоун",
   "book.terracompositio.creation_flow_journal.entry.floating_redstone.page1": "  Завдяки властивостям наповненого заліза до левітації, а також його провідності редстоуну, можна створити компоненти з редстоуну, яким не потрібна опора для роботи",
-  "book.terracompositio.creation_flow_journal.entry.floating_redstone.page2": "  У тримач можна вставити будь-який факел, не обов’язково з редстоуну"
+  "book.terracompositio.creation_flow_journal.entry.floating_redstone.page2": "  У тримач можна вставити будь-який факел, не обов’язково з редстоуну",
+  "book.terracompositio.creation_flow_journal.entry.fe_provider.name": "FE Постачальник",
+  "book.terracompositio.creation_flow_journal.entry.fe_provider.page1": "  Постачальник Формальної Энергії здатен перетворювати ЕПТ в FE у співвідношенні 1:60. <br>  Для роботи постачальник має бути оточений блоками, що містять рідкий поток, зверху та знизу",
+  "book.terracompositio.creation_flow_journal.entry.fe_provider.page2": "  Пілони мають бути розташовані навколо постачальника на одному рівні. Кожен збільшує швидкість на 60FE за секунду. Для роботи мають бути наповненими",
+  "book.terracompositio.creation_flow_journal.entry.fe_provider.page1.title": "Ядро FE Постачальника",
+  "book.terracompositio.creation_flow_journal.entry.fe_provider.page2.title": "Пілон FE Постачальника"
 }
