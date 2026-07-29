@@ -26,7 +26,6 @@ import net.sinedkadis.terracompositio.config.TCCommonConfigs;
 import net.sinedkadis.terracompositio.config.TCInnerConfig;
 import net.sinedkadis.terracompositio.recipe.ITCRecipe;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
-import net.sinedkadis.terracompositio.util.helpers.ParticleHelperInternal;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -77,7 +76,7 @@ public class FEProviderCoreBlockEntity extends TCBlockEntity {
                 if (toAddEnergy > 0) {
                     ecfCapability.takeECF(1, TransferAction.EXECUTE);
                     energyStorage.receiveEnergy(toAddEnergy, false);
-                    ParticleHelperInternal.spawnParticlesIn(pLevel, pPos);
+//                    ParticleHelperInternal.spawnParticlesIn(pLevel, pPos);
                 }
             }
         }
