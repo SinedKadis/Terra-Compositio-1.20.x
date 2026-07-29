@@ -2,6 +2,8 @@ package net.sinedkadis.terracompositio.item.custom;
 
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.stats.Stats;
@@ -12,7 +14,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
@@ -56,41 +57,31 @@ public class FlowBottleItem extends Item {
         if (player != null
                 && hasFlowCedarArmorOn(player)){
 
-            ItemStack currentBoots = player.getInventory().getArmor(0);
-            ItemStack currentLeggings = player.getInventory().getArmor(1);
-            ItemStack currentChest = player.getInventory().getArmor(2);
-            ItemStack currentHelmet = player.getInventory().getArmor(3);
+            for (ItemStack armorItem : player.getArmorSlots()) {
 
-            float bootsDamagePercentage = (float) getDamage(currentBoots) / currentBoots.getMaxDamage();
-            float leggingsDamagePercentage = (float) getDamage(currentLeggings) / currentLeggings.getMaxDamage();
-            float chestplateDamagePercentage = (float) getDamage(currentChest) / currentChest.getMaxDamage();
-            float helmetDamagePercentage = (float) getDamage(currentHelmet) / currentHelmet.getMaxDamage();
+                ItemStack current = player.getItemBySlot(player.getEquipmentSlotForItem(armorItem));
+                float damagePercentage = (float) getDamage(armorItem) / armorItem.getMaxDamage();
 
+                ArmorItem.Type type = ((ArmorItem) armorItem.getItem()).getType();
+                ItemStack newStack = switch (type) {
+                    case HELMET -> TCItems.FLOWING_FLOW_CEDAR_HELMET.get().getDefaultInstance();
+                    case CHESTPLATE -> TCItems.FLOWING_FLOW_CEDAR_CHESTPLATE.get().getDefaultInstance();
+                    case LEGGINGS -> TCItems.FLOWING_FLOW_CEDAR_LEGGINGS.get().getDefaultInstance();
+                    case BOOTS -> TCItems.FLOWING_FLOW_CEDAR_BOOTS.get().getDefaultInstance();
+                    case BODY -> ItemStack.EMPTY;
+                };
 
-            ItemStack boots = TCItems.FLOWING_FLOW_CEDAR_BOOTS.get().getDefaultInstance();
-            boots.applyComponents(currentBoots.getComponents());
-            setOldDamage(boots, getDamage(currentBoots));
-            boots.setDamageValue((int) (bootsDamagePercentage * boots.getMaxDamage()));
+                DataComponentMap components = current.getComponents();
+                DataComponentMap newComponents = DataComponentMap.builder()
+                        .addAll(components)
+                        .set(DataComponents.MAX_DAMAGE, newStack.get(DataComponents.MAX_DAMAGE))
+                        .build();
+                newStack.applyComponents(newComponents);
+                setOldDamage(newStack, getDamage(current));
+                newStack.setDamageValue((int) (damagePercentage * newStack.getMaxDamage()));
 
-            ItemStack leggings = TCItems.FLOWING_FLOW_CEDAR_LEGGINGS.get().getDefaultInstance();
-            leggings.applyComponents(currentLeggings.getComponents());
-            setOldDamage(leggings, getDamage(currentLeggings));
-            leggings.setDamageValue((int) (leggingsDamagePercentage * leggings.getMaxDamage()));
-
-            ItemStack chestplate = TCItems.FLOWING_FLOW_CEDAR_CHESTPLATE.get().getDefaultInstance();
-            chestplate.applyComponents(currentChest.getComponents());
-            setOldDamage(chestplate, getDamage(currentChest));
-            chestplate.setDamageValue((int) (chestplateDamagePercentage * chestplate.getMaxDamage()));
-
-            ItemStack helmet = TCItems.FLOWING_FLOW_CEDAR_HELMET.get().getDefaultInstance();
-            helmet.applyComponents(currentHelmet.getComponents());
-            setOldDamage(helmet, getDamage(currentHelmet));
-            helmet.setDamageValue((int) (helmetDamagePercentage * helmet.getMaxDamage()));
-
-            player.setItemSlot(EquipmentSlot.FEET,boots);
-            player.setItemSlot(EquipmentSlot.LEGS,leggings);
-            player.setItemSlot(EquipmentSlot.CHEST,chestplate);
-            player.setItemSlot(EquipmentSlot.HEAD,helmet);
+                player.setItemSlot(type.getSlot(), newStack);
+            }
         } else {
             pEntityLiving.gameEvent(GameEvent.DRINK);
             pEntityLiving.addEffect(new MobEffectInstance(TCEffects.FLOW_SATURATION,200));
