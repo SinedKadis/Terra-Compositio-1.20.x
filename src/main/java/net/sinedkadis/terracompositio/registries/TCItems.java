@@ -19,21 +19,21 @@ public class TCItems {
 
     //Cedar armor
     public static final DeferredItem<Item> FLOW_CEDAR_HELMET = ITEMS.register("flow_cedar_helmet",
-            () -> new TCArmorItem(TCArmorMaterials.FLOW_CEDAR, ArmorItem.Type.HELMET, new Item.Properties()));
+            () -> new TCArmorItem(TCArmorMaterials.FLOW_CEDAR, ArmorItem.Type.HELMET, armorProps(ArmorItem.Type.HELMET, 5)));
     public static final DeferredItem<Item> FLOW_CEDAR_CHESTPLATE = ITEMS.register("flow_cedar_chestplate",
-            () -> new TCArmorItem(TCArmorMaterials.FLOW_CEDAR, ArmorItem.Type.CHESTPLATE, new Item.Properties()));
+            () -> new TCArmorItem(TCArmorMaterials.FLOW_CEDAR, ArmorItem.Type.CHESTPLATE, armorProps(ArmorItem.Type.CHESTPLATE, 5)));
     public static final DeferredItem<Item> FLOW_CEDAR_LEGGINGS = ITEMS.register("flow_cedar_leggings",
-            () -> new TCArmorItem(TCArmorMaterials.FLOW_CEDAR, ArmorItem.Type.LEGGINGS, new Item.Properties()));
+            () -> new TCArmorItem(TCArmorMaterials.FLOW_CEDAR, ArmorItem.Type.LEGGINGS, armorProps(ArmorItem.Type.LEGGINGS, 5)));
     public static final DeferredItem<Item> FLOW_CEDAR_BOOTS = ITEMS.register("flow_cedar_boots",
-            () -> new TCArmorItem(TCArmorMaterials.FLOW_CEDAR, ArmorItem.Type.BOOTS, new Item.Properties()));
+            () -> new TCArmorItem(TCArmorMaterials.FLOW_CEDAR, ArmorItem.Type.BOOTS, armorProps(ArmorItem.Type.BOOTS, 5)));
     public static final DeferredItem<Item> FLOWING_FLOW_CEDAR_HELMET = ITEMS.register("flowing_flow_cedar_helmet",
-            () -> new CedarArmorItem(TCArmorMaterials.FLOWING_FLOW_CEDAR, ArmorItem.Type.HELMET, new Item.Properties()));
+            () -> new CedarArmorItem(TCArmorMaterials.FLOWING_FLOW_CEDAR, ArmorItem.Type.HELMET, armorProps(ArmorItem.Type.HELMET, 1)));
     public static final DeferredItem<Item> FLOWING_FLOW_CEDAR_CHESTPLATE = ITEMS.register("flowing_flow_cedar_chestplate",
-            () -> new CedarArmorItem(TCArmorMaterials.FLOWING_FLOW_CEDAR, ArmorItem.Type.CHESTPLATE, new Item.Properties()));
+            () -> new CedarArmorItem(TCArmorMaterials.FLOWING_FLOW_CEDAR, ArmorItem.Type.CHESTPLATE, armorProps(ArmorItem.Type.CHESTPLATE, 1)));
     public static final DeferredItem<Item> FLOWING_FLOW_CEDAR_LEGGINGS = ITEMS.register("flowing_flow_cedar_leggings",
-            () -> new CedarArmorItem(TCArmorMaterials.FLOWING_FLOW_CEDAR, ArmorItem.Type.LEGGINGS, new Item.Properties()));
+            () -> new CedarArmorItem(TCArmorMaterials.FLOWING_FLOW_CEDAR, ArmorItem.Type.LEGGINGS, armorProps(ArmorItem.Type.LEGGINGS, 1)));
     public static final DeferredItem<Item> FLOWING_FLOW_CEDAR_BOOTS = ITEMS.register("flowing_flow_cedar_boots",
-            () -> new CedarArmorItem(TCArmorMaterials.FLOWING_FLOW_CEDAR, ArmorItem.Type.BOOTS, new Item.Properties()));
+            () -> new CedarArmorItem(TCArmorMaterials.FLOWING_FLOW_CEDAR, ArmorItem.Type.BOOTS, armorProps(ArmorItem.Type.BOOTS, 1)));
 
 
     //Flow infused iron materials
@@ -62,17 +62,15 @@ public class TCItems {
             () -> new Item(new Item.Properties()));
 
 
-
     //Technetium armor
     public static final DeferredItem<Item> TECHNETIUM_CROWN = ITEMS.register("technetium_crown",
-            () -> new TechnetiumArmorItem(ArmorItem.Type.HELMET,new Item.Properties()));
+            () -> new TechnetiumArmorItem(ArmorItem.Type.HELMET, armorProps(ArmorItem.Type.HELMET, 38)));
     public static final DeferredItem<Item> TECHNETIUM_CHESTPLATE = ITEMS.register("technetium_chestplate",
-            () -> new TechnetiumArmorItem(ArmorItem.Type.CHESTPLATE,new Item.Properties()));
+            () -> new TechnetiumArmorItem(ArmorItem.Type.CHESTPLATE, armorProps(ArmorItem.Type.CHESTPLATE, 38)));
     public static final DeferredItem<Item> TECHNETIUM_LEGGINGS = ITEMS.register("technetium_leggings",
-            () -> new TechnetiumArmorItem(ArmorItem.Type.LEGGINGS,new Item.Properties()));
+            () -> new TechnetiumArmorItem(ArmorItem.Type.LEGGINGS, armorProps(ArmorItem.Type.LEGGINGS, 38)));
     public static final DeferredItem<Item> TECHNETIUM_BOOTS = ITEMS.register("technetium_boots",
-            () -> new TechnetiumArmorItem(ArmorItem.Type.BOOTS,new Item.Properties()));
-
+            () -> new TechnetiumArmorItem(ArmorItem.Type.BOOTS, armorProps(ArmorItem.Type.BOOTS, 38)));
 
 
     //Matter infuser
@@ -84,15 +82,11 @@ public class TCItems {
             () -> new Item(new Item.Properties()));
 
 
-
     //Wrench Axe
     public static final DeferredItem<Item> WRENCH_AXE = ITEMS.register("flow_rotating_axe",
             () -> new WrenchAxeItem(Tiers.IRON, new Item.Properties().durability(330)));
     public static final DeferredItem<Item> WRENCH_TAG_HOLDER = ITEMS.register("wrench_tag_holder",
             () -> new Item(new Item.Properties()));
-
-
-
 
 
     //Copper materials
@@ -106,7 +100,7 @@ public class TCItems {
     public static final DeferredItem<Item> FLOW_CEDAR_SIGN = ITEMS.register("flow_cedar_sign",
             () -> new SignItem(new Item.Properties().stacksTo(16), TCBlocks.FLOW_CEDAR_SIGN.get(), TCBlocks.FLOW_CEDAR_WALL_SIGN.get()));
     public static final DeferredItem<Item> FLOW_CEDAR_HANGING_SIGN = ITEMS.register("flow_cedar_hanging_sign",
-            () -> new HangingSignItem(TCBlocks.FLOW_CEDAR_HANGING_SIGN.get(), TCBlocks.FLOW_CEDAR_WALL_HANGING_SIGN.get(),new Item.Properties().stacksTo(16)));
+            () -> new HangingSignItem(TCBlocks.FLOW_CEDAR_HANGING_SIGN.get(), TCBlocks.FLOW_CEDAR_WALL_HANGING_SIGN.get(), new Item.Properties().stacksTo(16)));
 
 
     //Boats
@@ -126,7 +120,7 @@ public class TCItems {
     public static final DeferredItem<Item> FLOW_BOTTLE = ITEMS.register("flow_bottle",
             () -> new FlowBottleItem(new Item.Properties().stacksTo(16).food(TCFoods.FLOW)));
     public static final DeferredItem<Item> FLOW_INFUSER_KIT = ITEMS.register("flow_infuser_kit",
-            () -> new Item(new Item.Properties()){
+            () -> new Item(new Item.Properties()) {
                 @Override
                 @ParametersAreNonnullByDefault
                 public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
@@ -152,7 +146,11 @@ public class TCItems {
             () -> new KnowledgeAppleItem(new Item.Properties()));
 
 
-    public static void register(IEventBus eventBus){
+    private static Item.Properties armorProps(ArmorItem.Type type, int durabilityMultiplier) {
+        return new Item.Properties().durability(type.getDurability(durabilityMultiplier));
+    }
+
+    public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
     }
 
