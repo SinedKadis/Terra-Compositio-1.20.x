@@ -206,15 +206,18 @@ public class ECFNetworkHandler implements ECFNetwork {
                 if (!validateRelation(member, current, Math::max)) continue;
 
                 // PathPointer EMITTER — добавляем входы в очередь
-                if (member.getEntityInstance() instanceof PathPointerBlockEntity ppBE
-                        && (ppBE.parts.contains(PathPointerBlockEntity.PPPart.EMITTER)
-                        || (ppBE.parts.contains(PathPointerBlockEntity.PPPart.INFUSER)))
-                        && updatedEmitters.add(ppBE)) { // add() возвращает false если уже есть
-                    for (BlockPos inputPos : ppBE.getInputPoses()) {
-                        BlockEntity be = level.getBlockEntity(inputPos);
-                        if (be instanceof PathPointerBlockEntity inputEntity
-                                && visitedEntities.add(IEntityInstance.wrap(inputEntity))) { // защита от петли
-                            queue.add(new PPECFMemberProxy(updated, inputEntity));
+                IEntityInstance entityInstance = member.getEntityInstance();
+                if (entityInstance instanceof PathPointerBlockEntity ppBE) {
+                    boolean isEmitter = ppBE.parts.contains(PathPointerBlockEntity.PPPart.EMITTER) && entityInstance.tc$isBlock();
+                    boolean isInfuser = ppBE.parts.contains(PathPointerBlockEntity.PPPart.INFUSER) && entityInstance.tc$isEntity();
+                    if ((isEmitter || isInfuser)
+                            && updatedEmitters.add(ppBE)) { // add() возвращает false если уже есть
+                        for (BlockPos inputPos : ppBE.getInputPoses()) {
+                            BlockEntity be = level.getBlockEntity(inputPos);
+                            if (be instanceof PathPointerBlockEntity inputEntity
+                                    && visitedEntities.add(IEntityInstance.wrap(inputEntity))) { // защита от петли
+                                queue.add(new PPECFMemberProxy(updated, inputEntity));
+                            }
                         }
                     }
                 }
