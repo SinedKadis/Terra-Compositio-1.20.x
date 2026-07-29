@@ -195,8 +195,10 @@ public class CedarGearboxBlockEntity extends GeneratingKineticBlockEntity implem
         TooltipHelper.addWithHeader(TooltipHelper.Headers.ECF, tooltip, t -> {
             if (isShifting) {
                 TooltipHelper.addIfExist(TooltipHelper.Keys.ECF, t, data);
-                TooltipHelper.addIfExist(TooltipHelper.Keys.MAX_ECF, t, data);
-                TooltipHelper.addIfExist(TooltipHelper.Keys.QUEUED, t, data);
+                if (TCCommonConfigs.DEBUG.get()) {
+                    TooltipHelper.addIfExist(TooltipHelper.Keys.MAX_ECF, t, data);
+                    TooltipHelper.addIfExist(TooltipHelper.Keys.QUEUED, t, data);
+                }
             } else {
                 TooltipHelper.addScaleIfExist(TooltipHelper.Keys.ECF, TooltipHelper.Keys.MAX_ECF, t, data);
             }
