@@ -72,13 +72,13 @@ public class FEProviderCoreBlockEntity extends TCBlockEntity {
             exception = ITCRecipe.CraftException.NO_ECF;
             return;
         }
-        if (energyStorage.receiveEnergy(ecfCapability.takeECF(1, TransferAction.SIMULATE) * 20, true) <= 0) {
+        if (energyStorage.receiveEnergy(ecfCapability.takeECF(1, TransferAction.SIMULATE) * getEnergyMultiplier(), true) <= 0) {
             exception = ITCRecipe.CraftException.NO_SPACE;
             return;
         }
         if (pLevel.getGameTime() % 20 == 3) {
             for (int i = 0; i < pylonPoses.size(); i++) {
-                int toAddEnergy = energyStorage.receiveEnergy(ecfCapability.takeECF(1, TransferAction.SIMULATE) * 20, true);
+                int toAddEnergy = energyStorage.receiveEnergy(ecfCapability.takeECF(1, TransferAction.SIMULATE) * getEnergyMultiplier(), true);
                 if (toAddEnergy > 0) {
                     ecfCapability.takeECF(1, TransferAction.EXECUTE);
                     energyStorage.receiveEnergy(toAddEnergy, false);
@@ -87,6 +87,10 @@ public class FEProviderCoreBlockEntity extends TCBlockEntity {
             }
         }
         exception = ITCRecipe.CraftException.OK;
+    }
+
+    public int getEnergyMultiplier() {
+        return 60;
     }
 
     public void transferEnergy(Level level, BlockPos pPos, BlockState pState) {
