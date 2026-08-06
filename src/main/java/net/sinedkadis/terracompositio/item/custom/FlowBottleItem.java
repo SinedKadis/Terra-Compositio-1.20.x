@@ -22,6 +22,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.registries.RegistryObject;
 import net.sinedkadis.terracompositio.particle.ECFParticleData;
 import net.sinedkadis.terracompositio.registries.TCArmorMaterials;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
@@ -48,46 +49,19 @@ public class FlowBottleItem extends Item {
     @Override
     @ParametersAreNonnullByDefault
     public @NotNull ItemStack finishUsingItem(ItemStack pStack, Level pLevel, LivingEntity pEntityLiving) {
-        Player player = pEntityLiving instanceof Player ? (Player)pEntityLiving : null;
+        Player player = pEntityLiving instanceof Player ? (Player) pEntityLiving : null;
         if (player instanceof ServerPlayer) {
-            CriteriaTriggers.CONSUME_ITEM.trigger((ServerPlayer)player, pStack);
+            CriteriaTriggers.CONSUME_ITEM.trigger((ServerPlayer) player, pStack);
         }
         if (player != null
-                && hasFlowCedarArmorOn(player)){
-
-            float bootsDamagePercentage = (float) getDamage(player.getInventory().getArmor(0)) / player.getInventory().getArmor(0).getMaxDamage();
-            float leggingsDamagePercentage = (float) getDamage(player.getInventory().getArmor(1)) / player.getInventory().getArmor(1).getMaxDamage();
-            float chestplateDamagePercentage = (float) getDamage(player.getInventory().getArmor(2)) / player.getInventory().getArmor(2).getMaxDamage();
-            float helmetDamagePercentage = (float) getDamage(player.getInventory().getArmor(3)) / player.getInventory().getArmor(3).getMaxDamage();
-
-
-            ItemStack boots = TCItems.FLOWING_FLOW_CEDAR_BOOTS.get().getDefaultInstance();
-            boots.setTag(player.getInventory().getArmor(0).getTag());
-            setOldDamage(boots, bootsDamagePercentage);
-            boots.setDamageValue((int) (bootsDamagePercentage * boots.getMaxDamage()));
-
-            ItemStack leggings = TCItems.FLOWING_FLOW_CEDAR_LEGGINGS.get().getDefaultInstance();
-            leggings.setTag(player.getInventory().getArmor(1).getTag());
-            setOldDamage(leggings, bootsDamagePercentage);
-            leggings.setDamageValue((int) (leggingsDamagePercentage * leggings.getMaxDamage()));
-
-            ItemStack chestplate = TCItems.FLOWING_FLOW_CEDAR_CHESTPLATE.get().getDefaultInstance();
-            chestplate.setTag(player.getInventory().getArmor(2).getTag());
-            setOldDamage(chestplate, chestplateDamagePercentage);
-            chestplate.setDamageValue((int) (chestplateDamagePercentage * chestplate.getMaxDamage()));
-
-            ItemStack helmet = TCItems.FLOWING_FLOW_CEDAR_HELMET.get().getDefaultInstance();
-            helmet.setTag(player.getInventory().getArmor(3).getTag());
-            setOldDamage(helmet, helmetDamagePercentage);
-            helmet.setDamageValue((int) (helmetDamagePercentage * helmet.getMaxDamage()));
-
-            player.setItemSlot(EquipmentSlot.FEET,boots);
-            player.setItemSlot(EquipmentSlot.LEGS,leggings);
-            player.setItemSlot(EquipmentSlot.CHEST,chestplate);
-            player.setItemSlot(EquipmentSlot.HEAD,helmet);
+                && hasFlowCedarArmorOn(player)) {
+            player.setItemSlot(EquipmentSlot.FEET, getNewArmorPiece(player, 0, TCItems.FLOWING_FLOW_CEDAR_BOOTS));
+            player.setItemSlot(EquipmentSlot.LEGS, getNewArmorPiece(player, 1, TCItems.FLOWING_FLOW_CEDAR_LEGGINGS));
+            player.setItemSlot(EquipmentSlot.CHEST, getNewArmorPiece(player, 2, TCItems.FLOWING_FLOW_CEDAR_CHESTPLATE));
+            player.setItemSlot(EquipmentSlot.HEAD, getNewArmorPiece(player, 3, TCItems.FLOWING_FLOW_CEDAR_HELMET));
         } else {
             pEntityLiving.gameEvent(GameEvent.DRINK);
-            pEntityLiving.addEffect(new MobEffectInstance(TCEffects.FLOW_SATURATION.get(),200));
+            pEntityLiving.addEffect(new MobEffectInstance(TCEffects.FLOW_SATURATION.get(), 200));
         }
 
         if (player != null) {
@@ -109,38 +83,52 @@ public class FlowBottleItem extends Item {
         return pStack;
     }
 
+    public @NotNull ItemStack getNewArmorPiece(Player player, int pSlot, RegistryObject<Item> flowingFlowCedarBoots) {
+
+
+        ItemStack boots = flowingFlowCedarBoots.get().getDefaultInstance();
+        boots.setTag(player.getInventory().getArmor(pSlot).getTag());
+
+        int oldDamage = getDamage(player.getInventory().getArmor(pSlot));
+        setOldDamage(boots, oldDamage);
+
+        float bootsDamagePercentage = (float) oldDamage / player.getInventory().getArmor(pSlot).getMaxDamage();
+        boots.setDamageValue((int) (bootsDamagePercentage * boots.getMaxDamage()));
+        return boots;
+    }
+
     @Override
     public @NotNull InteractionResult useOn(UseOnContext pContext) {
         ItemStack itemStack = pContext.getItemInHand();
         BlockState blockState = pContext.getLevel().getBlockState(pContext.getClickedPos());
         Player player = pContext.getPlayer();
-        if (player != null && blockState.hasProperty(LEVEL)){
+        if (player != null && blockState.hasProperty(LEVEL)) {
             int levelValue = blockState.getValue(LEVEL);
-            if (itemStack.getCount()==1){
-                if (levelValue !=3) {
-                    pContext.getLevel().setBlock(pContext.getClickedPos(),blockState.setValue(LEVEL, levelValue + 1),1);
-                    player.setItemInHand(pContext.getHand(),new ItemStack(Items.GLASS_BOTTLE));
+            if (itemStack.getCount() == 1) {
+                if (levelValue != 3) {
+                    pContext.getLevel().setBlock(pContext.getClickedPos(), blockState.setValue(LEVEL, levelValue + 1), 1);
+                    player.setItemInHand(pContext.getHand(), new ItemStack(Items.GLASS_BOTTLE));
                     player.playSound(SoundEvents.BOTTLE_EMPTY);
                     return InteractionResult.SUCCESS;
                 }
-            }else {
-                if (levelValue !=3) {
-                    pContext.getLevel().setBlock(pContext.getClickedPos(),blockState.setValue(LEVEL, levelValue + 1),1);
-                    if (!player.addItem(new ItemStack(Items.GLASS_BOTTLE))){
-                        player.drop(new ItemStack(Items.GLASS_BOTTLE),false);
+            } else {
+                if (levelValue != 3) {
+                    pContext.getLevel().setBlock(pContext.getClickedPos(), blockState.setValue(LEVEL, levelValue + 1), 1);
+                    if (!player.addItem(new ItemStack(Items.GLASS_BOTTLE))) {
+                        player.drop(new ItemStack(Items.GLASS_BOTTLE), false);
                     }
                     player.playSound(SoundEvents.BOTTLE_EMPTY);
                     return InteractionResult.SUCCESS;
                 }
             }
 
-        }else if (player != null && blockState == Blocks.CAULDRON.defaultBlockState()){
-            pContext.getLevel().setBlock(pContext.getClickedPos(), TCBlocks.FLOW_CAULDRON.get().defaultBlockState().setValue(LEVEL,1),1);
-            if (itemStack.getCount()==1){
-                player.setItemInHand(pContext.getHand(),new ItemStack(Items.GLASS_BOTTLE));
-            }else {
-                if (!player.addItem(new ItemStack(Items.GLASS_BOTTLE))){
-                    player.drop(new ItemStack(Items.GLASS_BOTTLE),false);
+        } else if (player != null && blockState == Blocks.CAULDRON.defaultBlockState()) {
+            pContext.getLevel().setBlock(pContext.getClickedPos(), TCBlocks.FLOW_CAULDRON.get().defaultBlockState().setValue(LEVEL, 1), 1);
+            if (itemStack.getCount() == 1) {
+                player.setItemInHand(pContext.getHand(), new ItemStack(Items.GLASS_BOTTLE));
+            } else {
+                if (!player.addItem(new ItemStack(Items.GLASS_BOTTLE))) {
+                    player.drop(new ItemStack(Items.GLASS_BOTTLE), false);
                 }
             }
             player.playSound(SoundEvents.BOTTLE_EMPTY);
@@ -177,15 +165,15 @@ public class FlowBottleItem extends Item {
 
     private boolean hasFlowCedarArmorOn(Player player) {
         for (ItemStack armorStack : player.getInventory().armor) {
-            if(!(armorStack.getItem() instanceof ArmorItem)) {
+            if (!(armorStack.getItem() instanceof ArmorItem)) {
                 return false;
             }
         }
 
-        ArmorItem boots = ((ArmorItem)player.getInventory().getArmor(0).getItem());
-        ArmorItem leggings = ((ArmorItem)player.getInventory().getArmor(1).getItem());
-        ArmorItem breastplate = ((ArmorItem)player.getInventory().getArmor(2).getItem());
-        ArmorItem helmet = ((ArmorItem)player.getInventory().getArmor(3).getItem());
+        ArmorItem boots = ((ArmorItem) player.getInventory().getArmor(0).getItem());
+        ArmorItem leggings = ((ArmorItem) player.getInventory().getArmor(1).getItem());
+        ArmorItem breastplate = ((ArmorItem) player.getInventory().getArmor(2).getItem());
+        ArmorItem helmet = ((ArmorItem) player.getInventory().getArmor(3).getItem());
 
         return helmet.getMaterial() == TCArmorMaterials.FLOW_CEDAR && breastplate.getMaterial() == TCArmorMaterials.FLOW_CEDAR &&
                 leggings.getMaterial() == TCArmorMaterials.FLOW_CEDAR && boots.getMaterial() == TCArmorMaterials.FLOW_CEDAR;
