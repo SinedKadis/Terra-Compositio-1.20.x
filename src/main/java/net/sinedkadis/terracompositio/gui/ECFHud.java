@@ -25,7 +25,7 @@ public class ECFHud {
                               int screenHeight) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return;
-        IECFHandler playerHandler = player.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER).getMainHandler();
+        IECFHandler playerHandler = player.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER).getECFHandler();
         int cfeTotal = playerHandler.getECF();
         int cfeMaxTotal = playerHandler.getMaxECF();
 

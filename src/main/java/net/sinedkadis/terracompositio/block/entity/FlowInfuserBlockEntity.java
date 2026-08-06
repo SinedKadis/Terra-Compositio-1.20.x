@@ -36,7 +36,7 @@ public class FlowInfuserBlockEntity extends TCBlockEntity implements IHaveRender
         list.add(new ItemHandlerBehaviour(this, 2) {
             @Override
             public boolean allowInsert(int pSlot, ItemStack pStack, @Nullable Direction pDirection, boolean manual) {
-                return manual && pSlot == 0 && !pStack.is(TCItems.FLUID_APPLIER);
+                return manual && pSlot == 0 && !pStack.is(TCItems.FLUID_APPLIER.get());
             }
 
             @Override

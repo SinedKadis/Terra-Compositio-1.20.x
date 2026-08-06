@@ -20,7 +20,7 @@
     " C "
   ],
   "result": {
-    "count": 1,
-    "id": "terracompositio:fe_provider_core"
-  }
+    "item": "terracompositio:fe_provider_core"
+  },
+  "show_notification": true
 }

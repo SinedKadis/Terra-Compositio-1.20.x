@@ -18,7 +18,7 @@
     "B"
   ],
   "result": {
-    "count": 1,
-    "id": "terracompositio:fe_provider_pylon"
-  }
+    "item": "terracompositio:fe_provider_pylon"
+  },
+  "show_notification": true
 }
