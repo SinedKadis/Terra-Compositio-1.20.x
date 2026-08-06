@@ -5,6 +5,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
@@ -14,6 +16,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.sinedkadis.terracompositio.api.IEntityInstance;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
+import net.sinedkadis.terracompositio.api.dummies.DummyEntityInstance;
 import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.networks.AnyNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.NetworkAction;
@@ -25,6 +28,7 @@ import net.sinedkadis.terracompositio.block.entity.PathPointerBlockEntity;
 import net.sinedkadis.terracompositio.ecf.burst.ECFBurstProjectileEntity;
 import net.sinedkadis.terracompositio.entity.custom.ECFCloudEntity;
 import net.sinedkadis.terracompositio.events.ECFNetworkEvent;
+import net.sinedkadis.terracompositio.registries.TCItems;
 
 import java.util.*;
 import java.util.function.IntBinaryOperator;
@@ -79,21 +83,52 @@ public class ECFNetworkHandler implements ECFNetwork {
 
     @Override
     public boolean validateRelation(ECFNetworkMember source, ECFNetworkMember target, IntBinaryOperator distanceOp) {
-        if (target.getEntityInstance().equals(source.getEntityInstance())) return false;
+        IEntityInstance sourceEntityInstance = source.getEntityInstance();
+        IEntityInstance targetEntityInstance = target.getEntityInstance();
+
+        if (targetEntityInstance.equals(sourceEntityInstance)) return false;
         if (!validateMember(source)) return false;
         if (!validateMember(target)) return false;
         if (!(source.getPriority() < target.getPriority())) return false;
-        if (target.getEntityInstance().tc$isEntity()
-                && source instanceof PathPointerBlockEntity pp
-                && !pp.parts.contains(PathPointerBlockEntity.PPPart.INFUSER)) return false;
-        if (target.getEntityInstance().tc$isBlock()
-                && source instanceof PathPointerBlockEntity pp
-                && !pp.parts.contains(PathPointerBlockEntity.PPPart.EMITTER)) return false;
 
+        Level level = targetEntityInstance.tc$getLevel();
+        BlockEntity output = null;
+        IEntityInstance targetEntity = SentinelHelper.EMPTY_ENTITY;
 
-        return source.getEntityInstance().tc$getPosition()
+        if (targetEntityInstance.tc$isEntity() && sourceEntityInstance.tc$isBlock()) {
+            output = sourceEntityInstance.tc$asBE();
+            targetEntity = targetEntityInstance;
+        }
+
+        if (target instanceof PPECFMemberProxy proxy) {
+            output = level.getBlockEntity(proxy.proxy().getOutputPos());
+            targetEntity = proxy.target().getEntityInstance();
+        }
+
+        if (output instanceof PathPointerBlockEntity outputPPBE) {
+            if (targetEntity.tc$isEntity()) {
+                boolean hasInfuser = outputPPBE.parts.contains(PathPointerBlockEntity.PPPart.INFUSER);
+
+                if (!hasInfuser) {
+                    return false;
+                }
+
+                LivingEntity livingEntity = ((LivingEntity) targetEntity.tc$asEntity());
+                if (!livingEntity.getItemBySlot(EquipmentSlot.HEAD).is(TCItems.TECHNETIUM_CROWN.get())) {
+                    return false;
+                }
+            }
+            if (targetEntity.tc$isBlock()) {
+                boolean hasEmitter = outputPPBE.parts.contains(PathPointerBlockEntity.PPPart.EMITTER);
+
+                if (!hasEmitter) {
+                    return false;
+                }
+            }
+        }
+        return sourceEntityInstance.tc$getPosition()
                 .closerThan(
-                        target.getEntityInstance().tc$getPosition(),
+                        targetEntityInstance.tc$getPosition(),
                         distanceOp.applyAsInt(source.getRange(), target.getRange())
                 );
     }
@@ -169,6 +204,7 @@ public class ECFNetworkHandler implements ECFNetwork {
 
         IEntityInstance targetAttachedEntity = target.getAttachedEntity();
         if (targetAttachedEntity instanceof PathPointerBlockEntity) return false;
+        if (targetAttachedEntity instanceof DummyEntityInstance) return false;
         if (targetAttachedEntity.tc$isEntity()) return false;
 
         Vec3 vec3 = sourceAttachedEntity.tc$getPosition();

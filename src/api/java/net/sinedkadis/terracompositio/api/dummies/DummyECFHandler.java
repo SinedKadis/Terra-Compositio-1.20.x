@@ -107,7 +107,7 @@ public class DummyECFHandler implements IECFHandler {
 
     @Override
     public IEntityInstance getAttachedEntity() {
-        return null;
+        return SentinelHelper.EMPTY_ENTITY;
     }
 
     @Override

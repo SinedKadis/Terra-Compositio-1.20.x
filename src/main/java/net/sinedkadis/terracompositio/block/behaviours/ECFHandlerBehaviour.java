@@ -129,10 +129,6 @@ public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
         member.onECFNetworkMemberUpdate(updated);
     }
 
-    public boolean isValidMember(ECFNetworkMember updated) {
-        return TerraCompositioAPI.instance().getECFNetworkInstance().validateRelation(this, updated, Math::min);
-    }
-
     @Override
     public @Nullable LazyOptional<?> getCapability(Capability<?> cap, @Nullable Direction side) {
         if (cap == TCCapabilities.ECF){
@@ -317,7 +313,7 @@ public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
 
         @Override
         public void onECFNetworkMemberUpdate(ECFNetworkMember updated) {
-            if (getECFHandler().getECF() > 0 && isValidMember(updated) && !updated.getEntityInstance().tc$isEntity()) {
+            if (getECFHandler().getECF() > 0 && TerraCompositioAPI.instance().getECFNetworkInstance().validateRelation(this, updated, Math::min)) {
                 if (updated.getECFHandler().getFreeSpace() > TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get()) {
                     if (updated instanceof PPECFMemberProxy proxy && proxy.target().getEntityInstance().tc$isEntity()) {
                         if (updated.getEntityInstance().tc$getBlockPos().closerThan(proxy.proxy().getOutputPos(), getRange()))

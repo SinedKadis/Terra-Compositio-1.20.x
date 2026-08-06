@@ -33,7 +33,7 @@ public class DefaultECFHandler implements IECFHandler, INBTSerializable<Compound
     @Getter
     protected int index = 0;
     @Getter
-    protected int ECF = 0;
+    protected int ECF;
     protected int maxECF = 64;
     @Getter
     protected Function<Vec3, Vec3> offset = t -> t;
@@ -58,6 +58,7 @@ public class DefaultECFHandler implements IECFHandler, INBTSerializable<Compound
 
     public DefaultECFHandler(ECFNetworkMember attachedMember) {
         this.attachedMember = attachedMember;
+        ECF = 0;
     }
 
     @Override
@@ -73,12 +74,14 @@ public class DefaultECFHandler implements IECFHandler, INBTSerializable<Compound
     @Override
     public int takeECF(int cfe, TransferAction action) {
         int taken;
+        int current = this.getECF();
         if (action.simulate()) {
-            taken = Mth.clamp(cfe, 0, this.getECF());
+            taken = Mth.clamp(cfe, 0, current);
         } else
             taken = cfe;
         if (action.execute()) {
-            this.setECF(Math.max(this.getECF() - taken, 0));
+            int toSet = Math.max(current - taken, 0);
+            this.setECF(toSet);
 
             sendCFEUpdate();
             onContentsChanged();
@@ -99,12 +102,15 @@ public class DefaultECFHandler implements IECFHandler, INBTSerializable<Compound
 
     public int addECF(int cfe, TransferAction action) {
         int added = cfe;
+        int current = this.getECF();
+        int maxECF = this.getMaxECF();
         if (action.simulate()) {
-            int pMax = getMaxECF() - this.getECF() - this.getQueued();
+            int pMax = maxECF - current - this.getQueued();
             added = Mth.clamp(cfe, 0, pMax);
         }
         if (action.execute()) {
-            this.setECF(Math.min(this.getECF() + added, this.getMaxECF()));
+            int toSet = Math.min(current + added, maxECF);
+            this.setECF(toSet);
             if (getAttachedEntity() instanceof ECFNetworkMember member)
                 member.scheduleMemberUpdate();
             onContentsChanged();
@@ -171,11 +177,12 @@ public class DefaultECFHandler implements IECFHandler, INBTSerializable<Compound
 
     @Override
     public void deserializeNBT(CompoundTag tag) {
-        this.setECF(tag.getInt("ECF"));
+        int toSet = tag.getInt("ECF");
+        this.setECF(toSet);
     }
 
     public int getMaxECF() {
-        return Math.max(this.maxECF, this.ECF);
+        return Math.max(this.maxECF, this.getECF());
     }
 
     public DefaultECFHandler setMaxECF(int max) {
