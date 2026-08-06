@@ -147,7 +147,7 @@ public class AltarTransformationRecipe implements ITCRecipe<RecipeWrapper> {
     }
 
     protected void craftItem(TCBlockEntity blockEntity) {
-        ItemStack result = getOutput();
+        ItemStack result = getOutput().copy();
         IItemHandler itemCapability = blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER)
                 .orElse(SentinelHelper.EMPTY_ITEM_HANDLER);
         IItemHandlerModifiable capability = (IItemHandlerModifiable) itemCapability;
