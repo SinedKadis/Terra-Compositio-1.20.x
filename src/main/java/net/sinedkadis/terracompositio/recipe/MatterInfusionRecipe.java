@@ -187,7 +187,12 @@ public class MatterInfusionRecipe implements ITCRecipe<RecipeWrapper> {
         if (level != null
                 && portBE != null
                 && casingBE != null) {
-            ITCRecipe.craftItem(be, this);
+            IItemHandler iItemHandler = casingBE.getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(SentinelHelper.EMPTY_ITEM_HANDLER);
+            iItemHandler.getStackInSlot(0).shrink(this.input.getCount());
+            ItemStack stackInSlot = iItemHandler.getStackInSlot(1).copy();
+            if (stackInSlot.isEmpty()) stackInSlot = this.output.copy();
+            else stackInSlot.grow(this.output.getCount());
+            ((IItemHandlerModifiable) iItemHandler).setStackInSlot(1, stackInSlot);
             BlockState blockState = be.getBlockState();
             level.sendBlockUpdated(be.getBlockPos(), blockState, blockState, 3);
             if (level.getRandom().nextInt(100) < catalystDecayRate) {
