@@ -48,15 +48,19 @@ public interface ECFNetwork {
     boolean validateRelation(ECFNetworkMember source, ECFNetworkMember target, IntBinaryOperator distanceOp);
 
     /**
-     * Execute ecf transfer.
+     * Tries to make transfer between two members.
+     * If blocks are close enough, just takes ECF from source and adds it to target, else sends it like burst.
+     * Checks {@link ECFNetwork#validateRelation(ECFNetworkMember, ECFNetworkMember, IntBinaryOperator)}
+     * if validation is true
      *
-     * @param target the target
-     * @param source the source
-     * @param speed  the speed
+     * @param target   the target
+     * @param source   the source
+     * @param speed    the speed
+     * @param validate the validation
      */
     void executeECFTransfer(ECFNetworkMember target,
                             ECFNetworkMember source,
-                            float speed);
+                            float speed, boolean validate);
 
     /**
      * Send burst.

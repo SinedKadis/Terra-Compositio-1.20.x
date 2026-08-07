@@ -7,7 +7,6 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.api.registries.TCCapabilities;
@@ -57,7 +56,7 @@ public class FlowCedarEntRenderer extends MobRenderer<FlowCedarEntEntity,FlowCed
         Optional<IECFHandler> icfeHandler = entity.getCapability(TCCapabilities.ECF).resolve();
         if (energy > 0 && icfeHandler.isPresent()) {
             float alpha = 0.8f;
-            alpha += Mth.map(energy,1000,10000,0,0.2f);
+            //alpha += Mth.map(energy,1000,10000,0,0.2f);
 
 
             float scale = (0.1f + (energy / (float) icfeHandler.get().getMaxECF())) * 10;

@@ -163,6 +163,7 @@ public class ECFExtractGoal extends Goal {
                     ECFHelper.newTransfer()
                             .targetAndSource(mob, targetMember)
                             .speed(2 / 20f)
+                            .noValidate()
                             .build();
                     TerraCompositioAPI.instance().getECFNetworkInstance().fireECFNetworkEvent(targetMember, NetworkAction.UPDATE);
                 } else {

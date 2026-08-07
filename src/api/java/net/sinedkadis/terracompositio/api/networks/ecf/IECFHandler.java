@@ -11,7 +11,7 @@ import java.util.function.Function;
 
 /**
  * The ECF Handler interface for custom implementations. Extends {@link ECFNetworkMember} to be possible to pass as argument to methods like
- * {@link ECFNetwork#executeECFTransfer(ECFNetworkMember, ECFNetworkMember, float)}.
+ * {@link ECFNetwork#executeECFTransfer(ECFNetworkMember, ECFNetworkMember, float, boolean)}.
  */
 @MethodsReturnNonnullByDefault
 public interface IECFHandler extends ECFNetworkMember {

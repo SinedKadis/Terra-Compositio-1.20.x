@@ -3,6 +3,8 @@ package net.sinedkadis.terracompositio.api.helpers;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 
+import java.util.function.IntBinaryOperator;
+
 /**
  * The class with methods, that helps with ECF.
  */
@@ -41,6 +43,14 @@ public class ECFHelper {
 
 
         /**
+         * Marks transfer to call
+         * {@link net.sinedkadis.terracompositio.api.networks.ecf.ECFNetwork#validateRelation(ECFNetworkMember, ECFNetworkMember, IntBinaryOperator)}
+         * , defaults to true
+         */
+        boolean validate = true;
+
+
+        /**
          * Target and source for transfer. Mandatory.
          *
          * @param target the target
@@ -76,11 +86,19 @@ public class ECFHelper {
         }
 
         /**
+         * Disables transfer validation
+         */
+        public ECFTransferBuilder noValidate() {
+            this.validate = false;
+            return this;
+        }
+
+        /**
          * Executes transfer with given in builder data.
          */
         public void build() {
             if (target != null && source != null) {
-                TerraCompositioAPI.instance().getECFNetworkInstance().executeECFTransfer(target, source, speed);
+                TerraCompositioAPI.instance().getECFNetworkInstance().executeECFTransfer(target, source, speed, validate);
             }
         }
 

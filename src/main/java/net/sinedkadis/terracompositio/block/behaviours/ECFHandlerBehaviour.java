@@ -6,6 +6,8 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.Capability;
@@ -26,6 +28,7 @@ import net.sinedkadis.terracompositio.block.entity.TCBlockEntity;
 import net.sinedkadis.terracompositio.config.TCCommonConfigs;
 import net.sinedkadis.terracompositio.config.TCInnerConfig;
 import net.sinedkadis.terracompositio.ecf.PPECFMemberProxy;
+import net.sinedkadis.terracompositio.registries.TCItems;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEECFBehaviour;
 import org.jetbrains.annotations.Nullable;
 
@@ -315,10 +318,23 @@ public class ECFHandlerBehaviour implements IBEECFBehaviour, IHaveKnowledge {
         public void onECFNetworkMemberUpdate(ECFNetworkMember updated) {
             if (getECFHandler().getECF() > 0 && TerraCompositioAPI.instance().getECFNetworkInstance().validateRelation(this, updated, Math::min)) {
                 if (updated.getECFHandler().getFreeSpace() > TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get()) {
-                    if (updated instanceof PPECFMemberProxy proxy && proxy.target().getEntityInstance().tc$isEntity()) {
-                        if (updated.getEntityInstance().tc$getBlockPos().closerThan(proxy.proxy().getOutputPos(), getRange()))
-                            scheduleMemberUpdate(updated);
-                    } else scheduleMemberUpdate(updated);
+                    if (updated instanceof PPECFMemberProxy proxy) {
+                        IEntityInstance targetEntityInstance = proxy.target().getEntityInstance();
+                        if (targetEntityInstance.tc$isEntity()) {
+                            if (updated.getEntityInstance().tc$getBlockPos().closerThan(proxy.proxy().getOutputPos(), getRange())) {
+                                scheduleMemberUpdate(updated);
+                            }
+                        } else scheduleMemberUpdate(updated);
+                    } else {
+                        scheduleMemberUpdate(updated);
+                    }
+                }
+                if (updated instanceof PPECFMemberProxy proxy) {
+                    IEntityInstance targetEntityInstance = proxy.target().getEntityInstance();
+                    if (targetEntityInstance.tc$isEntity() && !((LivingEntity) targetEntityInstance.tc$asEntity())
+                            .getItemBySlot(EquipmentSlot.HEAD).is(TCItems.TECHNETIUM_CROWN.get())) {
+                        return;
+                    }
                 }
                 ECFHelper.ECFTransferBuilder transferBuilder = ECFHelper.newTransfer().targetAndSource(updated, this);
                 if (updated.getEntityInstance() instanceof PathPointerBlockEntity) transferBuilder.speed(2 / 20f);

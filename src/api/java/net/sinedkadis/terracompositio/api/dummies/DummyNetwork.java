@@ -53,7 +53,7 @@ public class DummyNetwork implements ECFNetwork, FluidNetwork {
     }
 
     @Override
-    public void executeECFTransfer(ECFNetworkMember target, ECFNetworkMember source, float speed) {
+    public void executeECFTransfer(ECFNetworkMember target, ECFNetworkMember source, float speed, boolean validate) {
 
     }
 

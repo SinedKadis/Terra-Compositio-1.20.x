@@ -5,8 +5,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
@@ -27,8 +25,8 @@ import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.block.entity.PathPointerBlockEntity;
 import net.sinedkadis.terracompositio.ecf.burst.ECFBurstProjectileEntity;
 import net.sinedkadis.terracompositio.entity.custom.ECFCloudEntity;
+import net.sinedkadis.terracompositio.entity.custom.FlowCedarEntEntity;
 import net.sinedkadis.terracompositio.events.ECFNetworkEvent;
-import net.sinedkadis.terracompositio.registries.TCItems;
 
 import java.util.*;
 import java.util.function.IntBinaryOperator;
@@ -83,49 +81,26 @@ public class ECFNetworkHandler implements ECFNetwork {
 
     @Override
     public boolean validateRelation(ECFNetworkMember source, ECFNetworkMember target, IntBinaryOperator distanceOp) {
+        return validateRelation(source, target, distanceOp, false);
+    }
+
+    public boolean validateRelation(ECFNetworkMember source, ECFNetworkMember target, IntBinaryOperator distanceOp, boolean ignorePriority) {
         IEntityInstance sourceEntityInstance = source.getEntityInstance();
         IEntityInstance targetEntityInstance = target.getEntityInstance();
 
         if (targetEntityInstance.equals(sourceEntityInstance)) return false;
         if (!validateMember(source)) return false;
         if (!validateMember(target)) return false;
-        if (!(source.getPriority() < target.getPriority())) return false;
+        if (!ignorePriority && !(source.getPriority() < target.getPriority())) return false;
 
-        Level level = targetEntityInstance.tc$getLevel();
-        BlockEntity output = null;
-        IEntityInstance targetEntity = SentinelHelper.EMPTY_ENTITY;
+        if (target.getEntityInstance().tc$isEntity()
+                && (!(source instanceof PathPointerBlockEntity pp)
+                || !pp.parts.contains(PathPointerBlockEntity.PPPart.INFUSER))) return false;
+        if (target.getEntityInstance().tc$isBlock()
+                && source instanceof PathPointerBlockEntity pp
+                && !pp.parts.contains(PathPointerBlockEntity.PPPart.EMITTER)) return false;
 
-        if (targetEntityInstance.tc$isEntity() && sourceEntityInstance.tc$isBlock()) {
-            output = sourceEntityInstance.tc$asBE();
-            targetEntity = targetEntityInstance;
-        }
 
-        if (target instanceof PPECFMemberProxy proxy) {
-            output = level.getBlockEntity(proxy.proxy().getOutputPos());
-            targetEntity = proxy.target().getEntityInstance();
-        }
-
-        if (output instanceof PathPointerBlockEntity outputPPBE) {
-            if (targetEntity.tc$isEntity()) {
-                boolean hasInfuser = outputPPBE.parts.contains(PathPointerBlockEntity.PPPart.INFUSER);
-
-                if (!hasInfuser) {
-                    return false;
-                }
-
-                LivingEntity livingEntity = ((LivingEntity) targetEntity.tc$asEntity());
-                if (!livingEntity.getItemBySlot(EquipmentSlot.HEAD).is(TCItems.TECHNETIUM_CROWN.get())) {
-                    return false;
-                }
-            }
-            if (targetEntity.tc$isBlock()) {
-                boolean hasEmitter = outputPPBE.parts.contains(PathPointerBlockEntity.PPPart.EMITTER);
-
-                if (!hasEmitter) {
-                    return false;
-                }
-            }
-        }
         return sourceEntityInstance.tc$getPosition()
                 .closerThan(
                         targetEntityInstance.tc$getPosition(),
@@ -137,16 +112,18 @@ public class ECFNetworkHandler implements ECFNetwork {
      * Tries to make transfer between two members.
      * If blocks are close enough, just takes ECF from source and adds it to target, else sends it like burst
      *
-     * @param target the target member. Used for navigation in sending burst, actually receives {@link IECFHandler#getECFHandler()},
-     *               so passing {@link IECFHandler} like argument only make sense when two blocks are close enough
-     * @param source the source member. {@link IECFHandler} can be used as argument
-     * @param speed  the speed of th burst, 1 means 1 block per tick
+     * @param target   the target member. Used for navigation in sending burst, actually receives {@link IECFHandler#getECFHandler()},
+     *                 so passing {@link IECFHandler} like argument only make sense when two blocks are close enough
+     * @param source   the source member. {@link IECFHandler} can be used as argument
+     * @param speed    the speed of th burst, 1 means 1 block per tick
+     * @param validate the validation
      */
     @Override
     public void executeECFTransfer(ECFNetworkMember target,
                                    ECFNetworkMember source,
-                                   float speed) {
-        if (!validateRelation(source, target, Math::max)) return;
+                                   float speed,
+                                   boolean validate) {
+        if (validate && !validateRelation(source, target, Math::max)) return;
 
 
         IECFHandler sourceMainHandler = source.getECFHandler();
@@ -238,13 +215,13 @@ public class ECFNetworkHandler implements ECFNetwork {
         while (!queue.isEmpty()) {
             ECFNetworkMember current = queue.poll();
             for (ECFNetworkMember member : members) {
-                if (!validateRelation(member, current, Math::max)) continue;
+                if (!validateRelation(member, current, Math::max, current instanceof FlowCedarEntEntity)) continue;
 
                 // PathPointer EMITTER — добавляем входы в очередь
                 IEntityInstance entityInstance = member.getEntityInstance();
                 if (entityInstance instanceof PathPointerBlockEntity ppBE) {
-                    boolean isEmitter = ppBE.parts.contains(PathPointerBlockEntity.PPPart.EMITTER) && entityInstance.tc$isBlock();
-                    boolean isInfuser = ppBE.parts.contains(PathPointerBlockEntity.PPPart.INFUSER) && entityInstance.tc$isEntity();
+                    boolean isEmitter = ppBE.parts.contains(PathPointerBlockEntity.PPPart.EMITTER) && current.getEntityInstance().tc$isBlock();
+                    boolean isInfuser = ppBE.parts.contains(PathPointerBlockEntity.PPPart.INFUSER) && current.getEntityInstance().tc$isEntity();
                     if ((isEmitter || isInfuser)
                             && updatedEmitters.add(ppBE)) { // add() возвращает false если уже есть
                         for (BlockPos inputPos : ppBE.getInputPoses()) {

@@ -84,7 +84,7 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
     public final AnimationState ecfHoldState = new AnimationState();
     protected LazyOptional<IECFHandler> lazyCFEOptional = LazyOptional.of(() -> new DefaultECFHandler(this)
             .setMaxECF(64000)
-            .setOffset(vec3 -> vec3.add(0, this.getBbHeight() + (0.1f + (this.getSyncedECF() / 10000d)) * 10 * 0.2f, 0))
+            .setOffset(vec3 -> vec3.add(0, this.getBbHeight() + (0.1f + (getSyncedECF() / (float) 64000)) * 10 * 0.2f, 0))
             .setIndex(0));
     @Getter
     protected LazyOptional<IECFHandler> innerECFOptional = LazyOptional.of(() -> new DefaultECFHandler(this)
@@ -181,8 +181,6 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
 
             lazyCFEOptional.ifPresent(icfeHandler -> {
                 int currentEnergy = icfeHandler.getECF();
-
-                if (currentEnergy > 10000) abortECFConsume();
 
                 if (currentEnergy != lastSyncedEnergy) {
                     setSyncedECF(currentEnergy);
@@ -404,17 +402,6 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
         innerECFOptional.ifPresent(cap -> cap.readFromNBT(pCompound));
     }
 
-
-    public void abortECFConsume() {
-        lazyCFEOptional.ifPresent(icfeHandler -> {
-            if (!this.level().isClientSide()) {
-                float scale = (0.1f + (icfeHandler.getECF() / (float) icfeHandler.getMaxECF())) * 10;
-                ParticleHelperInternal.spawnParticlesIn(this.level(), BlockPos.containing(this.position().add(0, this.getBbHeight() + scale * 0.2f, 0)), icfeHandler.getECF() / 10);
-                icfeHandler.setECF(0);
-            }
-        });
-
-    }
 
     public void sendViaPP(PPECFMemberProxy current) {
         if (getECFHandler().getECF() > 0 && TerraCompositioAPI.instance().getECFNetworkInstance().validateMember(current)) {

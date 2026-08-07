@@ -25,18 +25,20 @@ import net.sinedkadis.terracompositio.network.packets.S2CPlayerEcfContainerSync;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.function.Function;
 
-@Setter
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class DefaultECFHandler implements IECFHandler, INBTSerializable<CompoundTag> {
+    @Setter
     protected ECFNetworkMember attachedMember;
     @Getter
     protected int index = 0;
+    @Setter
     @Getter
     protected int ECF;
     protected int maxECF = 64;
     @Getter
     protected Function<Vec3, Vec3> offset = t -> t;
+    @Setter
     protected int queued = 0;
 
     @Override
@@ -189,4 +191,5 @@ public class DefaultECFHandler implements IECFHandler, INBTSerializable<Compound
         this.maxECF = max;
         return this;
     }
+
 }
