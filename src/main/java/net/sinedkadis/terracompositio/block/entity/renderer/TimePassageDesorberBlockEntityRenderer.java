@@ -13,7 +13,7 @@ import net.sinedkadis.terracompositio.fluid.FluidRenderer;
 import org.jetbrains.annotations.NotNull;
 
 public class TimePassageDesorberBlockEntityRenderer implements BlockEntityRenderer<TimePassageDesorberBlockEntity> {
-    public TimePassageDesorberBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
+    public TimePassageDesorberBlockEntityRenderer(BlockEntityRendererProvider.Context ignoredContext) {
 
     }
 

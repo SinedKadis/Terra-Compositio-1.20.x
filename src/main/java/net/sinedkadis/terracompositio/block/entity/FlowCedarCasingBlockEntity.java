@@ -22,6 +22,7 @@ import net.sinedkadis.terracompositio.block.custom.MatterInfuserBaseEntityBlock;
 import net.sinedkadis.terracompositio.block.custom.MatterInfuserUnitBlock;
 import net.sinedkadis.terracompositio.registries.TCBlockEntities;
 import net.sinedkadis.terracompositio.registries.TCItems;
+import net.sinedkadis.terracompositio.util.IHaveRenderStack;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,7 +35,7 @@ import static net.minecraft.world.level.block.entity.HopperBlockEntity.getContai
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class FlowCedarCasingBlockEntity extends TCCraftingBlockEntity{
+public class FlowCedarCasingBlockEntity extends TCBlockEntity implements IHaveRenderStack {
 
     public static final int INPUT_BUS_SLOT = 0;
     public static final int OUTPUT_BUS_SLOT = 1;
@@ -86,6 +87,8 @@ public class FlowCedarCasingBlockEntity extends TCCraftingBlockEntity{
                 if (level == null) return false;
 
                 Direction direction = Direction.get(Direction.AxisDirection.POSITIVE, getBlockState().getValue(BlockStateProperties.AXIS));
+                if (direction.getAxis().isVertical()) return false;
+
                 Block blockRelative = level.getBlockState(
                         worldPosition.relative(
                                 direction.getClockWise()
@@ -146,11 +149,6 @@ public class FlowCedarCasingBlockEntity extends TCCraftingBlockEntity{
         IItemHandler iItemHandler = this.getCapability(TCCapabilities.ITEM_STATE_HOLDER).orElse(((IItemHandlerModifiable) EmptyHandler.INSTANCE));
         return !iItemHandler.getStackInSlot(OUTPUT_BUS_SLOT).isEmpty()
                 && !iItemHandler.getStackInSlot(DOWN_CONNECTION_SLOT).isEmpty();
-    }
-
-    @Override
-    protected int getECF() {
-        return 0;
     }
 
     protected IItemHandlerModifiable getItemHandler() {

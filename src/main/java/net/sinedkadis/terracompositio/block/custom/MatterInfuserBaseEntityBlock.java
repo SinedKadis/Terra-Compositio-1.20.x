@@ -12,6 +12,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -19,12 +20,17 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.sinedkadis.terracompositio.api.helpers.ItemHelper;
+import net.sinedkadis.terracompositio.api.registries.TCCapabilities;
+import net.sinedkadis.terracompositio.block.entity.FlowCedarCasingBlockEntity;
+import net.sinedkadis.terracompositio.block.entity.MatterInfuserUnitBlockEntity;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.AXIS;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING;
 
 @SuppressWarnings("deprecation")
 public abstract class MatterInfuserBaseEntityBlock extends TCBaseEntityBlock {
@@ -49,8 +55,10 @@ public abstract class MatterInfuserBaseEntityBlock extends TCBaseEntityBlock {
         Direction direction = pState.getValue(FACING);
         BlockPos blockpos = pPos.relative(direction.getOpposite());
         BlockState blockstate = pLevel.getBlockState(blockpos);
-        if (blockstate.hasProperty(AXIS) && blockstate.is(TCBlocks.FLOW_CEDAR_CASING.get()))
-            return direction.getAxis().isHorizontal() && !blockstate.getValue(AXIS).equals(direction.getAxis());
+        if (blockstate.hasProperty(AXIS) && blockstate.is(TCBlocks.FLOW_CEDAR_CASING.get())) {
+            Direction.Axis axis = blockstate.getValue(AXIS);
+            return axis.isHorizontal() && !axis.equals(direction.getAxis());
+        }
         return false;
     }
 
@@ -114,6 +122,28 @@ public abstract class MatterInfuserBaseEntityBlock extends TCBaseEntityBlock {
         }
 
         return null;
+    }
+
+    @Override
+    public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, @NotNull BlockState pNewState, boolean pIsMoving) {
+        Direction direction = pState.getValue(HORIZONTAL_FACING);
+        BlockPos blockPos2 = pPos.relative(direction.getCounterClockWise());
+        BlockEntity blockEntity1;
+        blockEntity1 = pLevel.getBlockEntity(blockPos2);
+        if (blockEntity1 instanceof MatterInfuserUnitBlockEntity) {
+            ItemHelper.dropContents(blockEntity1, TCCapabilities.ITEM_STATE_HOLDER);
+        }
+        BlockPos blockpos = pPos.relative(direction.getOpposite());
+        BlockState blockState = pLevel.getBlockState(blockpos);
+        if (blockState.is(TCBlocks.FLOW_CEDAR_CASING.get())) {
+            BlockEntity blockEntity = pLevel.getBlockEntity(blockpos);
+            if (blockEntity instanceof FlowCedarCasingBlockEntity) {
+                ItemHelper.dropContents(blockEntity, TCCapabilities.ITEM_STATE_HOLDER,
+                        FlowCedarCasingBlockEntity.UP_CONNECTION_SLOT,
+                        FlowCedarCasingBlockEntity.DOWN_CONNECTION_SLOT);
+            }
+        }
+        super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
     }
 
     @SuppressWarnings("deprecation")

@@ -43,6 +43,11 @@ public class TCParticles {
                     );
                 }
             });
+    public static final RegistryObject<SimpleParticleType> ECF_SPIRAL =
+            PARTICLE_TYPES.register("ecf_spiral_particle", () -> new SimpleParticleType(true));
+    public static final RegistryObject<SimpleParticleType> FE_SPIRAL =
+            PARTICLE_TYPES.register("fe_spiral_particle", () -> new SimpleParticleType(true));
+
     public static void register(IEventBus eventBus) {
         PARTICLE_TYPES.register(eventBus);
     }

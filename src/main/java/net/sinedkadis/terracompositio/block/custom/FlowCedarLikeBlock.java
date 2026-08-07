@@ -1,5 +1,6 @@
 package net.sinedkadis.terracompositio.block.custom;
 
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -31,33 +32,37 @@ import net.sinedkadis.terracompositio.item.custom.WrenchAxeItem;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
 import net.sinedkadis.terracompositio.registries.TCItems;
 import net.sinedkadis.terracompositio.registries.TCTags;
-import org.jetbrains.annotations.NotNull;
+import net.sinedkadis.terracompositio.util.helpers.WorldHelperInternal;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.function.Supplier;
 
-import static net.sinedkadis.terracompositio.api.helpers.WorldHelper.handleInWorldBlockCraft;
-
+import static net.sinedkadis.terracompositio.util.helpers.WorldHelperInternal.handleInWorldBlockCraft;
 
 @SuppressWarnings("deprecation")
+@MethodsReturnNonnullByDefault
+@ParametersAreNonnullByDefault
 public class FlowCedarLikeBlock extends RotatedPillarBlock implements IFluidApplicable {
     public static final BooleanProperty INFUSED;
     @Nullable
     private final Supplier<Block> stripPair;
     protected static final BooleanProperty WAXED;
+
     public FlowCedarLikeBlock(Properties pProperties, @Nullable Supplier<Block> stripPair) {
         super(pProperties);
-        this.registerDefaultState(this.defaultBlockState().setValue(INFUSED, false).setValue(WAXED,false));
+        this.registerDefaultState(this.defaultBlockState().setValue(INFUSED, false).setValue(WAXED, false));
         this.stripPair = stripPair;
     }
+
     public FlowCedarLikeBlock(Properties pProperties) {
         super(pProperties);
-        this.registerDefaultState(this.defaultBlockState().setValue(INFUSED, false).setValue(WAXED,false));
+        this.registerDefaultState(this.defaultBlockState().setValue(INFUSED, false).setValue(WAXED, false));
         this.stripPair = null;
     }
 
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
-        pBuilder.add(AXIS,INFUSED,WAXED);
+        pBuilder.add(AXIS, INFUSED, WAXED);
     }
 
     @Override
@@ -77,16 +82,22 @@ public class FlowCedarLikeBlock extends RotatedPillarBlock implements IFluidAppl
 
     @Override
     public @Nullable BlockState getToolModifiedState(BlockState state, UseOnContext context, ToolAction toolAction, boolean simulate) {
-        if(context.getItemInHand().getItem() instanceof AxeItem && stripPair != null){
+        if (context.getItemInHand().getItem() instanceof AxeItem && stripPair != null) {
             return stripPair.get().defaultBlockState()
                     .setValue(AXIS, state.getValue(AXIS))
-                    .setValue(INFUSED,state.getValue(INFUSED));
+                    .setValue(INFUSED, state.getValue(INFUSED));
         }
-        return super.getToolModifiedState(state, context,toolAction,simulate);
+        return super.getToolModifiedState(state, context, toolAction, simulate);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
-    public @NotNull InteractionResult use(@NotNull BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, Player pPlayer, @NotNull InteractionHand pHand, @NotNull BlockHitResult pHit) {
+    public InteractionResult use(BlockState pState,
+                                 Level pLevel,
+                                 BlockPos pPos,
+                                 Player pPlayer,
+                                 InteractionHand pHand,
+                                 BlockHitResult pHit) {
         ItemStack item = pPlayer.getItemInHand(InteractionHand.MAIN_HAND);
         ItemStack item2 = pPlayer.getItemInHand(InteractionHand.OFF_HAND);
         if (this.getClass() == FlowCedarLikeBlock.class) {
@@ -102,34 +113,32 @@ public class FlowCedarLikeBlock extends RotatedPillarBlock implements IFluidAppl
                 return handleInWorldBlockCraft(pState, TCBlocks.FLOW_INFUSER.get().defaultBlockState(), pLevel, pPos, item, 1);
             }
         }
-        if (item.is(Items.HONEYCOMB) && !pState.getValue(WAXED)){
-            return handleInWorldBlockCraft(pState, pState.setValue(WAXED, true), pLevel, pPos, item, 1, ParticleTypes.WAX_ON, SoundEvents.HONEYCOMB_WAX_ON);
+        if (item.is(Items.HONEYCOMB) && !pState.getValue(WAXED)) {
+            return WorldHelper.handleInWorldBlockCraft(pState, pState.setValue(WAXED, true), pLevel, pPos, item, 1, ParticleTypes.WAX_ON, SoundEvents.HONEYCOMB_WAX_ON);
         }
-        if (item.getItem() instanceof AxeItem && pState.getValue(WAXED)){
-            item.hurtAndBreak(1,pPlayer,player1 -> player1.broadcastBreakEvent(InteractionHand.MAIN_HAND));
-            return handleInWorldBlockCraft(pState, pState.setValue(WAXED, false), pLevel, pPos, item, 0, ParticleTypes.WAX_OFF,SoundEvents.AXE_WAX_OFF);
+        if (item.getItem() instanceof AxeItem && pState.getValue(WAXED)) {
+            item.hurtAndBreak(1, pPlayer, player1 -> player1.broadcastBreakEvent(InteractionHand.MAIN_HAND));
+            return WorldHelper.handleInWorldBlockCraft(pState, pState.setValue(WAXED, false), pLevel, pPos, item, 0, ParticleTypes.WAX_OFF, SoundEvents.AXE_WAX_OFF);
         }
         return super.use(pState, pLevel, pPos, pPlayer, pHand, pHit);
     }
 
     @Override
-    public void onRemove(@NotNull BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pNewState, boolean pIsMoving) {
+    public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
         super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
         if (pState.getBlock() != pNewState.getBlock() && WorldHelper.onRemoveHandlerBlacklist(pNewState,
                 Blocks.STRUCTURE_VOID,
                 TCBlocks.FLOW_CEDAR_CASING.get())) {
-            WorldHelper.flowLeak(pState, pLevel, pPos);
+            WorldHelperInternal.flowLeak(pState, pLevel, pPos);
         }
     }
 
 
     @Override
-    public void tick(BlockState pState, @NotNull ServerLevel pLevel, @NotNull BlockPos pPos, @NotNull RandomSource pRandom) {
+    public void randomTick(BlockState pState, ServerLevel pLevel, BlockPos pPos, RandomSource pRandom) {
         if (pState.getValue(INFUSED)) {
             for (BlockPos blockPos : BlockPos.betweenClosed(pPos.offset(-1, -1, -1), pPos.offset(1, 1, 1))) {
-                if (blockPos.getX() != pPos.getX()
-                        && blockPos.getY() != pPos.getY()
-                        && blockPos.getZ() != pPos.getZ()) {
+                if (!blockPos.equals(pPos)) {
                     if (pLevel.getBlockState(blockPos).hasProperty(INFUSED)) {
                         if (!pLevel.getBlockState(blockPos).getValue(INFUSED) && pRandom.nextFloat() > 0.99f)
                             pLevel.setBlockAndUpdate(blockPos, pLevel.getBlockState(blockPos).setValue(INFUSED, true));
@@ -140,7 +149,7 @@ public class FlowCedarLikeBlock extends RotatedPillarBlock implements IFluidAppl
     }
 
     @Override
-    public boolean isRandomlyTicking(@NotNull BlockState pState) {
+    public boolean isRandomlyTicking(BlockState pState) {
         return true;
     }
 

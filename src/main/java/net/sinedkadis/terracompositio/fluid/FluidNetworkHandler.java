@@ -4,7 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.sinedkadis.terracompositio.api.helpers.ECFHelper;
+import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
 import net.sinedkadis.terracompositio.api.networks.NetworkAction;
 import net.sinedkadis.terracompositio.api.networks.fluid.FluidNetwork;
 import net.sinedkadis.terracompositio.api.networks.fluid.FluidNetworkMember;
@@ -77,7 +77,7 @@ public class FluidNetworkHandler implements FluidNetwork {
         }
 
 
-        toReturn.removeIf(m -> !ECFHelper.validMember(m));
+        toReturn.removeIf(m -> !TerraCompositioAPI.instance().getECFNetworkInstance().validateMember(m));
         return toReturn;
     }
 
@@ -105,7 +105,7 @@ public class FluidNetworkHandler implements FluidNetwork {
     @Override
     public boolean isIn(Level pLevel, IFluidHandler fluidHandler) {
         return fluidSources.getOrDefault(pLevel, Collections.emptySet()).stream().anyMatch(fluidSource -> {
-            IFluidHandler fluidHandler2 = fluidSource.getMainHandler();
+            IFluidHandler fluidHandler2 = fluidSource.getFluidHandler();
             return fluidHandler2.equals(fluidHandler);
         });
     }

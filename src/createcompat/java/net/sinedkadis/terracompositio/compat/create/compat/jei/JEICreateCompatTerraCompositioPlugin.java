@@ -25,6 +25,7 @@ import net.createmod.catnip.config.ConfigBase;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.fml.ModList;
@@ -85,11 +86,19 @@ public class JEICreateCompatTerraCompositioPlugin implements IModPlugin {
         allCategories.forEach(c -> c.registerRecipes(registration));
 
         registration.addRecipes(new mezz.jei.api.recipe.RecipeType<>(Create.asResource("item_application"), ItemApplicationRecipe.class),
-                List.of(new ProcessingRecipeBuilder<>(ManualApplicationRecipe::new, TerraCompositio.modLoc("cedar_tank_2"))
+                List.of(new ProcessingRecipeBuilder<>(ManualApplicationRecipe::new,
+                                TerraCompositio.modLoc("cedar_tank_2"))
                         .require(TCBlocks.FLOW_CEDAR_TANK_3.get())
                         .require(ItemTags.AXES)
                         .output(TCBlocks.FLOW_CEDAR_TANK_2.get())
-                        .build()));
+                                .build(),
+                        new ProcessingRecipeBuilder<>(ManualApplicationRecipe::new,
+                                TerraCompositio.modLoc("cedar_pedestal"))
+                                .require(TCBlocks.FLOW_CEDAR_SAPLING.get())
+                                .require(Items.BONE_MEAL)
+                                .output(TCBlocks.FLOW_CEDAR_PEDESTAL.get())
+                                .build())
+        );
     }
 
     @Override

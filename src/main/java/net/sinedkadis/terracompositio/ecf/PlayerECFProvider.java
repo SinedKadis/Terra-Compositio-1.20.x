@@ -6,26 +6,26 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
+import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.api.registries.TCCapabilities;
-import net.sinedkadis.terracompositio.util.IEntityInstance;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class PlayerECFProvider implements net.minecraftforge.common.capabilities.ICapabilityProvider, INBTSerializable<CompoundTag> {
 
     private ECFHandlerPlayerArmor handler = null;
+    private final Player player;
+    private final LazyOptional<IECFHandler> optional = LazyOptional.of(this::createPlayerECFContainer);
+
 
     public PlayerECFProvider(Player player) {
         this.player = player;
     }
 
-    private final Player player;
-    private final LazyOptional<IECFHandler> optional = LazyOptional.of(this::createPlayerECFContainer);
-
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if(cap == TCCapabilities.ECF) {
+        if (cap == TCCapabilities.ECF) {
             return optional.cast();
         }
 
@@ -34,7 +34,7 @@ public class PlayerECFProvider implements net.minecraftforge.common.capabilities
 
     private IECFHandler createPlayerECFContainer() {
         if (this.handler == null) {
-            this.handler = new ECFHandlerPlayerArmor(new DefaultECFHandler(IEntityInstance.wrap(player))
+            this.handler = new ECFHandlerPlayerArmor(new DefaultECFHandler((ECFNetworkMember) player)
                     .setMaxECF(0) // I haven't thought of a use for this yet
                     .setOffset(vec3 -> vec3.add(0, 1, 0)));
         }

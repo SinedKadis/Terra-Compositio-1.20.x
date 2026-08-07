@@ -2,15 +2,20 @@ package net.sinedkadis.terracompositio.util.helpers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fluids.FluidStack;
 import net.sinedkadis.terracompositio.particle.ECFParticleData;
 import net.sinedkadis.terracompositio.particle.FluidParticleData;
+import net.sinedkadis.terracompositio.particle.custom.SpiralParticle;
 import net.sinedkadis.terracompositio.registries.TCParticles;
 import org.jetbrains.annotations.NotNull;
 
@@ -136,11 +141,11 @@ public class ParticleHelperInternal {
         var matrix = pose.pose();
         var normal = pose.normal();
 
-        //pPackedLight = 0xF000F0;
+        pPackedLight = LightTexture.FULL_BRIGHT;
 
-        float size = 0.1f;
+        float size = 0.2f;
 
-        int pAlpha = 200;
+        int pAlpha = 255;
         buffer.vertex(matrix, -size, -size, 0)
                 .color(255, 255, 255, pAlpha)
                 .uv(0, 1)
@@ -172,5 +177,53 @@ public class ParticleHelperInternal {
                 .uv2(pPackedLight)
                 .normal(normal, 0, 0, 1)
                 .endVertex();
+    }
+
+
+    /**
+     * origin (центр) -> target (offset 0.5, 1, 0.5), обычная спираль.
+     */
+    public static void spawnSpiralEcf(ClientLevel level, BlockPos origin, BlockPos target) {
+        spawnInternal(level, TCParticles.ECF_SPIRAL.get(),
+                Vec3.atCenterOf(origin),
+                targetWithOffset(target));
+    }
+
+    /**
+     * target (offset 0.5, 1, 0.5) -> origin (центр), зеркальная спираль, движется навстречу первой.
+     */
+    public static void spawnSpiralFE(ClientLevel level, BlockPos origin, BlockPos target) {
+        spawnInternal(level, TCParticles.FE_SPIRAL.get(),
+                targetWithOffset(target),
+                Vec3.atCenterOf(origin));
+    }
+
+    private static Vec3 targetWithOffset(BlockPos target) {
+        return new Vec3(target.getX() + 0.5, target.getY() + 1.0, target.getZ() + 0.5);
+    }
+
+    private static void spawnInternal(ClientLevel level, SimpleParticleType type, Vec3 from, Vec3 to) {
+        Vec3 delta = to.subtract(from);
+        double distance = delta.length();
+
+        if (distance < 1.0e-4) {
+            return;
+        }
+
+        int lifetimeTicks = Mth.clamp(
+                (int) Math.round(distance / SpiralParticle.getAxialSpeed()),
+                1,
+                SpiralParticle.MAX_LIFETIME
+        );
+
+        Vec3 startVelocity = delta.normalize().scale(lifetimeTicks);
+
+        level.addParticle(
+                type,
+                from.x, from.y, from.z,
+                startVelocity.x, startVelocity.y, startVelocity.z
+        );
+
+
     }
 }

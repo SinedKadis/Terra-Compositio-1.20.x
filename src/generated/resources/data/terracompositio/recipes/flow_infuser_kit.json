@@ -3,7 +3,7 @@
   "category": "equipment",
   "key": {
     "N": {
-      "item": "terracompositio:copper_nugget"
+      "tag": "c:items/copper_nugget"
     },
     "S": {
       "item": "minecraft:stick"

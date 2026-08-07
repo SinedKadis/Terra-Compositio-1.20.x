@@ -7,7 +7,6 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.sinedkadis.terracompositio.TerraCompositio;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.api.registries.TCCapabilities;
@@ -25,12 +24,12 @@ import java.util.Optional;
 public class FlowCedarEntRenderer extends MobRenderer<FlowCedarEntEntity,FlowCedarEntModel<FlowCedarEntEntity>> {
 
     private static final ResourceLocation ENT_TEXTURE = TerraCompositio.modLoc("textures/entity/flow_cedar_ent.png");
-    private static final ResourceLocation CUBE_TEXTURE = TerraCompositio.modLoc("textures/entity/ecf_cube.png");
-    private final ECFCubeModel<FlowCedarEntEntity> ECFCubeModel;
+    public static final ResourceLocation CUBE_TEXTURE = TerraCompositio.modLoc("textures/entity/ecf_cube.png");
+    public final ECFCubeModel<FlowCedarEntEntity> ecfCubeModel;
 
     public FlowCedarEntRenderer(EntityRendererProvider.Context pContext) {
         super(pContext, new FlowCedarEntModel<>(pContext.bakeLayer(TCModelLayers.FLOW_CEDAR_ENT_LAYER)), 0.5f);
-        this.ECFCubeModel = new ECFCubeModel<>(pContext.bakeLayer(TCModelLayers.ECF_CUBE_LAYER));
+        this.ecfCubeModel = new ECFCubeModel<>(pContext.bakeLayer(TCModelLayers.ECF_CUBE_LAYER));
 
         bakeHomeless(pContext);
     }
@@ -57,7 +56,7 @@ public class FlowCedarEntRenderer extends MobRenderer<FlowCedarEntEntity,FlowCed
         Optional<IECFHandler> icfeHandler = entity.getCapability(TCCapabilities.ECF).resolve();
         if (energy > 0 && icfeHandler.isPresent()) {
             float alpha = 0.8f;
-            alpha += Mth.map(energy,1000,10000,0,0.2f);
+            //alpha += Mth.map(energy,1000,10000,0,0.2f);
 
 
             float scale = (0.1f + (energy / (float) icfeHandler.get().getMaxECF())) * 10;
@@ -68,8 +67,8 @@ public class FlowCedarEntRenderer extends MobRenderer<FlowCedarEntEntity,FlowCed
             poseStack.scale(scale,scale,scale);
 
 
-            this.ECFCubeModel.setupAnim(entity, 0, 0, entity.tickCount + partialTicks, 0, 0);
-            this.ECFCubeModel.renderToBuffer(
+            this.ecfCubeModel.setupAnim(entity, 0, 0, entity.tickCount + partialTicks, 0, 0);
+            this.ecfCubeModel.renderToBuffer(
                     poseStack,
                     buffer.getBuffer(RenderType.entityTranslucent(CUBE_TEXTURE)),
                     packedLight,

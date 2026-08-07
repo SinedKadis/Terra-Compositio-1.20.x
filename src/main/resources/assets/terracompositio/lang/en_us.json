@@ -87,6 +87,9 @@
 
   "info.terracompositio.ecf": "Stored ECF: %s",
   "info.terracompositio.ecf_tick": "ECF/tick: %s",
+  "info.terracompositio.ecf_consume": "ECF to consume: %s",
+  "info.terracompositio.dacay_rate": "Chance to consume catalyst: %s",
+
   "info.terracompositio.max_ecf": "Max ECF: %s",
   "info.terracompositio.priority": "Priority: %s",
   "info.terracompositio.range": "Range: %s",
@@ -94,6 +97,12 @@
   "info.terracompositio.extracted_ecf": "Extracted ECF: %s",
   "info.terracompositio.ecf_header": "Creation Flow Energy info: ",
   "info.terracompositio.type": "Type: %s",
+  "info.terracompositio.fe": "FE: %s",
+  "info.terracompositio.max_fe": "Max FE: %s",
+  "info.terracompositio.progress": "Progress: %s",
+  "info.terracompositio.max_progress": "Max Progress: %s",
+
+
   "info.terracompositio.consumer": " Consumer",
   "info.terracompositio.source": " Source",
 
@@ -110,6 +119,8 @@
   "info.terracompositio.items_header": "Items Info: ",
   "info.terracompositio.fluids_header": "Fluids Info: ",
   "info.terracompositio.crafting_header": "Crafting Info: ",
+  "info.terracompositio.fe_header": "Formal Energy Info: ",
+
   "info.terracompositio.time_remaining": "Remaining: %s",
   "info.terracompositio.time_collected": "Time Collected: %s",
   "info.terracompositio.time_collection_chance": "Time collection chance: %s%%",
@@ -119,6 +130,7 @@
   "info.terracompositio.seconds": " seconds",
   "info.terracompositio.no_ecf": "Not enough ECF",
   "info.terracompositio.no_space": "Not enough space in output",
+  "info.terracompositio.no_surroundings": "Multiblock is not assembled",
 
 
   "info.terracompositio.ent_hold_header": "Holds: ",
@@ -200,6 +212,8 @@
   "item.terracompositio.infused_fertilizer": "Infused Fertilizer",
   "item.terracompositio.apple_of_knowledge": "Apple of Knowledge",
   "item.terracompositio.apple_of_ignorance": "Apple of Ignorance",
+  "block.terracompositio.fe_provider_core": "Formal Energy Provider Core",
+  "block.terracompositio.fe_provider_pylon": "Formal Energy Provider Pylon",
 
 
 
@@ -254,7 +268,7 @@
 
   "book.terracompositio.creation_flow_journal.entry.flow_infuser.name": "Flow Infuser",
   "book.terracompositio.creation_flow_journal.entry.flow_infuser.page1": "  With this device, you can create an interesting material that possesses the properties of both a liquid and iron. To do this, we’ll need sticks, copper, an axe, and steady hands.",
-  "book.terracompositio.creation_flow_journal.entry.flow_infuser.page2": "  To function, the device must be placed inside a living cedar tree filled with flow",
+  "book.terracompositio.creation_flow_journal.entry.flow_infuser.page2": "  To function, the device must be surrounded with liquid flow containing blocks, from up and down",
   "book.terracompositio.creation_flow_journal.entry.flow_infuser.page3": "  Once you place iron inside and add a little ECF, the device will fill up and the material will be produced",
 
   "book.terracompositio.creation_flow_journal.entry.infused_iron_axe.name": "Multi-Tool",
@@ -336,10 +350,8 @@
   "book.terracompositio.creation_flow_journal.entry.enriched_technetium.page2": "  To extract ECF from it, smelt the enriched material. But remember, the more enriched it is, the more toxic it becomes",
   "book.terracompositio.creation_flow_journal.category.day_5.name": "Chapter Five",
   "book.terracompositio.creation_flow_journal.category.day_5.description": "Bookmark Five: Technetium and Its Applications. The final tab",
-
-
-  "book.terracompositio.creation_flow_journal.entry.fluid_applier.name": "Fluid Applicator",
-  "book.terracompositio.creation_flow_journal.entry.fluid_applier.page1": "  A cool device. Can be used as a bucket; holds 8 buckets of liquid. Can pour liquids one after another, instead of pouring them into a single block",
+  "book.terracompositio.creation_flow_journal.entry.fluid_applier.name": "Fluid Applier",
+  "book.terracompositio.creation_flow_journal.entry.fluid_applier.page1": "  A cool device. Can be used as a bucket; holds 8 buckets of liquid. Can pour liquids one after another, instead of pouring them into a single block. Also can apply fluids in 5x bigger range",
   "book.terracompositio.creation_flow_journal.entry.fluid_applier.page2": "  If it contains a liquid flow, it can fill wooden blocks with it and revive withered Ents",
   "book.terracompositio.creation_flow_journal.entry.technetium_armor.name": "Technetium Armor",
   "book.terracompositio.creation_flow_journal.entry.technetium_armor.desc": "  An incredible material that can be used to craft good armor. Initially, each piece can store up to 8 ECF, but by combining it at a workbench with a piece of enriched technetium, its capacity will equal the cost of production: from 128 to 3,200, respectively",
@@ -350,6 +362,10 @@
   "book.terracompositio.creation_flow_journal.entry.technetium_armor.boots_usage": "  Each platform placed costs 1 ECF; it also absorbs fall damage, and you cannot slip off it.  To use them, jump from a ledge after making sure you have enough ECF in your boots. If you look high enough while jumping, the platform’s level will rise; if you look low enough, it will lower. To descend quickly, step off the platform while crouching; to ascend quickly, jump twice. It saves you when falling from a great height",
   "book.terracompositio.creation_flow_journal.entry.floating_redstone.name": "Levitating Redstone",
   "book.terracompositio.creation_flow_journal.entry.floating_redstone.page1": "  Thanks to the levitation properties of filled iron, as well as its redstone conductivity, you can create redstone components that don’t need a support to function",
-  "book.terracompositio.creation_flow_journal.entry.floating_redstone.page2": "  You can insert any torch into the holder—it doesn’t have to be made of redstone"
-
+  "book.terracompositio.creation_flow_journal.entry.floating_redstone.page2": "  You can insert any torch into the holder—it doesn’t have to be made of redstone",
+  "book.terracompositio.creation_flow_journal.entry.fe_provider.name": "FE Provider",
+  "book.terracompositio.creation_flow_journal.entry.fe_provider.page1": "  Formal Energy provider is a device, that capable to exchanging ECF to FE in 1:60 rate. <br>  To function, the provider must be surrounded with liquid flow containing blocks, from up and down",
+  "book.terracompositio.creation_flow_journal.entry.fe_provider.page2": "  Pylons need to be placed around provider on the same level. Each pylon increases speed by 60FE per second. To function needs to be infused",
+  "book.terracompositio.creation_flow_journal.entry.fe_provider.page1.title": "FE Provider Core",
+  "book.terracompositio.creation_flow_journal.entry.fe_provider.page2.title": "FE Provider Pylon"
 }

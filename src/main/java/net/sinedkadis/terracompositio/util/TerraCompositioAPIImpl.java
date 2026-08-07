@@ -16,5 +16,4 @@ public class TerraCompositioAPIImpl implements TerraCompositioAPI {
     public FluidNetwork getFluidNetworkInstance() {
         return FluidNetworkHandler.INSTANCE;
     }
-
 }

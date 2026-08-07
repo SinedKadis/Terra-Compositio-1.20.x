@@ -189,6 +189,7 @@ public class TCEventBusClientEvents {
         event.registerBlockEntityRenderer(TCBlockEntities.ENT_STATUE_BE.get(), EntStatueBlockEntityRenderer::new);
         event.registerBlockEntityRenderer(TCBlockEntities.MATTER_INFUSER_IO_BE.get(), MatterInfuserIOBlockEntityRenderer::new);
         event.registerBlockEntityRenderer(TCBlockEntities.MATTER_INFUSER_PORT_BE.get(), MatterInfuserPortBlockEntityRenderer::new);
+        event.registerBlockEntityRenderer(TCBlockEntities.FE_PROVIDER_CORE_BE.get(), FEProviderCoreBlockEntityRenderer::new);
 
 
         if (ModList.get().isLoaded("create")) {
@@ -206,6 +207,8 @@ public class TCEventBusClientEvents {
         event.registerSpriteSet(TCParticles.FLOW_SPLASH_PARTICLE.get(), FlowSplashParticle.Provider::new);
         event.registerSpriteSet(TCParticles.BIRCH_JUICE_SPLASH_PARTICLE.get(), BirchJuiceSplashParticle.Provider::new);
         event.registerSpriteSet(TCParticles.FLUID_FLOW.get(), FluidFlowParticle.Provider::new);
+        event.registerSpriteSet(TCParticles.ECF_SPIRAL.get(), SpiralParticle.Provider::new);
+        event.registerSpriteSet(TCParticles.FE_SPIRAL.get(), SpiralParticle.ReverseProvider::new);
     }
 
     @SubscribeEvent

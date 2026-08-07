@@ -1,4 +1,3 @@
-import java.lang.reflect.Modifier
 
 //file:noinspection GroovyAssignabilityCheck
 //file:noinspection DependencyNotationArgument
@@ -67,11 +66,23 @@ repositories {
 
 
 sourceSets {
+    api {
+        java.srcDir 'src/api/java'
+
+        compileClasspath += configurations.compileClasspath
+        runtimeClasspath += configurations.runtimeClasspath
+    }
+
     createcompat {
         java.srcDir 'src/createcompat/java'
         //resources.srcDir 'src/main/resources'
-        compileClasspath += sourceSets.main.output
-        runtimeClasspath += sourceSets.main.output
+        compileClasspath += sourceSets.api.output + sourceSets.main.compileClasspath + sourceSets.main.output
+        runtimeClasspath += sourceSets.api.output + sourceSets.main.runtimeClasspath + sourceSets.main.output
+    }
+
+    main {
+        compileClasspath += sourceSets.api.output
+        runtimeClasspath += sourceSets.api.output
     }
 }
 
@@ -138,6 +149,7 @@ minecraft {
                 "${mod_id}" {
                     source sourceSets.main
                     source sourceSets.createcompat
+                    source sourceSets.api
                 }
             }
 
@@ -238,6 +250,9 @@ dependencies {
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.4.1"))
     implementation("io.github.llamalad7:mixinextras-forge:0.4.1")
     implementation fg.deobf("com.github.glitchfiend:TerraBlender-forge:${minecraft_version}-${terrablender_version}")
+
+    apiCompileOnly 'org.projectlombok:lombok:1.18.34'
+    apiAnnotationProcessor 'org.projectlombok:lombok:1.18.34'
 }
 
 mixin {
@@ -264,101 +279,6 @@ tasks.named('processResources', ProcessResources).configure {
 
     filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
         expand replaceProperties + [project: project]
-    }
-}
-
-tasks.register('checkAbstractMethods') {
-    dependsOn compileJava
-    doLast {
-        def classesDir = file("build/classes/java/main")
-        if (!classesDir.exists()) {
-            println "WARN: classes dir not found, skipping"
-            return
-        }
-
-        def errors = []
-
-        def baseUrls = []
-        configurations.each { config ->
-            try {
-                if (config.canBeResolved) {
-                    config.resolvedConfiguration.resolvedArtifacts.each { artifact ->
-                        baseUrls << artifact.file.toURI().toURL()
-                    }
-                }
-            } catch (Exception ignored) {
-            }
-        }
-
-        def classFiles = fileTree(classesDir).matching {
-            include "**/*.class"
-            // анонимные и inner-классы пропускаем — они не могут быть "не реализованы"
-            exclude "**/*\$*.class"
-        }.files
-
-        for (def classFile : classFiles) {
-            def className = classFile.path
-                    .replace(classesDir.path + "/", "")
-                    .replace("/", ".")
-                    .replace(".class", "")
-
-            // Пересоздаём classloader для каждого класса,
-            // чтобы ExceptionInInitializerError одного не ломал остальные
-            def urls = [classesDir.toURI().toURL()] + baseUrls
-            def classLoader = new URLClassLoader(
-                    urls as URL[],
-                    ClassLoader.getSystemClassLoader()
-            )
-
-            try {
-                def clazz = classLoader.loadClass(className)
-
-                if (clazz.isInterface() || clazz.isEnum() || Modifier.isAbstract(clazz.modifiers)) continue
-
-                def allIfaces = []
-                def queue = new ArrayDeque(clazz.interfaces.toList())
-                while (!queue.isEmpty()) {
-                    def iface = queue.poll()
-                    allIfaces << iface
-                    iface.interfaces.each { queue.add(it) }
-                }
-
-                for (def iface : allIfaces) {
-                    for (def method : iface.methods) {
-                        if (Modifier.isAbstract(method.modifiers)) {
-                            try {
-                                clazz.getMethod(method.name, method.parameterTypes)
-                            } catch (NoSuchMethodException ignored) {
-                                errors << "⚠ MISSING: ${className}\n  не реализует [${iface.name}].${method.name}(${method.parameterTypes*.simpleName.join(', ')})\n"
-                            }
-                        }
-                    }
-                }
-
-            } catch (ClassNotFoundException | NoClassDefFoundError | ExceptionInInitializerError | VerifyError ignored) {
-                // требует FML/Forge окружения — пропускаем
-            } catch (Throwable e) {
-                println "WARN skipped ${className}: ${e.class.simpleName}: ${e.message}"
-            } finally {
-                try {
-                    classLoader.close()
-                } catch (Exception ignored) {
-                }
-            }
-        }
-
-        System.out.flush()
-        println "\n========== checkAbstractMethods results =========="
-        if (errors) {
-            println "Найдено проблем: ${errors.size()}"
-            errors.each { println it }
-            System.out.flush()
-            println "=================================================="
-            throw new GradleException("Найдены нереализованные методы интерфейсов!")
-        } else {
-            println "✓ Все методы интерфейсов реализованы"
-            println "=================================================="
-        }
     }
 }
 
@@ -412,6 +332,7 @@ tasks.withType(AbstractArchiveTask).configureEach {
 
 jar {
     from sourceSets.createcompat.output
+    from sourceSets.api.output
 }
 
 

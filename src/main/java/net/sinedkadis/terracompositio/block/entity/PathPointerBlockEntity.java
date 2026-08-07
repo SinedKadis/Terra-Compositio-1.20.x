@@ -10,7 +10,6 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -25,10 +24,11 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PacketDistributor;
+import net.sinedkadis.terracompositio.api.IEntityInstance;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
-import net.sinedkadis.terracompositio.api.dummies.DummyECFHandler;
 import net.sinedkadis.terracompositio.api.helpers.BlockPosHelper;
 import net.sinedkadis.terracompositio.api.helpers.PlayerHelper;
+import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.networks.NetworkAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetwork;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
@@ -39,7 +39,6 @@ import net.sinedkadis.terracompositio.network.TCPackets;
 import net.sinedkadis.terracompositio.network.packets.S2CHighLightNodesSync;
 import net.sinedkadis.terracompositio.registries.TCBlockEntities;
 import net.sinedkadis.terracompositio.util.BindException;
-import net.sinedkadis.terracompositio.util.IEntityInstance;
 import net.sinedkadis.terracompositio.util.accessors.PlayerKnowledgeAccessor;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
 import org.jetbrains.annotations.NotNull;
@@ -68,7 +67,7 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
     @Setter
     private boolean updateScheduled = false;
 
-    private BlockPos receiverPos = null;
+    private BlockPos receiverPos = SentinelHelper.EMPTY_POS;
 
     public static boolean validAngle(PathPointerBlockEntity be, Vec3 burstDir) {
 
@@ -89,18 +88,10 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
         return dot > 0;
     }
 
-    public void setReceiverPos(@Nullable BlockPos receiverPos) {
-        this.receiverPos = receiverPos;
-    }
-
     private final Set<BlockPos> senderPoses = new HashSet<>() {
     };
 
-    private BlockPos outputPos = null;
-
-    public void setOutputPos(@Nullable BlockPos emitterPos) {
-        this.outputPos = emitterPos;
-    }
+    private BlockPos outputPos = SentinelHelper.EMPTY_POS;
 
     private final Set<BlockPos> inputPoses = new HashSet<>();
 
@@ -246,8 +237,8 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
         inputs.forEach(inputPPBE -> fullUpdateBE(pPlayer, (ServerLevel) level, inputPPBE));
         fullUpdateBE(pPlayer, (ServerLevel) level, outputPPBE);
 
-        inputs.forEach(inputPPBE ->
-                TerraCompositioAPI.instance().getECFNetworkInstance().updateInRange((Level) level, inputPPBE.getBlockPos(), 5));
+
+        TerraCompositioAPI.instance().getECFNetworkInstance().fireECFNetworkEvent(outputPPBE, NetworkAction.UPDATE_ALL);
     }
 
     private static void tryBindInputsAndOutput(Set<PathPointerBlockEntity> inputs, @Nullable PathPointerBlockEntity outputPPBE) {
@@ -381,6 +372,10 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
 
         be.rotationYaw = (float) Math.toDegrees(yaw);
         be.rotationPitch = (float) Math.toDegrees(pitch);
+
+        if (be.level != null) {
+            be.level.sendBlockUpdated(be.worldPosition, be.getBlockState(), be.getBlockState(), 3);
+        }
     }
 
     public static void clearAnyBindings(@Nullable Player pPlayer, LevelAccessor level, BlockPos blockPos) {
@@ -398,7 +393,7 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
             Set<PathPointerBlockEntity> inputs = getInputOf(be);
             inputs.forEach(inputPPBE -> {
                 if (inputPPBE != null) {
-                    inputPPBE.setOutputPos(null);
+                    inputPPBE.setOutputPos(SentinelHelper.EMPTY_POS);
                     updateClientHighLight(pPlayer, inputPPBE);
                 }
             });
@@ -409,7 +404,7 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
                 inputs.add(be);
                 output.getInputPoses().removeAll(inputs.stream().map(BlockEntity::getBlockPos).collect(Collectors.toSet()));
                 inputs.forEach(input -> updateClientHighLight(pPlayer, input));
-                be.setOutputPos(null);
+                be.setOutputPos(SentinelHelper.EMPTY_POS);
                 updateClientHighLight(pPlayer, output);
             }
             be.getInputPoses().clear();
@@ -422,13 +417,13 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
                     updateClientHighLight(pPlayer, receiver);
                 }
 
-                be.setReceiverPos(null);
+                be.setReceiverPos(SentinelHelper.EMPTY_POS);
             }
 
             be.getSenderPoses().forEach(senderPos -> {
                 PathPointerBlockEntity sender = (PathPointerBlockEntity) level.getBlockEntity(senderPos);
                 if (sender != null) {
-                    sender.setReceiverPos(null);
+                    sender.setReceiverPos(SentinelHelper.EMPTY_POS);
                     updateClientHighLight(pPlayer, sender);
                 }
             });
@@ -483,12 +478,12 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
     @Nullable
     private static Vec3 calculateRot(
             Set<BlockPos> receiverSenderPoses,
-            @Nullable BlockPos senderBindPos,
+            BlockPos senderBindPos,
             BlockPos origin
     ) {
         Vec3 toBind = null;
 
-        if (senderBindPos != null && !senderBindPos.equals(origin)) {
+        if (senderBindPos != SentinelHelper.EMPTY_POS && !senderBindPos.equals(origin)) {
             toBind = Vec3.atCenterOf(senderBindPos)
                     .subtract(Vec3.atCenterOf(origin))
                     .normalize();
@@ -606,17 +601,6 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
         return true;
     }
 
-    public static void saveFromSetToTag(CompoundTag pTag, String tag, Set<BlockPos> senderPoses) {
-        ListTag listTag = new ListTag();
-        listTag.addAll(senderPoses.stream().map(BlockPosHelper::saveBlockPos).toList());
-        pTag.put(tag, listTag);
-    }
-
-    public static void loadFromTagToSet(CompoundTag pTag, String tag, Set<BlockPos> senderPoses) {
-        ListTag tagList = pTag.getList(tag, CompoundTag.TAG_COMPOUND);
-        senderPoses.addAll(tagList.stream().map(BlockPosHelper::loadBlockPos).toList());
-    }
-
     @Override
     protected void saveAdditional(CompoundTag pTag) {
         pTag.putFloat("rot_y", rotationYaw);
@@ -626,12 +610,12 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
         pTag.putInt("part0", parts.get(0).ordinal());
         pTag.putInt("part1", parts.get(1).ordinal());
 
-        if (receiverPos != null)
+        if (receiverPos != SentinelHelper.EMPTY_POS)
             pTag.put(RECEIVER_POS_TAG, BlockPosHelper.saveBlockPos(receiverPos));
-        if (outputPos != null)
+        if (outputPos != SentinelHelper.EMPTY_POS)
             pTag.put(OUTPUT_POS_TAG, BlockPosHelper.saveBlockPos(outputPos));
-        saveFromSetToTag(pTag, SENDER_POSES_TAG, senderPoses);
-        saveFromSetToTag(pTag, INPUT_POSES_TAG, inputPoses);
+        BlockPosHelper.saveFromSetToTag(pTag, SENDER_POSES_TAG, senderPoses);
+        BlockPosHelper.saveFromSetToTag(pTag, INPUT_POSES_TAG, inputPoses);
         super.saveAdditional(pTag);
     }
 
@@ -650,8 +634,8 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
 
         outputPos = BlockPosHelper.loadBlockPos(pTag.getCompound(OUTPUT_POS_TAG));
 
-        loadFromTagToSet(pTag, SENDER_POSES_TAG, senderPoses);
-        loadFromTagToSet(pTag, INPUT_POSES_TAG, inputPoses);
+        BlockPosHelper.loadFromTagToSet(pTag, SENDER_POSES_TAG, senderPoses);
+        BlockPosHelper.loadFromTagToSet(pTag, INPUT_POSES_TAG, inputPoses);
 
     }
 
@@ -663,10 +647,10 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
 
             if (!TCClientConfigs.APPLE_PP_ENDPOINTS.get()) return;
 
-            if (receiverPos != null) {
+            if (receiverPos != SentinelHelper.EMPTY_POS) {
                 addParticle(level, receiverPos, ParticleTypes.FLAME);
             }
-            if (outputPos != null) {
+            if (outputPos != SentinelHelper.EMPTY_POS) {
                 addParticle(level, outputPos, ParticleTypes.WAX_OFF);
             }
 
@@ -695,13 +679,13 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
         }
     }
 
-    @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        super.handleUpdateTag(tag);
-        rotationYaw = tag.getFloat("rot_y");
-        rotationPitch = tag.getFloat("rot_x");
-        rotationRoll = tag.getFloat("rot_z");
-    }
+//    @Override
+//    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+//        super.handleUpdateTag(tag, lookupProvider);
+//        rotationYaw = tag.getFloat("rot_y");
+//        rotationPitch = tag.getFloat("rot_x");
+//        rotationRoll = tag.getFloat("rot_z");
+//    }
 
     @Override
     public @NotNull Component getName() {
@@ -720,7 +704,8 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
     }
 
     @Override
-    public int getRange() {
+    public int getRange(boolean inner) {
+        if (inner) return 1;
         return 7;
     }
 
@@ -730,15 +715,14 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
     }
 
     @Override
-    public IECFHandler getMainHandler() {
-        return DummyECFHandler.instance;
+    public IECFHandler getECFHandler() {
+        return SentinelHelper.EMPTY_ECF_HANDLER;
     }
 
 
     @Override
     public void updateIfScheduled() {
-//        CFENetwork cfeNetworkInstance = TerraCompositioAPI.instance().getCFENetworkInstance();
-//        inputPoses.forEach(pos -> cfeNetworkInstance.updateInRange(level, pos, 5));
+
     }
 
     public void scheduleMemberUpdate() {
@@ -747,7 +731,7 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
 
     public BlockPos getOutputPos() {
         BlockPos outputPos1 = this.outputPos;
-        if (outputPos1 == null
+        if (outputPos1 == SentinelHelper.EMPTY_POS
                 && (parts.contains(PPPart.EMITTER) || parts.contains(PPPart.INFUSER))
                 && (parts.contains(PPPart.COLLECTOR) || parts.contains(PPPart.EXTRACTOR))) {
             return worldPosition;
@@ -763,6 +747,16 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
             inputPoses1.add(worldPosition);
         }
         return inputPoses1;
+    }
+
+    public void setReceiverPos(@Nullable BlockPos receiverPos) {
+        if (receiverPos == null) receiverPos = SentinelHelper.EMPTY_POS;
+        this.receiverPos = receiverPos;
+    }
+
+    public void setOutputPos(@Nullable BlockPos outputPos) {
+        if (outputPos == null) outputPos = SentinelHelper.EMPTY_POS;
+        this.outputPos = outputPos;
     }
 
     public enum PPPart implements StringRepresentable {

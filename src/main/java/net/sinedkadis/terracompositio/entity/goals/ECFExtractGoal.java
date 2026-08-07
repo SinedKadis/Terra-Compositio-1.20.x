@@ -10,6 +10,7 @@ import net.minecraftforge.event.ForgeEventFactory;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
 import net.sinedkadis.terracompositio.api.helpers.ECFHelper;
 import net.sinedkadis.terracompositio.api.networks.NetworkAction;
+import net.sinedkadis.terracompositio.api.networks.TransferAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.api.registries.TCBlockStateProperties;
@@ -89,10 +90,10 @@ public class ECFExtractGoal extends Goal {
                 .getECFNetworkInstance()
                 .getAllECFNetworkMembers(level)) {
 
-            if (!ECFHelper.validMember(member)) continue;
+            if (!TerraCompositioAPI.instance().getECFNetworkInstance().validateMember(member)) continue;
             if (!member.getEntityInstance().tc$getBlockPos().closerThan(mobPos, extractRange)) continue;
             if (member.getEntityInstance().equals(mob)) continue;
-            if (member.getMainHandler().getECF() <= 0) continue;
+            if (member.getECFHandler().getECF() <= 0) continue;
 
             if (member instanceof FlowCedarEntEntity ent) {
                 boolean hasEnough = ent.getCapability(TCCapabilities.ECF)
@@ -161,8 +162,8 @@ public class ECFExtractGoal extends Goal {
                 if (targetMember != null) {
                     ECFHelper.newTransfer()
                             .targetAndSource(mob, targetMember)
-                            .maxTransfer(1000)
                             .speed(2 / 20f)
+                            .noValidate()
                             .build();
                     TerraCompositioAPI.instance().getECFNetworkInstance().fireECFNetworkEvent(targetMember, NetworkAction.UPDATE);
                 } else {
@@ -183,7 +184,7 @@ public class ECFExtractGoal extends Goal {
                 && blockState.getValue(TCBlockStateProperties.INFUSED)) {
             level.setBlockAndUpdate(targetPosition,
                     blockState.setValue(TCBlockStateProperties.INFUSED, false));
-            cachedHeld.addECF(32, false);
+            cachedHeld.addECF(32, TransferAction.EXECUTE);
         }
     }
 }

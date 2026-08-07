@@ -1,5 +1,6 @@
 package net.sinedkadis.terracompositio.block.custom;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -8,12 +9,16 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.sinedkadis.terracompositio.api.registries.TCBlockStateProperties;
+import net.sinedkadis.terracompositio.block.IFluidApplicable;
 import net.sinedkadis.terracompositio.block.entity.TCBlockEntity;
 import net.sinedkadis.terracompositio.registries.TCBlockEntities;
+import net.sinedkadis.terracompositio.util.helpers.WorldHelperInternal;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class FlowInfuserBlock extends TCBaseEntityBlock {
+import javax.annotation.ParametersAreNonnullByDefault;
+
+public class FlowInfuserBlock extends TCBaseEntityBlock implements IFluidApplicable {
 
     public FlowInfuserBlock(Properties pProperties) {
         super(pProperties);
@@ -38,5 +43,14 @@ public class FlowInfuserBlock extends TCBaseEntityBlock {
         }
         return createTickerHelper(pBlockEntityType, TCBlockEntities.FLOW_INFUSER_BE.get(),
                 (pLevel1, pPos, pState1, pBlockEntity) -> pBlockEntity.tick(pLevel1,pPos,pState1));
+    }
+
+    @Override
+    @ParametersAreNonnullByDefault
+    public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
+        super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
+        if (!pNewState.getBlock().equals(pState.getBlock())) {
+            WorldHelperInternal.flowLeak(pState, pLevel, pPos);
+        }
     }
 }

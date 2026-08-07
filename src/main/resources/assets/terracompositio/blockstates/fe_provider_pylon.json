@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "infused=true": {
+      "model": "terracompositio:block/fe_provider_pylon_infused"
+    },
+    "infused=false": {
+      "model": "terracompositio:block/fe_provider_pylon"
+    }
+  }
+}

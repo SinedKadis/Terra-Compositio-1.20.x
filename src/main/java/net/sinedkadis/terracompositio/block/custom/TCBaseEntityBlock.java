@@ -2,11 +2,13 @@ package net.sinedkadis.terracompositio.block.custom;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -14,8 +16,8 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.sinedkadis.terracompositio.api.helpers.ItemHelper;
 import net.sinedkadis.terracompositio.block.entity.TCBlockEntity;
+import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -54,7 +56,7 @@ public abstract class TCBaseEntityBlock extends Block implements EntityBlock {
         if (pState.getBlock() != pNewState.getBlock()){
             TCBlockEntity blockEntity = (TCBlockEntity) pLevel.getBlockEntity(pPos);
             if (blockEntity != null){
-                ItemHelper.dropContents(blockEntity);
+                blockEntity.getBehaviours().forEach(IBEBehaviour::onRemoved);
             }
         }
         super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
@@ -90,4 +92,14 @@ public abstract class TCBaseEntityBlock extends Block implements EntityBlock {
         return InteractionResult.PASS;
     }
 
+
+    @Override
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+        BlockEntity entity = level.getBlockEntity(pos);
+        if (entity instanceof TCBlockEntity tcBlockEntity) {
+            tcBlockEntity.getBehaviours().forEach(ibeBehaviour ->
+                    ibeBehaviour.onNeighbourUpdated(state, direction, neighborState, level, pos, neighborPos));
+        }
+        return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
+    }
 }

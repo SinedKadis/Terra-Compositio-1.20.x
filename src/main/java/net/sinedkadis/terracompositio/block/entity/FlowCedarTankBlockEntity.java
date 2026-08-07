@@ -14,20 +14,19 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.sinedkadis.terracompositio.api.IEntityInstance;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
-import net.sinedkadis.terracompositio.api.components.FluidComponent;
-import net.sinedkadis.terracompositio.api.helpers.ECFHelper;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
 import net.sinedkadis.terracompositio.api.networks.NetworkAction;
 import net.sinedkadis.terracompositio.api.networks.fluid.FluidNetwork;
 import net.sinedkadis.terracompositio.api.networks.fluid.FluidNetworkMember;
+import net.sinedkadis.terracompositio.api.tooltip.FluidComponent;
 import net.sinedkadis.terracompositio.config.TCCommonConfigs;
 import net.sinedkadis.terracompositio.fluid.TCFluidTank;
 import net.sinedkadis.terracompositio.registries.TCBlockEntities;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
 import net.sinedkadis.terracompositio.registries.TCFluids;
 import net.sinedkadis.terracompositio.registries.TCTags;
-import net.sinedkadis.terracompositio.util.IEntityInstance;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
 import net.sinedkadis.terracompositio.util.helpers.ParticleHelperInternal;
 import org.jetbrains.annotations.Nullable;
@@ -136,7 +135,7 @@ public class FlowCedarTankBlockEntity extends TCBlockEntity implements FluidNetw
 
 
     @Override
-    public IFluidHandler getMainHandler() {
+    public IFluidHandler getFluidHandler() {
         return fluidHandler;
     }
 
@@ -164,7 +163,8 @@ public class FlowCedarTankBlockEntity extends TCBlockEntity implements FluidNetw
     }
 
     @Override
-    public int getRange() {
+    public int getRange(boolean inner) {
+        if (inner) return 1;
         return 10;
     }
 
@@ -197,12 +197,12 @@ public class FlowCedarTankBlockEntity extends TCBlockEntity implements FluidNetw
 
     @Override
     public void onFluidNetworkMemberUpdate() {
-        if (getMainHandler().getFluidInTank(0).getAmount() > 0) {
+        if (getFluidHandler().getFluidInTank(0).getAmount() > 0) {
             FluidNetwork fluidNetwork = TerraCompositioAPI.instance().getFluidNetworkInstance();
             Set<FluidNetworkMember> targets = fluidNetwork.getAvailableNetworkTargets(this);
             targets.forEach(target -> {
                 if (target.getPriority() <= 0) return;
-                IFluidHandler mainHandler = target.getMainHandler();
+                IFluidHandler mainHandler = target.getFluidHandler();
                 FluidStack fluidInTank = mainHandler.getFluidInTank(0);
                 if (mainHandler.getTankCapacity(0) - fluidInTank.getAmount() > 0)
                     scheduleMemberUpdate(target);
@@ -217,14 +217,19 @@ public class FlowCedarTankBlockEntity extends TCBlockEntity implements FluidNetw
                                     amount / 10,
                                     transferred);
                 }
+                setChanged();
+                if (level != null) {
+                    level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+                }
             });
         }
     }
 
     @Override
     public void onFluidNetworkMemberUpdate(FluidNetworkMember updated) {
-        if (updated.getPriority() > this.getPriority() && getMainHandler().getFluidInTank(0).getAmount() > 0 && ECFHelper.validMember(updated)) {
-            IFluidHandler mainHandler = updated.getMainHandler();
+        if (updated.getPriority() > this.getPriority() && getFluidHandler().getFluidInTank(0).getAmount() > 0
+                && TerraCompositioAPI.instance().getECFNetworkInstance().validateMember(updated)) {
+            IFluidHandler mainHandler = updated.getFluidHandler();
             if (mainHandler.getTankCapacity(0) - mainHandler.getFluidInTank(0).getAmount() > 0) {
                 scheduleMemberUpdate(updated);
             }
@@ -237,6 +242,10 @@ public class FlowCedarTankBlockEntity extends TCBlockEntity implements FluidNetw
                                 this.getBlockPos(),
                                 amount / 10,
                                 transferred);
+                setChanged();
+                if (level != null) {
+                    level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+                }
             }
         } else onFluidNetworkMemberUpdate();
     }

@@ -34,10 +34,12 @@ public class ECFBurstRenderer extends EntityRenderer<ECFBurstProjectileEntity> {
         if (tickCount >= 1 || !(this.entityRenderDispatcher.camera.getEntity().distanceToSqr(pEntity) < MIN_CAMERA_DISTANCE_SQUARED)) {
             int cfe = pEntity.getECF();
             int count = TCInnerConfig.RENDER_COUNT_FUNCTION.applyAsInt(cfe);
+            if (count > 100)
+                count = 100;
             Vector3f[] offsets1 = getOffsets(pEntity);
             if (offsets1 == null || offsets1.length < count) {
                 try {
-                    genOffsets(pEntity);
+                    generateOffsets(pEntity);
                 } catch (RuntimeException e) {
                     return;
                 }
@@ -47,8 +49,8 @@ public class ECFBurstRenderer extends EntityRenderer<ECFBurstProjectileEntity> {
             var renderType = RenderType.entityTranslucentEmissive(getTextureLocation(pEntity));
             var buffer = pBuffer.getBuffer(renderType);
 
-            boolean isEnd = tickCount >= 60;
-            float pDelta = (float) (tickCount - 60) / 40f;
+            boolean isEnd = tickCount >= pEntity.getTimeToLive();
+            float pDelta = (float) (tickCount - pEntity.getTimeToLive()) / 40f;
 
             for (int i = 0; i < count; i++) {
 
@@ -56,7 +58,7 @@ public class ECFBurstRenderer extends EntityRenderer<ECFBurstProjectileEntity> {
 
                 var offset = offsets1[i];
                 float oX = offset.x();
-                float oY = offset.y();
+                float oY = offset.y() + (pEntity.getBbHeight() / 2);
                 float oZ = offset.z();
 
                 if (isEnd) {
@@ -79,7 +81,7 @@ public class ECFBurstRenderer extends EntityRenderer<ECFBurstProjectileEntity> {
         }
     }
 
-    private void genOffsets(ECFBurstProjectileEntity entity) {
+    private void generateOffsets(ECFBurstProjectileEntity entity) {
         int cfe = entity.getECF();
         float count = TCInnerConfig.RENDER_COUNT_FUNCTION.applyAsInt(cfe);
         if (count > 100000) throw new RuntimeException("Particles amount is suspicious large: " + count);

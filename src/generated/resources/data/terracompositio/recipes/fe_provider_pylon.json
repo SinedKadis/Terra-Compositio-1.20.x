@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "B": {
+      "item": "minecraft:redstone_block"
+    },
+    "C": {
+      "item": "terracompositio:flow_cedar_casing"
+    },
+    "R": {
+      "item": "terracompositio:copper_rod"
+    }
+  },
+  "pattern": [
+    "R",
+    "C",
+    "B"
+  ],
+  "result": {
+    "item": "terracompositio:fe_provider_pylon"
+  },
+  "show_notification": true
+}

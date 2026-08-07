@@ -11,10 +11,10 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
-import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
+import net.sinedkadis.terracompositio.api.IEntityInstance;
+import net.sinedkadis.terracompositio.api.networks.TransferAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.api.registries.TCCapabilities;
-import net.sinedkadis.terracompositio.util.IEntityInstance;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -81,26 +81,27 @@ public class ECFItemWrapper implements IECFHandler, ICapabilityProvider {
     }
 
     @Override
-    public int takeECF(int cfe, boolean simulate) {
-        int cfe1 = this.getECF();
-        int toTake = Math.min(cfe, cfe1);
-        if (!simulate) {
-            this.setECF(cfe1 - toTake);
+    public int takeECF(int cfe, TransferAction action) {
+        int toTake;
+        if (action.simulate()) {
+            toTake = Math.min(cfe, this.getECF());
+        } else
+            toTake = cfe;
+        if (action.execute()) {
+            this.setECF(Math.max(this.getECF() - toTake, 0));
         }
         return toTake;
     }
 
     @Override
-    public int sendECF(ECFNetworkMember target, int cfe, float speed) {
-        return 0;
-    }
-
-    @Override
-    public int addECF(int cfe, boolean simulate) {
-        int toAdd = Math.min(this.getFreeSpace(),cfe);
-        if (!simulate) {
-            int cfe1 = this.getECF();
-            this.setECF(cfe1 + toAdd);
+    public int addECF(int cfe, TransferAction action) {
+        int toAdd = cfe;
+        if (action.simulate()) {
+            toAdd = Math.min(this.getFreeSpace(), cfe);
+        }
+        if (action.execute()) {
+            int maxECF = this.getMaxECF();
+            this.setECF(Math.min(this.getECF() + toAdd, maxECF));
         }
         return toAdd;
     }

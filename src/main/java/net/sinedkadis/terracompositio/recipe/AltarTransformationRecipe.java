@@ -4,33 +4,46 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import lombok.Getter;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.wrapper.RecipeWrapper;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.sinedkadis.terracompositio.TerraCompositio;
+import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
+import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
+import net.sinedkadis.terracompositio.block.entity.TCBlockEntity;
+import net.sinedkadis.terracompositio.config.TCCommonConfigs;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.List;
 import java.util.Objects;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class AltarTransformationRecipe implements Recipe<SimpleContainer> {
+@Getter
+public class AltarTransformationRecipe implements ITCRecipe<RecipeWrapper> {
     private final NonNullList<Ingredient> inputs;
     private final ItemStack output;
+    private final int maxProgress = 80;
     private final ResourceLocation id;
 
     public AltarTransformationRecipe(NonNullList<Ingredient> inputs, ItemStack output, ResourceLocation id) {
@@ -40,7 +53,7 @@ public class AltarTransformationRecipe implements Recipe<SimpleContainer> {
     }
 
     @Override
-    public boolean matches(SimpleContainer pContainer, Level pLevel) {
+    public boolean matches(RecipeWrapper pContainer, Level pLevel) {
         if(pLevel.isClientSide()){
             return false;
         }
@@ -61,7 +74,7 @@ public class AltarTransformationRecipe implements Recipe<SimpleContainer> {
     }
 
     @Override
-    public ItemStack assemble(SimpleContainer pContainer, RegistryAccess pRegistryAccess) {
+    public ItemStack assemble(RecipeWrapper pContainer, RegistryAccess pRegistryAccess) {
         return output.copy();
     }
 
@@ -71,7 +84,7 @@ public class AltarTransformationRecipe implements Recipe<SimpleContainer> {
     }
 
     @Override
-    public ItemStack getResultItem(RegistryAccess pRegistryAccess) {
+    public ItemStack getResultItem(RegistryAccess registries) {
         return output.copy();
     }
 
@@ -90,9 +103,84 @@ public class AltarTransformationRecipe implements Recipe<SimpleContainer> {
         return Type.INSTANCE;
     }
 
-    public static class Type implements RecipeType<AltarTransformationRecipe> {
+    @Override
+    public CraftException allowOnTick(TCBlockEntity be) {
+        IItemHandler itemCapability = be.getCapability(ForgeCapabilities.ITEM_HANDLER)
+                .orElse(SentinelHelper.EMPTY_ITEM_HANDLER);
+        ItemStack recipeOutput = getOutput();
+
+        CraftException noSpace = ITCRecipe.checkSpace(itemCapability, recipeOutput);
+        if (noSpace.hasExceptions()) return noSpace;
+
+        CraftException infusion = ITCRecipe.checkInfusion(be);
+        if (infusion.hasExceptions()) return infusion;
+
+
+        return CraftException.OK;
+
+    }
+
+    @Override
+    public CraftException allowOnNeighbourUpdate(TCBlockEntity be) {
+        return ITCRecipe.checkPedestal(be);
+    }
+
+    @Override
+    public void onCraftingTick(TCBlockEntity be, int progress) {
+        ITCRecipe.spawnParticles(be);
+        if (progress == 1) {
+            Level level = be.getLevel();
+            if (level != null) {
+                level.playSound(null, be.getBlockPos(), SoundEvents.ZOMBIE_VILLAGER_CURE, SoundSource.BLOCKS);
+            }
+        }
+        be.setChanged();
+    }
+
+    @Override
+    public boolean isCompleteThenCraft(TCBlockEntity be, int progress) {
+        if (progress > maxProgress) {
+            craftItem(be);
+            return true;
+        }
+        return false;
+    }
+
+    protected void craftItem(TCBlockEntity blockEntity) {
+        ItemStack result = getOutput().copy();
+        IItemHandler itemCapability = blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER)
+                .orElse(SentinelHelper.EMPTY_ITEM_HANDLER);
+        IItemHandlerModifiable capability = (IItemHandlerModifiable) itemCapability;
+        capability.setStackInSlot(0, ItemStack.EMPTY);
+        capability.setStackInSlot(1, ItemStack.EMPTY);
+        capability.setStackInSlot(2, result);
+        Level level = blockEntity.getLevel();
+        if (level != null)
+            level.sendBlockUpdated(blockEntity.getBlockPos(), blockEntity.getBlockState(), blockEntity.getBlockState(), 3);
+        blockEntity.setChanged();
+    }
+
+    @Override
+    public void collectKnowledgeData(CompoundTag data) {
+
+    }
+
+    @Override
+    public void addTooltipLines(CompoundTag data, List<Component> tooltip, boolean isShifting) {
+        if (TCCommonConfigs.DEBUG.get()) {
+            tooltip.add(TooltipHelper.keyWithArg(TooltipHelper.Keys.MAX_PROGRESS, maxProgress));
+        }
+    }
+
+    public static class Type implements ITCRecipeType<RecipeWrapper, AltarTransformationRecipe> {
         public static final Type INSTANCE = new Type();
         public static final String ID = "altar_transformation";
+
+        @Override
+        public RecipeWrapper getRecipeInput(TCBlockEntity be) {
+            return new RecipeWrapper((IItemHandlerModifiable) be.getCapability(ForgeCapabilities.ITEM_HANDLER)
+                    .orElse(SentinelHelper.EMPTY_ITEM_HANDLER));
+        }
     }
     @SuppressWarnings("DataFlowIssue")
     public static class Serializer implements RecipeSerializer<AltarTransformationRecipe> {

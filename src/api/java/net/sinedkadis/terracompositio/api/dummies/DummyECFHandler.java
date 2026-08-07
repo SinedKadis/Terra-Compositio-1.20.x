@@ -1,0 +1,127 @@
+package net.sinedkadis.terracompositio.api.dummies;
+
+import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.phys.Vec3;
+import net.sinedkadis.terracompositio.api.IEntityInstance;
+import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
+import net.sinedkadis.terracompositio.api.networks.TransferAction;
+import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetwork;
+import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
+
+import java.util.function.Function;
+
+/**
+ * The placeholder, returned by {@link ECFNetwork#createDefaultECFHandler(net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember)}, if Terracompositio is not present
+ */
+@SuppressWarnings("DataFlowIssue")
+@MethodsReturnNonnullByDefault
+public class DummyECFHandler implements IECFHandler {
+
+    @Override
+    public int getECF() {
+        return 0;
+    }
+
+
+    @Override
+    public IECFHandler setIndex(int index) {
+        return SentinelHelper.EMPTY_ECF_HANDLER;
+    }
+
+    @Override
+    public IECFHandler setOffset(Function<Vec3, Vec3> offset) {
+        return null;
+    }
+
+    @Override
+    public void setECF(int ecf) {
+
+    }
+
+    @Override
+    public int takeECF(int cfe, TransferAction action) {
+        return 0;
+    }
+
+    @Override
+    public int addECF(int cfe, TransferAction action) {
+        return 0;
+    }
+
+    @Override
+    public int getMaxECF() {
+        return 0;
+    }
+
+
+
+    @Override
+    public IECFHandler setMaxECF(int max) {
+        return SentinelHelper.EMPTY_ECF_HANDLER;
+    }
+
+
+
+    @Override
+    public void writeToNBT(CompoundTag pTag) {
+
+    }
+
+    @Override
+    public void readFromNBT(CompoundTag pTag) {
+
+    }
+
+    @Override
+    public int getQueued() {
+        return 0;
+    }
+
+    @Override
+    public void setQueued(int queued) {
+
+    }
+
+    @Override
+    public int getECFWithQueue() {
+        return 0;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
+
+
+    @Override
+    public int getFreeSpace() {
+        return 0;
+    }
+
+    @Override
+    public void clear() {
+
+    }
+
+
+    @Override
+    public IEntityInstance getAttachedEntity() {
+        return SentinelHelper.EMPTY_ENTITY;
+    }
+
+    @Override
+    public Function<Vec3, Vec3> getOffset() {
+        return null;
+    }
+
+
+    @Override
+    public int getIndex() {
+        return 0;
+    }
+
+
+
+
+}

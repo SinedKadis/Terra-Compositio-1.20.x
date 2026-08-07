@@ -7,11 +7,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.LazyOptional;
-import net.sinedkadis.terracompositio.api.dummies.DummyECFHandler;
-import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
+import net.sinedkadis.terracompositio.api.IEntityInstance;
+import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
+import net.sinedkadis.terracompositio.api.networks.TransferAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.api.registries.TCCapabilities;
-import net.sinedkadis.terracompositio.util.IEntityInstance;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.function.Function;
@@ -41,7 +41,7 @@ public class ECFHandlerPlayerArmor implements IECFHandler {
             LazyOptional<IECFHandler> capability = icfeHandler.getCapability(TCCapabilities.ECF);
             if (capability.isPresent()) {
                 stringBuilder.append("\n")
-                        .append(capability.orElse(DummyECFHandler.instance))
+                        .append(capability.orElse(SentinelHelper.EMPTY_ECF_HANDLER))
                         .append("\n");
             }
         });
@@ -54,7 +54,7 @@ public class ECFHandlerPlayerArmor implements IECFHandler {
     public int getECF() {
         int toReturn = handler.getECF();
         for (ItemStack itemStack : handlerList) {
-            IECFHandler IECFHandler = itemStack.getCapability(TCCapabilities.ECF).orElse(DummyECFHandler.instance);
+            IECFHandler IECFHandler = itemStack.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER);
             toReturn += IECFHandler.getECF();
         }
         return toReturn;
@@ -69,7 +69,7 @@ public class ECFHandlerPlayerArmor implements IECFHandler {
     public int getMaxECF() {
         int toReturn = handler.getMaxECF();
         for (ItemStack itemStack : handlerList) {
-            IECFHandler IECFHandler = itemStack.getCapability(TCCapabilities.ECF).orElse(DummyECFHandler.instance);
+            IECFHandler IECFHandler = itemStack.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER);
             toReturn += IECFHandler.getMaxECF();
         }
         return toReturn;
@@ -82,12 +82,12 @@ public class ECFHandlerPlayerArmor implements IECFHandler {
     }
 
     @Override
-    public int addECF(int cfe, boolean simulate) {
+    public int addECF(int cfe, TransferAction action) {
         int allAdded = 0;
-        int toAdd = cfe - handler.addECF(cfe, false);
+        int toAdd = cfe - handler.addECF(cfe, action);
         for (ItemStack itemStack : handlerList) {
-            IECFHandler IECFHandler = itemStack.getCapability(TCCapabilities.ECF).orElse(DummyECFHandler.instance);
-            int added = IECFHandler.addECF(toAdd, simulate);
+            IECFHandler IECFHandler = itemStack.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER);
+            int added = IECFHandler.addECF(toAdd, action);
             allAdded += added;
             toAdd -= added;
         }
@@ -95,21 +95,16 @@ public class ECFHandlerPlayerArmor implements IECFHandler {
     }
 
     @Override
-    public int takeECF(int cfe, boolean simulate) {
+    public int takeECF(int cfe, TransferAction action) {
         int allTaken = 0;
-        int toTake = cfe - handler.takeECF(cfe, false);
+        int toTake = cfe - handler.takeECF(cfe, action);
         for (ItemStack itemStack : handlerList) {
-            IECFHandler IECFHandler = itemStack.getCapability(TCCapabilities.ECF).orElse(DummyECFHandler.instance);
-            int taken = IECFHandler.takeECF(toTake, simulate);
+            IECFHandler IECFHandler = itemStack.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER);
+            int taken = IECFHandler.takeECF(toTake, action);
             allTaken += taken;
             toTake -= taken;
         }
         return allTaken;
-    }
-
-    @Override
-    public int sendECF(ECFNetworkMember target, int cfe, float speed) {
-        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -141,7 +136,7 @@ public class ECFHandlerPlayerArmor implements IECFHandler {
     public boolean isEmpty() {
         boolean toReturn = handler.isEmpty();
         for (ItemStack itemStack : handlerList) {
-            IECFHandler IECFHandler = itemStack.getCapability(TCCapabilities.ECF).orElse(DummyECFHandler.instance);
+            IECFHandler IECFHandler = itemStack.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER);
             toReturn &= IECFHandler.isEmpty();
         }
         return toReturn;
@@ -151,7 +146,7 @@ public class ECFHandlerPlayerArmor implements IECFHandler {
     public int getFreeSpace() {
         int toReturn = handler.getFreeSpace();
         for (ItemStack itemStack : handlerList) {
-            IECFHandler IECFHandler = itemStack.getCapability(TCCapabilities.ECF).orElse(DummyECFHandler.instance);
+            IECFHandler IECFHandler = itemStack.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER);
             toReturn += IECFHandler.getFreeSpace();
         }
         return toReturn - queued;
@@ -161,7 +156,7 @@ public class ECFHandlerPlayerArmor implements IECFHandler {
     public void clear() {
         handler.clear();
         for (ItemStack itemStack : handlerList) {
-            IECFHandler IECFHandler = itemStack.getCapability(TCCapabilities.ECF).orElse(DummyECFHandler.instance);
+            IECFHandler IECFHandler = itemStack.getCapability(TCCapabilities.ECF).orElse(SentinelHelper.EMPTY_ECF_HANDLER);
             IECFHandler.clear();
         }
         queued = 0;
@@ -173,7 +168,7 @@ public class ECFHandlerPlayerArmor implements IECFHandler {
     }
 
     @Override
-    public IECFHandler getMainHandler() {
+    public IECFHandler getECFHandler() {
         return handler;
     }
 

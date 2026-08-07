@@ -1,0 +1,11 @@
+{
+  "parent": "terracompositio:block/fe_provider_core",
+  "textures": {
+    "0": "terracompositio:block/flow_cedar_casing_side_infused",
+    "1": "terracompositio:block/flow_cedar_log_top_infused",
+    "2": "terracompositio:block/infused_iron_block",
+    "3": "terracompositio:block/technetium_block",
+    "6": "terracompositio:block/copper_shaft_infused",
+    "particle": "terracompositio:block/flow_cedar_log_infused"
+  }
+}

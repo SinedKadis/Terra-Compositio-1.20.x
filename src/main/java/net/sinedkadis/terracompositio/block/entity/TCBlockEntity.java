@@ -81,12 +81,6 @@ public abstract class TCBlockEntity extends BlockEntity implements IHaveKnowledg
     }
 
     @Override
-    public void setRemoved() {
-        behaviours.forEach(IBEBehaviour::onRemoved);
-        super.setRemoved();
-    }
-
-    @Override
     public void invalidateCaps() {
         super.invalidateCaps();
         behaviours.forEach(IBEBehaviour::onInvalidateCaps);
@@ -112,7 +106,15 @@ public abstract class TCBlockEntity extends BlockEntity implements IHaveKnowledg
 
     @Override
     public CompoundTag getUpdateTag() {
-        return saveWithoutMetadata();
+        CompoundTag tag = super.getUpdateTag();
+        saveAdditional(tag);
+        return tag;
+    }
+
+    @Override
+    public void handleUpdateTag(CompoundTag tag) {
+        super.handleUpdateTag(tag);
+        load(tag);
     }
 
     @Override

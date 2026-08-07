@@ -33,11 +33,11 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.fluids.FluidStack;
 import net.sinedkadis.terracompositio.api.IHaveKnowledge;
-import net.sinedkadis.terracompositio.api.components.EmptyComponent;
-import net.sinedkadis.terracompositio.api.components.FluidComponent;
-import net.sinedkadis.terracompositio.api.components.HeaderComponent;
-import net.sinedkadis.terracompositio.api.components.ItemComponent;
 import net.sinedkadis.terracompositio.api.helpers.PlayerHelper;
+import net.sinedkadis.terracompositio.api.tooltip.EmptyComponent;
+import net.sinedkadis.terracompositio.api.tooltip.FluidComponent;
+import net.sinedkadis.terracompositio.api.tooltip.HeaderComponent;
+import net.sinedkadis.terracompositio.api.tooltip.ItemComponent;
 import net.sinedkadis.terracompositio.config.TCClientConfigs;
 import net.sinedkadis.terracompositio.network.TCPackets;
 import net.sinedkadis.terracompositio.network.packets.C2SRequestBlockKnowledgePacket;
@@ -156,7 +156,10 @@ public class KnowledgeOverlay {
         }
 
         resolveHeaders(tooltip);
-        if (tooltip.isEmpty()) return;
+        if (tooltip.isEmpty()) {
+            resetHover();
+            return;
+        }
 
         renderOverlay(mc, graphics, partialTicks, width, height, tooltip);
 

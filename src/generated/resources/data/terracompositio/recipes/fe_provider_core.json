@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "C": {
+      "item": "terracompositio:flow_cedar_casing"
+    },
+    "I": {
+      "item": "terracompositio:infused_iron_pressure_plate"
+    },
+    "R": {
+      "item": "terracompositio:copper_rod"
+    },
+    "T": {
+      "item": "terracompositio:technetium_ingot"
+    }
+  },
+  "pattern": [
+    "RTI",
+    " C "
+  ],
+  "result": {
+    "item": "terracompositio:fe_provider_core"
+  },
+  "show_notification": true
+}

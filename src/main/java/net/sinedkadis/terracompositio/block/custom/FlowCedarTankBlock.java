@@ -1,5 +1,6 @@
 package net.sinedkadis.terracompositio.block.custom;
 
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -16,6 +17,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -32,16 +34,19 @@ import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.sinedkadis.terracompositio.api.helpers.WorldHelper;
+import net.sinedkadis.terracompositio.block.entity.FlowCedarTankBlockEntity;
 import net.sinedkadis.terracompositio.block.entity.TCBlockEntity;
 import net.sinedkadis.terracompositio.item.custom.WrenchAxeItem;
 import net.sinedkadis.terracompositio.registries.*;
-import org.jetbrains.annotations.NotNull;
+import net.sinedkadis.terracompositio.util.helpers.WorldHelperInternal;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
 
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public class FlowCedarTankBlock extends TCBaseEntityBlock{
     public static final IntegerProperty STAGE = IntegerProperty.create("stage",0,4);
     public FlowCedarTankBlock(Properties pProperties) {
@@ -64,7 +69,7 @@ public class FlowCedarTankBlock extends TCBaseEntityBlock{
         Integer stage = state.getValue(STAGE);
         if (context.getItemInHand().getItem() instanceof AxeItem && (stage.equals(0) || stage.equals(1))) {
             if (stage.equals(0)){
-                WorldHelper.flowLeak(state, context.getLevel(), context.getClickedPos());
+                WorldHelperInternal.flowLeak(state, context.getLevel(), context.getClickedPos());
             }
             return state.setValue(STAGE, 2);
         }
@@ -73,20 +78,25 @@ public class FlowCedarTankBlock extends TCBaseEntityBlock{
 
     @Nullable
     @Override
-    public BlockState getStateForPlacement(@NotNull BlockPlaceContext pContext) {
+    public BlockState getStateForPlacement(BlockPlaceContext pContext) {
         BlockState stateForPlacement = super.getStateForPlacement(pContext);
         return stateForPlacement != null ? stateForPlacement.setValue(STAGE, 3) : null;
     }
 
     @Override
-    public @NotNull InteractionResult use(@NotNull BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull Player pPlayer, @NotNull InteractionHand pHand, @NotNull BlockHitResult pHit) {
+    public InteractionResult use(BlockState pState,
+                                 Level pLevel,
+                                 BlockPos pPos,
+                                 Player pPlayer,
+                                 InteractionHand pHand,
+                                 BlockHitResult pHit) {
         ItemStack heldItem = pPlayer.getItemInHand(InteractionHand.MAIN_HAND);
         ItemStack item2 = pPlayer.getItemInHand(InteractionHand.OFF_HAND);
 
         if (heldItem.is(Items.GLASS) && pState.getValue(STAGE).equals(2)
                 && (item2.is(TCTags.Items.WRENCHES) || item2.is(TCItems.WRENCH_AXE.get()))) {
             if (!item2.is(TCItems.WRENCH_AXE.get()) || WrenchAxeItem.getWrenchMode(item2).equals(WrenchAxeItem.WrenchMode.WRENCH)) {
-                WorldHelper.handleInWorldBlockCraft(pState, pState.setValue(STAGE, 3), pLevel, pPos, heldItem, 1);
+                WorldHelperInternal.handleInWorldBlockCraft(pState, pState.setValue(STAGE, 3), pLevel, pPos, heldItem, 1);
                     return InteractionResult.SUCCESS;
             }
         }
@@ -99,10 +109,6 @@ public class FlowCedarTankBlock extends TCBaseEntityBlock{
         IFluidHandler fluidHandlerBlock = blockEntity.getCapability(ForgeCapabilities.FLUID_HANDLER).resolve().orElse(null);
         if (!(fluidHandlerBlock instanceof FluidTank tank)) {
             return InteractionResult.PASS;
-        }
-
-        if (tank.getSpace() <= 0){
-            return InteractionResult.SUCCESS;
         }
 
         if (pPlayer.isShiftKeyDown()) {
@@ -189,7 +195,16 @@ public class FlowCedarTankBlock extends TCBaseEntityBlock{
 
     @SuppressWarnings("deprecation")
     @Override
-    public @NotNull List<ItemStack> getDrops(@NotNull BlockState pState, LootParams.@NotNull Builder pParams) {
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity instanceof FlowCedarTankBlockEntity flowCedarTankBlockEntity) {
+            flowCedarTankBlockEntity.scheduleMemberUpdate();
+        }
+        return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
+    }
+    @SuppressWarnings("deprecation")
+    @Override
+    public List<ItemStack> getDrops(BlockState pState, LootParams.Builder pParams) {
         List<ItemStack> drops = new ArrayList<>();
         ItemStack inHand = pParams.getParameter(LootContextParams.TOOL);
         if (inHand.getItem() instanceof AxeItem){
@@ -212,7 +227,6 @@ public class FlowCedarTankBlock extends TCBaseEntityBlock{
     }
 
     @Override
-    @NotNull
     public BlockEntityType<? extends TCBlockEntity> getBlockEntityType() {
         return TCBlockEntities.FLOW_CEDAR_TANK_BE.get();
     }

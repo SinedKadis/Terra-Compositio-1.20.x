@@ -28,7 +28,7 @@ public class ECFParticle extends TextureSheetParticle{
         } else {
             this.lifetime = 5;
         }
-        this.scale(0.5F);
+        this.scale(1F);
         Vec3 direction = new Vec3(xd, yd, zd).normalize().scale(speed);
 
         this.xd = direction.x;

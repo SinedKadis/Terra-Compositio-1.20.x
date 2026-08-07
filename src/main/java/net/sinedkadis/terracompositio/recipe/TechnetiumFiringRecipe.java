@@ -3,6 +3,7 @@ package net.sinedkadis.terracompositio.recipe;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import lombok.Getter;
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
@@ -17,14 +18,14 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @Getter
 @ParametersAreNonnullByDefault
-public class TechnetiumFiringRecipe implements Recipe<Container> {
+@MethodsReturnNonnullByDefault
+public class TechnetiumFiringRecipe implements Recipe<Container> { //used not by TCBE so using vanilla interface
     private final ItemStack furnaceOutputItem;
     private final ResourceLocation pRecipeId;
     private final int ecf;
@@ -46,13 +47,13 @@ public class TechnetiumFiringRecipe implements Recipe<Container> {
     }
 
     @Override
-    public @NotNull ItemStack assemble(Container container, RegistryAccess registryAccess) {
+    public ItemStack assemble(Container container, RegistryAccess registryAccess) {
         assembled = true;
         return container.getItem(0);
     }
 
     @Override
-    public @NotNull NonNullList<Ingredient> getIngredients() {
+    public NonNullList<Ingredient> getIngredients() {
         return NonNullList.of(Ingredient.EMPTY,Ingredient.of(furnaceOutputItem));
     }
 
@@ -62,22 +63,22 @@ public class TechnetiumFiringRecipe implements Recipe<Container> {
     }
 
     @Override
-    public @NotNull ItemStack getResultItem(RegistryAccess registryAccess) {
+    public ItemStack getResultItem(RegistryAccess registryAccess) {
         return furnaceOutputItem;
     }
 
     @Override
-    public @NotNull ResourceLocation getId() {
+    public ResourceLocation getId() {
         return this.pRecipeId;
     }
 
     @Override
-    public @NotNull RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<?> getSerializer() {
         return Serializer.INSTANCE;
     }
 
     @Override
-    public @NotNull RecipeType<?> getType() {
+    public RecipeType<?> getType() {
         return Type.INSTANCE;
     }
 
@@ -94,7 +95,7 @@ public class TechnetiumFiringRecipe implements Recipe<Container> {
         public static final Serializer INSTANCE = new Serializer();
         //public static final ResourceLocation ID = new ResourceLocation(TerraCompositio.MOD_ID,"flow_infusion");
         @Override
-        public @NotNull TechnetiumFiringRecipe fromJson(ResourceLocation pRecipeId, JsonObject pJson) {
+        public TechnetiumFiringRecipe fromJson(ResourceLocation pRecipeId, JsonObject pJson) {
             String furnaceInput = GsonHelper.getAsString(pJson, "furnace_input");
             Item ingredient = ForgeRegistries.ITEMS.getValue(ResourceLocation.tryParse(furnaceInput));
             int cfe = GsonHelper.getAsInt(pJson, "ecf");

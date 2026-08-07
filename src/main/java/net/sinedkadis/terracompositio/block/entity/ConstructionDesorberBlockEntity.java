@@ -16,13 +16,15 @@ import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.items.ItemStackHandler;
 import net.sinedkadis.terracompositio.TerraCompositio;
+import net.sinedkadis.terracompositio.api.IEntityInstance;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
+import net.sinedkadis.terracompositio.api.networks.TransferAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetwork;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.ecf.burst.ECFBurstProjectileEntity;
 import net.sinedkadis.terracompositio.registries.TCBlockEntities;
-import net.sinedkadis.terracompositio.util.IEntityInstance;
+import net.sinedkadis.terracompositio.registries.TCSounds;
 import net.sinedkadis.terracompositio.util.helpers.ParticleHelperInternal;
 import org.jetbrains.annotations.NotNull;
 
@@ -72,7 +74,7 @@ public class ConstructionDesorberBlockEntity extends AbstractDesorberBlockEntity
             if (!fluidHandler1.isEmpty() && fluidHandler1.getFluidAmount() >= ECFToAdd) {
                 fluidHandler1.drain(ECFToAdd, IFluidHandler.FluidAction.EXECUTE);
                 IECFHandler iecfHandler = blockEntity.ecfContainer();
-                int added = iecfHandler.addECF(ECFToAdd, true);
+                int added = iecfHandler.addECF(ECFToAdd, TransferAction.SIMULATE);
                 ECFToAdd -= added;
                 blockEntity.setRenderStack(new ItemStack(event.getPlacedBlock().getBlock()));
                 BlockPos blockEntityBlockPos = blockEntity.getBlockPos();
@@ -106,9 +108,10 @@ public class ConstructionDesorberBlockEntity extends AbstractDesorberBlockEntity
         ECFNetwork network = TerraCompositioAPI.instance().getECFNetworkInstance();
         Set<ECFNetworkMember> sources = network.getAllECFNetworkMembers((Level) level);
         List<ConstructionDesorberBlockEntity> constructors = sources.stream()
+                .filter(ecfSource ->
+                        Math.sqrt(ecfSource.getEntityInstance().tc$getBlockPos().distSqr(pos)) < ecfSource.getRange())
                 .map(ECFNetworkMember::getEntityInstance)
                 .map(IEntityInstance::tc$getBlockPos)
-                .filter(cfeSourceBlockPos -> Math.sqrt(cfeSourceBlockPos.distSqr(pos)) < 7)
                 .map(cfeSourceBlockPos -> {
                     if (level.getBlockEntity(cfeSourceBlockPos) instanceof ConstructionDesorberBlockEntity blockEntity)
                         return blockEntity;
@@ -133,7 +136,7 @@ public class ConstructionDesorberBlockEntity extends AbstractDesorberBlockEntity
                     ((Level) level).sendBlockUpdated(blockEntityBlockPos, blockEntity.getBlockState(), blockEntity.getBlockState(), 3);
                     ParticleHelperInternal.spawnParticlesIn((Level) level, blockEntityBlockPos, 10);
                     if (!level.isClientSide())
-                        level.playSound(null, blockEntityBlockPos, SoundEvents.BEACON_DEACTIVATE, SoundSource.BLOCKS, 0.1f, 1f);
+                        level.playSound(null, blockEntityBlockPos, TCSounds.FLOW_EVAPORATION.get(), SoundSource.BLOCKS, 0.1f, 1f);
                 }
                 if (CFEToRemove == 0) {
                     break;

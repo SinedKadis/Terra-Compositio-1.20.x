@@ -1,0 +1,10 @@
+{
+  "parent": "terracompositio:block/fe_provider_pylon",
+  "textures": {
+    "0": "block/redstone_block",
+    "1": "terracompositio:block/flow_cedar_casing_side_infused",
+    "2": "terracompositio:block/flow_cedar_log_top_infused",
+    "3": "terracompositio:block/copper_shaft_infused",
+    "particle": "terracompositio:block/flow_cedar_log_infused"
+  }
+}

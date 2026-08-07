@@ -12,6 +12,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -27,6 +28,7 @@ import net.minecraft.world.entity.animal.AbstractGolem;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.Capability;
@@ -34,20 +36,23 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.items.ItemStackHandler;
+import net.sinedkadis.terracompositio.api.IEntityInstance;
 import net.sinedkadis.terracompositio.api.IHaveKnowledge;
 import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
 import net.sinedkadis.terracompositio.api.dummies.DummyECFHandler;
 import net.sinedkadis.terracompositio.api.helpers.ECFHelper;
+import net.sinedkadis.terracompositio.api.helpers.SentinelHelper;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
 import net.sinedkadis.terracompositio.api.networks.NetworkAction;
+import net.sinedkadis.terracompositio.api.networks.TransferAction;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetwork;
 import net.sinedkadis.terracompositio.api.networks.ecf.ECFNetworkMember;
 import net.sinedkadis.terracompositio.api.networks.ecf.IECFHandler;
 import net.sinedkadis.terracompositio.api.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.block.entity.EntStatueBlockEntity;
+import net.sinedkadis.terracompositio.block.entity.PathPointerBlockEntity;
 import net.sinedkadis.terracompositio.config.TCClientConfigs;
 import net.sinedkadis.terracompositio.config.TCCommonConfigs;
-import net.sinedkadis.terracompositio.config.TCInnerConfig;
 import net.sinedkadis.terracompositio.ecf.DefaultECFHandler;
 import net.sinedkadis.terracompositio.ecf.ECFNetworkHandler;
 import net.sinedkadis.terracompositio.ecf.PPECFMemberProxy;
@@ -56,13 +61,13 @@ import net.sinedkadis.terracompositio.entity.goals.ECFHoldGoal;
 import net.sinedkadis.terracompositio.entity.goals.ReachSourceGoal;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
 import net.sinedkadis.terracompositio.registries.TCItems;
-import net.sinedkadis.terracompositio.util.IEntityInstance;
 import net.sinedkadis.terracompositio.util.helpers.ParticleHelperInternal;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 // /kill @e[type=terracompositio:flow_cedar_ent_entity]
@@ -77,14 +82,14 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
     private static final EntityDataAccessor<Integer> ECF_DATA =
             SynchedEntityData.defineId(FlowCedarEntEntity.class, EntityDataSerializers.INT);
     public final AnimationState ecfHoldState = new AnimationState();
-    protected LazyOptional<IECFHandler> lazyCFEOptional = LazyOptional.of(() -> new DefaultECFHandler(this.getEntityInstance())
+    protected LazyOptional<IECFHandler> lazyCFEOptional = LazyOptional.of(() -> new DefaultECFHandler(this)
             .setMaxECF(64000)
-            .setOffset(vec3 -> vec3.add(0, this.getBbHeight() + (0.1f + (this.getSyncedECF() / 10000d)) * 10 * 0.2f, 0))
+            .setOffset(vec3 -> vec3.add(0, this.getBbHeight() + (0.1f + (getSyncedECF() / (float) 64000)) * 10 * 0.2f, 0))
             .setIndex(0));
     @Getter
-    protected LazyOptional<IECFHandler> innerECFOptional = LazyOptional.of(() -> new DefaultECFHandler(this.getEntityInstance())
+    protected LazyOptional<IECFHandler> innerECFOptional = LazyOptional.of(() -> new DefaultECFHandler(this)
             .setMaxECF(32)
-            .setOffset(vec3 -> vec3.add(0,1,0))
+            .setOffset(vec3 -> vec3.add(0, 1, 0))
             .setIndex(1));
     public final AnimationState idleAnimationState = new AnimationState();
     public final AnimationState extractionAnimationState = new AnimationState();
@@ -115,65 +120,19 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
 
     private int lastSyncedEnergy = -1;
 
-    @Override
-    public void tick() {
-        super.tick();
-        updateIfScheduled();
-        ItemStack item = this.getItemBySlot(EquipmentSlot.HEAD);
-        item.getItem().inventoryTick(item,level(),this,3,false);
-        if (this.level().isClientSide()) {
-            setupAnimationStates();
+    public static boolean checkEntSpawnRules(
+            EntityType<FlowCedarEntEntity> bat, LevelAccessor level, MobSpawnType spawnType, BlockPos pos, RandomSource random
+    ) {
+        if (pos.getY() >= 63) {
+            return false;
         } else {
-            // Серверная логика
-            ECFNetwork ECFNetworkInstance = TerraCompositioAPI.instance().getECFNetworkInstance();
-            boolean inNetwork = ECFNetworkInstance.isIn(this.level(), this);
-            if (!inNetwork && !this.isRemoved()) {
-                ECFNetworkInstance.fireECFNetworkEvent(this, NetworkAction.ADD);
+            int i = level.getMaxLocalRawBrightness(pos);
+            int j = 4;
+            if (random.nextBoolean()) {
+                return false;
             }
 
-            lazyCFEOptional.ifPresent(icfeHandler -> {
-                int currentEnergy = icfeHandler.getECF();
-
-                if (currentEnergy > 10000) abortECFConsume();
-
-                if (currentEnergy != lastSyncedEnergy) {
-                    setSyncedECF(currentEnergy);
-                    lastSyncedEnergy = currentEnergy;
-                }
-
-                innerECFOptional.ifPresent(icfeHandler1 -> {
-                    if (tickCount % 20 == 0) {
-                        int cfe = TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get();
-                        int taken = icfeHandler.takeECF(cfe, true);
-                        int added = icfeHandler1.addECF(
-                                taken,
-                                true
-                        );
-
-                        if (added > 0) {
-                            icfeHandler.takeECF(taken, true);
-                            icfeHandler1.addECF(
-                                    added,
-                                    true
-                            );
-                        }
-                        if (taken > 0) {
-                            if (this.level() instanceof ServerLevel serverLevel)
-                                ParticleHelperInternal.sendECFParticles(
-                                        serverLevel,
-                                        icfeHandler1.getOffset().apply(position()),
-                                        icfeHandler.getOffset().apply(position()),
-                                        (int) Math.floor(cfe * TCClientConfigs.ECF_RENDER_MULTIPLIER.get()));
-                        }
-                    }
-                    if (tickCount % 200 == 0) {
-                        icfeHandler1.takeECF(1, false);
-                        if (icfeHandler1.getECF() <= 0) {
-                            this.turnIntoStatue();
-                        }
-                    }
-                });
-            });
+            return i <= random.nextInt(j) && checkMobSpawnRules(bat, level, spawnType, pos, random);
         }
     }
 
@@ -189,7 +148,7 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
                     entity.setPersistenceRequired();
                     event.setCancellationResult(InteractionResult.SUCCESS);
                     event.setCanceled(true);
-                    ECFNetworkHandler.INSTANCE.updateInRange(entity.level(),entity.blockPosition(), entity.getRange());
+                    ECFNetworkHandler.INSTANCE.fireECFNetworkEvent(entity, NetworkAction.UPDATE);
                     return;
                 }
             }
@@ -204,20 +163,81 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
         }
     }
 
+    @Override
+    public void tick() {
+        super.tick();
+        updateIfScheduled();
+        ItemStack item = this.getItemBySlot(EquipmentSlot.HEAD);
+        item.getItem().inventoryTick(item, level(), this, 3, false);
+        if (this.level().isClientSide()) {
+            setupAnimationStates();
+        } else {
+            // Серверная логика
+            ECFNetwork ECFNetworkInstance = TerraCompositioAPI.instance().getECFNetworkInstance();
+            boolean inNetwork = ECFNetworkInstance.isIn(this.level(), this);
+            if (!inNetwork && !this.isRemoved()) {
+                ECFNetworkInstance.fireECFNetworkEvent(this, NetworkAction.ADD);
+            }
+
+            lazyCFEOptional.ifPresent(icfeHandler -> {
+                int currentEnergy = icfeHandler.getECF();
+
+                if (currentEnergy != lastSyncedEnergy) {
+                    setSyncedECF(currentEnergy);
+                    lastSyncedEnergy = currentEnergy;
+                }
+
+                innerECFOptional.ifPresent(icfeHandler1 -> {
+                    if (tickCount % 20 == 0) {
+                        int cfe = TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get();
+                        int taken = icfeHandler.takeECF(cfe, TransferAction.SIMULATE);
+                        int added = icfeHandler1.addECF(
+                                taken,
+                                TransferAction.SIMULATE
+                        );
+
+                        if (added > 0) {
+                            icfeHandler.takeECF(added, TransferAction.EXECUTE);
+                            icfeHandler1.addECF(
+                                    added,
+                                    TransferAction.EXECUTE
+                            );
+                        }
+                        if (taken > 0) {
+                            if (this.level() instanceof ServerLevel serverLevel)
+                                ParticleHelperInternal.sendECFParticles(
+                                        serverLevel,
+                                        icfeHandler1.getOffset().apply(position()),
+                                        icfeHandler.getOffset().apply(position()),
+                                        (int) Math.floor(cfe * TCClientConfigs.ECF_RENDER_MULTIPLIER.get()));
+                        }
+                    }
+                    if (tickCount % 200 == 0) {
+                        icfeHandler1.takeECF(1, TransferAction.EXECUTE);
+                        if (icfeHandler1.getECF() <= 0) {
+                            this.turnIntoStatue();
+                        }
+                    }
+                });
+            });
+        }
+    }
+
     public void turnIntoStatue() {
         ItemStack crown = this.getItemBySlot(EquipmentSlot.HEAD);
         this.level().setBlock(this.blockPosition(),
-                TCBlocks.FLOW_CEDAR_ENT_STATUE.get().defaultBlockState(),3);
+                TCBlocks.FLOW_CEDAR_ENT_STATUE.get().defaultBlockState(), 3);
         BlockEntity blockEntity = this.level().getBlockEntity(this.blockPosition());
         if (blockEntity instanceof EntStatueBlockEntity entStatueBlockEntity) {
             entStatueBlockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iItemHandler -> {
                 if (iItemHandler instanceof ItemStackHandler itemStackHandler)
-                    itemStackHandler.setStackInSlot(0,crown);
+                    itemStackHandler.setStackInSlot(0, crown);
             });
 
         }
         this.remove(RemovalReason.CHANGED_DIMENSION);
     }
+
 
     @SuppressWarnings("deprecation")
     @Override
@@ -279,22 +299,24 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
     }
 
     boolean wasHeld = false;
+
     private void setupAnimationStates() {
         idleAnimationState.startIfStopped(this.tickCount);
 
-        extractionAnimationState.animateWhen(this.isExtracting(),this.tickCount);
+        extractionAnimationState.animateWhen(this.isExtracting(), this.tickCount);
         ecfHoldState.animateWhen(this.isHolding(), this.tickCount);
-        if (!isHolding() && wasHeld){
+        if (!isHolding() && wasHeld) {
             ecfHoldState.stop();
             extractionCompleteAnimationState.start(this.tickCount);
         }
         wasHeld = isHolding();
 
     }
+
     @Override
     protected void updateWalkAnimation(float pPartialTick) {
         float f;
-        if(this.getPose() == Pose.STANDING) {
+        if (this.getPose() == Pose.STANDING) {
             f = Math.min(pPartialTick * 6F, 1f);
         } else {
             f = 0f;
@@ -317,7 +339,6 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
         this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
 
     }
-
 
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -352,18 +373,19 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
     }
 
     @Override
-    public int getRange() {
+    public int getRange(boolean inner) {
+        if (inner) return 1;
         return 5;
     }
 
     @Override
     public int getPriority() {
-        return TCInnerConfig.DEFAULT_SOURCE_PRIORITY;
+        return 0;
     }
 
     @Override
-    public IECFHandler getMainHandler() {
-        return lazyCFEOptional.orElse(DummyECFHandler.instance);
+    public IECFHandler getECFHandler() {
+        return lazyCFEOptional.orElse(SentinelHelper.EMPTY_ECF_HANDLER);
     }
 
     @Override
@@ -381,23 +403,12 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
     }
 
 
-    public void abortECFConsume() {
-        lazyCFEOptional.ifPresent(icfeHandler -> {
-            if (!this.level().isClientSide()){
-                float scale = (0.1f + (icfeHandler.getECF() / (float) icfeHandler.getMaxECF())) * 10;
-                ParticleHelperInternal.spawnParticlesIn(this.level(), BlockPos.containing(this.position().add(0, this.getBbHeight() + scale * 0.2f, 0)), icfeHandler.getECF() / 10);
-                icfeHandler.setECF(0);
-            }
-        });
-
-    }
-
     public void sendViaPP(PPECFMemberProxy current) {
-        if (getMainHandler().getECF() > 0 && ECFHelper.validMember(current)) {
-            if (current.getMainHandler().getFreeSpace() > TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get())
+        if (getECFHandler().getECF() > 0 && TerraCompositioAPI.instance().getECFNetworkInstance().validateMember(current)) {
+            if (current.getECFHandler().getFreeSpace() > TCCommonConfigs.ECF_PER_BURST_TRANSFER_LIMIT.get())
                 scheduleMemberUpdate(current);
             ECFHelper.newTransfer().targetAndSource(current, this).speed(5 / 20f).build();
-        } else onECFNetworkMemberUpdate();
+        }
     }
 
     @Override
@@ -429,22 +440,54 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
     }
 
     @Override
+    public void onECFNetworkMemberUpdate() {
+        IECFHandler holdECFHandler = lazyCFEOptional.orElse(SentinelHelper.EMPTY_ECF_HANDLER);
+        if (holdECFHandler.getECF() > 0) {
+            Set<ECFNetworkMember> allECFNetworkMembers = TerraCompositioAPI.instance().getECFNetworkInstance().getAllECFNetworkMembers(level());
+            allECFNetworkMembers.stream()
+                    .filter(PathPointerBlockEntity.class::isInstance)
+                    .filter(member -> member.getEntityInstance().tc$getBlockPos().closerThan(blockPosition(), getRange()))
+                    .map(PathPointerBlockEntity.class::cast)
+                    .filter(member -> member.parts.contains(PathPointerBlockEntity.PPPart.EXTRACTOR))
+                    .map(member -> {
+                        Optional<ECFNetworkMember> availableNetworkTargets = TerraCompositioAPI.instance().getECFNetworkInstance()
+                                .getAvailableNetworkTargets(this).stream().findAny();
+
+                        if (availableNetworkTargets.isPresent()) {
+                            return new PPECFMemberProxy(
+                                    availableNetworkTargets.get(),
+                                    member
+                            );
+                        }
+                        return SentinelHelper.EMPTY_ECF_HANDLER;
+
+                    })
+                    .filter(member -> !(member instanceof DummyECFHandler))
+                    .map(PPECFMemberProxy.class::cast)
+                    .findAny()
+                    .ifPresent(this::sendViaPP);
+        }
+    }
+
+    @Override
     public void collectKnowledgeData(CompoundTag data) {
 
         lazyCFEOptional.ifPresent(cfeHandler -> {
 
+
             data.putInt(TooltipHelper.Keys.ECF.toData(), cfeHandler.getECF());
+            data.putInt(TooltipHelper.Keys.MAX_ECF.toData(), cfeHandler.getMaxECF());
             if (TCCommonConfigs.DEBUG.get()) {
-                data.putInt(TooltipHelper.Keys.MAX_ECF.toData(), cfeHandler.getMaxECF());
                 data.putInt(TooltipHelper.Keys.QUEUED.toData(), cfeHandler.getQueued());
             }
-        });
-        innerECFOptional.ifPresent(cfeHandler -> {
-            data.putInt(TooltipHelper.Keys.ECF.toData() + 2, cfeHandler.getECF());
-            if (TCCommonConfigs.DEBUG.get()) {
-                data.putInt(TooltipHelper.Keys.MAX_ECF.toData() + 2, cfeHandler.getMaxECF());
-                data.putInt(TooltipHelper.Keys.QUEUED.toData() + 2, cfeHandler.getQueued());
-            }
+
+            innerECFOptional.ifPresent(innerECFHandler -> {
+                data.putInt(TooltipHelper.Keys.ECF.toData() + 2, innerECFHandler.getECF());
+                data.putInt(TooltipHelper.Keys.MAX_ECF.toData() + 2, innerECFHandler.getMaxECF());
+                if (TCCommonConfigs.DEBUG.get()) {
+                    data.putInt(TooltipHelper.Keys.QUEUED.toData() + 2, innerECFHandler.getQueued());
+                }
+            });
         });
 
         int priority = this.getPriority();
@@ -461,19 +504,25 @@ public class FlowCedarEntEntity extends AbstractGolem implements ECFNetworkMembe
 
         TooltipHelper.addWithHeader(TooltipHelper.Headers.ECF, tooltip, t1 -> {
             TooltipHelper.addWithHeader(TooltipHelper.Headers.ENT_HOLD, t1, t -> {
-                TooltipHelper.addIfExist(TooltipHelper.Keys.ECF, t, data);
-                TooltipHelper.addIfExist(TooltipHelper.Keys.MAX_ECF, t, data);
-                TooltipHelper.addIfExist(TooltipHelper.Keys.QUEUED, t, data);
+                if (isShifting) {
+                    TooltipHelper.addIfExist(TooltipHelper.Keys.ECF, t, data);
+                    TooltipHelper.addIfExist(TooltipHelper.Keys.MAX_ECF, t, data);
+                    TooltipHelper.addIfExist(TooltipHelper.Keys.QUEUED, t, data);
+                } else {
+                    TooltipHelper.addScaleIfExist(TooltipHelper.Keys.ECF, TooltipHelper.Keys.MAX_ECF, t, data);
+                }
             });
 
 
             TooltipHelper.addWithHeader(TooltipHelper.Headers.ENT_INNER, t1, t -> {
-                TooltipHelper.addIfExist(TooltipHelper.Keys.ECF, t, data, 2);
                 if (isShifting) {
+                    TooltipHelper.addIfExist(TooltipHelper.Keys.ECF, t, data, 2);
+                    TooltipHelper.addIfExist(TooltipHelper.Keys.MAX_ECF, t, data, 2);
+                    TooltipHelper.addIfExist(TooltipHelper.Keys.QUEUED, t, data, 2);
                     t.add(TooltipHelper.keyWithArg(TooltipHelper.Keys.CONSUME, 0.1, TooltipHelper.Units.ECF_SECOND));
+                } else {
+                    TooltipHelper.addScaleIfExist(TooltipHelper.Keys.ECF, TooltipHelper.Keys.MAX_ECF, t, data, 2);
                 }
-                TooltipHelper.addIfExist(TooltipHelper.Keys.MAX_ECF, t, data, 2);
-                TooltipHelper.addIfExist(TooltipHelper.Keys.QUEUED, t, data, 2);
             });
 
             TooltipHelper.addWithHeader(TooltipHelper.Headers.ENT_COMMON, t1, t -> {
