@@ -67,7 +67,6 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
     @Setter
     private boolean updateScheduled = false;
 
-    @Setter
     private BlockPos receiverPos = SentinelHelper.EMPTY_POS;
 
     public static boolean validAngle(PathPointerBlockEntity be, Vec3 burstDir) {
@@ -92,7 +91,6 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
     private final Set<BlockPos> senderPoses = new HashSet<>() {
     };
 
-    @Setter
     private BlockPos outputPos = SentinelHelper.EMPTY_POS;
 
     private final Set<BlockPos> inputPoses = new HashSet<>();
@@ -749,6 +747,16 @@ public class PathPointerBlockEntity extends TCBlockEntity implements Nameable, E
             inputPoses1.add(worldPosition);
         }
         return inputPoses1;
+    }
+
+    public void setReceiverPos(@Nullable BlockPos receiverPos) {
+        if (receiverPos == null) receiverPos = SentinelHelper.EMPTY_POS;
+        this.receiverPos = receiverPos;
+    }
+
+    public void setOutputPos(@Nullable BlockPos outputPos) {
+        if (outputPos == null) outputPos = SentinelHelper.EMPTY_POS;
+        this.outputPos = outputPos;
     }
 
     public enum PPPart implements StringRepresentable {
