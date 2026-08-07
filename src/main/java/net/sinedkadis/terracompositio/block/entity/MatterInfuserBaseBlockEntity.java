@@ -7,8 +7,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.items.IItemHandlerModifiable;
-import net.sinedkadis.terracompositio.api.helpers.ItemHelper;
-import net.sinedkadis.terracompositio.api.registries.TCCapabilities;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
 import org.jetbrains.annotations.Nullable;
 
@@ -54,29 +52,5 @@ public abstract class MatterInfuserBaseBlockEntity extends TCBlockEntity {
             }
         }
         return null;
-    }
-
-    @Override
-    public void setRemoved() {
-        Direction direction = getBlockState().getValue(HORIZONTAL_FACING);
-        BlockPos blockPos2 = worldPosition.relative(direction.getCounterClockWise());
-        BlockEntity blockEntity1 = null;
-        if (level != null) {
-            blockEntity1 = level.getBlockEntity(blockPos2);
-        }
-        if (blockEntity1 instanceof MatterInfuserUnitBlockEntity) {
-            ItemHelper.dropContents(blockEntity1, TCCapabilities.ITEM_STATE_HOLDER);
-        }
-        BlockPos blockpos = worldPosition.relative(direction.getOpposite());
-        BlockState blockState = level.getBlockState(blockpos);
-        if (blockState.is(TCBlocks.FLOW_CEDAR_CASING.get())) {
-            BlockEntity blockEntity = level.getBlockEntity(blockpos);
-            if (blockEntity instanceof FlowCedarCasingBlockEntity) {
-                ItemHelper.dropContents(blockEntity, TCCapabilities.ITEM_STATE_HOLDER,
-                        FlowCedarCasingBlockEntity.UP_CONNECTION_SLOT,
-                        FlowCedarCasingBlockEntity.DOWN_CONNECTION_SLOT);
-            }
-        }
-        super.setRemoved();
     }
 }
