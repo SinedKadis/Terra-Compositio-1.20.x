@@ -121,12 +121,10 @@ public class DefaultECFHandler implements IECFHandler, INBTSerializable<Compound
     }
 
     protected void sendCFEUpdate() {
-        if (getAttachedEntity() instanceof ECFNetworkMember member) {
-            TerraCompositioAPI.INSTANCE.getECFNetworkInstance().fireECFNetworkEvent(member, NetworkAction.UPDATE);
-            if (getAttachedEntity() instanceof ServerPlayer serverPlayer) {
-                TCPackets.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer),
-                        new S2CPlayerEcfContainerSync(this.getECF()));
-            }
+        TerraCompositioAPI.INSTANCE.getECFNetworkInstance().fireECFNetworkEvent(this, NetworkAction.UPDATE);
+        if (getAttachedEntity() instanceof ServerPlayer serverPlayer) {
+            TCPackets.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer),
+                    new S2CPlayerEcfContainerSync(this.getECF()));
         }
     }
 

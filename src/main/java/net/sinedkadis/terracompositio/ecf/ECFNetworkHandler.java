@@ -46,6 +46,7 @@ public class ECFNetworkHandler implements ECFNetwork {
         Queue<Pair<Long, Runnable>> skipped = new LinkedList<>();
         while (!scheduledDeliveries.isEmpty()) {
             Pair<Long, Runnable> poll = scheduledDeliveries.poll();
+            if (poll == null) continue;
             if (poll.getFirst() < gameTime) {
                 poll.getSecond().run();
             } else {
