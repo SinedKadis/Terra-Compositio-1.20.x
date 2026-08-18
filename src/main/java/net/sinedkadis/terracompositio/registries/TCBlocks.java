@@ -299,6 +299,10 @@ public class TCBlocks {
     public static final DeferredBlock<Block> FE_PROVIDER_PYLON = registerBlock("fe_provider_pylon",
             () -> new FEProviderPylonBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS).noOcclusion()));
 
+    //Time saturator
+    public static final DeferredBlock<TimeSaturatorCoreBlock> TIME_SATURATOR_CORE = registerBlock("time_saturator_core",
+            () -> new TimeSaturatorCoreBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).noOcclusion()));
+
     public static <T extends Block> DeferredBlock<T> registerBlock(String name, Supplier<T> block) {
         return registerBlock(name, block, () -> true);
     }

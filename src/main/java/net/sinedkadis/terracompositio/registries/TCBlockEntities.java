@@ -118,6 +118,9 @@ public class TCBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FEProviderCoreBlockEntity>> FE_PROVIDER_CORE_BE =
             registerBE("fe_provider_core_be", FEProviderCoreBlockEntity::new, FE_PROVIDER_CORE);
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TimeSaturatorCoreBlockEntity>> TIME_SATURATOR_CORE_BE =
+            registerBE("time_saturator_core_be", TimeSaturatorCoreBlockEntity::new, TIME_SATURATOR_CORE);
+
 
 
     public static void register(IEventBus eventBus){
