@@ -44,6 +44,59 @@ public class TCRecipeProvider extends RecipeProvider implements IConditionBuilde
         super(pOutput,provider);
     }
 
+    private static void buildSpecial(RecipeOutput pWriter) {
+        buildWrenchAxe(pWriter);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, TCBlocks.WEDGE.get())
+                .pattern("S S")
+                .pattern("SSS")
+                .pattern(" S ")
+                .define('S', Items.IRON_NUGGET)
+                .unlockedBy(getHasName(Items.IRON_BARS), has(Items.IRON_BARS))
+                .save(pWriter);
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, TCItems.FLOW_INFUSER_KIT.get())
+                .pattern(" N ")
+                .pattern("SNS")
+                .pattern(" N ")
+                .define('S', Items.STICK)
+                .define('N', TCTags.Items.COPPER_NUGGETS)
+                .unlockedBy(getHasName(Items.STICK), has(TCItems.COPPER_NUGGET.get()))
+                .save(pWriter);
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, TCItems.SHIELDED_BUNDLE.get(), 1)
+                .requires(Items.BUNDLE)
+                .requires(TCItems.INFUSED_IRON_INGOT.get())
+                .unlockedBy(getHasName(TCItems.INFUSED_IRON_INGOT.get()), has(Items.BUNDLE))
+                .save(pWriter);
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, TCItems.FLUID_APPLIER.get())
+                .pattern("  N")
+                .pattern(" T ")
+                .pattern("S  ")
+                .define('T', TCItems.TECHNETIUM_INGOT.get())
+                .define('N', TCItems.INFUSED_IRON_NUGGET.get())
+                .define('S', Items.STICK)
+                .unlockedBy(getHasName(TCItems.TECHNETIUM_INGOT.get()), has(TCItems.TECHNETIUM_INGOT.get()))
+                .save(pWriter);
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, TCBlocks.AIR_SATURATOR.get())
+                .pattern(" I ")
+                .pattern("RCR")
+                .pattern(" L ")
+                .define('I', Items.IRON_INGOT)
+                .define('C', Items.COBWEB)
+                .define('R', TCItems.INFUSED_IRON_ROD.get())
+                .define('L', TCBlocks.FLOW_CEDAR_LOG.get())
+                .unlockedBy(getHasName(TCItems.INFUSED_IRON_INGOT.get()), has(TCItems.INFUSED_IRON_INGOT.get()))
+                .save(pWriter);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, TCBlocks.TIME_SATURATOR_CORE.get())
+                .pattern(" C ")
+                .pattern("RTR")
+                .define('C', TCItems.ECF_CHARGE.get())
+                .define('R', TCItems.GOLD_ROD.get())
+                .define('T', TCBlocks.TECHNETIUM_BLOCK.get())
+                .unlockedBy(getHasName(TCItems.TECHNETIUM_INGOT.get()), has(TCItems.TECHNETIUM_INGOT.get()))
+                .save(pWriter);
+    }
+
     private static void buildFEP(RecipeOutput pWriter) {
         ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, TCBlocks.FE_PROVIDER_CORE.get())
                 .pattern("RTI")
@@ -747,48 +800,34 @@ public class TCRecipeProvider extends RecipeProvider implements IConditionBuilde
                 .save(pWriter);
     }
 
-    private static void buildSpecial(RecipeOutput pWriter) {
-        buildWrenchAxe(pWriter);
+    @Override
+    protected void buildRecipes(RecipeOutput pWriter) {
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, TCBlocks.WEDGE.get())
-                .pattern("S S")
-                .pattern("SSS")
-                .pattern(" S ")
-                .define('S', Items.IRON_NUGGET)
-                .unlockedBy(getHasName(Items.IRON_BARS), has(Items.IRON_BARS))
-                .save(pWriter);
-        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, TCItems.FLOW_INFUSER_KIT.get())
-                .pattern(" N ")
-                .pattern("SNS")
-                .pattern(" N ")
-                .define('S', Items.STICK)
-                .define('N', TCTags.Items.COPPER_NUGGETS)
-                .unlockedBy(getHasName(Items.STICK), has(TCItems.COPPER_NUGGET.get()))
-                .save(pWriter);
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, TCItems.SHIELDED_BUNDLE.get(), 1)
-                .requires(Items.BUNDLE)
-                .requires(TCItems.INFUSED_IRON_INGOT.get())
-                .unlockedBy(getHasName(TCItems.INFUSED_IRON_INGOT.get()), has(Items.BUNDLE))
-                .save(pWriter);
-        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, TCItems.FLUID_APPLIER.get())
-                .pattern("  N")
-                .pattern(" T ")
-                .pattern("S  ")
-                .define('T', TCItems.TECHNETIUM_INGOT.get())
-                .define('N', TCItems.INFUSED_IRON_NUGGET.get())
-                .define('S', Items.STICK)
-                .unlockedBy(getHasName(TCItems.TECHNETIUM_INGOT.get()), has(TCItems.TECHNETIUM_INGOT.get()))
-                .save(pWriter);
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, TCBlocks.AIR_SATURATOR.get())
-                .pattern(" I ")
-                .pattern("RCR")
-                .pattern(" L ")
-                .define('I', Items.IRON_INGOT)
-                .define('C', Items.COBWEB)
-                .define('R', TCItems.INFUSED_IRON_ROD.get())
-                .define('L', TCBlocks.FLOW_CEDAR_LOG.get())
-                .unlockedBy(getHasName(TCItems.INFUSED_IRON_INGOT.get()), has(TCItems.INFUSED_IRON_INGOT.get()))
-                .save(pWriter);
+        specialCraftingRecipe(pWriter, ECFStorageUpgradeRecipe::new, "storage_upgrade");
+
+        buildCedarBlocks(pWriter);
+        buildMatterInfuserBlocks(pWriter);
+        buildCopperMaterials(pWriter);
+        buildTechnetiumMaterials(pWriter);
+        buildTechnetiumArmor(pWriter);
+        buildCedarArmor(pWriter);
+        buildInfusedIronMaterials(pWriter);
+        buildGoldMaterials(pWriter);
+        buildDesorbers(pWriter);
+        buildPathPointers(pWriter);
+        buildFloatingRedstone(pWriter);
+        buildCFJ(pWriter);
+        buildFEP(pWriter);
+
+
+        buildTechnetiumOreProcessing(pWriter);
+        buildMisc(pWriter);
+        buildSpecial(pWriter);
+        buildApples(pWriter);
+
+        buildCompat(pWriter);
+
+
     }
 
     private static void buildMatterInfuserBlocks(RecipeOutput pWriter) {
@@ -824,36 +863,6 @@ public class TCRecipeProvider extends RecipeProvider implements IConditionBuilde
                 .define('H', Items.IRON_INGOT)
                 .unlockedBy(getHasName(Items.IRON_INGOT), has(Items.IRON_INGOT))
                 .save(pWriter);
-    }
-
-    @Override
-    protected void buildRecipes(RecipeOutput pWriter) {
-
-        specialCraftingRecipe(pWriter, ECFStorageUpgradeRecipe::new,"storage_upgrade");
-
-        buildCedarBlocks(pWriter);
-        buildMatterInfuserBlocks(pWriter);
-        buildCopperMaterials(pWriter);
-        buildTechnetiumMaterials(pWriter);
-        buildTechnetiumArmor(pWriter);
-        buildCedarArmor(pWriter);
-        buildInfusedIronMaterials(pWriter);
-        buildGoldMaterials(pWriter);
-        buildDesorbers(pWriter);
-        buildPathPointers(pWriter);
-        buildFloatingRedstone(pWriter);
-        buildCFJ(pWriter);
-        buildFEP(pWriter);
-
-
-        buildTechnetiumOreProcessing(pWriter);
-        buildMisc(pWriter);
-        buildSpecial(pWriter);
-        buildApples(pWriter);
-
-        buildCompat(pWriter);
-
-
     }
 
     private static ItemStack createCFJBook(int day) {

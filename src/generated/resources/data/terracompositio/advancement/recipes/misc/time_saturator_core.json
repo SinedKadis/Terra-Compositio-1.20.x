@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_technetium_ingot": {
+      "conditions": {
+        "items": [
+          {
+            "items": "terracompositio:technetium_ingot"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "terracompositio:time_saturator_core"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_technetium_ingot"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "terracompositio:time_saturator_core"
+    ]
+  }
+}

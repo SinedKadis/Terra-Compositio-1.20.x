@@ -37,8 +37,9 @@ public class ECFCubeModel<T extends Entity> extends HierarchicalModel<T> {
 
     @Override
     public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-        this.cube.yRot = ageInTicks * 0.1f;
-        this.cube.xRot = ageInTicks * 0.1f;
+        if (limbSwing == 0) limbSwing = 0.1f;
+        this.cube.yRot = ageInTicks * limbSwing;
+        this.cube.xRot = ageInTicks * limbSwing;
     }
 
     @Override

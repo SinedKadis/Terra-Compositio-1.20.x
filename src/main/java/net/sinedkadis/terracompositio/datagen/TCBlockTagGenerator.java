@@ -3,18 +3,18 @@ package net.sinedkadis.terracompositio.datagen;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;
-
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.sinedkadis.terracompositio.TerraCompositio;
-import net.sinedkadis.terracompositio.registries.TCBlocks;
 import net.sinedkadis.terracompositio.registries.TCTags;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
+
+import static net.sinedkadis.terracompositio.registries.TCBlocks.*;
 
 public class TCBlockTagGenerator extends BlockTagsProvider {
     public TCBlockTagGenerator(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, @Nullable ExistingFileHelper existingFileHelper) {
@@ -23,123 +23,108 @@ public class TCBlockTagGenerator extends BlockTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.@NotNull Provider pProvider) {
-        //this.tag(ModTags.Blocks.METAL_DETECTOR_VALUABLES)
-        //        .add(ModBlocks.FLOW_LOG.get()).addTag(Tags.Blocks.NEEDS_NETHERITE_TOOL);
-
         this.tag(BlockTags.MINEABLE_WITH_PICKAXE)
-                .add(TCBlocks.TECHNETIUM_RAW_ORE_BLOCK.get(),
-                        TCBlocks.TECHNETIUM_ORE.get(),
-                        TCBlocks.TECHNETIUM_DEEPSLATE_ORE.get(),
-                        TCBlocks.MATTER_INFUSER_PORT.get(),
-                        TCBlocks.MATTER_INFUSER_UNIT.get(),
-                        TCBlocks.CONSTRUCTION_DESORBER.get(),
-                        TCBlocks.CULTIVATION_DESORBER.get(),
-                        TCBlocks.TIME_PASSAGE_DESORBER.get(),
-                        TCBlocks.PP_SENDER.get(),
-                        TCBlocks.PP_EMITTER.get(),
-                        TCBlocks.PP_COLLECTOR.get(),
-                        TCBlocks.PP_RECEIVER.get(),
-                        TCBlocks.PP_EXTRACTOR.get(),
-                        TCBlocks.PP_INFUSER.get(),
-                        TCBlocks.TECHNETIUM_BLOCK.get(),
-                        TCBlocks.INFUSED_IRON_BLOCK.get(),
-                        TCBlocks.INFUSED_IRON_DOOR.get(),
-                        TCBlocks.INFUSED_IRON_PRESSURE_PLATE.get(),
-                        TCBlocks.FLOATING_BUTTON.get(),
-                        TCBlocks.FLOATING_LEVER.get());
+                .add(TECHNETIUM_RAW_ORE_BLOCK.get(),
+                        TECHNETIUM_ORE.get(),
+                        TECHNETIUM_DEEPSLATE_ORE.get(),
+                        MATTER_INFUSER_PORT.get(),
+                        MATTER_INFUSER_UNIT.get(),
+                        CONSTRUCTION_DESORBER.get(),
+                        CULTIVATION_DESORBER.get(),
+                        TIME_PASSAGE_DESORBER.get(),
+                        PP_SENDER.get(),
+                        PP_EMITTER.get(),
+                        PP_COLLECTOR.get(),
+                        PP_RECEIVER.get(),
+                        PP_EXTRACTOR.get(),
+                        PP_INFUSER.get(),
+                        TECHNETIUM_BLOCK.get(),
+                        INFUSED_IRON_BLOCK.get(),
+                        INFUSED_IRON_DOOR.get(),
+                        INFUSED_IRON_PRESSURE_PLATE.get(),
+                        FLOATING_BUTTON.get(),
+                        FLOATING_LEVER.get(),
+                        TIME_SATURATOR_CORE.get(),
+                        FE_PROVIDER_PYLON.get());
         this.tag(BlockTags.MINEABLE_WITH_AXE)
-                .add(TCBlocks.FLOW_CEDAR_LOG.get(),
-                        TCBlocks.FLOW_CEDAR_LEAVES.get(),
-                        TCBlocks.FLOW_CEDAR_ALTAR.get(),
-                        TCBlocks.FLOW_INFUSER.get(),
-                        TCBlocks.FLOW_CEDAR_WOOD.get(),
-                        TCBlocks.FLOW_CEDAR_PLANKS.get(),
-                        TCBlocks.STRIPPED_FLOW_CEDAR_LOG.get(),
-                        TCBlocks.STRIPPED_FLOW_CEDAR_WOOD.get(),
-                        TCBlocks.FLOW_CEDAR_CASING.get(),
-                        TCBlocks.FLOW_CEDAR_PEDESTAL.get(),
-                        TCBlocks.FLOW_CEDAR_TANK.get(),
-                        TCBlocks.PP_SENDER.get(),
-                        TCBlocks.PP_EMITTER.get(),
-                        TCBlocks.PP_COLLECTOR.get(),
-                        TCBlocks.PP_RECEIVER.get(),
-                        TCBlocks.PP_EXTRACTOR.get(),
-                        TCBlocks.PP_INFUSER.get(),
-                        TCBlocks.FLOW_CEDAR_ENT_STATUE.get());
-
-
-//        this.tag(BlockTags.NEEDS_IRON_TOOL)
-//                .add(TCBlocks.FLOW_CEDAR_LOG.get(),
-//                        TCBlocks.FLOW_CEDAR_LEAVES.get(),
-//                        TCBlocks.FLOW_CEDAR_PORT.get(),
-//                        TCBlocks.FLOW_CEDAR_WOOD.get());
+                .add(FLOW_CEDAR_LOG.get(),
+                        FLOW_CEDAR_LEAVES.get(),
+                        FLOW_CEDAR_ALTAR.get(),
+                        FLOW_INFUSER.get(),
+                        FLOW_CEDAR_WOOD.get(),
+                        FLOW_CEDAR_PLANKS.get(),
+                        STRIPPED_FLOW_CEDAR_LOG.get(),
+                        STRIPPED_FLOW_CEDAR_WOOD.get(),
+                        FLOW_CEDAR_CASING.get(),
+                        FLOW_CEDAR_PEDESTAL.get(),
+                        FLOW_CEDAR_TANK.get(),
+                        PP_SENDER.get(),
+                        PP_EMITTER.get(),
+                        PP_COLLECTOR.get(),
+                        PP_RECEIVER.get(),
+                        PP_EXTRACTOR.get(),
+                        PP_INFUSER.get(),
+                        FLOW_CEDAR_ENT_STATUE.get(),
+                        FE_PROVIDER_CORE.get());
 
         this.tag(BlockTags.NEEDS_STONE_TOOL)
-                .add(TCBlocks.PP_SENDER.get(),
-                        TCBlocks.PP_EMITTER.get(),
-                        TCBlocks.PP_COLLECTOR.get(),
-                        TCBlocks.PP_RECEIVER.get(),
-                        TCBlocks.PP_EXTRACTOR.get(),
-                        TCBlocks.PP_INFUSER.get());
+                .add(PP_SENDER.get(),
+                        PP_EMITTER.get(),
+                        PP_COLLECTOR.get(),
+                        PP_RECEIVER.get(),
+                        PP_EXTRACTOR.get(),
+                        PP_INFUSER.get());
         this.tag(BlockTags.LOGS_THAT_BURN)
-                .add(TCBlocks.FLOW_CEDAR_LOG.get(),
-                        TCBlocks.FLOW_CEDAR_WOOD.get(),
-                        TCBlocks.STRIPPED_FLOW_CEDAR_LOG.get(),
-                        TCBlocks.STRIPPED_FLOW_CEDAR_WOOD.get(),
-                        TCBlocks.FLOW_INFUSER.get(),
-                        TCBlocks.FLOW_CEDAR_CASING.get());
+                .add(FLOW_CEDAR_LOG.get(),
+                        FLOW_CEDAR_WOOD.get(),
+                        STRIPPED_FLOW_CEDAR_LOG.get(),
+                        STRIPPED_FLOW_CEDAR_WOOD.get(),
+                        FLOW_INFUSER.get(),
+                        FLOW_CEDAR_CASING.get());
         this.tag(BlockTags.PLANKS)
-                .add(TCBlocks.FLOW_CEDAR_PLANKS.get());
+                .add(FLOW_CEDAR_PLANKS.get());
         this.tag(BlockTags.LEAVES)
-                .add(TCBlocks.FLOW_CEDAR_LEAVES.get());
+                .add(FLOW_CEDAR_LEAVES.get());
 
         this.tag(BlockTags.STAIRS)
-                .add(TCBlocks.FLOW_CEDAR_STAIRS.get());
+                .add(FLOW_CEDAR_STAIRS.get());
         this.tag(BlockTags.DOORS)
-                .add(TCBlocks.FLOW_CEDAR_DOOR.get(),
-                        TCBlocks.INFUSED_IRON_DOOR.get());
+                .add(FLOW_CEDAR_DOOR.get(),
+                        INFUSED_IRON_DOOR.get());
         this.tag(BlockTags.TRAPDOORS)
-                .add(TCBlocks.FLOW_CEDAR_TRAPDOOR.get());
+                .add(FLOW_CEDAR_TRAPDOOR.get());
         this.tag(BlockTags.BUTTONS)
-                .add(TCBlocks.FLOW_CEDAR_BUTTON.get());
+                .add(FLOW_CEDAR_BUTTON.get());
         this.tag(BlockTags.PRESSURE_PLATES)
-                .add(TCBlocks.FLOW_CEDAR_PRESSURE_PLATE.get(),
-                        TCBlocks.INFUSED_IRON_PRESSURE_PLATE.get());
+                .add(FLOW_CEDAR_PRESSURE_PLATE.get(),
+                        INFUSED_IRON_PRESSURE_PLATE.get());
         this.tag(BlockTags.FENCES)
-                .add(TCBlocks.FLOW_CEDAR_FENCE.get());
+                .add(FLOW_CEDAR_FENCE.get());
         this.tag(BlockTags.FENCE_GATES)
-                .add(TCBlocks.FLOW_CEDAR_FENCE_GATE.get());
+                .add(FLOW_CEDAR_FENCE_GATE.get());
         this.tag(TCTags.Blocks.FLOW_CEDAR_LOGS)
-                .add(TCBlocks.FLOW_CEDAR_LOG.get(),
-                        TCBlocks.FLOW_CEDAR_WOOD.get());
-        //this.tag(BlockTags.NEEDS_DIAMOND_TOOL)
-        //        .add(ModBlocks.RAW_SAPPHIRE_BLOCK.get());
-
-        //this.tag(BlockTags.NEEDS_STONE_TOOL)
-        //        .add(ModBlocks.NETHER_SAPPHIRE_ORE.get());
-
-        //this.tag(Tags.Blocks.NEEDS_NETHERITE_TOOL)
-        //        .add(ModBlocks.END_STONE_SAPPHIRE_ORE.get());
+                .add(FLOW_CEDAR_LOG.get(),
+                        FLOW_CEDAR_WOOD.get());
 
         this.tag(BlockTags.ALL_HANGING_SIGNS)
-                .add(TCBlocks.FLOW_CEDAR_HANGING_SIGN.get(),
-                        TCBlocks.FLOW_CEDAR_WALL_HANGING_SIGN.get());
+                .add(FLOW_CEDAR_HANGING_SIGN.get(),
+                        FLOW_CEDAR_WALL_HANGING_SIGN.get());
         this.tag(BlockTags.WALL_HANGING_SIGNS)
-                .add(TCBlocks.FLOW_CEDAR_WALL_HANGING_SIGN.get());
+                .add(FLOW_CEDAR_WALL_HANGING_SIGN.get());
         this.tag(BlockTags.CEILING_HANGING_SIGNS)
-                .add(TCBlocks.FLOW_CEDAR_HANGING_SIGN.get());
+                .add(FLOW_CEDAR_HANGING_SIGN.get());
         this.tag(BlockTags.ALL_SIGNS)
-                .add(TCBlocks.FLOW_CEDAR_SIGN.get(),
-                        TCBlocks.FLOW_CEDAR_WALL_SIGN.get());
+                .add(FLOW_CEDAR_SIGN.get(),
+                        FLOW_CEDAR_WALL_SIGN.get());
         this.tag(BlockTags.WALL_SIGNS)
-                .add(TCBlocks.FLOW_CEDAR_WALL_SIGN.get());
+                .add(FLOW_CEDAR_WALL_SIGN.get());
         this.tag(BlockTags.STANDING_SIGNS)
-                .add(TCBlocks.FLOW_CEDAR_SIGN.get());
+                .add(FLOW_CEDAR_SIGN.get());
         this.tag(BlockTags.SAPLINGS)
-                .add(TCBlocks.FLOW_CEDAR_SAPLING.get());
+                .add(FLOW_CEDAR_SAPLING.get());
         this.tag(TCTags.Blocks.REDSTONE_WIRES)
                 .add(Blocks.REDSTONE_WIRE,
-                        TCBlocks.FLOATING_REDSTONE.get());
+                        FLOATING_REDSTONE.get());
 
 
         if (ModList.get().isLoaded("create")) {

@@ -18,6 +18,7 @@
     "terracompositio:pp_extractor",
     "terracompositio:pp_infuser",
     "terracompositio:flow_cedar_ent_statue",
+    "terracompositio:fe_provider_core",
     "terracompositio:cedar_gearbox"
   ]
 }

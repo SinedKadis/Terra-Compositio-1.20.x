@@ -151,6 +151,9 @@ public class TCCreativeModeTabs {
                             pOutput.accept(TCBlocks.FE_PROVIDER_CORE.get());
                             pOutput.accept(TCBlocks.FE_PROVIDER_PYLON.get());
 
+                            //Time saturator
+                            pOutput.accept(TCBlocks.TIME_SATURATOR_CORE.get());
+
 
                             //misc
                             pOutput.accept(TCItems.FLOW_CEDAR_ENT_SPAWN_EGG.get());

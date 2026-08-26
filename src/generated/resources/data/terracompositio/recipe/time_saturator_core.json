@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "terracompositio:ecf_charge"
+    },
+    "R": {
+      "item": "terracompositio:gold_rod"
+    },
+    "T": {
+      "item": "terracompositio:technetium_block"
+    }
+  },
+  "pattern": [
+    " C ",
+    "RTR"
+  ],
+  "result": {
+    "count": 1,
+    "id": "terracompositio:time_saturator_core"
+  }
+}

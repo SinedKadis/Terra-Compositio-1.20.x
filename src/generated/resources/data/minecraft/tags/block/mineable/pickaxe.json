@@ -20,6 +20,8 @@
     "terracompositio:infused_iron_pressure_plate",
     "terracompositio:floating_button",
     "terracompositio:floating_lever",
+    "terracompositio:time_saturator_core",
+    "terracompositio:fe_provider_pylon",
     "terracompositio:cedar_gearbox"
   ]
 }
