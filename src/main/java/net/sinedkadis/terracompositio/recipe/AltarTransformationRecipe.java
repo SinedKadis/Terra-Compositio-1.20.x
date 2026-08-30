@@ -105,11 +105,6 @@ public class AltarTransformationRecipe implements ITCRecipe<RecipeWrapper> {
     }
 
     @Override
-    public CraftException allowOnNeighbourUpdate(TCBlockEntity be) {
-        return ITCRecipe.checkPedestal(be);
-    }
-
-    @Override
     public void onCraftingTick(TCBlockEntity be, int progress) {
         ITCRecipe.spawnParticles(be);
         if (progress == 1) {

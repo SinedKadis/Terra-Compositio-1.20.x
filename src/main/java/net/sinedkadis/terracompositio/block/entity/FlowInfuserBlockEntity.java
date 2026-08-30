@@ -6,11 +6,13 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.IItemHandler;
+import net.sinedkadis.terracompositio.block.behaviours.AssemblyBehaviour;
 import net.sinedkadis.terracompositio.block.behaviours.CraftingBehaviour;
 import net.sinedkadis.terracompositio.block.behaviours.ECFHandlerBehaviour;
 import net.sinedkadis.terracompositio.block.behaviours.ItemHandlerBehaviour;
 import net.sinedkadis.terracompositio.config.TCInnerConfig;
 import net.sinedkadis.terracompositio.recipe.FlowInfusionRecipe;
+import net.sinedkadis.terracompositio.recipe.ITCRecipe;
 import net.sinedkadis.terracompositio.registries.TCItems;
 import net.sinedkadis.terracompositio.util.IHaveRenderStack;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
@@ -47,7 +49,15 @@ public class FlowInfuserBlockEntity extends TCBlockEntity implements IHaveRender
                 return 1;
             }
         });
-        list.add(new CraftingBehaviour<>(this, FlowInfusionRecipe.Type.INSTANCE));
+        AssemblyBehaviour assemblyBehaviour = new AssemblyBehaviour(this) {
+            @Override
+            protected boolean isAssembled() {
+                return !ITCRecipe.checkSurroundings(FlowInfuserBlockEntity.this).hasExceptions();
+            }
+        };
+        list.add(assemblyBehaviour);
+        list.add(new CraftingBehaviour<>(this, FlowInfusionRecipe.Type.INSTANCE)
+                .assemblyListener(assemblyBehaviour.allowCrafting));
     }
 
     @Override

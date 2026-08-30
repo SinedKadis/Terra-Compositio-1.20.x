@@ -21,6 +21,7 @@ import net.neoforged.neoforge.items.wrapper.EmptyItemHandler;
 import net.sinedkadis.terracompositio.api.helpers.ItemHelper;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
 import net.sinedkadis.terracompositio.api.tooltip.ItemComponent;
+import net.sinedkadis.terracompositio.block.behaviours.AssemblyBehaviour;
 import net.sinedkadis.terracompositio.block.behaviours.CraftingBehaviour;
 import net.sinedkadis.terracompositio.block.behaviours.ECFHandlerBehaviour;
 import net.sinedkadis.terracompositio.block.behaviours.ItemStateHolderBehaviour;
@@ -86,7 +87,15 @@ public class MatterInfuserUnitBlockEntity extends MatterInfuserBaseBlockEntity{
                 return InteractionResult.PASS;
             }
         });
-        list.add(new CraftingBehaviour<>(this, MatterInfusionRecipe.Type.INSTANCE));
+        AssemblyBehaviour assemblyBehaviour = new AssemblyBehaviour(this) {
+            @Override
+            protected boolean isAssembled() {
+                return assembleValid();
+            }
+        };
+        list.add(assemblyBehaviour);
+        list.add(new CraftingBehaviour<>(this, MatterInfusionRecipe.Type.INSTANCE)
+                .assemblyListener(assemblyBehaviour.allowCrafting));
 
     }
 

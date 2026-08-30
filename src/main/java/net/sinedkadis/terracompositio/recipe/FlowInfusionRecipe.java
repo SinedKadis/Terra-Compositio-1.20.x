@@ -116,13 +116,6 @@ public class FlowInfusionRecipe implements ITCRecipe<RecipeWrapper> {
     }
 
     @Override
-    public CraftException allowOnNeighbourUpdate(TCBlockEntity be) {
-        CraftException noSurrounding = ITCRecipe.checkSurroundings(be);
-        if (noSurrounding.hasExceptions()) return noSurrounding;
-        return CraftException.OK;
-    }
-
-    @Override
     public void onCraftingTick(TCBlockEntity be, int progress) {
         spawnParticles(be);
         ITCRecipe.consumeECF(be, getECFTick());

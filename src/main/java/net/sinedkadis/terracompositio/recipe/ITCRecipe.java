@@ -141,10 +141,6 @@ public interface ITCRecipe<INPUT extends RecipeInput> extends Recipe<INPUT>, IHa
 
     CraftException allowOnTick(TCBlockEntity be);
 
-    default CraftException allowOnNeighbourUpdate(TCBlockEntity be) {
-        return CraftException.OK;
-    }
-
     void onCraftingTick(TCBlockEntity be, int progress);
 
     boolean isCompleteThenCraft(TCBlockEntity be, int progress);

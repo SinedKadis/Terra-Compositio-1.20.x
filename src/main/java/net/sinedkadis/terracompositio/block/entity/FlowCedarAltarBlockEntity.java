@@ -6,9 +6,11 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.sinedkadis.terracompositio.block.IFluidApplicable;
+import net.sinedkadis.terracompositio.block.behaviours.AssemblyBehaviour;
 import net.sinedkadis.terracompositio.block.behaviours.CraftingBehaviour;
 import net.sinedkadis.terracompositio.block.behaviours.ItemHandlerBehaviour;
 import net.sinedkadis.terracompositio.recipe.AltarTransformationRecipe;
+import net.sinedkadis.terracompositio.recipe.ITCRecipe;
 import net.sinedkadis.terracompositio.registries.TCBlockEntities;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
 import org.jetbrains.annotations.Nullable;
@@ -37,6 +39,14 @@ public class FlowCedarAltarBlockEntity extends TCBlockEntity implements IFluidAp
                 return !(pSlot == 2);
             }
         });
-        list.add(new CraftingBehaviour<>(this, AltarTransformationRecipe.Type.INSTANCE));
+        AssemblyBehaviour assemblyBehaviour = new AssemblyBehaviour(this) {
+            @Override
+            protected boolean isAssembled() {
+                return !ITCRecipe.checkPedestal(FlowCedarAltarBlockEntity.this).hasExceptions();
+            }
+        };
+        list.add(assemblyBehaviour);
+        list.add(new CraftingBehaviour<>(this, AltarTransformationRecipe.Type.INSTANCE)
+                .assemblyListener(assemblyBehaviour.allowCrafting));
     }
 }

@@ -134,8 +134,6 @@ public class MatterInfusionRecipe implements ITCRecipe<RecipeWrapper> {
         CraftException noECF = ITCRecipe.checkECF(ecfCapability, ecf);
         if (noECF.hasExceptions()) return noECF;
 
-        if (!miBE.assembleValid()) return CraftException.NO_SURROUNDINGS;
-
         return CraftException.OK;
     }
 

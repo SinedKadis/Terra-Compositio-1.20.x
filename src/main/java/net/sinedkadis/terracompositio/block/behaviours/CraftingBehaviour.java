@@ -1,16 +1,12 @@
 package net.sinedkadis.terracompositio.block.behaviours;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.state.BlockState;
 import net.sinedkadis.terracompositio.api.IHaveKnowledge;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
 import net.sinedkadis.terracompositio.block.entity.TCBlockEntity;
@@ -30,20 +26,24 @@ public class CraftingBehaviour<INPUT extends RecipeInput, RECIPE extends ITCReci
 
     protected int progress = 0;
     protected ITCRecipe.CraftException craftException = ITCRecipe.CraftException.OK;
-    protected boolean exceptionLock = false;
+    protected boolean assembled = true;
+
 
     public CraftingBehaviour(TCBlockEntity blockEntity, ITCRecipeType<INPUT, RECIPE> type) {
         this.blockEntity = blockEntity;
         this.type = type;
     }
 
+    public CraftingBehaviour<INPUT, RECIPE> assemblyListener(boolean assemblyListener) {
+        this.assembled = assemblyListener;
+        return this;
+    }
+
     @Override
     public void tick() {
-        if (exceptionLock) return;
-
         craftException = hasRecipe();
 
-        if (cachedRecipe != null) {
+        if (cachedRecipe != null && assembled) {
             ++progress;
             cachedRecipe.onCraftingTick(blockEntity, progress);
             if (cachedRecipe.isCompleteThenCraft(blockEntity, progress)) {
@@ -52,15 +52,6 @@ public class CraftingBehaviour<INPUT extends RecipeInput, RECIPE extends ITCReci
             }
         } else {
             progress = 0;
-        }
-    }
-
-    @Override
-    public void onNeighbourUpdated(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
-        if (cachedRecipe != null) {
-            ITCRecipe.CraftException exception = cachedRecipe.allowOnNeighbourUpdate(blockEntity);
-            exceptionLock = exception.hasExceptions();
-            craftException = exception;
         }
     }
 
@@ -82,11 +73,7 @@ public class CraftingBehaviour<INPUT extends RecipeInput, RECIPE extends ITCReci
         RECIPE value = recipe.get().value();
         ITCRecipe.CraftException canBeProcessed = value.allowOnTick(blockEntity);
         if (!canBeProcessed.hasExceptions()) {
-            if (cachedRecipe == null) {
-                canBeProcessed = value.allowOnNeighbourUpdate(blockEntity);
-            }
-            if (!canBeProcessed.hasExceptions())
-                cachedRecipe = value;
+            cachedRecipe = value;
         } else {
             cachedRecipe = null;
         }
