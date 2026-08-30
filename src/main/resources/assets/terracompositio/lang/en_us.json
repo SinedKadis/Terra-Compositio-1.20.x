@@ -118,7 +118,7 @@
   "info.terracompositio.entity_header": "Entity Info: ",
   "info.terracompositio.items_header": "Items Info: ",
   "info.terracompositio.fluids_header": "Fluids Info: ",
-  "info.terracompositio.crafting_header": "Crafting Info: ",
+  "info.terracompositio.crafting_header": "Using Info: ",
   "info.terracompositio.fe_header": "Formal Energy Info: ",
 
   "info.terracompositio.time_remaining": "Remaining: %s",

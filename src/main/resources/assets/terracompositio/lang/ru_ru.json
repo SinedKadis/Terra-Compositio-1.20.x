@@ -107,7 +107,7 @@
   "info.terracompositio.entity_header": "Информация о Сущности: ",
   "info.terracompositio.items_header": "Информация о Предметах: ",
   "info.terracompositio.fluids_header": "Информация о Жидкостях: ",
-  "info.terracompositio.crafting_header": "Информация о Процессе Создания: ",
+  "info.terracompositio.crafting_header": "Информация о Использовании: ",
   "info.terracompositio.fe_header": "Информация о FE: ",
 
 
@@ -197,6 +197,7 @@
   "item.terracompositio.apple_of_ignorance": "Яблоко Забытия",
   "block.terracompositio.fe_provider_core": "Ядро поставщика Формальной Энергии",
   "block.terracompositio.fe_provider_pylon": "Пилон поставщика Формальной Энергии",
+  "block.terracompositio.time_saturator_core": "Ядро Насыщателя Времени",
 
 
 

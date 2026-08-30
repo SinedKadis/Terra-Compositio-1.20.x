@@ -107,7 +107,7 @@
   "info.terracompositio.entity_header": "Інформація про Сутність: ",
   "info.terracompositio.items_header": "Інформація про Предмети: ",
   "info.terracompositio.fluids_header": "Інформація про Рідини: ",
-  "info.terracompositio.crafting_header": "Інформація про Процес Створення: ",
+  "info.terracompositio.crafting_header": "Інформація про Використання: ",
   "info.terracompositio.fe_header": "Інформація про FE: ",
 
   "info.terracompositio.time_remaining": "Залишилось: %s",
@@ -196,6 +196,7 @@
   "item.terracompositio.apple_of_ignorance": "Яблуко Забуття",
   "block.terracompositio.fe_provider_core": "Ядро поставщика Формальної Энергії",
   "block.terracompositio.fe_provider_pylon": "Пілон поставщика Формальної Энергії",
+  "block.terracompositio.time_saturator_core": "Ядро Насичувача Часу",
 
 
 
