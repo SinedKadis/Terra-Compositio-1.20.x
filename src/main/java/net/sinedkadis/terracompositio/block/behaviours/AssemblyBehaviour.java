@@ -3,6 +3,7 @@ package net.sinedkadis.terracompositio.block.behaviours;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.sinedkadis.terracompositio.api.IHaveKnowledge;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
@@ -14,7 +15,7 @@ import java.util.List;
 
 public class AssemblyBehaviour implements IBEBehaviour, IHaveKnowledge {
     public static int CHECK_RATE = 60;
-    private final TCBlockEntity blockEntity;
+    protected final TCBlockEntity blockEntity;
     public boolean allowCrafting = true;
 
     public AssemblyBehaviour(TCBlockEntity blockEntity) {
@@ -24,14 +25,14 @@ public class AssemblyBehaviour implements IBEBehaviour, IHaveKnowledge {
     @Override
     public void tick() {
         Level level = blockEntity.getLevel();
-        if (level == null) return;
+        if (!(level instanceof ServerLevel serverLevel)) return;
 
         if (level.getGameTime() % CHECK_RATE == 0) {
-            allowCrafting = isAssembled();
+            allowCrafting = isAssembled(serverLevel);
         }
     }
 
-    protected boolean isAssembled() {
+    protected boolean isAssembled(ServerLevel level) {
         return true;
     }
 

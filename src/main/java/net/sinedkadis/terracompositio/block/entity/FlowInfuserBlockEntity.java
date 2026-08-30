@@ -3,6 +3,7 @@ package net.sinedkadis.terracompositio.block.entity;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.IItemHandler;
@@ -51,7 +52,7 @@ public class FlowInfuserBlockEntity extends TCBlockEntity implements IHaveRender
         });
         AssemblyBehaviour assemblyBehaviour = new AssemblyBehaviour(this) {
             @Override
-            protected boolean isAssembled() {
+            protected boolean isAssembled(ServerLevel level) {
                 return !ITCRecipe.checkSurroundings(FlowInfuserBlockEntity.this).hasExceptions();
             }
         };

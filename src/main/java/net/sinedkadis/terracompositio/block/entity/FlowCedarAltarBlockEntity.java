@@ -3,6 +3,7 @@ package net.sinedkadis.terracompositio.block.entity;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.sinedkadis.terracompositio.block.IFluidApplicable;
@@ -41,7 +42,7 @@ public class FlowCedarAltarBlockEntity extends TCBlockEntity implements IFluidAp
         });
         AssemblyBehaviour assemblyBehaviour = new AssemblyBehaviour(this) {
             @Override
-            protected boolean isAssembled() {
+            protected boolean isAssembled(ServerLevel level) {
                 return !ITCRecipe.checkPedestal(FlowCedarAltarBlockEntity.this).hasExceptions();
             }
         };
