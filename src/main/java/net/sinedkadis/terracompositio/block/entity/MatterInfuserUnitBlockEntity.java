@@ -88,15 +88,13 @@ public class MatterInfuserUnitBlockEntity extends MatterInfuserBaseBlockEntity{
                 return InteractionResult.PASS;
             }
         });
-        AssemblyBehaviour assemblyBehaviour = new AssemblyBehaviour(this) {
+        list.add(new AssemblyBehaviour(MatterInfuserUnitBlockEntity.this) {
             @Override
-            protected boolean isAssembled(ServerLevel level) {
+            protected boolean isAssembled(ServerLevel level1) {
                 return assembleValid();
             }
-        };
-        list.add(assemblyBehaviour);
-        list.add(new CraftingBehaviour<>(this, MatterInfusionRecipe.Type.INSTANCE)
-                .assemblyListener(assemblyBehaviour.allowCrafting));
+        });
+        list.add(new CraftingBehaviour<>(this, MatterInfusionRecipe.Type.INSTANCE));
 
     }
 

@@ -50,15 +50,13 @@ public class FlowInfuserBlockEntity extends TCBlockEntity implements IHaveRender
                 return 1;
             }
         });
-        AssemblyBehaviour assemblyBehaviour = new AssemblyBehaviour(this) {
+        list.add(new AssemblyBehaviour(FlowInfuserBlockEntity.this) {
             @Override
-            protected boolean isAssembled(ServerLevel level) {
+            protected boolean isAssembled(ServerLevel level1) {
                 return !ITCRecipe.checkSurroundings(FlowInfuserBlockEntity.this).hasExceptions();
             }
-        };
-        list.add(assemblyBehaviour);
-        list.add(new CraftingBehaviour<>(this, FlowInfusionRecipe.Type.INSTANCE)
-                .assemblyListener(assemblyBehaviour.allowCrafting));
+        });
+        list.add(new CraftingBehaviour<>(this, FlowInfusionRecipe.Type.INSTANCE));
     }
 
     @Override

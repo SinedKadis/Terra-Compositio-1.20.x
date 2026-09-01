@@ -26,7 +26,6 @@ public class CraftingBehaviour<INPUT extends RecipeInput, RECIPE extends ITCReci
 
     protected int progress = 0;
     protected ITCRecipe.CraftException craftException = ITCRecipe.CraftException.OK;
-    protected boolean assembled = true;
 
 
     public CraftingBehaviour(TCBlockEntity blockEntity, ITCRecipeType<INPUT, RECIPE> type) {
@@ -34,16 +33,13 @@ public class CraftingBehaviour<INPUT extends RecipeInput, RECIPE extends ITCReci
         this.type = type;
     }
 
-    public CraftingBehaviour<INPUT, RECIPE> assemblyListener(boolean assemblyListener) {
-        this.assembled = assemblyListener;
-        return this;
-    }
-
     @Override
     public void tick() {
         craftException = hasRecipe();
 
-        if (cachedRecipe != null && assembled) {
+        CompoundTag persistentData = blockEntity.getPersistentData();
+        boolean isAssembled = !persistentData.contains(AssemblyBehaviour.ASSEMBLY.toData()) || persistentData.getBoolean(AssemblyBehaviour.ASSEMBLY.toData());
+        if (cachedRecipe != null && isAssembled) {
             ++progress;
             cachedRecipe.onCraftingTick(blockEntity, progress);
             if (cachedRecipe.isCompleteThenCraft(blockEntity, progress)) {

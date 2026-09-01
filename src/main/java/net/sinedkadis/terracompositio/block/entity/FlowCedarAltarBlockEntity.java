@@ -40,14 +40,12 @@ public class FlowCedarAltarBlockEntity extends TCBlockEntity implements IFluidAp
                 return !(pSlot == 2);
             }
         });
-        AssemblyBehaviour assemblyBehaviour = new AssemblyBehaviour(this) {
+        list.add(new AssemblyBehaviour(FlowCedarAltarBlockEntity.this) {
             @Override
-            protected boolean isAssembled(ServerLevel level) {
+            protected boolean isAssembled(ServerLevel level1) {
                 return !ITCRecipe.checkPedestal(FlowCedarAltarBlockEntity.this).hasExceptions();
             }
-        };
-        list.add(assemblyBehaviour);
-        list.add(new CraftingBehaviour<>(this, AltarTransformationRecipe.Type.INSTANCE)
-                .assemblyListener(assemblyBehaviour.allowCrafting));
+        });
+        list.add(new CraftingBehaviour<>(this, AltarTransformationRecipe.Type.INSTANCE));
     }
 }

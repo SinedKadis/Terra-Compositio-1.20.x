@@ -6,6 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.sinedkadis.terracompositio.api.IHaveKnowledge;
+import net.sinedkadis.terracompositio.api.TerraCompositioAPI;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
 import net.sinedkadis.terracompositio.block.entity.TCBlockEntity;
 import net.sinedkadis.terracompositio.recipe.ITCRecipe;
@@ -13,24 +14,16 @@ import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
 
 import java.util.List;
 
-public class AssemblyBehaviour implements IBEBehaviour, IHaveKnowledge {
+public class AssemblyBehaviour implements IBEBehaviour, IHaveKnowledge, TooltipHelper.ICustomKey {
     public static int CHECK_RATE = 60;
     protected final TCBlockEntity blockEntity;
-    public boolean allowCrafting = true;
+    public static TooltipHelper.ICustomKey ASSEMBLY = new AssemblyBehaviour(null);
 
     public AssemblyBehaviour(TCBlockEntity blockEntity) {
         this.blockEntity = blockEntity;
     }
 
-    @Override
-    public void tick() {
-        Level level = blockEntity.getLevel();
-        if (!(level instanceof ServerLevel serverLevel)) return;
-
-        if (level.getGameTime() % CHECK_RATE == 0) {
-            allowCrafting = isAssembled(serverLevel);
-        }
-    }
+    public boolean allowCrafting;
 
     protected boolean isAssembled(ServerLevel level) {
         return true;
@@ -64,4 +57,26 @@ public class AssemblyBehaviour implements IBEBehaviour, IHaveKnowledge {
             }
         });
     }
+
+    @Override
+    public void tick() {
+        Level level = blockEntity.getLevel();
+        if (!(level instanceof ServerLevel serverLevel)) return;
+
+        if (level.getGameTime() % CHECK_RATE == 0) {
+            allowCrafting = isAssembled(serverLevel);
+            blockEntity.getPersistentData().putBoolean(ASSEMBLY.toData(), allowCrafting);
+        }
+    }
+
+    @Override
+    public String name() {
+        return "ASSEMBLED";
+    }
+
+    @Override
+    public String getModID() {
+        return TerraCompositioAPI.MOD_ID;
+    }
+
 }

@@ -8,6 +8,8 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.TickingBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.sinedkadis.terracompositio.api.IEntityInstance;
@@ -43,6 +45,22 @@ public class TimeSaturatorCoreBlockEntity extends TCBlockEntity implements IHave
                 return ((TimeSaturatorCoreBlockEntity) blockEntity).isAssembled(level);
             }
         });
+    }
+
+    @Override
+    public void tick(Level pLevel, BlockPos pPos, BlockState pState) {
+        super.tick(pLevel, pPos, pState);
+        CompoundTag persistentData = this.getPersistentData();
+        boolean isAssembled = !persistentData.contains(AssemblyBehaviour.ASSEMBLY.toData()) || persistentData.getBoolean(AssemblyBehaviour.ASSEMBLY.toData());
+        if (isAssembled) {
+            List<TickingBlockEntity> list = List.copyOf(pLevel.blockEntityTickers).stream()
+                    .filter(tickingBlockEntity -> !tickingBlockEntity.isRemoved())
+                    .filter(tickingBlockEntity -> tickingBlockEntity.getPos().closerThan(pPos, getRange()))
+                    .toList();
+            for (int i = 0; i < 3; i++) {
+                list.forEach(TickingBlockEntity::tick);
+            }
+        }
     }
 
     public boolean isAssembled(ServerLevel level) {
