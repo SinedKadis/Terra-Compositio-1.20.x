@@ -359,6 +359,10 @@
   "book.terracompositio.creation_flow_journal.entry.fe_provider.page1": "  Поставщик Формальной Энергии способен превращать ЭПС в FE в соотношении 1:60. <br>  Для работы поставщик должен быть окружен содержащими жидкий поток блоками, сверху и снизу",
   "book.terracompositio.creation_flow_journal.entry.fe_provider.page2": "  Пилоны должны быть размещены вокруг поставщика на одном уровне. Каждый увеличивает скорость на 60FE за секунду. Для роботы должны быть наполненными",
   "book.terracompositio.creation_flow_journal.entry.fe_provider.page1.title": "Ядро FE Поставщика",
-  "book.terracompositio.creation_flow_journal.entry.fe_provider.page2.title": "Пилон FE Поставщика"
+  "book.terracompositio.creation_flow_journal.entry.fe_provider.page2.title": "Пилон FE Поставщика",
+  "book.terracompositio.creation_flow_journal.entry.time_saturator.name": "Насыщатель Времени",
+  "book.terracompositio.creation_flow_journal.entry.time_saturator.page1": "  Это многоблочная структура, что может увеличивать количество времени вокруг, ускоряя различные устройства. Его высота может быть больше, увеличивая радиус действия",
+  "book.terracompositio.creation_flow_journal.entry.time_saturator.page2": " Что бы структура работала, надо что б работали все Десорберы Течения Времени",
+  "book.terracompositio.creation_flow_journal.entry.time_saturator.page1.title": "Насыщатель Времени"
 
 }

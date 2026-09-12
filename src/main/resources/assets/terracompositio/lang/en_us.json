@@ -368,5 +368,9 @@
   "book.terracompositio.creation_flow_journal.entry.fe_provider.page1": "  Formal Energy provider is a device, that capable to exchanging ECF to FE in 1:60 rate. <br>  To function, the provider must be surrounded with liquid flow containing blocks, from up and down",
   "book.terracompositio.creation_flow_journal.entry.fe_provider.page2": "  Pylons need to be placed around provider on the same level. Each pylon increases speed by 60FE per second. To function needs to be infused",
   "book.terracompositio.creation_flow_journal.entry.fe_provider.page1.title": "FE Provider Core",
-  "book.terracompositio.creation_flow_journal.entry.fe_provider.page2.title": "FE Provider Pylon"
+  "book.terracompositio.creation_flow_journal.entry.fe_provider.page2.title": "FE Provider Pylon",
+  "book.terracompositio.creation_flow_journal.entry.time_saturator.name": "Time Saturator",
+  "book.terracompositio.creation_flow_journal.entry.time_saturator.page1": "  It's a multiblock structure that capable to increase amount of time in region around it, boosting different devices. Its height can be bigger, increasing its range ",
+  "book.terracompositio.creation_flow_journal.entry.time_saturator.page2": "  To function, Time Passage Desorbers need to be working",
+  "book.terracompositio.creation_flow_journal.entry.time_saturator.page1.title": "Time Saturator"
 }

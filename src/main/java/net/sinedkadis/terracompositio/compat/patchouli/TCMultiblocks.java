@@ -2,14 +2,20 @@ package net.sinedkadis.terracompositio.compat.patchouli;
 
 import com.google.common.base.Suppliers;
 import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.sinedkadis.terracompositio.api.registries.TCBlockStateProperties;
+import net.sinedkadis.terracompositio.block.custom.FlowCedarTankBlock;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
+import net.sinedkadis.terracompositio.registries.TCFluids;
 import vazkii.patchouli.api.IMultiblock;
+import vazkii.patchouli.api.IStateMatcher;
 import vazkii.patchouli.api.PatchouliAPI;
+import vazkii.patchouli.api.TriPredicate;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.function.Supplier;
@@ -83,4 +89,86 @@ public class TCMultiblocks {
                 '0', moss
         ).setSymmetrical(true);
     });
+
+    public static final Supplier<IMultiblock> TIME_SATURATOR_MB = Suppliers.memoize(() -> {
+
+        var core = TCBlocks.TIME_SATURATOR_CORE.get().defaultBlockState();
+        var technetium = TCBlocks.TECHNETIUM_BLOCK.get().defaultBlockState();
+        var desorber = TCBlocks.TIME_PASSAGE_DESORBER.get().defaultBlockState();
+        var flow = new FlowContainingState();
+
+        return PatchouliAPI.get().makeMultiblock(
+                new String[][]{
+                        {
+                                "   ",
+                                " C ",
+                                "   "
+                        },
+                        {
+                                "   ",
+                                " t ",
+                                "   "
+                        },
+                        {
+                                " d ",
+                                "dtd",
+                                " d "
+                        },
+                        {
+                                " f ",
+                                "f0f",
+                                " f "
+                        }
+                },
+                'd', desorber,
+                'C', core,
+                '0', technetium,
+                't', technetium,
+                'f', flow
+        ).setSymmetrical(true);
+    });
+
+    private static class FlowContainingState implements IStateMatcher {
+
+        private final BlockState LOG = TCBlocks.FLOW_CEDAR_LOG.get().defaultBlockState()
+                .setValue(BlockStateProperties.AXIS, Direction.Axis.Y)
+                .setValue(TCBlockStateProperties.INFUSED, true);
+        private final BlockState WOOD = TCBlocks.FLOW_CEDAR_WOOD.get().defaultBlockState()
+                .setValue(BlockStateProperties.AXIS, Direction.Axis.Y)
+                .setValue(TCBlockStateProperties.INFUSED, true);
+        private final BlockState CASING = TCBlocks.FLOW_CEDAR_CASING.get().defaultBlockState()
+                .setValue(BlockStateProperties.AXIS, Direction.Axis.Y)
+                .setValue(TCBlockStateProperties.INFUSED, true);
+        private final BlockState TANK = TCBlocks.FLOW_CEDAR_TANK.get().defaultBlockState()
+                .setValue(FlowCedarTankBlock.STAGE, 3);
+        private final BlockState FLOW = TCFluids.FLOW_FLUID.block.get().defaultBlockState();
+
+        @Override
+        public BlockState getDisplayedState(long ticks) {
+            long x = ticks % 80;
+            if (x < 20) {
+                return LOG;
+            }
+            if (x < 40) {
+                return WOOD;
+            }
+            if (x < 60) {
+                return CASING;
+            }
+//            if (x < 80) {
+//                return TANK;
+//            }
+
+            return FLOW;
+        }
+
+        @Override
+        public TriPredicate<BlockGetter, BlockPos, BlockState> getStatePredicate() {
+
+            return ((blockGetter, pos, blockState) -> {
+                boolean exceptions = blockState.equals(TANK) || blockState.equals(FLOW);
+                return exceptions || (blockState.hasProperty(TCBlockStateProperties.INFUSED) && blockState.getValue(TCBlockStateProperties.INFUSED));
+            });
+        }
+    }
 }

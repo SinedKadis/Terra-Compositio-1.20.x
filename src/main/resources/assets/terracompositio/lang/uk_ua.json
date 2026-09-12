@@ -329,5 +329,9 @@
   "book.terracompositio.creation_flow_journal.entry.fe_provider.page1": "  Постачальник Формальної Энергії здатен перетворювати ЕПТ в FE у співвідношенні 1:60. <br>  Для роботи постачальник має бути оточений блоками, що містять рідкий поток, зверху та знизу",
   "book.terracompositio.creation_flow_journal.entry.fe_provider.page2": "  Пілони мають бути розташовані навколо постачальника на одному рівні. Кожен збільшує швидкість на 60FE за секунду. Для роботи мають бути наповненими",
   "book.terracompositio.creation_flow_journal.entry.fe_provider.page1.title": "Ядро FE Постачальника",
-  "book.terracompositio.creation_flow_journal.entry.fe_provider.page2.title": "Пілон FE Постачальника"
+  "book.terracompositio.creation_flow_journal.entry.fe_provider.page2.title": "Пілон FE Постачальника",
+  "book.terracompositio.creation_flow_journal.entry.time_saturator.name": "Насичувач Часу",
+  "book.terracompositio.creation_flow_journal.entry.time_saturator.page1": "  Це багатоблочна структура, що здатна збільшувати кількість часу навколо, пришвидшуючи різні пристрої. Її висота може бути більшою, збільшуючи радіус дії",
+  "book.terracompositio.creation_flow_journal.entry.time_saturator.page2": " Що б структура працювала, треба що б також працювали всі Десорбери Плину Часу",
+  "book.terracompositio.creation_flow_journal.entry.time_saturator.page1.title": "Насичувач Часу"
 }

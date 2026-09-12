@@ -32,8 +32,8 @@ public class TimeSaturatorCoreBlockEntityRenderer implements BlockEntityRenderer
         if (level == null) return;
 
         CompoundTag persistentData = pBlockEntity.getPersistentData();
-        boolean isAssembled = !persistentData.contains(AssemblyBehaviour.ASSEMBLY.toData())
-                || persistentData.getBoolean(AssemblyBehaviour.ASSEMBLY.toData());
+        boolean isAssembled = persistentData.contains(AssemblyBehaviour.ASSEMBLY.toData())
+                && persistentData.getBoolean(AssemblyBehaviour.ASSEMBLY.toData());
 
         if (isAssembled) renderCube(partialTick, pPoseStack, pBuffer, pPackedLight, pPackedOverlay, level, 1);
 
