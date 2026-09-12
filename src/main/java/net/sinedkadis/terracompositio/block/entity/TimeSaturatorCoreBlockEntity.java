@@ -11,15 +11,14 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.TickingBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.sinedkadis.terracompositio.api.IEntityInstance;
 import net.sinedkadis.terracompositio.api.IHaveKnowledge;
 import net.sinedkadis.terracompositio.api.helpers.TooltipHelper;
 import net.sinedkadis.terracompositio.api.networks.AnyNetworkMember;
-import net.sinedkadis.terracompositio.api.registries.TCBlockStateProperties;
 import net.sinedkadis.terracompositio.block.behaviours.AssemblyBehaviour;
 import net.sinedkadis.terracompositio.registries.TCBlocks;
 import net.sinedkadis.terracompositio.util.behaviors.blockentity.IBEBehaviour;
+import net.sinedkadis.terracompositio.util.helpers.WorldHelperInternal;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
@@ -54,14 +53,18 @@ public class TimeSaturatorCoreBlockEntity extends TCBlockEntity implements IHave
         boolean isAssembled = !persistentData.contains(AssemblyBehaviour.ASSEMBLY.toData()) || persistentData.getBoolean(AssemblyBehaviour.ASSEMBLY.toData());
         if (isAssembled) {
             List<TickingBlockEntity> list = List.copyOf(pLevel.blockEntityTickers).stream()
-                    .filter(tickingBlockEntity -> !tickingBlockEntity.isRemoved())
                     .filter(tickingBlockEntity -> tickingBlockEntity.getPos().closerThan(pPos, getRange()))
+                    .filter(tickingBlockEntity -> !pLevel.getBlockState(tickingBlockEntity.getPos())
+                            .is(TCBlocks.TIME_SATURATOR_CORE.get()))
                     .toList();
             for (int i = 0; i < 3; i++) {
-                list.forEach(TickingBlockEntity::tick);
+                list.stream()
+                        .filter(tickingBlockEntity -> !tickingBlockEntity.isRemoved())
+                        .forEach(TickingBlockEntity::tick);
             }
         }
     }
+
 
     public boolean isAssembled(ServerLevel level) {
         BlockPos blockPos = this.getBlockPos();
@@ -83,14 +86,13 @@ public class TimeSaturatorCoreBlockEntity extends TCBlockEntity implements IHave
             for (Direction direction : Direction.Plane.HORIZONTAL) {
                 BlockPos relative = below.relative(direction);
                 BlockState desorber = level.getBlockState(relative);
-                if (!desorber.is(TCBlocks.TIME_PASSAGE_DESORBER)) {
-                    ++range;
-                    continue outer;
-                }
-                BlockState casing = level.getBlockState(relative.below());
-                if (!(casing.is(TCBlocks.FLOW_CEDAR_CASING)
-                        && casing.getValue(TCBlockStateProperties.INFUSED)
-                        && casing.getValue(BlockStateProperties.AXIS).isVertical())) {
+                if (desorber.is(TCBlocks.TIME_PASSAGE_DESORBER)) {
+                    if (!(WorldHelperInternal.containsFlow(level, relative))
+                            || !(WorldHelperInternal.containsFlow(level, relative.below()))) {
+                        ++range;
+                        continue outer;
+                    }
+                } else {
                     ++range;
                     continue outer;
                 }

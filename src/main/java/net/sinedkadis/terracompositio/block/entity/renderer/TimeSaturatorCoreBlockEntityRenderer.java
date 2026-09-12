@@ -5,7 +5,9 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
+import net.sinedkadis.terracompositio.block.behaviours.AssemblyBehaviour;
 import net.sinedkadis.terracompositio.block.entity.TimeSaturatorCoreBlockEntity;
 import net.sinedkadis.terracompositio.entity.client.ECFCubeModel;
 import net.sinedkadis.terracompositio.entity.custom.FlowCedarEntEntity;
@@ -29,8 +31,11 @@ public class TimeSaturatorCoreBlockEntityRenderer implements BlockEntityRenderer
         Level level = pBlockEntity.getLevel();
         if (level == null) return;
 
+        CompoundTag persistentData = pBlockEntity.getPersistentData();
+        boolean isAssembled = !persistentData.contains(AssemblyBehaviour.ASSEMBLY.toData())
+                || persistentData.getBoolean(AssemblyBehaviour.ASSEMBLY.toData());
 
-        renderCube(partialTick, pPoseStack, pBuffer, pPackedLight, pPackedOverlay, level, 1);
+        if (isAssembled) renderCube(partialTick, pPoseStack, pBuffer, pPackedLight, pPackedOverlay, level, 1);
 
 
     }

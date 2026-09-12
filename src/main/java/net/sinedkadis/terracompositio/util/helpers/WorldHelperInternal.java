@@ -54,44 +54,32 @@ public class WorldHelperInternal {
         }
     }
 
+    private static final FluidStack fluidStack = new FluidStack(TCFluids.FLOW_FLUID.source.get(), 1);
+
     public static ITCRecipe.CraftException surroundedByFlow(Level level, BlockPos pos) {
-        boolean upIsTrue = false;
-        {
-            BlockPos blockPos = pos.above();
-            BlockState state = level.getBlockState(blockPos);
 
-            if (!state.hasProperty(INFUSED) || !state.getValue(INFUSED)) {
-                if (state.getFluidState().is(TCFluids.FLOW_FLUID.source.get())) {
-                    upIsTrue = true;
-                } else {
-                    IFluidHandler capability = level.getCapability(Capabilities.FluidHandler.BLOCK, blockPos, state, null, null);
-                    if (capability != null && capability
-                            .drain(new FluidStack(TCFluids.FLOW_FLUID.source, 1), IFluidHandler.FluidAction.SIMULATE).getAmount() > 0) {
-                        upIsTrue = true;
-                    }
+        BlockPos above = pos.above();
+        BlockPos below = pos.below();
+
+        return containsFlow(level, above) && containsFlow(level, below) ?
+                ITCRecipe.CraftException.OK : ITCRecipe.CraftException.NO_SURROUNDINGS;
+    }
+
+    public static boolean containsFlow(Level level, BlockPos blockPos) {
+        boolean toReturn = false;
+        BlockState state = level.getBlockState(blockPos);
+
+        if (!state.hasProperty(INFUSED) || !state.getValue(INFUSED)) {
+            if (state.getFluidState().is(TCFluids.FLOW_FLUID.source.get())) {
+                toReturn = true;
+            } else {
+                IFluidHandler capability = level.getCapability(Capabilities.FluidHandler.BLOCK, blockPos, state, null, null);
+                if (capability != null && capability
+                        .drain(fluidStack, IFluidHandler.FluidAction.SIMULATE).getAmount() > 0) {
+                    toReturn = true;
                 }
-            } else upIsTrue = true;
-        }
-        if (!upIsTrue) return ITCRecipe.CraftException.NO_SURROUNDINGS;
-
-        boolean downIsTrue = false;
-        {
-            BlockPos blockPos = pos.below();
-            BlockState state = level.getBlockState(blockPos);
-
-            if (!state.hasProperty(INFUSED) || !state.getValue(INFUSED)) {
-                if (state.getFluidState().is(TCFluids.FLOW_FLUID.source.get())) {
-                    downIsTrue = true;
-                } else {
-                    IFluidHandler capability = level.getCapability(Capabilities.FluidHandler.BLOCK, blockPos, state, null, null);
-                    if (capability != null && capability
-                            .drain(new FluidStack(TCFluids.FLOW_FLUID.source, 1), IFluidHandler.FluidAction.SIMULATE).getAmount() > 0) {
-                        downIsTrue = true;
-                    }
-                }
-            } else downIsTrue = true;
-        }
-
-        return downIsTrue ? ITCRecipe.CraftException.OK : ITCRecipe.CraftException.NO_SURROUNDINGS;
+            }
+        } else toReturn = true;
+        return toReturn;
     }
 }
