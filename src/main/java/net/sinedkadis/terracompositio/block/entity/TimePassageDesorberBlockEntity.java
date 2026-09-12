@@ -26,7 +26,7 @@ public class TimePassageDesorberBlockEntity extends AbstractDesorberBlockEntity 
     private int timeBuffer = 0;
     private int timeReSetter = 20;
     private int timeCounter = 0;
-    public static final Function<Integer, Double> function = (x) -> (-Math.cos((double) x / 50) + 1) / 1.5f * 2 - 1.3f;
+    public static final Function<Integer, Double> function = (x) -> (-Math.cos((double) x / 100 + 90)) / 1.5f * 2;
     public TimePassageDesorberBlockEntity(BlockPos pos, BlockState state) {
         super(TCBlockEntities.TIME_PASSAGE_DESORBER_BE.get(), pos, state);
     }
