@@ -26,7 +26,7 @@ public class TimePassageDesorberBlockEntity extends AbstractDesorberBlockEntity 
     private int timeBuffer = 0;
     private int timeReSetter = 20;
     private int timeCounter = 0;
-    public static final Function<Integer,Double> function = (x) -> (-Math.cos((double) x /50)+1)/1.5f;
+    public static final Function<Integer, Double> function = (x) -> (-Math.cos((double) x / 50) + 1) / 1.5f * 2 - 1.3f;
     public TimePassageDesorberBlockEntity(BlockPos pos, BlockState state) {
         super(TCBlockEntities.TIME_PASSAGE_DESORBER_BE.get(), pos, state);
     }
@@ -60,11 +60,18 @@ public class TimePassageDesorberBlockEntity extends AbstractDesorberBlockEntity 
         consumeFluid();
         Double chance = function.apply(timeCounter);
         float random = pLevel.getRandom().nextFloat();
-        if (random < chance) {
-            timeBuffer++;
-            if (chance > 1 && random < (chance-1)){
+        double absoluteChance = Math.abs(chance);
+        if (random < absoluteChance) {
+            if (chance > 0)
                 timeBuffer++;
-                ParticleHelperInternal.spawnParticlesIn(pLevel, this.worldPosition);
+            else
+                timeBuffer--;
+            ParticleHelperInternal.spawnParticlesIn(pLevel, this.worldPosition);
+            if (absoluteChance > 1 && random < (absoluteChance - 1)) {
+                if (chance > 0)
+                    timeBuffer++;
+                else
+                    timeBuffer--;
             }
         }
     }
